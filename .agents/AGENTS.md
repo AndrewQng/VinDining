@@ -59,11 +59,26 @@
 
 ---
 
-## 4. Agent Skill Activation Protocol & Semantic Routing
+## 4. Agent Skill Activation Protocol & In-Flight Execution Routing
+
+### Dynamic & In-Flight Skill Evaluation Protocol
+Skill selection is an active, continuous process, NOT a one-time check at the initial prompt. The agent must evaluate skills at three distinct execution gates:
+
+1. **Initial Dispatch Gate (Turn Start)**:
+   - Match user intent (in English, Vietnamese, or mixed) against the skill catalog.
+2. **Post-Context Gathering Gate (Pre-Implementation)**:
+   - After inspecting code, reading documentation, or diagnosing errors, the agent gains fresh situational context.
+   - Before writing or modifying code, the agent MUST evaluate:
+     > *"Now that I understand the actual codebase context and sub-problems, does a specialized skill (e.g. `clean-architecture`, `dotnet-backend-patterns`, `database-schema-designer`, `tdd`, `architecture-decision-records`) govern this specific step?"*
+   - If a matching skill exists, activate it immediately before taking modifying actions.
+3. **In-Flight Transition Gate (Sub-task Emergence)**:
+   - When encountering a new sub-domain mid-execution (e.g., discovering an unindexed table query, an architectural trade-off, or an unwritten unit test), seamlessly activate the corresponding specialized skill for that sub-task rather than ad-hoc coding.
 
 > [!IMPORTANT]
 > **Semantic Intent & Multilingual Support**:
 > Skill activation is based strictly on **semantic intent and development objective**, never on rigid keyword matching. Developers on the team may prompt in **Vietnamese, English, or mixed technical terminology**. The agent MUST evaluate the user's underlying goal and invoke the appropriate skill regardless of prompt phrasing or language.
+
+---
 
 ### A. Requirements Engineering & Product Management
 
