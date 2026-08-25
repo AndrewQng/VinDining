@@ -59,33 +59,55 @@
 
 ---
 
-## 4. Agent Skill Catalog & Activation Conditions
+## 4. Agent Skill Activation Protocol & Semantic Routing
+
+> [!IMPORTANT]
+> **Semantic Intent & Multilingual Support**:
+> Skill activation is based strictly on **semantic intent and development objective**, never on rigid keyword matching. Developers on the team may prompt in **Vietnamese, English, or mixed technical terminology**. The agent MUST evaluate the user's underlying goal and invoke the appropriate skill regardless of prompt phrasing or language.
 
 ### A. Requirements Engineering & Product Management
 
 #### 1. `prd-development`
 * **Path**: `.agents/skills/prd-development/SKILL.md`
-* **What it does**: Orchestrates structured PRD / BRS / SRS creation: Problem Framing with evidence, Target Personas, Strategic Context, Solution Overview, Success Metrics, User Story breakdown, Out-of-Scope boundaries, and Risk mitigations.
-* **Activation**: When drafting or refining product specifications, BRS, or SRS.
-* **Triggers**: `"write PRD"`, `"create BRS"`, `"draft SRS"`, `"document system requirements"`, `"product specification"`.
+* **Core Purpose**: Orchestrates structured PRD / BRS / SRS creation: Problem Framing with evidence, Target Personas, Strategic Context, Solution Overview, Success Metrics, User Story breakdown, Out-of-Scope boundaries, and Risk mitigations.
+* **When to Activate (Intent)**:
+  - Drafting, structuring, or refining a Product Requirements Document (PRD), Business Requirements Specification (BRS), or Software Requirements Specification (SRS).
+  - Defining the complete feature scope, constraints, and business metrics for the restaurant management system.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Draft the BRS document for the table reservation and deposit module."
+  - *VI*: "Viết tài liệu đặc tả yêu cầu nghiệp vụ BRS / SRS cho tính năng đặt bàn và tính tiền cọc."
+  - *VI*: "Soạn thảo PRD cho phân hệ quét mã QR tự gọi món tại bàn."
 
 #### 2. `user-story-mapping`
 * **Path**: `.agents/skills/user-story-mapping/SKILL.md`
-* **What it does**: Visualizes the user journey via 2D Story Mapping (Jeff Patton model): horizontal backbone (Activities $\rightarrow$ Steps $\rightarrow$ Tasks) and vertical release slicing (MVP vs Future).
-* **Activation**: When mapping out end-to-end user workflows or slicing MVP releases.
-* **Triggers**: `"story map"`, `"user journey map"`, `"map out workflow"`, `"slice MVP"`.
+* **Core Purpose**: Visualizes the user journey via 2D Story Mapping (Jeff Patton model): horizontal backbone (Activities $\rightarrow$ Steps $\rightarrow$ Tasks) and vertical release slicing (MVP vs Future).
+* **When to Activate (Intent)**:
+  - Mapping out end-to-end operational journeys across different roles (Guest $\rightarrow$ Host $\rightarrow$ Waiter $\rightarrow$ Chef $\rightarrow$ Manager).
+  - Slicing backlogs into coherent milestone releases (MVP release vs Phase 2 enhancements).
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Map out the full user journey from QR scan to kitchen firing and bill checkout."
+  - *VI*: "Lập bản đồ User Story Mapping cho quy trình từ lúc khách quét QR đến khi Bếp ra món và thanh toán."
+  - *VI*: "Phân chia các lát cắt phát hành MVP cho đợt demo tuần 4."
 
 #### 3. `user-story`
 * **Path**: `.agents/skills/user-story/SKILL.md`
-* **What it does**: Formulates user stories in Mike Cohn format (`As a [role], I want to [action], so that [outcome]`) with testable Gherkin acceptance criteria (`Scenario`, `Given`, `When`, `Then`).
-* **Activation**: When writing detailed user stories or acceptance criteria for backlog items.
-* **Triggers**: `"write user story"`, `"create user story for X"`, `"acceptance criteria for Y"`, `"Gherkin scenarios"`.
+* **Core Purpose**: Formulates individual user stories in Mike Cohn format (`As a [role], I want to [action], so that [outcome]`) with testable Gherkin acceptance criteria (`Scenario`, `Given`, `When`, `Then`).
+* **When to Activate (Intent)**:
+  - Writing or detailing specific user stories with clear acceptance criteria for developers and QA testers.
+  - Converting business rules into testable conditions (e.g. table status transitions, deposit deduction rules).
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Write a user story with Gherkin acceptance criteria for automatic deposit deduction upon checkout."
+  - *VI*: "Viết user story kèm tiêu chí nghiệm thu Gherkin cho tính năng in phiếu Bếp khi khách gửi đơn."
+  - *VI*: "Đặc tả kịch bản kiểm thử (Given-When-Then) cho nghiệp vụ hủy bàn và hoàn tiền cọc."
 
 #### 4. `planning-with-files`
 * **Path**: `.agents/skills/planning-with-files/SKILL.md`
-* **What it does**: Maintains persistent state on disk (`task_plan.md`, `findings.md`, `progress.md`) across multi-step agent sessions to prevent context drift.
-* **Activation**: When starting any multi-step analysis, design, or implementation workflow requiring 5+ actions.
-* **Triggers**: `"plan with files"`, `"track progress in files"`, `"initialize task plan"`.
+* **Core Purpose**: Maintains persistent state on disk (`task_plan.md`, `findings.md`, `progress.md`) across multi-step agent sessions to prevent context drift.
+* **When to Activate (Intent)**:
+  - Starting any complex multi-step analysis, design, or implementation workflow requiring 5+ actions.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Track our multi-step research and architecture design in persistent planning files."
+  - *VI*: "Lập kế hoạch làm việc chi tiết và lưu vết tiến độ vào các file trên đĩa để không bị quên ngữ cảnh."
 
 ---
 
@@ -93,33 +115,54 @@
 
 #### 5. `clean-architecture`
 * **Path**: `.agents/skills/clean-architecture/SKILL.md`
-* **What it does**: Enforces the 4-layer .NET Clean Architecture structure (`Domain` $\rightarrow$ `Application` $\rightarrow$ `Infrastructure` $\rightarrow$ `Api`), dependency inversion, rich domain entities with business behaviors, MediatR CQRS Commands/Queries, FluentValidation pipelines, and `IAppDbContext` abstractions.
-* **Activation**: When designing backend layers, writing CQRS handlers, domain entities, or minimal API endpoints.
-* **Triggers**: `"clean architecture"`, `"setup backend layers"`, `"create command handler"`, `"domain entity"`.
+* **Core Purpose**: Enforces the 4-layer .NET Clean Architecture structure (`Domain` $\rightarrow$ `Application` $\rightarrow$ `Infrastructure` $\rightarrow$ `Api`), dependency inversion, rich domain entities with business behaviors, MediatR CQRS Commands/Queries, FluentValidation pipelines, and `IAppDbContext` abstractions.
+* **When to Activate (Intent)**:
+  - Designing backend solution structure, CQRS Commands/Queries, Domain Entities with encapsulation, or Minimal API endpoint groups.
+  - Ensuring business rules remain strictly decoupled from database frameworks or UI controllers.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Structure the Order creation command handler following Clean Architecture and CQRS."
+  - *VI*: "Thiết kế tầng Application và Domain theo Clean Architecture cho nghiệp vụ tạo Order và điều phối Course."
+  - *VI*: "Tổ chức các Command, Query và Validator trong MediatR."
 
 #### 6. `dotnet-backend-patterns`
 * **Path**: `.agents/skills/dotnet-backend-patterns/SKILL.md`
-* **What it does**: Implements production C#/.NET 9 patterns: async/await cancellation tokens, DI lifetimes, `IOptions<T>` configuration, `Result<T>` flow control, EF Core 9 fluent mapping, high-performance Dapper queries, and integration testing with `WebApplicationFactory`.
-* **Activation**: When writing or reviewing C# backend code, repository access, caching, or middleware.
-* **Triggers**: `"dotnet patterns"`, `"csharp best practices"`, `"setup EF Core repository"`, `"result pattern C#"`.
+* **Core Purpose**: Implements production C#/.NET 9 patterns: async/await cancellation tokens, DI lifetimes, `IOptions<T>` configuration, `Result<T>` flow control, EF Core 9 fluent mapping, high-performance Dapper queries, and integration testing with `WebApplicationFactory`.
+* **When to Activate (Intent)**:
+  - Writing, reviewing, or optimizing C# code, Entity Framework Core mappings, repository queries, caching, or middleware.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Configure EF Core entity relations and write Dapper queries for high-speed floor plan retrieval."
+  - *VI*: "Viết cấu hình EntityTypeConfiguration cho các bảng CSDL và tối ưu truy vấn EF Core 9."
+  - *VI*: "Áp dụng Result pattern thay vì throw exception khi xử lý logic nghiệp vụ đặt bàn."
 
 #### 7. `architecture-decision-records`
 * **Path**: `.agents/skills/architecture-decision-records/SKILL.md`
-* **What it does**: Standardizes creation and governance of Architecture Decision Records (ADRs) using MADR or Y-Statement formats to capture decision drivers, options, rationale, and consequences.
-* **Activation**: When deciding on technical trade-offs or documenting architectural choices.
-* **Triggers**: `"write an ADR"`, `"architecture decision record"`, `"why did we choose X"`, `"compare tech options"`.
+* **Core Purpose**: Standardizes creation and governance of Architecture Decision Records (ADRs) using MADR or Y-Statement formats to capture decision drivers, options, rationale, and consequences.
+* **When to Activate (Intent)**:
+  - Evaluating and documenting major architectural trade-offs (e.g. SignalR WebSocket vs HTTP polling, EF Core vs Dapper, Clean Architecture vs 3-Tier).
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Create an ADR explaining why we chose SignalR for real-time kitchen order updates."
+  - *VI*: "Viết tài liệu ADR giải thích lý do lựa chọn SignalR cho KDS và sơ đồ bàn thay vì cơ chế polling."
+  - *VI*: "So sánh ưu nhược điểm kỹ thuật giữa Clean Architecture và N-Tier truyền thống."
 
 #### 8. `openapi-spec-generation`
 * **Path**: `.agents/skills/openapi-spec-generation/SKILL.md`
-* **What it does**: Generates and maintains OpenAPI 3.1 specifications for RESTful API contracts between frontend and backend.
-* **Activation**: When defining or documenting API contracts, Swagger endpoints, request/response schemas, or error formats.
-* **Triggers**: `"generate openapi spec"`, `"design API contract"`, `"swagger specification"`.
+* **Core Purpose**: Generates and maintains OpenAPI 3.1 specifications for RESTful API contracts between frontend and backend.
+* **When to Activate (Intent)**:
+  - Defining API request/response schemas, DTO models, HTTP status codes, and authentication requirements before frontend/backend implementation.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Generate the OpenAPI specification contract for the QR menu and ordering endpoints."
+  - *VI*: "Thiết kế hợp đồng API OpenAPI / Swagger cho các endpoint đặt bàn, gọi món và xuất hóa đơn."
+  - *VI*: "Đặc tả các DTO request/response và mã lỗi HTTP cho Frontend React tiêu thụ."
 
 #### 9. `database-schema-designer`
 * **Path**: `.agents/skills/database-schema-designer/SKILL.md`
-* **What it does**: Designs normalized relational database schemas (1NF $\rightarrow$ 2NF $\rightarrow$ 3NF) for SQL Server, foreign keys, composite indexes, and reversible EF Core migrations.
-* **Activation**: When designing database tables, ERD diagrams, indexes, or relationships.
-* **Triggers**: `"design database schema"`, `"create ERD"`, `"table structure"`, `"database normalization"`.
+* **Core Purpose**: Designs normalized relational database schemas (1NF $\rightarrow$ 2NF $\rightarrow$ 3NF) for SQL Server, foreign keys, composite indexes, and reversible EF Core migrations.
+* **When to Activate (Intent)**:
+  - Designing Entity Relationship Diagrams (ERD), table structures, constraint rules, or indexing strategies for SQL Server.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Design a normalized database schema and ERD for Tables, Reservations, Courses, and Invoices."
+  - *VI*: "Thiết kế sơ đồ cơ sở dữ liệu quan hệ (ERD) và các bảng dữ liệu trên SQL Server."
+  - *VI*: "Chuẩn hóa bảng CSDL sang dạng 3NF và thiết lập các khóa ngoại, chỉ mục (Index) tối ưu."
 
 ---
 
@@ -127,27 +170,40 @@
 
 #### 10. `planning-and-task-breakdown`
 * **Path**: `.agents/skills/planning-and-task-breakdown/SKILL.md`
-* **What it does**: Decomposes specs into atomic vertical engineering slices with acceptance criteria, verification commands, and dependency ordering.
-* **Activation**: When breaking down sprint tasks or milestone goals (`tasks/todo.md`).
-* **Triggers**: `"break down tasks"`, `"plan sprint"`, `"task list"`, `"decompose work"`.
+* **Core Purpose**: Decomposes specs into atomic vertical engineering slices with acceptance criteria, verification commands, and dependency ordering.
+* **When to Activate (Intent)**:
+  - Breaking down sprint milestones into actionable developer tasks with dependency ordering and verification steps.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Break down the Week 3-4 design deliverables into atomic developer tasks."
+  - *VI*: "Chia nhỏ kế hoạch triển khai tuần 3 thành các đầu việc kỹ thuật cụ thể cho từng thành viên."
+  - *VI*: "Lập danh sách task chi tiết kèm tiêu chí hoàn thành (Definition of Done)."
 
 #### 11. `tdd`
 * **Path**: `.agents/skills/tdd/SKILL.md`
-* **What it does**: Drives test-driven development (Red-Green-Refactor) with deep module design, interface boundaries, and unit/integration testing.
-* **Activation**: When building new features or bug fixes test-first.
-* **Triggers**: `"tdd"`, `"write tests first"`, `"red-green-refactor"`.
+* **Core Purpose**: Drives test-driven development (Red-Green-Refactor) with deep module design, interface boundaries, and unit/integration testing.
+* **When to Activate (Intent)**:
+  - Implementing domain business logic, payment calculation, or complex validations test-first.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Write tests first for the invoice total calculation and deposit deduction algorithm."
+  - *VI*: "Áp dụng TDD để viết unit test cho hàm tính toán hóa đơn và cấn trừ tiền cọc trước khi viết code xử lý."
 
 #### 12. `grill-me` & `grill-with-docs`
 * **Path**: `.agents/skills/grill-me/SKILL.md` & `.agents/skills/grill-with-docs/SKILL.md`
-* **What it does**: Conducts an interview to stress-test designs, identify unstated assumptions, and generate documentation.
-* **Activation**: When validating a plan or design before implementation.
-* **Triggers**: `"grill me"`, `"stress test my plan"`, `"interview me on design"`.
+* **Core Purpose**: Conducts an interview to stress-test designs, identify unstated assumptions, and generate documentation.
+* **When to Activate (Intent)**:
+  - Stress-testing architectural plans or business workflows before committing to development.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Grill me on our real-time table concurrency and reservation locking model."
+  - *VI*: "Chất vấn và phản biện thiết kế luồng xử lý tranh chấp bàn ăn khi nhiều khách đặt cùng lúc."
 
 #### 13. `improve-codebase-architecture`
 * **Path**: `.agents/skills/improve-codebase-architecture/SKILL.md`
-* **What it does**: Scans codebase for deepening opportunities, module seams, and architectural improvements.
-* **Activation**: When reviewing architecture quality across the repository.
-* **Triggers**: `"improve architecture"`, `"review codebase structure"`, `"find module seams"`.
+* **Core Purpose**: Scans codebase for deepening opportunities, module seams, and architectural improvements.
+* **When to Activate (Intent)**:
+  - Auditing repository health, module coupling, and Clean Architecture layer boundary integrity.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Audit our .NET solution for unintended layer dependencies or leaky abstractions."
+  - *VI*: "Kiểm tra toàn bộ mã nguồn xem có vi phạm quy tắc phân tầng Clean Architecture hay không."
 
 ---
 
