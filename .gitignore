@@ -27,6 +27,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Agent Planning & Working Files
+task_plan.md
+findings.md
+progress.md
+.planning/
+skills-lock.json
+
 # OS / Editor files
 .DS_Store
 Thumbs.db
