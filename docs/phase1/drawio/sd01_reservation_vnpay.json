@@ -1,0 +1,124 @@
+{
+  "title": "SD-01: Đặt bàn trực tuyến & Thanh toán cọc VNPAY",
+  "participants": [
+    {
+      "id": "g",
+      "label": "Khách hàng (Guest)",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Web Frontend (React)"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server"
+    },
+    {
+      "id": "vn",
+      "label": "Cổng VNPAY"
+    }
+  ],
+  "messages": [
+    {
+      "from": "g",
+      "to": "fe",
+      "label": "1. Chọn ngày, ca, số khách, khu vực bàn"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "2. GET /api/v1/tables/available"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "3. Query bàn trống khả dụng"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "4. Trả về danh sách bàn",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "5. 200 OK (Danh sách bàn)",
+      "return": true
+    },
+    {
+      "from": "g",
+      "to": "fe",
+      "label": "6. Nhập thông tin & Bấm Đặt cọc"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "7. POST /api/v1/reservations/hold"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "8. Khóa bàn tạm thời 15p (BR-01)"
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "9. CreatePaymentUrl(DepositAmount)"
+    },
+    {
+      "from": "vn",
+      "to": "api",
+      "label": "10. Trả về PaymentUrl",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "11. 200 OK (PaymentUrl)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "vn",
+      "label": "12. Chuyển hướng sang VNPAY Gateway"
+    },
+    {
+      "from": "g",
+      "to": "vn",
+      "label": "13. Quét mã QR thanh toán cọc"
+    },
+    {
+      "from": "vn",
+      "to": "api",
+      "label": "14. POST /api/v1/payments/ipn (Callback)"
+    },
+    {
+      "from": "api",
+      "to": "api",
+      "label": "15. VerifyChecksum & Confirm"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "16. Cập nhật Reservation -> Reserved"
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "17. Confirm Success (RspCode 00)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "g",
+      "label": "18. Gửi SMS/Email kèm BookingCode",
+      "async": true
+    }
+  ]
+}

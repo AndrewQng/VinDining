@@ -1,0 +1,106 @@
+{
+  "title": "SD-04: Thanh toán hóa đơn & Cấn trừ cọc",
+  "participants": [
+    {
+      "id": "g",
+      "label": "Khách hàng",
+      "actor": true
+    },
+    {
+      "id": "w",
+      "label": "Phục vụ / Thu ngân",
+      "actor": true
+    },
+    {
+      "id": "tab",
+      "label": "Tablet Phục vụ"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server"
+    },
+    {
+      "id": "prn",
+      "label": "Máy in Hóa đơn"
+    }
+  ],
+  "messages": [
+    {
+      "from": "g",
+      "to": "w",
+      "label": "1. Yêu cầu tính tiền"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "2. Chọn 'Thanh toán bàn'"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "3. GET /invoices/preview/{tableId}"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "4. Query tiền món & tiền cọc Deposit"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "5. Trả về dữ liệu",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "api",
+      "label": "6. Áp công thức BR-03 (Subtotal + 5% SVC + 10% VAT - Deposit)"
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "7. 200 OK (Chi tiết hóa đơn tạm tính)",
+      "return": true
+    },
+    {
+      "from": "w",
+      "to": "prn",
+      "label": "8. In phiếu tạm tính đem cho khách kiểm tra"
+    },
+    {
+      "from": "g",
+      "to": "w",
+      "label": "9. Thanh toán số tiền còn thiếu"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "10. Bấm 'Hoàn tất thanh toán'"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "11. POST /invoices/{id}/settle"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "12. Cập nhật Invoice -> Paid, Table -> Cleaning"
+    },
+    {
+      "from": "api",
+      "to": "prn",
+      "label": "13. In hóa đơn tài chính cuối cùng"
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "14. 200 OK (Bàn chuyển sang Cleaning)",
+      "return": true
+    }
+  ]
+}

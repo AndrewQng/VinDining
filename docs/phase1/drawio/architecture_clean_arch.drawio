@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+  <diagram name="Clean Architecture VinDining" id="clean_architecture_vindining">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1360" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tier 1: Presentation -->
+        <mxCell id="tier_pres" value="1. Tầng Trình Diễn / Client (Presentation Layer)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="fe_guest" value="Khách hàng (Guest)&#xa;Mobile Web E-Menu (React + Vite)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+          <mxGeometry x="40" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="fe_staff" value="Nhân viên Phục vụ (Waitstaff)&#xa;Tablet Web (SignalR Client)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+          <mxGeometry x="470" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="fe_admin" value="Quản lý &amp; Admin (Manager/Admin)&#xa;Desktop Web Portal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+          <mxGeometry x="900" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Tier 2: API & Gateway -->
+        <mxCell id="tier_api" value="2. Tầng Controller &amp; API Gateway (ASP.NET Core .NET 9 Web API)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="210" width="1280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_ctrl" value="RESTful API Controllers&#xa;(Routing, JWT Bearer Auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
+          <mxGeometry x="40" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="signalr_hub" value="SignalR Real-Time Hubs&#xa;(FloorPlanHub &amp; OrderHub)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
+          <mxGeometry x="470" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="middleware" value="Global Exception Middleware&#xa;&amp; FluentValidation Pipelines" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
+          <mxGeometry x="900" y="45" width="340" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Tier 3: Application (CQRS MediatR) -->
+        <mxCell id="tier_app" value="3. Tầng Service &amp; Business Logic (Application Layer - CQRS with MediatR)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="1280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="mediatr_cmd" value="Commands &amp; Handlers (Ghi dữ liệu)&#xa;CreateReservation, ApproveOrder, SettleBill" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
+          <mxGeometry x="40" y="45" width="400" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="mediatr_query" value="Queries &amp; Handlers (Đọc dữ liệu)&#xa;GetAvailableTables, GetActiveOrders" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
+          <mxGeometry x="490" y="45" width="380" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="biz_rules" value="Business Rules Engine&#xa;BR-01 (15m lock), BR-03 (Formula), BR-05 (Refund)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
+          <mxGeometry x="920" y="45" width="320" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Tier 4: Core Domain -->
+        <mxCell id="tier_dom" value="4. Tầng Thực thể Miền (Core Domain Layer)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="1280" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="Domain Entities &amp; Value Objects&#xa;Guest, Table, Reservation, Order, OrderItem, Deposit, Invoice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
+          <mxGeometry x="40" y="45" width="700" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="enums" value="Domain Enums &amp; Invariants&#xa;TableStatus, OrderStatus, ShiftTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
+          <mxGeometry x="800" y="45" width="440" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Tier 5: Infrastructure & Persistence -->
+        <mxCell id="tier_infra" value="5. Tầng Hạ tầng &amp; Tích hợp Ngoài (Infrastructure Layer)" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="710" width="1280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="efcore" value="Entity Framework Core 9&#xa;IApplicationDbContext, Migrations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="tier_infra">
+          <mxGeometry x="40" y="45" width="280" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="sqlserver" value="Microsoft SQL Server&#xa;(Relational Database ACID)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="tier_infra">
+          <mxGeometry x="370" y="40" width="200" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="vnpay_svc" value="Cổng thanh toán VNPAY&#xa;(Online Deposit IPN Gateway)" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="tier_infra">
+          <mxGeometry x="630" y="45" width="280" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="printer_svc" value="ESC/POS Thermal Printing&#xa;(LAN/Wi-Fi Kitchen Printers)" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="tier_infra">
+          <mxGeometry x="960" y="45" width="280" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="c1" value="HTTPS REST API" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fe_guest" target="api_ctrl">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="WebSocket (SignalR)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fe_staff" target="signalr_hub">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="HTTPS Admin Requests" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fe_admin" target="middleware">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="Dispatch Command" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="api_ctrl" target="mediatr_cmd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="Query Data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="signalr_hub" target="mediatr_query">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Persist Data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="mediatr_cmd" target="efcore">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="530"/>
+              <mxPoint x="180" y="755"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c7" value="Read/Write" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="tier_infra" source="efcore" target="sqlserver">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="IPN Webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vnpay_svc" target="api_ctrl">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="690"/>
+              <mxPoint x="30" y="690"/>
+              <mxPoint x="30" y="275"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c9" value="ESC/POS Ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="mediatr_cmd" target="printer_svc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="690"/>
+              <mxPoint x="1140" y="690"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

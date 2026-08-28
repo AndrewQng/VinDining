@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+  <diagram name="Use Case Overall VinDining" id="use_case_overall_vindining">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="920" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Primary Actors -->
+        <mxCell id="act_guest" value="Khách hàng&#xa;(Guest)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="50" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_staff" value="Nhân viên Phục vụ&#xa;(Waitstaff)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="50" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_manager" value="Quản lý&#xa;(Manager)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="50" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_admin" value="Quản trị viên&#xa;(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="740" width="50" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- System Boundary -->
+        <mxCell id="sys_box" value="Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)" style="swimlane;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="700" height="820" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases inside boundary -->
+        <mxCell id="uc1" value="UC-01: Đặt bàn trực tuyến &amp; Đặt cọc" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="50" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc2" value="UC-02: Quét mã QR tại bàn &amp; Tự gọi món" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="140" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc3" value="UC-03: Tiếp nhận, Đối soát &amp; Phê duyệt in Bếp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="240" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc4" value="UC-04: Phục vụ món &amp; Xác nhận hoàn thành tại bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="340" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc5" value="UC-05: Thanh toán, Cấn trừ cọc &amp; Đóng bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="440" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc6" value="UC-06: Quản trị Thực đơn, Sơ đồ bàn &amp; Mã QR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="540" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc7" value="UC-07: Duyệt hoàn tiền cọc thủ công ngoại lệ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="630" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc8" value="UC-08: Quản trị Tài khoản &amp; Phân quyền (RBAC)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="sys_box">
+          <mxGeometry x="180" y="720" width="340" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Secondary External Actors -->
+        <mxCell id="act_vnpay" value="Cổng thanh toán&#xa;VNPAY" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="980" y="140" width="50" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_printer" value="Máy in Bếp nhiệt&#xa;(ESC/POS)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="980" y="300" width="50" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Connections -->
+        <mxCell id="e1" style="endArrow=none;html=1;" edge="1" parent="1" source="act_guest" target="uc1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=none;html=1;" edge="1" parent="1" source="act_guest" target="uc2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=none;html=1;" edge="1" parent="1" source="act_staff" target="uc3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=none;html=1;" edge="1" parent="1" source="act_staff" target="uc4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="endArrow=none;html=1;" edge="1" parent="1" source="act_staff" target="uc5"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=none;html=1;" edge="1" parent="1" source="act_manager" target="uc6"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=none;html=1;" edge="1" parent="1" source="act_manager" target="uc7"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=none;html=1;" edge="1" parent="1" source="act_admin" target="uc8"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" value="&amp;laquo;include&amp;raquo;" style="dashed=1;endArrow=open;html=1;" edge="1" parent="1" source="uc1" target="act_vnpay"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" value="&amp;laquo;include&amp;raquo;" style="dashed=1;endArrow=open;html=1;" edge="1" parent="1" source="uc7" target="act_vnpay"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" value="&amp;laquo;include&amp;raquo;" style="dashed=1;endArrow=open;html=1;" edge="1" parent="1" source="uc3" target="act_printer"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,108 @@
+<mxfile>
+  <diagram id="seqlayout" name="SD-01: Đặt bàn trực tuyến &amp; Thanh toán cọc VNPAY">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="g" value="Khách hàng (Guest)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="100" height="1050" as="geometry"/>
+        </mxCell>
+        <mxCell id="fe" value="Web Frontend (React)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
+          <mxGeometry x="260" y="40" width="100" height="1050" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="Web API (.NET 9)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
+          <mxGeometry x="480" y="40" width="100" height="1050" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="SQL Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="100" height="1050" as="geometry"/>
+        </mxCell>
+        <mxCell id="vn" value="Cổng VNPAY" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
+          <mxGeometry x="920" y="40" width="100" height="1050" as="geometry"/>
+        </mxCell>
+        <mxCell id="act0" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="db">
+          <mxGeometry x="45" y="190" width="10" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
+          <mxGeometry x="45" y="140" width="10" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="vn">
+          <mxGeometry x="45" y="490" width="10" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="act3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
+          <mxGeometry x="45" y="390" width="10" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="act4" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
+          <mxGeometry x="45" y="740" width="10" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="act5" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="fe">
+          <mxGeometry x="45" y="90" width="10" height="920" as="geometry"/>
+        </mxCell>
+        <mxCell id="act6" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="db">
+          <mxGeometry x="45" y="440" width="10" height="570" as="geometry"/>
+        </mxCell>
+        <mxCell id="act7" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="vn">
+          <mxGeometry x="45" y="640" width="10" height="370" as="geometry"/>
+        </mxCell>
+        <mxCell id="act8" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="g">
+          <mxGeometry x="45" y="960" width="10" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m0" value="1. Chọn ngày, ca, số khách, khu vực bàn" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0857;entryX=0;entryY=0.0;" edge="1" parent="1" source="g" target="act5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m1" value="2. GET /api/v1/tables/available" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0543;entryX=0;entryY=0.0;" edge="1" parent="1" source="act5" target="act1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m2" value="3. Query bàn trống khả dụng" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3333;entryX=0;entryY=0.0;" edge="1" parent="1" source="act1" target="act0">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m3" value="4. Trả về danh sách bàn" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.6667;" edge="1" parent="1" source="act0" target="act1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m4" value="5. 200 OK (Danh sách bàn)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.2174;" edge="1" parent="1" source="act1" target="act5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m5" value="6. Nhập thông tin &amp; Bấm Đặt cọc" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.3238;entryX=0;entryY=0.2717;" edge="1" parent="1" source="g" target="act5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m6" value="7. POST /api/v1/reservations/hold" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3261;entryX=0;entryY=0.0;" edge="1" parent="1" source="act5" target="act3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m7" value="8. Khóa bàn tạm thời 15p (BR-01)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m8" value="9. CreatePaymentUrl(DepositAmount)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m9" value="10. Trả về PaymentUrl" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.75;" edge="1" parent="1" source="act2" target="act3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m10" value="11. 200 OK (PaymentUrl)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.5435;" edge="1" parent="1" source="act3" target="act5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m11" value="12. Chuyển hướng sang VNPAY Gateway" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5978;entryX=0;entryY=0.0;" edge="1" parent="1" source="act5" target="act7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m12" value="13. Quét mã QR thanh toán cọc" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.6571;entryX=0;entryY=0.1351;" edge="1" parent="1" source="g" target="act7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m13" value="14. POST /api/v1/payments/ipn (Callback)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0;exitY=0.2703;entryX=1;entryY=0.0;" edge="1" parent="1" source="act7" target="act4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m14" value="15. VerifyChecksum &amp; Confirm" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2941;entryX=1;entryY=0.4706;" edge="1" parent="1" source="act4" target="act4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="590" y="830"/><mxPoint x="590" y="860"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="16. Cập nhật Reservation -&gt; Reserved" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.7059;entryX=0;entryY=0.7368;" edge="1" parent="1" source="act4" target="act6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m16" value="17. Confirm Success (RspCode 00)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=1;exitY=1.0;entryX=0;entryY=0.7297;" edge="1" parent="1" source="act4" target="act7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="m17" value="18. Gửi SMS/Email kèm BookingCode" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;exitX=0.5;exitY=0.9143;entryX=1;entryY=0.0;" edge="1" parent="1" source="api" target="act8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

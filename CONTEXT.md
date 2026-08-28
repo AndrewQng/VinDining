@@ -1,55 +1,80 @@
-# Restaurant Management & Reservation Context
+# Restaurant Management & Reservation Context (VinDining)
 
-Core domain managing fine dining reservations, table seating layout, tasting menu ordering, and billing operations.
+Core domain managing fine dining reservations, real-time table layout, QR self-ordering, automated kitchen ticket dispatching, serving confirmation, and invoice settlement with deposit deduction.
 
-## Language
+---
+
+## 1. Ubiquitous Language
 
 **Guest**:
-A customer reserving a table or dining at the restaurant.
-_Avoid_: Client, user, account
+A customer reserving a table online or dining in person at the restaurant.
+_Avoid_: Client, customer, account, user
+
+**Staff**:
+Internal restaurant employees interacting with the system, categorized into:
+- **Waitstaff / Server**: Floor staff handling check-in, order approval, serving confirmation, and bill handover.
+- **Manager**: Supervisor managing menus, table layouts, shifts, reports, and exception refunds.
+- **Admin**: System administrator managing user credentials, RBAC permissions, and system configurations.
+_Note_: **Kitchen / Chef** is an operational station (not an interactive software actor); the kitchen receives orders via automated thermal print tickets and coordinates with Waitstaff at the Pass.
 
 **Reservation**:
-An advance booking by a Guest for a specific dining shift, table category, and party size.
+An advance table booking by a Guest for a specific date, dining shift, party size, and table category.
 _Avoid_: Booking, appointment
 
+**Deposit**:
+A mandatory advance payment per table category (e.g., Standard: 300,000 VNĐ, VIP/Balcony: 500,000 VNĐ) paid via VNPAY to confirm a Reservation and prevent no-shows.
+_Avoid_: Down-payment, pre-auth
+
 **Table**:
-A designated physical dining space with a specific capacity, location zone, and real-time status.
+A designated physical dining space with specific capacity, location zone, static QR code, and real-time status.
 _Avoid_: Seat, spot
 
+**Table State Lifecycle**:
+- `Available` (Trống) $\rightarrow$ `Reserved` (Đã đặt trước) $\rightarrow$ `Occupied` (Đang phục vụ) $\rightarrow$ `Cleaning` (Chờ dọn dẹp) $\rightarrow$ `Available` (Trống).
+
 **TastingMenu**:
-A multi-course curated set menu served in sequential progression.
-_Avoid_: Food item, combo
+A multi-course curated set menu served in fine dining style.
+_Avoid_: Combo, set meal
 
 **Course**:
-A sequential stage within a tasting menu (e.g., Amuse-Bouche, Appetizer, Main, Dessert).
-_Avoid_: Dish, step
+A structured menu category representing a sequence of dining (e.g., Appetizer / Khai vị, Main Course / Món chính, Dessert / Tráng miệng, Drinks & Wine Pairing).
+_Avoid_: Step, dish item
 
 **Order**:
-The active dining order associated with an occupied table recording selected tasting menus and beverages.
+The active dining order associated with an `Occupied` Table recording selected tasting menus, courses, and beverage items.
 _Avoid_: Cart, purchase
 
-**Deposit**:
-A mandatory advance payment required to confirm high-value fine dining reservations.
-_Avoid_: Pre-auth, down-payment
-
 **Invoice**:
-The final itemized settlement for an Order after dining, accounting for service charge, VAT, and deducting any Deposit.
+The final itemized financial settlement for an Order after dining, accounting for 5% service charge, 10% VAT, and deducting the pre-paid Deposit.
 _Avoid_: Bill, receipt
 
-## Relationships
+---
 
-- A **Guest** creates one or more **Reservations**
-- A **Reservation** holds exactly one **Deposit**
-- A **Reservation** is assigned to one or more **Tables**
-- An active dining session on a **Table** produces an **Order**
-- A **TastingMenu** consists of multiple **Courses**
-- An **Order** produces exactly one **Invoice** upon checkout
+## 2. Core Domain Invariants & Rules
 
-## Example dialogue
+1. **Scope Boundary**: 100% In-House Dining. No third-party online delivery or shipper actors.
+2. **Table QR Session (BR-02)**: Each table has a static QR code. The E-Menu ordering capability is activated ONLY when the Table is in `Occupied` state (after Waitstaff check-in). Orders submitted by Guests enter `Pending` state until physically verified and approved by Waitstaff on their portable tablet/device.
+3. **Kitchen Dispatching (BR-04)**: When Waitstaff clicks "Approve Order", the system dispatches automatic print commands to thermal printers at designated stations (Hot kitchen, Cold kitchen, Bar) with allergy notes prominently highlighted.
+4. **Serving Confirmation (BR-04)**: When the kitchen places completed dishes on the Pass, Waitstaff brings them to the table and taps "Mark as Served" on their mobile device to record actual serving timestamps.
+5. **Reservation Lock & Refund Policy (BR-01, BR-05)**:
+   - Online reservation locks table for 15 minutes awaiting VNPAY deposit completion. If timed out, table reverts to `Available`.
+   - Cancellation $\ge 4$ hours before shift: 100% automated refund via VNPAY.
+   - Cancellation $< 4$ hours before shift: 0% refund (100% penalty for ingredients preparation).
+   - Force Majeure: Manager can trigger `Manual Refund Override` from the Admin Portal.
+6. **Financial Calculation Formula (BR-03)**:
+   $$\text{Subtotal} = \sum (\text{Dish Price} \times \text{Quantity})$$
+   $$\text{Service Charge (5\%)} = \text{Subtotal} \times 0.05$$
+   $$\text{VAT (10\%)} = (\text{Subtotal} + \text{Service Charge}) \times 0.10$$
+   $$\text{Amount Payable} = (\text{Subtotal} + \text{Service Charge} + \text{VAT}) - \text{Deposit Paid}$$
 
-> **Dev:** "When a **Guest** books a table for 4 with a 7-course **TastingMenu**, is the **Order** created immediately?"
-> **Domain expert:** "No — the **Reservation** is confirmed upon **Deposit** payment. The actual **Order** is opened when the **Guest** checks in and the **Table** status changes to Occupied."
+---
 
-## Flagged ambiguities
+## 3. Entity Relationships
 
-- "user" was used to mean both **Guest** and internal **Staff** — resolved: **Guest** represents the dining customer, while **Staff** (Host, Server, Chef, Manager) represents internal users.
+- A **Guest** creates one or more **Reservations**.
+- A **Reservation** holds exactly one **Deposit** transaction.
+- A **Reservation** is assigned to exactly one **Table** for a given dining shift.
+- An `Occupied` **Table** maintains an active **Order**.
+- An **Order** contains multiple **OrderItems** categorized by **Course** or **TastingMenu**.
+- An **Order** produces exactly one **Invoice** upon checkout.
+- Completing the **Invoice** transitions the **Table** from `Occupied` $\rightarrow$ `Cleaning` $\rightarrow$ `Available`.

@@ -1,0 +1,66 @@
+{
+  "title": "SD-03: Bưng món & Xác nhận hoàn thành tại bàn",
+  "participants": [
+    {
+      "id": "k",
+      "label": "Nhà bếp (Offline)",
+      "actor": true
+    },
+    {
+      "id": "w",
+      "label": "Phục vụ (Waitstaff)",
+      "actor": true
+    },
+    {
+      "id": "tab",
+      "label": "Tablet Phục vụ"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server"
+    }
+  ],
+  "messages": [
+    {
+      "from": "k",
+      "to": "w",
+      "label": "1. Đặt món đã nấu xong ra quầy Pass"
+    },
+    {
+      "from": "w",
+      "to": "w",
+      "label": "2. Đối chiếu số bàn & Bưng ra phục vụ khách"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "3. Bấm 'Xác nhận món đã hoàn thành' (BR-04)"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "4. POST /orders/items/{id}/mark-served"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "5. Update Item -> Served & Save ServeTimestamp"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "6. Ghi nhận thành công",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "7. 200 OK (Item: Served)",
+      "return": true
+    }
+  ]
+}

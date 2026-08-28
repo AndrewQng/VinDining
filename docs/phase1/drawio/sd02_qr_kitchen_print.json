@@ -1,0 +1,110 @@
+{
+  "title": "SD-02: Quét QR tại bàn & In phiếu Bếp tự động",
+  "participants": [
+    {
+      "id": "g",
+      "label": "Khách hàng",
+      "actor": true
+    },
+    {
+      "id": "w",
+      "label": "Phục vụ (Waitstaff)",
+      "actor": true
+    },
+    {
+      "id": "qr",
+      "label": "E-Menu QR Web"
+    },
+    {
+      "id": "tab",
+      "label": "Tablet Phục vụ"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "hub",
+      "label": "SignalR OrderHub"
+    },
+    {
+      "id": "prn",
+      "label": "Máy in Bếp"
+    }
+  ],
+  "messages": [
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "1. Check-in khách vào bàn"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "2. POST /tables/{id}/check-in"
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "3. Table Status: Occupied",
+      "return": true
+    },
+    {
+      "from": "g",
+      "to": "qr",
+      "label": "4. Quét QR tĩnh dán tại bàn"
+    },
+    {
+      "from": "g",
+      "to": "qr",
+      "label": "5. Chọn món, ghi chú dị ứng & Gửi đơn"
+    },
+    {
+      "from": "qr",
+      "to": "api",
+      "label": "6. POST /orders/submit (Pending)"
+    },
+    {
+      "from": "api",
+      "to": "hub",
+      "label": "7. Broadcast 'NewOrderPending'"
+    },
+    {
+      "from": "hub",
+      "to": "tab",
+      "label": "8. Thông báo rung đơn mới",
+      "async": true
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "9. Đến bàn đối soát & Bấm 'Duyệt đơn'"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "10. POST /orders/{id}/approve"
+    },
+    {
+      "from": "api",
+      "to": "api",
+      "label": "11. Cập nhật Order -> Processing"
+    },
+    {
+      "from": "api",
+      "to": "prn",
+      "label": "12. Gửi lệnh in ESC/POS (In đậm dị ứng)"
+    },
+    {
+      "from": "prn",
+      "to": "prn",
+      "label": "13. Nhả phiếu order Bếp vật lý"
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "14. 200 OK (Đã duyệt & Đã in)",
+      "return": true
+    }
+  ]
+}

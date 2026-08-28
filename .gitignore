@@ -34,6 +34,9 @@ progress.md
 .planning/
 skills-lock.json
 
+# Local Docs & References
+localdocs/
+
 # OS / Editor files
 .DS_Store
 Thumbs.db

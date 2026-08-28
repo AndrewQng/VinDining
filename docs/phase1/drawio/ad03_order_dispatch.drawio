@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+  <diagram name="AD-03 Duyệt đơn & In phiếu Bếp" id="ad-03_duyệt_đơn_&_in_phiếu_bếp">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="lane3_1" value="Nhân viên Phục vụ (Waitstaff)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="340" height="880" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane3_2" value="Hệ thống VinDining (Web API)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="40" width="340" height="880" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane3_3" value="Máy in nhiệt &amp; Nhà bếp (Kitchen)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="340" height="880" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 1 (Waitstaff) -->
+        <mxCell id="start3" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;" vertex="1" parent="lane3_1">
+          <mxGeometry x="155" y="60" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_act1" value="Nhận thông báo đơn mới&#xa;trên Tablet di động" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_1">
+          <mxGeometry x="65" y="120" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_act2" value="Di chuyển đến bàn đối soát món&#xa;&amp; lưu ý dị ứng với khách" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_1">
+          <mxGeometry x="65" y="210" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_dec1" value="Khách yêu cầu&#xa;điều chỉnh?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane3_1">
+          <mxGeometry x="110" y="295" width="120" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_act_edit" value="Chỉnh sửa số lượng / món&#xa;trên giao diện Tablet" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_1">
+          <mxGeometry x="65" y="390" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_act3" value="Nhấn nút 'Phê duyệt đơn'&#xa;(Quyền hạn BR-04)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_1">
+          <mxGeometry x="65" y="480" width="210" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 2 (System) -->
+        <mxCell id="s3_act1" value="Cập nhật Order -> 'Processing'&#xa;&amp; Ghi nhận thời gian bắt đầu nấu" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_2">
+          <mxGeometry x="65" y="480" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3_act2" value="Gửi lệnh in nhiệt ESC/POS&#xa;phân trạm Bếp nóng / Lạnh / Bar" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_2">
+          <mxGeometry x="65" y="570" width="210" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 3 (Kitchen) -->
+        <mxCell id="k3_act1" value="Máy in nhả phiếu order vật lý&#xa;(In đậm cảnh báo dị ứng)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_3">
+          <mxGeometry x="65" y="570" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="k3_act2" value="Đầu bếp tiếp nhận phiếu in&#xa;&amp; tiến hành chế biến theo Course" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3_3">
+          <mxGeometry x="65" y="660" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="end_k3" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#2e7d32;strokeWidth=2;" vertex="1" parent="lane3_3">
+          <mxGeometry x="155" y="750" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="end_k3_dot" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2e7d32;strokeColor=none;" vertex="1" parent="lane3_3">
+          <mxGeometry x="161" y="756" width="18" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e3_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="start3" target="w3_act1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_act1" target="w3_act2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_act2" target="w3_dec1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_yes" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_dec1" target="w3_act_edit"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_edit_ok" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_act_edit" target="w3_act3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_no" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_dec1" target="w3_act3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="55" y="327"/><mxPoint x="55" y="507"/></Array></mxGeometry></mxCell>
+        <mxCell id="e3_4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="w3_act3" target="s3_act1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="s3_act1" target="s3_act2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="s3_act2" target="k3_act1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="k3_act1" target="k3_act2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3_8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;" edge="1" parent="1" source="k3_act2" target="end_k3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
