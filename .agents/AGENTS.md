@@ -179,11 +179,21 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - *VI*: "Thiết kế sơ đồ cơ sở dữ liệu quan hệ (ERD) và các bảng dữ liệu trên SQL Server."
   - *VI*: "Chuẩn hóa bảng CSDL sang dạng 3NF và thiết lập các khóa ngoại, chỉ mục (Index) tối ưu."
 
+#### 10. `drawio-skill`
+* **Path**: `.agents/skills/drawio-skill/SKILL.md`
+* **Core Purpose**: Generates editable `.drawio` XML files and exports diagrams (Architecture, ERD, UML, C4, Sequence, Flowcharts, Cloud Topology) locally to PNG/SVG/PDF with custom styling and 10,000+ stock/branded shapes.
+* **When to Activate (Intent)**:
+  - Creating visual architectural blueprints, ERDs, sequence diagrams, workflow charts, or exporting `.drawio` diagrams.
+* **Example Intent Scenarios (EN / VI)**:
+  - *EN*: "Generate a Draw.io architecture diagram for the microservices and SignalR flow."
+  - *VI*: "Vẽ sơ đồ kiến trúc hệ thống dạng Draw.io và xuất file PNG/SVG."
+  - *VI*: "Tạo sơ đồ luồng dữ liệu KDS và sơ đồ cơ sở dữ liệu Draw.io."
+
 ---
 
 ### C. Task Breakdown, Sprint Planning & Code Quality
 
-#### 10. `planning-and-task-breakdown`
+#### 11. `planning-and-task-breakdown`
 * **Path**: `.agents/skills/planning-and-task-breakdown/SKILL.md`
 * **Core Purpose**: Decomposes specs into atomic vertical engineering slices with acceptance criteria, verification commands, and dependency ordering.
 * **When to Activate (Intent)**:
@@ -193,7 +203,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - *VI*: "Chia nhỏ kế hoạch triển khai tuần 3 thành các đầu việc kỹ thuật cụ thể cho từng thành viên."
   - *VI*: "Lập danh sách task chi tiết kèm tiêu chí hoàn thành (Definition of Done)."
 
-#### 11. `tdd`
+#### 12. `tdd`
 * **Path**: `.agents/skills/tdd/SKILL.md`
 * **Core Purpose**: Drives test-driven development (Red-Green-Refactor) with deep module design, interface boundaries, and unit/integration testing.
 * **When to Activate (Intent)**:
@@ -202,7 +212,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - *EN*: "Write tests first for the invoice total calculation and deposit deduction algorithm."
   - *VI*: "Áp dụng TDD để viết unit test cho hàm tính toán hóa đơn và cấn trừ tiền cọc trước khi viết code xử lý."
 
-#### 12. `grill-me` & `grill-with-docs`
+#### 13. `grill-me` & `grill-with-docs`
 * **Path**: `.agents/skills/grill-me/SKILL.md` & `.agents/skills/grill-with-docs/SKILL.md`
 * **Core Purpose**: Conducts an interview to stress-test designs, identify unstated assumptions, and generate documentation.
 * **When to Activate (Intent)**:
@@ -211,7 +221,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - *EN*: "Grill me on our real-time table concurrency and reservation locking model."
   - *VI*: "Chất vấn và phản biện thiết kế luồng xử lý tranh chấp bàn ăn khi nhiều khách đặt cùng lúc."
 
-#### 13. `improve-codebase-architecture`
+#### 14. `improve-codebase-architecture`
 * **Path**: `.agents/skills/improve-codebase-architecture/SKILL.md`
 * **Core Purpose**: Scans codebase for deepening opportunities, module seams, and architectural improvements.
 * **When to Activate (Intent)**:
@@ -227,7 +237,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
 | Project Phase | Focus & Deliverables | Primary Skills to Invoke |
 | :--- | :--- | :--- |
 | **Weeks 1–2 (Proposal + Analysis)** | BRS, SRS (draft), Business Rules, User Stories, Scope definition | `prd-development`<br>`user-story-mapping`<br>`user-story`<br>`planning-with-files` |
-| **Weeks 3–4 (Design & Architecture)** | Architecture blueprints, ADRs, Domain Model, ERD/Database Schema, OpenAPI Specs | `clean-architecture`<br>`architecture-decision-records`<br>`database-schema-designer`<br>`openapi-spec-generation`<br>`dotnet-backend-patterns` |
+| **Weeks 3–4 (Design & Architecture)** | Architecture blueprints, ADRs, Domain Model, ERD/Database Schema, OpenAPI Specs, Visual Diagrams | `clean-architecture`<br>`architecture-decision-records`<br>`database-schema-designer`<br>`openapi-spec-generation`<br>`drawio-skill`<br>`dotnet-backend-patterns` |
 | **Weeks 5–6 (Setup & Scaffolding)** | Solution layout, MediatR CQRS pipeline, EF Core setup, React Vite setup | `clean-architecture`<br>`planning-and-task-breakdown`<br>`dotnet-backend-patterns` |
 | **Weeks 7–8 (Coding & Feature Delivery)** | Table QR Self-Ordering, KDS SignalR, Billing & Payment | `dotnet-backend-patterns`<br>`tdd`<br>`planning-with-files` |
 | **Weeks 9–10 (Polish & Verification)** | End-to-end testing, bug fixes, demo preparation | `improve-codebase-architecture`<br>`diagnose` |
