@@ -12,7 +12,8 @@ _Avoid_: Client, customer, account, user
 
 **Staff**:
 Internal restaurant employees interacting with the system, categorized into:
-- **Waitstaff / Server**: Floor staff handling check-in, order approval, serving confirmation, and bill handover.
+- **Waitstaff / Server**: Floor staff handling check-in, order creation, serving dishes to guests, and bill handover.
+- **Expediter / Checkfood**: Staff stationed at the Kitchen Pass who verifies completed dishes, coordinates delivery, and marks items as served in the system.
 - **Manager**: Supervisor managing menus, table layouts, shifts, reports, and exception refunds.
 - **Admin**: System administrator managing user credentials, RBAC permissions, and system configurations.
 _Note_: **Kitchen / Chef** is an operational station (not an interactive software actor); the kitchen receives orders via automated thermal print tickets and coordinates with Waitstaff at the Pass.
@@ -32,16 +33,12 @@ _Avoid_: Seat, spot
 **Table State Lifecycle**:
 - `Available` (Trống) $\rightarrow$ `Reserved` (Đã đặt trước) $\rightarrow$ `Occupied` (Đang phục vụ) $\rightarrow$ `Cleaning` (Chờ dọn dẹp) $\rightarrow$ `Available` (Trống).
 
-**TastingMenu**:
-A multi-course curated set menu served in fine dining style.
-_Avoid_: Combo, set meal
-
-**Course**:
-A structured menu category representing a sequence of dining (e.g., Appetizer / Khai vị, Main Course / Món chính, Dessert / Tráng miệng, Drinks & Wine Pairing).
-_Avoid_: Step, dish item
+**MenuItem**:
+A regular dish or beverage available for ordering from the A La Carte menu.
+_Avoid_: Combo, set meal, step
 
 **Order**:
-The active dining order associated with an `Occupied` Table recording selected tasting menus, courses, and beverage items.
+The active dining order associated with an `Occupied` Table recording selected menu items.
 _Avoid_: Cart, purchase
 
 **Invoice**:
@@ -53,10 +50,11 @@ _Avoid_: Bill, receipt
 ## 2. Core Domain Invariants & Rules
 
 1. **Scope Boundary**: 100% In-House Dining. No third-party online delivery or shipper actors.
-2. **Table QR Session (BR-02)**: Each table has a static QR code. The E-Menu ordering capability is activated ONLY when the Table is in `Occupied` state (after Waitstaff check-in). Orders submitted by Guests enter `Pending` state until physically verified and approved by Waitstaff on their portable tablet/device.
-3. **Kitchen Dispatching (BR-04)**: When Waitstaff clicks "Approve Order", the system dispatches automatic print commands to thermal printers at designated stations (Hot kitchen, Cold kitchen, Bar) with allergy notes prominently highlighted.
-4. **Serving Confirmation (BR-04)**: When the kitchen places completed dishes on the Pass, Waitstaff brings them to the table and taps "Mark as Served" on their mobile device to record actual serving timestamps.
-5. **Reservation Lock & Refund Policy (BR-01, BR-05)**:
+2. **Digital Display Session (BR-02)**: Each table is equipped with a digital display (tablet) that functions as a view-only E-Menu. Guests use this display to view the available menu items. The ordering capability on this display is disabled.
+3. **Waitstaff Ordering (BR-02b)**: Orders are taken and entered entirely by the Waitstaff on their portable tablet/device after guests have selected their meals from the digital display. The `Pending` order state from Guest self-ordering is eliminated.
+4. **Kitchen Dispatching (BR-04)**: When Waitstaff submits the order, the system immediately dispatches automatic print commands to thermal printers at designated stations (Hot kitchen, Cold kitchen, Bar) with allergy notes prominently highlighted.
+5. **Serving Confirmation (BR-04)**: When the kitchen places completed dishes on the Pass, the Expediter (Nhân viên Checkfood) verifies the order, dispatches a Waitstaff to deliver it, and taps "Mark as Served" on their tablet at the Pass to record actual serving timestamps.
+6. **Reservation Lock & Refund Policy (BR-01, BR-05)**:
    - Online reservation locks table for 15 minutes awaiting VNPAY deposit completion. If timed out, table reverts to `Available`.
    - Cancellation $\ge 4$ hours before shift: 100% automated refund via VNPAY.
    - Cancellation $< 4$ hours before shift: 0% refund (100% penalty for ingredients preparation).
@@ -75,6 +73,6 @@ _Avoid_: Bill, receipt
 - A **Reservation** holds exactly one **Deposit** transaction.
 - A **Reservation** is assigned to exactly one **Table** for a given dining shift.
 - An `Occupied` **Table** maintains an active **Order**.
-- An **Order** contains multiple **OrderItems** categorized by **Course** or **TastingMenu**.
+- An **Order** contains multiple **OrderItems**.
 - An **Order** produces exactly one **Invoice** upon checkout.
 - Completing the **Invoice** transitions the **Table** from `Occupied` $\rightarrow$ `Cleaning` $\rightarrow$ `Available`.

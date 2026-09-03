@@ -7,7 +7,7 @@
 * **Tên tài liệu**: Báo cáo Khảo sát Hiện trạng & Đánh giá Tính khả thi (System Survey & Feasibility Study Report)
 * **Dự án**: VinDining — Fine Dining Restaurant Management & Reservation System
 * **Giai đoạn**: Phase 1 (Tuần 1–2) — Proposal & Requirement Analysis
-* **Nhóm thực hiện**: Nguyễn Mạnh Quyền, Đặng Quốc Khánh, Nguyễn Thành Đạt
+* **Nhóm thực hiện**: Nguyễn Mạnh Quyền, Đặng Quốc Khánh, Nguyễn Hoàng Đạt
 * **Giảng viên hướng dẫn**: ThS. Phạm Hữu Tùng
 
 ---
