@@ -37,6 +37,14 @@ skills-lock.json
 # Local Docs & References
 localdocs/
 
+# Temporary drafts & scratch files
+BRS.md
+extracted_proposal.md
+project_proposal_v1.md
+scratch_kw_results.txt
+scratch_proposal_text.txt
+scratch/
+
 # OS / Editor files
 .DS_Store
 Thumbs.db

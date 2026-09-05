@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+  <diagram name="State Machine Vòng đời Bàn ăn" id="state_table_lifecycle">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title block -->
+        <mxCell id="title_box" value="SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI BÀN ĂN (TABLE LIFECYCLE STATE MACHINE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="180" y="30" width="740" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Initial State -->
+        <mxCell id="init_state" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="240" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- State 1: Available -->
+        <mxCell id="st_avail" value="Available (Trống)&#xa;--------------------&#xa;entry / Hiển thị xanh trên sơ đồ&#xa;do / Chờ khách đặt chỗ / Walk-in&#xa;exit / Khóa chọn trên sơ đồ" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="210" width="220" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- State 2: TemporaryHold -->
+        <mxCell id="st_hold" value="TemporaryHold (Giữ tạm 15p)&#xa;-----------------------------------&#xa;entry / Bắt đầu đếm ngược 15 phút (BR-01)&#xa;do / Chờ xác thực IPN từ cổng VNPAY&#xa;exit / Dừng bộ đếm Timer" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="100" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- State 3: Reserved -->
+        <mxCell id="st_res" value="Reserved (Đã đặt cọc)&#xa;----------------------------&#xa;entry / Sinh BookingCode; Gửi SMS/Email&#xa;do / Khóa bàn theo ca hẹn; Giữ cọc&#xa;exit / Bàn sẵn sàng đón khách" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="210" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- State 4: Occupied -->
+        <mxCell id="st_occ" value="Occupied (Đang phục vụ)&#xa;------------------------------&#xa;entry / Kích hoạt phiên QR tại bàn (BR-02)&#xa;do / Khách quét QR, gọi món; Bếp ra món&#xa;exit / Vô hiệu hóa mã QR bàn" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="380" width="240" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- State 5: Cleaning -->
+        <mxCell id="st_clean" value="Cleaning (Chờ dọn dẹp)&#xa;-----------------------------&#xa;entry / Đóng hóa đơn; Tính tổng doanh thu&#xa;do / Nhân viên dọn bát đĩa, set up bàn&#xa;exit / Bàn sạch sẽ tiêu chuẩn Fine Dining" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="550" width="220" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Final State -->
+        <mxCell id="end_state" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="end_state_dot" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="66" y="586" width="18" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- Transitions -->
+        <!-- init -> Available -->
+        <mxCell id="tr0" value="Khởi tạo sơ đồ bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;" edge="1" source="init_state" target="st_avail" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Available -> TemporaryHold -->
+        <mxCell id="tr1" value="Khách chọn bàn &amp; Bấm 'Đặt cọc'&#xa;[Còn bàn trống] / LockTable(15m)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_hold" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="145"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- TemporaryHold -> Available (Timeout) -->
+        <mxCell id="tr2" value="[Quá 15 phút chưa thanh toán cọc] /&#xa;Tự động mở khóa giải phóng bàn (BR-01)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_hold" target="st_avail" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="170"/>
+              <mxPoint x="430" y="230"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- TemporaryHold -> Reserved -->
+        <mxCell id="tr3" value="Nhận tín hiệu IPN VNPAY thành công&#xa;/ Ghi nhận tiền cọc Deposit &amp; Gửi mã" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_hold" target="st_res" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="145"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Reserved -> Available (Cancel & Refund) -->
+        <mxCell id="tr4" value="Khách hủy bàn trước &gt;= 4 tiếng (BR-05)&#xa;hoặc Quản lý duyệt Override / Hoàn cọc 100%" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_avail" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="40"/>
+              <mxPoint x="280" y="40"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Reserved -> Available (No-show penalty) -->
+        <mxCell id="tr5" value="Hủy &lt; 4 tiếng hoặc No-show quá 30p&#xa;[Phạt 100% cọc] / Giải phóng bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_res" target="st_avail" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="320"/>
+              <mxPoint x="340" y="320"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Reserved -> Occupied -->
+        <mxCell id="tr6" value="Khách đến nhà hàng; Phục vụ check-in&#xa;/ Kích hoạt phiên QR &amp; SignalR Broadcast" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_occ" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="430"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Available -> Occupied (Walk-in) -->
+        <mxCell id="tr7" value="Khách vãng lai (Walk-in) vào ăn trực tiếp&#xa;/ Phục vụ check-in mở bàn ngay" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_occ" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="430"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Occupied -> Cleaning -->
+        <mxCell id="tr8" value="Thanh toán hóa đơn cấn trừ cọc thành công (BR-03)&#xa;/ Khóa phiên QR bàn &amp; In hóa đơn tài chính" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_occ" target="st_clean" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="610" y="595"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cleaning -> Available -->
+        <mxCell id="tr9" value="Nhân viên phục vụ dọn bàn xong&#xa;&amp; bấm 'Hoàn tất dọn dẹp' trên Tablet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_clean" target="st_avail" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Cleaning -> end -->
+        <mxCell id="tr10" value="Hết ca / Đóng cửa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1.5;html=1;fontSize=10;" edge="1" source="st_clean" target="end_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- SignalR Callout -->
+        <mxCell id="callout_hub" value="⚡ TẤT CẢ CHUYỂN TRẠNG THÁI:&#xa;Đều phát sự kiện thời gian thực&#xa;qua SignalR FloorPlanHub&#xa;tới toàn bộ thiết bị Tablet/Desktop" style="shape=note;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#4a148c;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="550" width="220" height="70" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

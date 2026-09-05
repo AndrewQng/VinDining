@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+  <diagram name="As-Is 03 Thanh toán & Cấn cọc thủ công" id="asis03_survey_billing">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Swimlanes -->
+        <mxCell id="lane_guest" value="Khách hàng (Guest)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="320" height="900" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane_staff" value="Nhân viên Phục vụ (Waitstaff)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="360" height="900" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane_cashier" value="Thu ngân / Kế toán (Cashier)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="340" height="900" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 1 (Guest) -->
+        <mxCell id="g_start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;" vertex="1" parent="lane_guest">
+          <mxGeometry x="145" y="60" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_act1" value="Dùng xong bữa tiệc,&#xa;gọi Phục vụ yêu cầu tính tiền" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
+          <mxGeometry x="55" y="120" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_act2" value="Xem Hóa đơn tạm tính,&#xa;soi dòng tiền cọc bị trừ tay" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
+          <mxGeometry x="55" y="550" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_act3" value="Thanh toán số tiền còn thiếu&#xa;(Tiền mặt / Thẻ ngân hàng POS)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
+          <mxGeometry x="55" y="660" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_end_succ" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#2e7d32;strokeWidth=2;" vertex="1" parent="lane_guest">
+          <mxGeometry x="145" y="835" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_end_succ_dot" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2e7d32;strokeColor=none;" vertex="1" parent="lane_guest">
+          <mxGeometry x="151" y="841" width="18" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 2 (Waitstaff) -->
+        <mxCell id="w_act1" value="Di chuyển ra quầy Thu ngân&#xa;báo in hóa đơn tạm tính bàn X" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+          <mxGeometry x="75" y="120" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w_act2" value="Đứng chờ Thu ngân tra sổ cọc&#xa;&amp; tính toán cấn trừ (Mất 5-10p)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#757575;strokeColor=#424242;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+          <mxGeometry x="75" y="380" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w_act3" value="Cầm Hóa đơn giấy kẹp bìa da&#xa;đem ra bàn cho khách kiểm tra" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+          <mxGeometry x="75" y="550" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w_act4" value="Nhận tiền mặt/thẻ từ khách,&#xa;mang về quầy Thu ngân đối soát" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+          <mxGeometry x="75" y="660" width="210" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w_act5" value="Gửi lại hóa đơn đỏ &amp; tiến hành&#xa;dọn dẹp bàn tiệc cho lượt mới" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+          <mxGeometry x="75" y="750" width="210" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Lane 3 (Cashier) -->
+        <mxCell id="c_act1" value="Lục tìm sổ cọc giấy, tin nhắn Zalo&#xa;hoặc hỏi Lễ tân ca trước về khoản cọc" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="60" y="120" width="225" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_dec1" value="Tìm thấy khoản&#xa;cọc của bàn?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="110" y="210" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_act_err" value="In hóa đơn nguyên giá&#xa;(Nguy cơ khách khiếu nại cọc)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#c00000;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="60" y="300" width="225" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_act_calc" value="Dùng máy tính Casio bấm tay:&#xa;Tổng tiền - Số tiền cọc trong sổ" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="60" y="380" width="225" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_act_print" value="In hóa đơn tạm tính từ máy POS&#xa;&amp; ghi bút chì số tiền còn lại" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="60" y="470" width="225" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_act_close" value="Xác nhận nhận đủ tiền, bấm đóng bàn&#xa;&amp; gạch tên trong sổ cọc ngày" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="60" y="750" width="225" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Pain Point Callouts -->
+        <mxCell id="callout1" value="⚠️ RỦI RO THẤT THOÁT:&#xa;Thu ngân ca tối không biết cọc&#xa;ca sáng -&gt; Dễ quên trừ cọc" style="shape=note;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#c00000;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="lane_cashier">
+          <mxGeometry x="175" y="45" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="callout2" value="⚠️ TRỄ 5–10 PHÚT/BÀN:&#xa;Khách hạng sang phải chờ đợi&#xa;lâu để được thanh toán ra về" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#b45f06;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="lane_staff">
+          <mxGeometry x="190" y="450" width="160" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g_start" target="g_act1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g_act1" target="w_act1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="w_act1" target="c_act1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="c_act1" target="c_dec1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Không thấy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;labelBackgroundColor=#ffffff;" edge="1" source="c_dec1" target="c_act_err" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="c_act_err" target="c_act_print" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="365"/>
+              <mxPoint x="1000" y="537"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="Tìm thấy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;labelBackgroundColor=#ffffff;" edge="1" source="c_dec1" target="c_act_calc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="c_act_calc" target="w_act2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="w_act2" target="c_act_print" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="c_act_print" target="w_act3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="w_act3" target="g_act2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g_act2" target="g_act3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g_act3" target="w_act4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="w_act4" target="c_act_close" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="c_act_close" target="w_act5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="w_act5" target="g_end_succ" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
