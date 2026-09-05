@@ -1,0 +1,88 @@
+{
+  "title": "SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY",
+  "participants": [
+    {
+      "id": "g",
+      "label": "Khách hàng / Quản lý",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Web App / Portal"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server"
+    },
+    {
+      "id": "vn",
+      "label": "Cổng VNPAY"
+    }
+  ],
+  "messages": [
+    {
+      "from": "g",
+      "to": "fe",
+      "label": "1. Bấm yêu cầu Hủy bàn (Nhập lý do)"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "2. POST /api/v1/reservations/{id}/cancel"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "3. Query thông tin đặt bàn & mã giao dịch cọc"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "4. Trả về thông tin Reservation & Deposit",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "api",
+      "label": "5. Kiểm tra BR-05 (Trước >= 4h hoặc Quản lý Override)"
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "6. POST /merchant_webapi/api/transaction (Refund)"
+    },
+    {
+      "from": "vn",
+      "to": "api",
+      "label": "7. 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "8. Cập nhật Reservation: Cancelled, Table: Available"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "9. Lưu thay đổi CSDL thành công",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "10. 200 OK (Đã hủy bàn & Hoàn 100% cọc)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "g",
+      "label": "11. Thông báo hủy bàn thành công & Gửi Email xác nhận",
+      "return": true
+    }
+  ]
+}
