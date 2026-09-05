@@ -1,5 +1,5 @@
 {
-  "title": "SD-03: Bưng món & Xác nhận hoàn thành tại bàn",
+  "title": "SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass",
   "participants": [
     {
       "id": "k",
@@ -7,13 +7,18 @@
       "actor": true
     },
     {
+      "id": "exp",
+      "label": "Nhân viên Checkfood",
+      "actor": true
+    },
+    {
       "id": "w",
-      "label": "Phục vụ (Waitstaff)",
+      "label": "Nhân viên Phục vụ",
       "actor": true
     },
     {
       "id": "tab",
-      "label": "Tablet Phục vụ"
+      "label": "Tablet tại Pass"
     },
     {
       "id": "api",
@@ -27,40 +32,45 @@
   "messages": [
     {
       "from": "k",
-      "to": "w",
+      "to": "exp",
       "label": "1. Đặt món đã nấu xong ra quầy Pass"
     },
     {
-      "from": "w",
-      "to": "w",
-      "label": "2. Đối chiếu số bàn & Bưng ra phục vụ khách"
+      "from": "exp",
+      "to": "exp",
+      "label": "2. Đối chiếu món ăn với đơn hàng (Kiểm tra dị ứng)"
     },
     {
-      "from": "w",
+      "from": "exp",
       "to": "tab",
-      "label": "3. Bấm 'Xác nhận món đã hoàn thành' (BR-04)"
+      "label": "3. Bấm \"Xác nhận món đã hoàn thành\" (BR-04)"
     },
     {
       "from": "tab",
       "to": "api",
-      "label": "4. POST /orders/items/{id}/mark-served"
+      "label": "4. POST /api/v1/orders/items/{itemId}/mark-served"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "5. Update Item -> Served & Save ServeTimestamp"
+      "label": "5. Cập nhật OrderItem -> Served, Lưu ServeTimestamp"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "6. Ghi nhận thành công",
+      "label": "6. Ghi nhận CSDL thành công",
       "return": true
     },
     {
       "from": "api",
       "to": "tab",
-      "label": "7. 200 OK (Item: Served)",
+      "label": "7. 200 OK (Item Status: Served)",
       "return": true
+    },
+    {
+      "from": "exp",
+      "to": "w",
+      "label": "8. Giao món ăn, đọc số bàn để phục vụ bưng ra"
     }
   ]
 }

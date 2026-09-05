@@ -32,7 +32,7 @@
         </mxCell>
 
         <!-- State 4: Occupied -->
-        <mxCell id="st_occ" value="Occupied (Đang phục vụ)&#xa;------------------------------&#xa;entry / Kích hoạt phiên QR tại bàn (BR-02)&#xa;do / Khách quét QR, gọi món; Bếp ra món&#xa;exit / Vô hiệu hóa mã QR bàn" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="st_occ" value="Occupied (Đang phục vụ)&#xa;------------------------------&#xa;entry / Check-in bàn trên Tablet (BR-02)&#xa;do / Khách xem Digital Display; Bếp ra món&#xa;exit / Yêu cầu thanh toán" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="490" y="380" width="240" height="100" as="geometry"/>
         </mxCell>
 
@@ -83,12 +83,12 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- Reserved -> Available (Cancel & Refund) -->
+        <!-- Reserved -> Available (Cancel &amp; Refund) -->
         <mxCell id="tr4" value="Khách hủy bàn trước &gt;= 4 tiếng (BR-05)&#xa;hoặc Quản lý duyệt Override / Hoàn cọc 100%" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="920" y="40"/>
-              <mxPoint x="280" y="40"/>
+              <mxPoint x="920" y="85"/>
+              <mxPoint x="280" y="85"/>
             </Array>
           </mxGeometry>
         </mxCell>
@@ -104,7 +104,7 @@
         </mxCell>
 
         <!-- Reserved -> Occupied -->
-        <mxCell id="tr6" value="Khách đến nhà hàng; Phục vụ check-in&#xa;/ Kích hoạt phiên QR &amp; SignalR Broadcast" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_occ" parent="1">
+        <mxCell id="tr6" value="Khách đến nhà hàng; Phục vụ check-in&#xa;/ Check-in mở bàn &amp; SignalR Broadcast" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_occ" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="920" y="430"/>
@@ -122,7 +122,7 @@
         </mxCell>
 
         <!-- Occupied -> Cleaning -->
-        <mxCell id="tr8" value="Thanh toán hóa đơn cấn trừ cọc thành công (BR-03)&#xa;/ Khóa phiên QR bàn &amp; In hóa đơn tài chính" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_occ" target="st_clean" parent="1">
+        <mxCell id="tr8" value="Thanh toán hóa đơn cấn trừ cọc thành công (BR-03)&#xa;/ Đóng bàn &amp; In hóa đơn tài chính" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_occ" target="st_clean" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="610" y="595"/>

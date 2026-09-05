@@ -530,64 +530,7 @@ flowchart TD
     S1 --> S2
     S2 --> S3
     S3 --> S_End
-```mermaid
-flowchart TD
-    subgraph Waitstaff ["Nhân viên Phục vụ (Waitstaff)"]
-        direction TB
-        W_Start(( ))
-        W1["Dẫn khách vào bàn & Check-in<br/>trên Tablet di động"]
-        W2["Nhận thông báo rung SignalR<br/>có đơn gọi món mới"]
-        W_End(((OK)))
-    end
-
-    subgraph System ["Hệ thống VinDining (Web App & API)"]
-        direction TB
-        S1["Cập nhật trạng thái bàn sang<br/>'Occupied' (Đang phục vụ)"]
-        S2["Mở liên kết Web E-Menu<br/>theo TableId gắn trên mã QR"]
-        S_Dec{"Bàn có trạng thái<br/>'Occupied'? (BR-02)"}
-        S_Lock["Khóa tính năng gọi món & Báo<br/>khách liên hệ phục vụ check-in"]
-        S_Order["Tạo Order trạng thái 'Pending'<br/>& Phát tín hiệu SignalR tức thời"]
-    end
-
-    subgraph Guest ["Khách hàng (Guest)"]
-        direction TB
-        G1["Dùng camera điện thoại<br/>quét mã QR tĩnh tại bàn"]
-        G_Lock["Hiển thị thông báo<br/>bàn chưa kích hoạt"]
-        G_EndLock(((X)))
-        G2["Xem Menu, chọn món/Course<br/>& Nhập ghi chú dị ứng"]
-        G3["Nhấn nút<br/>'Gửi đơn gọi món'"]
-    end
-
-    W_Start --> W1
-    W1 --> S1
-    S1 --> G1
-    G1 --> S2
-    S2 --> S_Dec
-    S_Dec -->|No| S_Lock
-    S_Lock --> G_Lock
-    G_Lock --> G_EndLock
-    S_Dec -->|Yes| G2
-    G2 --> G3
-    G3 --> S_Order
-    S_Order --> W2
-    W2 --> W_End
-
-    style W_Start fill:#e53935,stroke:#b71c1c
-    style W_End fill:#ffffff,stroke:#2e7d32,stroke-width:2px
-    style G_EndLock fill:#ffffff,stroke:#e53935,stroke-width:2px
-    style S_Dec fill:#fce4ec,stroke:#c2185b,color:#880e4f
-    style W1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Lock fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Order fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G_Lock fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
 ```
-
 ---
 
 ### 3.4 AD-04: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món (3 Làn: Nhà bếp | Expediter | Hệ thống)
@@ -750,34 +693,7 @@ sequenceDiagram
     API->>Printer: Gửi lệnh in ESC/POS (Phân trạm Bếp/Bar, In đậm Dị ứng)
     Printer-->>Printer: Nhả phiếu order Bếp vật lý
     API-->>Tablet: 200 OK (Đã gửi Bếp thành công)
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Guest as Khách hàng
-    actor Waitstaff as Nhân viên Phục vụ
-    participant QRWeb as E-Menu Web (Mobile)
-    participant Tablet as Tablet Phục vụ
-    participant API as Web API (.NET 9)
-    participant Hub as SignalR OrderHub
-    participant Printer as Máy in Bếp nhiệt
-
-    Waitstaff->>Tablet: Check-in khách vào bàn
-    Tablet->>API: POST /api/v1/tables/{id}/check-in
-    API-->>Tablet: 200 OK (Table Status: Occupied)
-    Guest->>QRWeb: Quét QR tĩnh tại bàn (mở E-Menu kèm TableId)
-    Guest->>QRWeb: Chọn món, điền ghi chú dị ứng & Bấm Gửi đơn
-    QRWeb->>API: POST /api/v1/orders/submit
-    API->>API: Lưu Order (Status: Pending)
-    API->>Hub: Broadcast "NewOrderPending" (TableId, OrderItems)
-    Hub-->>Tablet: Gửi thông báo rung thời gian thực
-    Waitstaff->>Tablet: Xem chi tiết đơn, đến bàn đối soát & Bấm "Duyệt đơn"
-    Tablet->>API: POST /api/v1/orders/{id}/approve
-    API->>API: Cập nhật Order -> Processing
-    API->>Printer: Gửi lệnh in ESC/POS (Phân trạm Bếp/Bar, In đậm Dị ứng)
-    Printer-->>Printer: Nhả phiếu order Bếp vật lý
-    API-->>Tablet: 200 OK (Đã duyệt & Đã in Bếp)
 ```
-
 ---
 
 ### 4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass

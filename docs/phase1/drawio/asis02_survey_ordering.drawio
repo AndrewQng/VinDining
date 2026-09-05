@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
-  <diagram name="As-Is 02 Gọi món & Điều phối Bếp truyền thống" id="asis02_survey_ordering">
+  <diagram name="As-Is 02 Gọi món &amp; Điều phối Bếp truyền thống" id="asis02_survey_ordering">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="980" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -123,8 +123,8 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1030" y="600"/>
-              <mxPoint x="1030" y="740"/>
-              <mxPoint x="610" y="740"/>
+              <mxPoint x="1030" y="775"/>
+              <mxPoint x="540" y="775"/>
             </Array>
           </mxGeometry>
         </mxCell>

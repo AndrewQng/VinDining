@@ -20,7 +20,7 @@
         <mxCell id="box_guest" value="1. THỰC KHÁCH (GUEST)&#xa;[Kênh: Smartphone cá nhân - Mobile Web]" style="swimlane;startSize=35;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="50" y="110" width="360" height="230" as="geometry"/>
         </mxCell>
-        <mxCell id="g_content" value="• Đặt bàn trực tuyến nhanh chóng, chọn ngày/ca/vị trí đẹp.&#xa;• Đặt cọc giữ chỗ minh bạch qua VNPAY, không sợ bùng bàn.&#xa;• Quét mã QR tĩnh dán tại bàn mở E-Menu trực quan sang trọng.&#xa;• Tự do ghi chú cảnh báo dị ứng thực phẩm nhạy cảm.&#xa;• Hóa đơn tài chính minh bạch, hiển thị rõ dòng tiền cấn trừ cọc." style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="box_guest">
+        <mxCell id="g_content" value="• Đặt bàn trực tuyến nhanh chóng, chọn ngày/ca/vị trí đẹp.&#xa;• Đặt cọc giữ chỗ minh bạch qua VNPAY, không sợ bùng bàn.&#xa;• Xem E-Menu qua màn hình Digital Display tại bàn trực quan sang trọng.&#xa;• Trao đổi trực tiếp yêu cầu dị ứng thực phẩm với nhân viên phục vụ.&#xa;• Hóa đơn tài chính minh bạch, hiển thị rõ dòng tiền cấn trừ cọc." style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="box_guest">
           <mxGeometry x="10" y="45" width="340" height="170" as="geometry"/>
         </mxCell>
 
@@ -28,7 +28,7 @@
         <mxCell id="box_staff" value="2. NHÂN VIÊN PHỤC VỤ (WAITSTAFF)&#xa;[Kênh: Máy tính bảng Tablet / Điện thoại cầm tay]" style="swimlane;startSize=35;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="790" y="110" width="360" height="230" as="geometry"/>
         </mxCell>
-        <mxCell id="w_content" value="• Theo dõi sơ đồ bàn trực quan theo thời gian thực (SignalR).&#xa;• Check-in khách vào bàn kích hoạt phiên QR tự động.&#xa;• Nhận chuông báo rung tức thì khi khách gửi đơn gọi món mới.&#xa;• Kiểm tra đối soát trực tiếp yêu cầu dị ứng tại bàn ăn.&#xa;• Thao tác một chạm: Duyệt đơn in Bếp, Xác nhận món đã phục vụ." style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="box_staff">
+        <mxCell id="w_content" value="• Theo dõi sơ đồ bàn trực quan theo thời gian thực (SignalR).&#xa;• Check-in khách vào bàn &amp; nhận diện lịch đặt chỗ.&#xa;• Tư vấn món &amp; Tạo Order trực tiếp trên Tablet di động gửi Bếp.&#xa;• Phối hợp với Expediter nhận đĩa món tại Pass mang ra bàn.&#xa;• Thao tác một chạm: Tạo đơn in Bếp, Yêu cầu thanh toán hóa đơn." style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="box_staff">
           <mxGeometry x="10" y="45" width="340" height="170" as="geometry"/>
         </mxCell>
 
@@ -40,7 +40,7 @@
           <mxGeometry x="10" y="45" width="340" height="170" as="geometry"/>
         </mxCell>
 
-        <!-- 4. Quản lý & Admin (Manager & Admin) - Bottom Right -->
+        <!-- 4. Quản lý &amp; Admin (Manager &amp; Admin) - Bottom Right -->
         <mxCell id="box_mgr" value="4. QUẢN LÝ &amp; ADMIN (MANAGEMENT)&#xa;[Kênh: Máy tính cá nhân - Desktop Web Portal]" style="swimlane;startSize=35;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="790" y="550" width="360" height="230" as="geometry"/>
         </mxCell>
@@ -49,10 +49,10 @@
         </mxCell>
 
         <!-- Connectors -->
-        <mxCell id="e_g_hub" value="Đặt bàn, Quét QR, Gọi món, Thanh toán cọc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="box_guest" target="hub_sys" parent="1">
+        <mxCell id="e_g_hub" value="Đặt bàn, Xem Digital Menu, Thanh toán cọc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="box_guest" target="hub_sys" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_w_hub" value="Đồng bộ sơ đồ bàn, Nhận đơn, Duyệt in Bếp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=2;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="box_staff" target="hub_sys" parent="1">
+        <mxCell id="e_w_hub" value="Đồng bộ sơ đồ bàn, Tạo Order, Đóng bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=2;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="box_staff" target="hub_sys" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="e_k_hub" value="Lệnh in nhiệt ESC/POS phân trạm Bếp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="hub_sys" target="box_kitchen" parent="1">

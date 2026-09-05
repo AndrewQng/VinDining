@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
-  <diagram name="AD-05 Thanh toán & Cấn trừ cọc" id="ad-05_thanh_toán_&_cấn_trừ_cọc">
+  <diagram name="AD-05 Thanh toán &amp; Cấn trừ cọc" id="ad-05_thanh_toán_&amp;_cấn_trừ_cọc">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1050" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -60,7 +60,7 @@
         <mxCell id="s5_act2" value="In phiếu Hóa đơn tạm tính&#xa;qua máy in nhiệt thu ngân" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
           <mxGeometry x="65" y="300" width="210" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="s5_act3" value="Vô hiệu hóa phiên QR của bàn,&#xa;in Hóa đơn tài chính cuối cùng" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
+        <mxCell id="s5_act3" value="Đóng phiên phục vụ bàn,&#xa;in Hóa đơn tài chính cuối cùng" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
           <mxGeometry x="55" y="660" width="230" height="55" as="geometry"/>
         </mxCell>
         <mxCell id="s5_act4" value="Chuyển trạng thái bàn sang&#xa;'Cleaning' (Chờ dọn dẹp)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">

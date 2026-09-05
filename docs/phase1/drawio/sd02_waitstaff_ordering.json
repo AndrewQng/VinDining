@@ -1,0 +1,84 @@
+{
+  "title": "SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp",
+  "participants": [
+    {
+      "id": "g",
+      "label": "Khách hàng (Guest)",
+      "actor": true
+    },
+    {
+      "id": "w",
+      "label": "Phục vụ (Waitstaff)",
+      "actor": true
+    },
+    {
+      "id": "disp",
+      "label": "Màn hình Digital Display"
+    },
+    {
+      "id": "tab",
+      "label": "Tablet Phục vụ"
+    },
+    {
+      "id": "api",
+      "label": "Web API (.NET 9)"
+    },
+    {
+      "id": "prn",
+      "label": "Máy in Bếp nhiệt"
+    }
+  ],
+  "messages": [
+    {
+      "from": "g",
+      "to": "disp",
+      "label": "1. Xem danh mục món ăn (A La Carte)"
+    },
+    {
+      "from": "g",
+      "to": "w",
+      "label": "2. Gọi nhân viên để đặt món"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "3. Chọn bàn & Thêm các món ăn vào giỏ hàng"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "4. Điền ghi chú dị ứng (Nếu có)"
+    },
+    {
+      "from": "w",
+      "to": "tab",
+      "label": "5. Bấm nút 'Tạo đơn & Gửi Bếp'"
+    },
+    {
+      "from": "tab",
+      "to": "api",
+      "label": "6. POST /api/v1/orders/create-direct"
+    },
+    {
+      "from": "api",
+      "to": "api",
+      "label": "7. Lưu Order (Status: Processing)"
+    },
+    {
+      "from": "api",
+      "to": "prn",
+      "label": "8. Gửi lệnh in ESC/POS (Phân trạm Bếp/Bar, In đậm Dị ứng)"
+    },
+    {
+      "from": "prn",
+      "to": "prn",
+      "label": "9. Nhả phiếu order Bếp vật lý"
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "10. 200 OK (Đã gửi Bếp thành công)",
+      "return": true
+    }
+  ]
+}

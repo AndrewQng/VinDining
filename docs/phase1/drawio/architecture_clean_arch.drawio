@@ -95,8 +95,8 @@
         <mxCell id="c6" value="Persist Data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="mediatr_cmd" target="efcore">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="180" y="530"/>
-              <mxPoint x="180" y="755"/>
+              <mxPoint x="20" y="455"/>
+              <mxPoint x="20" y="785"/>
             </Array>
           </mxGeometry>
         </mxCell>
@@ -106,17 +106,18 @@
         <mxCell id="c8" value="IPN Webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vnpay_svc" target="api_ctrl">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="810" y="690"/>
-              <mxPoint x="30" y="690"/>
-              <mxPoint x="30" y="275"/>
+              <mxPoint x="770" y="870"/>
+              <mxPoint x="10" y="870"/>
+              <mxPoint x="10" y="275"/>
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="c9" value="ESC/POS Ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="mediatr_cmd" target="printer_svc">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="430" y="690"/>
-              <mxPoint x="1140" y="690"/>
+              <mxPoint x="460" y="530"/>
+              <mxPoint x="1340" y="530"/>
+              <mxPoint x="1340" y="785"/>
             </Array>
           </mxGeometry>
         </mxCell>
