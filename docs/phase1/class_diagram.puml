@@ -1,0 +1,120 @@
+@startuml
+!theme plain
+skinparam linetype ortho
+skinparam nodesep 70
+skinparam ranksep 70
+skinparam packageStyle rectangle
+
+package "ENUMS" {
+    enum TableStatus {
+        Available
+        LockedForPayment
+        Reserved
+        Occupied
+        Cleaning
+    }
+    enum ReservationStatus {
+        AwaitingPayment
+        Confirmed
+        Cancelled
+        Completed
+    }
+    enum OrderItemStatus {
+        Preparing
+        Served
+        Cancelled
+    }
+}
+
+package "CONTROLLERS & HUBS (API)" {
+    class ReservationController <<Controller>>
+    class OrderController <<Controller>>
+    class TableController <<Controller>>
+    class TableHub <<SignalR>>
+    class KitchenHub <<SignalR>>
+}
+
+package "SERVICES (CQRS)" {
+    class ReservationCommandHandler <<Handler>>
+    class OrderCommandHandler <<Handler>>
+    class TableQueryHandler <<Handler>>
+}
+
+package "DB ENTITIES (DOMAIN)" {
+    class Guest {
+        + Guid Id
+        + string FullName
+        + string PhoneNumber
+    }
+    class Table {
+        + Guid Id
+        + string Name
+        + int Capacity
+        + TableStatus Status
+    }
+    class MenuItem {
+        + Guid Id
+        + string Name
+        + decimal Price
+    }
+    class Reservation {
+        + Guid Id
+        + DateTime ReservationTime
+        + int PartySize
+        + ReservationStatus Status
+    }
+    class Order {
+        + Guid Id
+        + Guid TableId
+    }
+    class OrderItem {
+        + Guid Id
+        + int Quantity
+        + OrderItemStatus Status
+    }
+    class Deposit {
+        + Guid Id
+        + decimal Amount
+        + string PaymentMethod
+    }
+    class Invoice {
+        + Guid Id
+        + decimal AmountPayable
+        + bool IsPaid
+    }
+
+    ' Ép layout theo dạng lưới 3 cột x 3 hàng để đường thẳng tắp
+    Guest -[hidden]right-> Table
+    Table -[hidden]right-> MenuItem
+
+    Reservation -[hidden]right-> Order
+    Order -[hidden]right-> OrderItem
+
+    Deposit -[hidden]right-> Invoice
+
+    ' Định nghĩa các quan hệ có cardinality (0..1, 1..*) và chiều mũi tên
+    Guest "1" -down-> "0..*" Reservation : Makes
+    Table "1" -down-> "0..*" Reservation : Hosted at
+    Table "1" -down-> "0..*" Order : Has active
+    
+    OrderItem "0..*" -up-> "1" MenuItem : Represents
+
+    Reservation "1" -down-> "0..1" Deposit : Confirmed by
+    Order "1" -down-> "0..1" Invoice : Billed as
+
+    Order "1" -right-> "1..*" OrderItem : Contains
+    Order "0..*" .-left.> "0..1" Reservation : Links to
+}
+
+ReservationController ..> ReservationCommandHandler
+OrderController ..> OrderCommandHandler
+TableController ..> TableQueryHandler
+
+ReservationCommandHandler --> Reservation
+OrderCommandHandler --> Order
+TableQueryHandler --> Table
+
+TableHub ..> Table
+KitchenHub ..> OrderItem
+
+@enduml

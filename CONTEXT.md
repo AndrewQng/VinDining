@@ -31,7 +31,11 @@ A designated physical dining space with specific capacity, location zone, static
 _Avoid_: Seat, spot
 
 **Table State Lifecycle**:
-- `Available` (Trống) $\rightarrow$ `Reserved` (Đã đặt trước) $\rightarrow$ `Occupied` (Đang phục vụ) $\rightarrow$ `Cleaning` (Chờ dọn dẹp) $\rightarrow$ `Available` (Trống).
+- `Available` (Trống) $\rightarrow$ `LockedForPayment` (Khóa 17p chờ VNPAY) $\rightarrow$ `Reserved` (Đã thanh toán cọc) $\rightarrow$ `Occupied` (Đang phục vụ) $\rightarrow$ `Cleaning` (Chờ dọn dẹp) $\rightarrow$ `Available` (Trống).
+
+**Reservation Status**:
+- `AwaitingPayment` $\rightarrow$ `Confirmed` (Deposit paid) $\rightarrow$ `Completed` (Guest finished dining)
+- Alternately, can end in `Cancelled` (Timed out after 17m or guest manually cancelled).
 
 **MenuItem**:
 A regular dish or beverage available for ordering from the A La Carte menu.
@@ -40,6 +44,12 @@ _Avoid_: Combo, set meal, step
 **Order**:
 The active dining order associated with an `Occupied` Table recording selected menu items.
 _Avoid_: Cart, purchase
+
+**OrderItem**:
+A specific instance of a MenuItem within an Order.
+**OrderItem State Lifecycle**:
+- `Preparing` (Sent to kitchen printer) $\rightarrow$ `Served` (Expediter marked at the pass)
+- Or `Cancelled` (Out of stock or manually voided).
 
 **Invoice**:
 The final itemized financial settlement for an Order after dining, accounting for 5% service charge, 10% VAT, and deducting the pre-paid Deposit.
@@ -76,5 +86,6 @@ _Avoid_: Bill, receipt
 - A **Reservation** is assigned to exactly one **Table** for a given dining shift.
 - An `Occupied` **Table** maintains an active **Order**.
 - An **Order** contains multiple **OrderItems**.
+- An **Order** optionally links back to a **Reservation** (nullable foreign key) to allow the **Invoice** to trace and deduct the **Deposit**.
 - An **Order** produces exactly one **Invoice** upon checkout.
 - Completing the **Invoice** transitions the **Table** from `Occupied` $\rightarrow$ `Cleaning` $\rightarrow$ `Available`.

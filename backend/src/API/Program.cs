@@ -1,3 +1,4 @@
+using API.Hubs;
 using API.Middlewares;
 using API.Services;
 using Application;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 
 // Configure Swagger with JWT Support
 builder.Services.AddSwaggerGen(c =>
@@ -91,5 +93,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<TableHub>("/hubs/table");
+app.MapHub<KitchenHub>("/hubs/kitchen");
 
 app.Run();

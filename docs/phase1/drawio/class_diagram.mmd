@@ -1,0 +1,71 @@
+flowchart LR
+    %% ENUMS
+    subgraph Enums["📌 ENUMS"]
+        direction TB
+        E1["<b>&lt;&lt;Enum&gt;&gt;<br>TableStatus</b><hr>Available<br>LockedForPayment<br>Reserved<br>Occupied<br>Cleaning"]
+        E2["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Cancelled<br>Completed"]
+        E3["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Preparing<br>Served<br>Cancelled"]
+    end
+
+    %% CONTROLLERS & HUBS
+    subgraph API["🚀 CONTROLLERS & HUBS (API)"]
+        direction TB
+        C1["<b>ReservationController</b><hr>+ CreateReservation()<br>+ GetReservation()"]
+        C2["<b>OrderController</b><hr>+ CreateOrder()"]
+        C3["<b>TableController</b><hr>+ GetTables()"]
+        H1["<b>TableHub (SignalR)</b><hr>+ SendTableStatusUpdate()"]
+        H2["<b>KitchenHub (SignalR)</b><hr>+ NotifyNewOrder()<br>+ MarkDishAsServed()"]
+    end
+
+    %% SERVICES (APPLICATION / MEDIATR)
+    subgraph Services["⚙️ SERVICES (APPLICATION / CQRS)"]
+        direction TB
+        S1["<b>ReservationCommandHandler</b><hr>+ Handle()"]
+        S2["<b>OrderCommandHandler</b><hr>+ Handle()"]
+        S3["<b>TableQueryHandler</b><hr>+ Handle()"]
+    end
+
+    %% ENTITIES (DOMAIN)
+    subgraph DB["🗄️ DB ENTITIES (DOMAIN)"]
+        direction TB
+        Base["<b>BaseEntity</b><hr>+ Guid Id<br>+ DateTime CreatedAtUtc<br>+ DateTime? UpdatedAtUtc"]
+        
+        Guest["<b>Guest</b><hr>+ string FullName<br>+ string PhoneNumber<br>+ string? Email"]
+        Table["<b>Table</b><hr>+ string Name<br>+ int Capacity<br>+ string Zone<br>+ TableStatus Status"]
+        Reservation["<b>Reservation</b><hr>+ Guid GuestId<br>+ Guid TableId<br>+ DateTime ReservationTime<br>+ int PartySize<br>+ ReservationStatus Status"]
+        Deposit["<b>Deposit</b><hr>+ Guid ReservationId<br>+ decimal Amount<br>+ string TransactionId<br>+ string PaymentMethod"]
+        Order["<b>Order</b><hr>+ Guid TableId<br>+ Guid? ReservationId"]
+        OrderItem["<b>OrderItem</b><hr>+ Guid OrderId<br>+ Guid MenuItemId<br>+ int Quantity<br>+ decimal UnitPrice<br>+ OrderItemStatus Status"]
+        MenuItem["<b>MenuItem</b><hr>+ string Name<br>+ decimal Price<br>+ string Category<br>+ bool IsAvailable"]
+        Invoice["<b>Invoice</b><hr>+ Guid OrderId<br>+ decimal Subtotal<br>+ decimal AmountPayable<br>+ bool IsPaid"]
+        
+        Guest -.->|Inherits| Base
+        Table -.->|Inherits| Base
+        Reservation -.->|Inherits| Base
+        Deposit -.->|Inherits| Base
+        Order -.->|Inherits| Base
+        OrderItem -.->|Inherits| Base
+        MenuItem -.->|Inherits| Base
+        Invoice -.->|Inherits| Base
+    end
+
+    %% RELATIONS
+    C1 -.->|Dispatches| S1
+    C2 -.->|Dispatches| S2
+    C3 -.->|Dispatches| S3
+
+    S1 -->|Creates| Reservation
+    S2 -->|Creates| Order
+    S3 -->|Reads| Table
+
+    Guest -->|Makes| Reservation
+    Table -->|Hosted at| Reservation
+    Table -->|Has active| Order
+    Reservation -->|Confirmed by| Deposit
+    Order -->|Optionally links to| Reservation
+    Order -->|Contains| OrderItem
+    OrderItem -->|Represents| MenuItem
+    Order -->|Billed as| Invoice
+    
+    TableHub -.->|Observes| Table
+    KitchenHub -.->|Observes| OrderItem
