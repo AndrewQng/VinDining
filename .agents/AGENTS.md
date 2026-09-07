@@ -2,12 +2,12 @@
 
 ## 1. Project Context & Architectural Invariants
 
-* **Product**: End-to-End Fine Dining Restaurant Management System featuring Real-time Table Reservations, QR Self-Ordering at Tables, Kitchen Display System (KDS) Course Firing & Order Management, and Billing / Invoice Settlement with Deposit Deduction.
+* **Product**: End-to-End Fine Dining Restaurant Management System featuring Real-time Table Reservations, Digital Display E-Menu, Waitstaff Ordering, Automated Kitchen Ticket Dispatching, Expediter Serving Confirmation, and Billing / Invoice Settlement with Deposit Deduction.
 * **Architecture**: Clean Architecture / 3-Layer separated Client-Server model.
   * **Frontend**: React (SPA) + TypeScript + Vite + Tailwind CSS + TanStack Query + Zustand + SignalR Client.
   * **Backend API**: ASP.NET Core (.NET 9) Web API + CQRS Pattern (MediatR) + FluentValidation pipeline.
   * **Data & Persistence**: Microsoft SQL Server + Entity Framework Core 9 (EF Core) with DbContext abstractions and Unit of Work.
-  * **Real-time Engine**: ASP.NET Core SignalR Hubs for floor plan states, kitchen orders, and staff notifications.
+  * **Real-time Engine**: ASP.NET Core SignalR Hubs for floor plan states, automated thermal ticket printing, expediter confirmations, and staff notifications.
   * **Security**: ASP.NET Core Identity + JWT Bearer Tokens + Role-based Authorization.
 
 ---
@@ -51,9 +51,8 @@
 * **Reservation**: An advance booking by a Guest for a specific dining shift, table zone, and party size. (*Avoid: Booking, appointment*)
 * **Deposit**: A mandatory advance payment required to confirm fine dining reservations. (*Avoid: Pre-auth, down-payment*)
 * **Table**: A physical dining space with capacity, location zone, and real-time status (Available, Reserved, Occupied, Cleaning). (*Avoid: Seat, spot*)
-* **TastingMenu**: A multi-course curated set menu served in sequential progression. (*Avoid: Food item, combo*)
-* **Course**: A sequential stage within a tasting menu (e.g., Amuse-Bouche, Appetizer, Main, Dessert). (*Avoid: Dish, step*)
-* **Order**: The active dining order associated with an occupied Table recording selected tasting menus, courses, and beverages. (*Avoid: Cart, purchase*)
+* **MenuItem**: A regular dish or beverage available for ordering from the A La Carte menu. (*Avoid: Combo, set meal, step*)
+* **Order**: The active dining order associated with an occupied Table recording selected menu items and beverages. (*Avoid: Cart, purchase*)
 * **Invoice**: The final itemized settlement for an Order after dining, accounting for service charge (5%), VAT (10%), and deducting any Deposit. (*Avoid: Bill, receipt*)
 * **Staff**: Internal restaurant roles (Host, Server, Chef, Manager, Admin).
 
@@ -91,7 +90,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
 * **Example Intent Scenarios (EN / VI)**:
   - *EN*: "Draft the BRS document for the table reservation and deposit module."
   - *VI*: "Viết tài liệu đặc tả yêu cầu nghiệp vụ BRS / SRS cho tính năng đặt bàn và tính tiền cọc."
-  - *VI*: "Soạn thảo PRD cho phân hệ quét mã QR tự gọi món tại bàn."
+  - *VI*: "Soạn thảo PRD cho phân hệ Digital Display E-Menu và nhân viên gọi món tại bàn."
 
 #### 2. `user-story-mapping`
 * **Path**: `.agents/skills/user-story-mapping/SKILL.md`
@@ -100,8 +99,8 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - Mapping out end-to-end operational journeys across different roles (Guest $\rightarrow$ Host $\rightarrow$ Waiter $\rightarrow$ Chef $\rightarrow$ Manager).
   - Slicing backlogs into coherent milestone releases (MVP release vs Phase 2 enhancements).
 * **Example Intent Scenarios (EN / VI)**:
-  - *EN*: "Map out the full user journey from QR scan to kitchen firing and bill checkout."
-  - *VI*: "Lập bản đồ User Story Mapping cho quy trình từ lúc khách quét QR đến khi Bếp ra món và thanh toán."
+  - *EN*: "Map out the full user journey from check-in to serving confirmation and bill checkout."
+  - *VI*: "Lập bản đồ User Story Mapping cho quy trình từ lúc khách vào bàn đến khi Expediter xác nhận ra món và thanh toán."
   - *VI*: "Phân chia các lát cắt phát hành MVP cho đợt demo tuần 4."
 
 #### 3. `user-story`
@@ -156,7 +155,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
   - Evaluating and documenting major architectural trade-offs (e.g. SignalR WebSocket vs HTTP polling, EF Core vs Dapper, Clean Architecture vs 3-Tier).
 * **Example Intent Scenarios (EN / VI)**:
   - *EN*: "Create an ADR explaining why we chose SignalR for real-time kitchen order updates."
-  - *VI*: "Viết tài liệu ADR giải thích lý do lựa chọn SignalR cho KDS và sơ đồ bàn thay vì cơ chế polling."
+  - *VI*: "Viết tài liệu ADR giải thích lý do lựa chọn SignalR cho điều phối lệnh in bếp và sơ đồ bàn thay vì cơ chế polling."
   - *VI*: "So sánh ưu nhược điểm kỹ thuật giữa Clean Architecture và N-Tier truyền thống."
 
 #### 8. `openapi-spec-generation`
@@ -165,7 +164,7 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
 * **When to Activate (Intent)**:
   - Defining API request/response schemas, DTO models, HTTP status codes, and authentication requirements before frontend/backend implementation.
 * **Example Intent Scenarios (EN / VI)**:
-  - *EN*: "Generate the OpenAPI specification contract for the QR menu and ordering endpoints."
+  - *EN*: "Generate the OpenAPI specification contract for the Waitstaff ordering endpoints."
   - *VI*: "Thiết kế hợp đồng API OpenAPI / Swagger cho các endpoint đặt bàn, gọi món và xuất hóa đơn."
   - *VI*: "Đặc tả các DTO request/response và mã lỗi HTTP cho Frontend React tiêu thụ."
 
@@ -239,5 +238,5 @@ Skill selection is an active, continuous process, NOT a one-time check at the in
 | **Weeks 1–2 (Proposal + Analysis)** | BRS, SRS (draft), Business Rules, User Stories, Scope definition | `prd-development`<br>`user-story-mapping`<br>`user-story`<br>`planning-with-files` |
 | **Weeks 3–4 (Design & Architecture)** | Architecture blueprints, ADRs, Domain Model, ERD/Database Schema, OpenAPI Specs, Visual Diagrams | `clean-architecture`<br>`architecture-decision-records`<br>`database-schema-designer`<br>`openapi-spec-generation`<br>`drawio-skill`<br>`dotnet-backend-patterns` |
 | **Weeks 5–6 (Setup & Scaffolding)** | Solution layout, MediatR CQRS pipeline, EF Core setup, React Vite setup | `clean-architecture`<br>`planning-and-task-breakdown`<br>`dotnet-backend-patterns` |
-| **Weeks 7–8 (Coding & Feature Delivery)** | Table QR Self-Ordering, KDS SignalR, Billing & Payment | `dotnet-backend-patterns`<br>`tdd`<br>`planning-with-files` |
+| **Weeks 7–8 (Coding & Feature Delivery)** | Waitstaff Ordering, Automated Thermal Printing, Billing & Payment | `dotnet-backend-patterns`<br>`tdd`<br>`planning-with-files` |
 | **Weeks 9–10 (Polish & Verification)** | End-to-end testing, bug fixes, demo preparation | `improve-codebase-architecture`<br>`diagnose` |

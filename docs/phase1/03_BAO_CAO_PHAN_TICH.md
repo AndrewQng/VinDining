@@ -178,12 +178,13 @@ graph TD
   1. Khách hàng chọn Ngày hẹn, Ca phục vụ (Giờ hẹn), Số lượng khách và Khu vực bàn mong muốn (VIP, Sảnh chính, Ban công).
   2. Hệ thống kiểm tra trạng thái sơ đồ bàn thời gian thực và hiển thị danh sách bàn trống khả dụng.
   3. Khách hàng điền thông tin cá nhân (Họ tên, SĐT, Email), ghi chú các yêu cầu đặc biệt/cảnh báo dị ứng và nhấn "Tiến hành đặt cọc".
-  4. Hệ thống khóa giữ tạm thời vị trí bàn đã chọn trong tối đa **15 phút** (`BR-01`), đồng thời chuyển hướng khách sang giao diện thanh toán VNPAY.
+  4. Hệ thống khóa giữ tạm thời vị trí bàn đã chọn trong tối đa **17 phút** (`BR-01` - gồm 15 phút VNPAY + 2 phút Grace Period), đồng thời chuyển hướng khách sang giao diện thanh toán VNPAY (QR code có thời hạn 15 phút).
   5. Khách hàng thực hiện thanh toán tiền cọc trên cổng VNPAY (quét QR ngân hàng hoặc nhập thẻ).
   6. Cổng VNPAY xử lý giao dịch thành công và gửi tín hiệu xác nhận (IPN) thời gian thực về Backend.
   7. Hệ thống cập nhật trạng thái bàn sang `Reserved`, sinh mã đặt bàn `BookingCode` duy nhất và gửi thông báo xác nhận cho khách.
 * **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *5a. Thanh toán thất bại hoặc quá thời hạn 15 phút (`BR-01`)*: Quá 15 phút chưa nhận được kết quả thành công từ VNPAY, hệ thống tự động hủy phiên đặt bàn tạm thời, giải phóng vị trí bàn về trạng thái `Available` trên sơ đồ và hiển thị thông báo mời khách thao tác lại.
+  - *5a. Thanh toán thất bại hoặc quá thời hạn 17 phút (`BR-01`)*: Quá 17 phút chưa nhận được kết quả thành công từ VNPAY, hệ thống tự động hủy phiên đặt bàn tạm thời, giải phóng vị trí bàn về trạng thái `Available` trên sơ đồ và hiển thị thông báo mời khách thao tác lại.
+  - *5b. Giao dịch mồ côi (Late IPN > 17 phút)*: Tín hiệu IPN báo thành công nhưng gửi về trễ sau 17 phút và bàn đã bị khách khác đặt mất. Hệ thống tự động quét tìm bàn trống tương đương (cùng khu vực, sức chứa) để gán cho khách. Nếu hết sạch bàn tương đương, lưu trạng thái `Paid_TableLost` và báo động đỏ cho Quản lý (CSKH) gọi điện trực tiếp để xử lý ngoại lệ (đổi ngày/hoàn tiền thủ công).
   - *2a. Khung giờ hoặc khu vực bàn đã hết chỗ*: Hệ thống thông báo hết bàn và tự động gợi ý các khung giờ hoặc phân khu bàn lân cận còn trống.
   - *Khách hủy đặt bàn trước $\ge$ 4 tiếng (`BR-05`)*: Hệ thống tự động kích hoạt hoàn cọc 100% qua API VNPAY và giải phóng bàn về `Available`.
   - *Khách hủy đặt bàn trong vòng < 4 tiếng (`BR-05`)*: Hệ thống ghi nhận hủy bàn nhưng phạt 100% tiền cọc (không hoàn tiền).
@@ -262,12 +263,13 @@ graph TD
      - $\text{Subtotal} = \sum (\text{Tiền món dùng thực tế})$
      - $\text{Phí dịch vụ (5\%)} = \text{Subtotal} \times 0.05$
      - $\text{Thuế VAT (10\%)} = (\text{Subtotal} + \text{Phí dịch vụ}) \times 0.10$
-     - $\text{Số tiền phải trả} = (\text{Subtotal} + \text{Phí dịch vụ} + \text{Thuế VAT}) - \text{Tiền cọc đã trả (Deposit)}$
+     - $\text{Số tiền phải trả} = \max(0, (\text{Subtotal} + \text{Phí dịch vụ} + \text{Thuế VAT}) - \text{Tiền cọc đã trả (Deposit)})$
   4. Hệ thống in phiếu Hóa đơn tạm tính hiển thị minh bạch toàn bộ các dòng tiền và số tiền cọc đã cấn trừ để nhân viên đem ra bàn cho khách kiểm tra.
   5. Khách hàng thực hiện thanh toán số tiền còn thiếu qua tiền mặt, thẻ ngân hàng hoặc quét mã QR chuyển khoản.
   6. Nhân viên phục vụ bấm "Hoàn tất thanh toán" trên thiết bị.
   7. Hệ thống tự động vô hiệu hóa phiên QR, in hóa đơn tài chính cuối cùng và chuyển trạng thái bàn sang `Cleaning`. Sau khi nhân viên dọn bàn xong, bàn chuyển về trạng thái `Available`.
 * **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
+  - *3a. Hóa đơn âm (Tổng tiền < Tiền cọc)*: Theo chính sách Deposit = Minimum Spend, hệ thống tự động làm tròn Số tiền phải trả = 0 VNĐ (không thối lại tiền thừa). Hệ thống hiển thị cảnh báo đỏ trên Tablet để Waitstaff biết và ra bàn nhắc nhở khách nên gọi thêm đồ uống hoặc mang về để tận dụng tối đa số tiền cọc.
   - *5a. Khách hàng có thắc mắc về số tiền cọc*: Nhân viên phục vụ tra cứu trực tiếp lịch sử giao dịch cọc gắn với `BookingCode` trên hệ thống để giải thích minh bạch cho khách.
 
 ---
@@ -440,10 +442,13 @@ flowchart TD
         S1["Kiểm tra sơ đồ bàn<br/>thời gian thực"]
         S_Dec1{"Còn bàn<br/>khả dụng?"}
         S_Alt["Gợi ý ca / khu vực<br/>khác còn trống"]
-        S2["Khóa giữ bàn 15 phút (BR-01)<br/>& Khởi tạo PaymentUrl"]
-        S_Dec2{"Thanh toán<br/>trong 15p?"}
+        S2["Khóa giữ bàn 17 phút (BR-01)<br/>(15p QR + 2p Grace Period)"]
+        S_Dec2{"IPN về<br/>trong 17p?"}
         S_Cancel["Hủy phiên giữ chỗ,<br/>giải phóng bàn về Available"]
         S_Confirm["Cập nhật bàn sang 'Reserved'<br/>& Sinh mã BookingCode"]
+        S_LateIPN{"Tìm bàn<br/>tương đương?"}
+        S_Reallocate["Gán bàn mới<br/>& Sinh BookingCode"]
+        S_Alert["Lưu Paid_TableLost<br/>& Báo động CSKH"]
     end
 
     subgraph VNPAY ["Cổng thanh toán VNPAY"]
@@ -464,11 +469,16 @@ flowchart TD
     V1 --> G4
     G4 --> V2
     V2 --> S_Dec2
-    S_Dec2 -->|No / Quá 15p| S_Cancel
+    S_Dec2 -->|Quá 17p khách bỏ| S_Cancel
     S_Cancel --> G_Fail
     G_Fail --> G_EndFail
-    S_Dec2 -->|Yes| S_Confirm
+    S_Dec2 -->|Đúng 17p| S_Confirm
     S_Confirm --> G_Success
+    S_Dec2 -->|IPN trễ quá 17p| S_LateIPN
+    S_LateIPN -->|Còn bàn| S_Reallocate
+    S_Reallocate --> G_Success
+    S_LateIPN -->|Hết bàn| S_Alert
+    S_Alert --> G_Fail
     G_Success --> G_EndSuccess
 
     style G_Start fill:#e53935,stroke:#b71c1c
@@ -654,7 +664,7 @@ sequenceDiagram
     API-->>Web: 200 OK (Danh sách bàn)
     Guest->>Web: Nhập thông tin, ghi chú dị ứng & Bấm Đặt cọc
     Web->>API: POST /api/v1/reservations/create-hold
-    API->>DB: Tạo Reservation (Status: TemporaryHold, Expire: 15p)
+    API->>DB: Tạo Reservation (Status: TemporaryHold, Expire: 17p)
     API->>VNPAY: Khởi tạo URL giao dịch VNPAY (CreatePaymentUrl)
     VNPAY-->>API: Trả về PaymentUrl
     API-->>Web: 200 OK (PaymentUrl)
@@ -662,9 +672,20 @@ sequenceDiagram
     Guest->>VNPAY: Quét mã QR thanh toán tiền cọc
     VNPAY->>API: POST /api/v1/payments/vnpay-ipn (Server-to-Server)
     API->>API: Kiểm tra chữ ký Checksum & Số tiền
-    API->>DB: Cập nhật Reservation -> Reserved, Table -> Reserved
+    alt IPN về đúng hạn (dưới 17 phút)
+        API->>DB: Cập nhật Reservation -> Reserved, Table -> Reserved
+        API-->>Guest: Gửi Email và SMS xác nhận kèm BookingCode
+    else IPN trễ (quá 17 phút) và Bàn đã mất
+        API->>DB: Quét tìm bàn trống tương đương (Auto-Reallocate)
+        alt Còn bàn tương đương
+            API->>DB: Gán bàn mới, Cập nhật Reservation -> Reserved
+            API-->>Guest: Gửi Email & SMS xác nhận bàn mới
+        else Hết bàn tương đương (Orphaned Payment)
+            API->>DB: Lưu trạng thái Reservation -> Paid_TableLost
+            API-->>Web: Push Notification (SignalR) cho CSKH
+        end
+    end
     API-->>VNPAY: {"RspCode": "00", "Message": "Confirm Success"}
-    API-->>Guest: Gửi Email & SMS xác nhận kèm BookingCode
 ```
 
 ---

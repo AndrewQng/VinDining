@@ -67,7 +67,7 @@
         <mxCell id="m6" value="7. POST /api/v1/reservations/hold" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3261;entryX=0;entryY=0.0;" edge="1" parent="1" source="act5" target="act3">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m7" value="8. Khóa bàn tạm thời 15p (BR-01)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act6">
+        <mxCell id="m7" value="8. Khóa bàn tạm thời 17p (BR-01)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act6">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="m8" value="9. CreatePaymentUrl(DepositAmount)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act2">

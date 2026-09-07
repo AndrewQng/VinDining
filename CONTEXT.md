@@ -55,7 +55,8 @@ _Avoid_: Bill, receipt
 4. **Kitchen Dispatching (BR-04)**: When Waitstaff submits the order, the system immediately dispatches automatic print commands to thermal printers at designated stations (Hot kitchen, Cold kitchen, Bar) with allergy notes prominently highlighted.
 5. **Serving Confirmation (BR-04)**: When the kitchen places completed dishes on the Pass, the Expediter (Nhân viên Checkfood) verifies the order, dispatches a Waitstaff to deliver it, and taps "Mark as Served" on their tablet at the Pass to record actual serving timestamps.
 6. **Reservation Lock & Refund Policy (BR-01, BR-05)**:
-   - Online reservation locks table for 15 minutes awaiting VNPAY deposit completion. If timed out, table reverts to `Available`.
+   - Online reservation locks table for **17 minutes** (15m VNPAY QR expiry + 2m Grace Period) awaiting VNPAY IPN. If timed out, table reverts to `Available`.
+   - **Late IPN / Orphaned Payment Handling**: If IPN arrives after 17m and the table is lost, system attempts auto-reallocation to an equivalent table. If no equivalent table exists, system escalates to Manager (`Paid_TableLost`) for manual CSKH resolution.
    - Cancellation $\ge 4$ hours before shift: 100% automated refund via VNPAY.
    - Cancellation $< 4$ hours before shift: 0% refund (100% penalty for ingredients preparation).
    - Force Majeure: Manager can trigger `Manual Refund Override` from the Admin Portal.
@@ -63,7 +64,8 @@ _Avoid_: Bill, receipt
    $$\text{Subtotal} = \sum (\text{Dish Price} \times \text{Quantity})$$
    $$\text{Service Charge (5\%)} = \text{Subtotal} \times 0.05$$
    $$\text{VAT (10\%)} = (\text{Subtotal} + \text{Service Charge}) \times 0.10$$
-   $$\text{Amount Payable} = (\text{Subtotal} + \text{Service Charge} + \text{VAT}) - \text{Deposit Paid}$$
+   $$\text{Amount Payable} = \max(0, (\text{Subtotal} + \text{Service Charge} + \text{VAT}) - \text{Deposit Paid})$$
+   - *Note*: Deposit acts as a Minimum Spend and is non-refundable. If total is less than the deposit, Amount Payable is 0 VNĐ and no cash change is given.
 
 ---
 

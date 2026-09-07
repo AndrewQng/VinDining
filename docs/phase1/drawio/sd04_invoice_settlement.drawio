@@ -58,7 +58,7 @@
         <mxCell id="m4" value="5. Trả về dữ liệu" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.4545;" edge="1" parent="1" source="act0" target="act1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m5" value="6. Áp công thức BR-03 (Subtotal + 5% SVC + 10% VAT - Deposit)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6818;entryX=1;entryY=0.8182;" edge="1" parent="1" source="act1" target="act1">
+        <mxCell id="m5" value="6. Áp công thức BR-03 (max(0, Subtotal + 5% SVC + 10% VAT - Deposit))" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6818;entryX=1;entryY=0.8182;" edge="1" parent="1" source="act1" target="act1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points"><mxPoint x="780" y="380"/><mxPoint x="780" y="410"/></Array>
           </mxGeometry>

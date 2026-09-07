@@ -58,7 +58,7 @@
     {
       "from": "api",
       "to": "api",
-      "label": "6. Áp công thức BR-03 (Subtotal + 5% SVC + 10% VAT - Deposit)"
+      "label": "6. Áp công thức BR-03 (max(0, Subtotal + 5% SVC + 10% VAT - Deposit))"
     },
     {
       "from": "api",

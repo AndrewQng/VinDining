@@ -54,7 +54,7 @@
         </mxCell>
 
         <!-- Lane 3 (System) -->
-        <mxCell id="s5_act1" value="Áp công thức tài chính BR-03:&#xa;Subtotal + 5% SVC + 10% VAT - Deposit Paid" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
+        <mxCell id="s5_act1" value="Áp công thức tài chính BR-03:&#xa;max(0, Subtotal + 5% SVC + 10% VAT - Deposit Paid)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
           <mxGeometry x="55" y="210" width="230" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="s5_act2" value="In phiếu Hóa đơn tạm tính&#xa;qua máy in nhiệt thu ngân" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane5_3">
