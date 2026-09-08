@@ -543,9 +543,9 @@ flowchart TD
 ```
 ---
 
-### 3.4 AD-04: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món (3 Làn: Nhà bếp | Expediter | Hệ thống)
+### 3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món (3 Làn: Nhà bếp | Expediter | Hệ thống)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad04_serving_confirmation.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/ad04_serving_confirmation.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad03_serving_confirmation.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad03_serving_confirmation.drawio)
 
 ```mermaid
 flowchart TD
@@ -578,9 +578,9 @@ flowchart TD
 
 ---
 
-### 3.5 AD-05: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn (3 Làn: Khách hàng | Phục vụ/Thu ngân | Hệ thống)
+### 3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn (3 Làn: Khách hàng | Phục vụ/Thu ngân | Hệ thống)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad05_invoice_settlement.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/ad05_invoice_settlement.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad04_invoice_settlement.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad04_invoice_settlement.drawio)
 
 ```mermaid
 flowchart TD
@@ -638,6 +638,67 @@ flowchart TD
     style S2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
     style S3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
     style S4 fill:#5b40ff,stroke:#4527a0,color:#ffffff
+```
+
+---
+
+### 3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY (3 Làn: Khách/Quản lý | Hệ thống | Cổng VNPAY)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad05_cancellation_refund.drawio)
+
+```mermaid
+flowchart TD
+    subgraph Actor ["Khách hàng / Quản lý"]
+        direction TB
+        A_Start(( ))
+        A1["Bấm 'Hủy đặt bàn' trên Web<br/>hoặc Quản lý 'Manual Override'"]
+        A_Penalty["Nhận thông báo: Hủy bàn thành công,<br/>phạt 100% cọc (Hủy dưới 4 tiếng)"]
+        A_EndPenalty(((Phạt)))
+        A_Refund["Nhận Email/SMS xác nhận hoàn cọc 100%<br/>& tiền hoàn về tài khoản"]
+        A_EndSuccess(((Hoàn)))
+    end
+
+    subgraph System ["Hệ thống VinDining (Policy Engine)"]
+        direction TB
+        S_Check["Kiểm tra điều kiện BR-05:<br/>DeltaTime = BookingTime - Now"]
+        S_Dec{"Hủy trước >= 4h (BR-05)<br/>HOẶC Manager Override?"}
+        S_Forfeit["Cập nhật Reservation -> Cancelled_Forfeited;<br/>Giải phóng bàn về Available (Phạt 100% cọc)"]
+        S_ReqRefund["Gửi yêu cầu RefundTransaction sang VNPAY<br/>với mã giao dịch gốc & số tiền cọc"]
+        S_DoneRefund["Cập nhật Reservation -> Cancelled_Refunded;<br/>Giải phóng bàn về Available & Gửi thông báo"]
+    end
+
+    subgraph VNPAY ["Cổng thanh toán VNPAY (Refund API)"]
+        direction TB
+        V_Process["Tiếp nhận yêu cầu hoàn tiền<br/>& đối soát giao dịch gốc"]
+        V_Done["Hoàn tiền về tài khoản thẻ/ngân hàng<br/>& Phản hồi RspCode: 00 (Thành công)"]
+    end
+
+    A_Start --> A1
+    A1 --> S_Check
+    S_Check --> S_Dec
+    S_Dec -->|Không đủ điều kiện| S_Forfeit
+    S_Forfeit --> A_Penalty
+    A_Penalty --> A_EndPenalty
+    S_Dec -->|Đủ điều kiện >= 4h / Override| S_ReqRefund
+    S_ReqRefund --> V_Process
+    V_Process --> V_Done
+    V_Done --> S_DoneRefund
+    S_DoneRefund --> A_Refund
+    A_Refund --> A_EndSuccess
+
+    style A_Start fill:#e53935,stroke:#b71c1c
+    style A_EndPenalty fill:#ffffff,stroke:#e53935,stroke-width:2px
+    style A_EndSuccess fill:#ffffff,stroke:#2e7d32,stroke-width:2px
+    style S_Dec fill:#fce4ec,stroke:#c2185b,color:#880e4f
+    style A1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style A_Penalty fill:#757575,stroke:#424242,color:#ffffff
+    style A_Refund fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style S_Check fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style S_Forfeit fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style S_ReqRefund fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style S_DoneRefund fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style V_Process fill:#5b40ff,stroke:#4527a0,color:#ffffff
+    style V_Done fill:#5b40ff,stroke:#4527a0,color:#ffffff
 ```
 
 ---
@@ -764,12 +825,46 @@ sequenceDiagram
     API->>API: Áp công thức BR-03: Subtotal + 5% SVC + 10% VAT - Deposit
     API-->>Tablet: 200 OK (Chi tiết Hóa đơn tạm tính)
     Waitstaff->>Printer: In Hóa đơn tạm tính đem cho khách kiểm tra
-    Guest->>Waitstaff: Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ / QR)
-    Waitstaff->>Tablet: Bấm "Hoàn tất thanh toán"
-    Tablet->>API: POST /api/v1/invoices/{id}/settle
-    API->>DB: Cập nhật Invoice -> Paid, Table -> Cleaning
-    API->>Printer: In hóa đơn tài chính cuối cùng
-    API-->>Tablet: 200 OK (Bàn chuyển sang trạng thái Cleaning)
+    Guest->>Waitstaff: Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)
+    Waitstaff->>Tablet: Chọn phương thức thanh toán & Bấm "Hoàn tất thanh toán"
+    Tablet->>API: POST /api/v1/invoices/{id}/settle { paymentMethod }
+    API->>DB: Cập nhật Invoice -> Paid (lưu PaymentMethod), Table -> Cleaning
+    API->>Printer: In hóa đơn tài chính cuối cùng (kèm PaymentMethod)
+    API-->>Tablet: 200 OK (Hóa đơn đã thanh toán thành công)
+    API-->>Tablet: [SignalR TableHub] Broadcast TableStatusChanged(tableId, "Cleaning")
+```
+
+---
+
+### 4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/sd05_cancellation_refund.drawio)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Khách hàng / Quản lý
+    participant Web as Web App / Portal
+    participant API as Web API (.NET 9)
+    participant DB as SQL Server
+    participant VNPAY as Cổng VNPAY
+
+    User->>Web: Bấm yêu cầu Hủy bàn (Nhập lý do)
+    Web->>API: POST /api/v1/reservations/{id}/cancel
+    API->>DB: Query thông tin đặt bàn & mã giao dịch cọc
+    DB-->>API: Trả về thông tin Reservation & Deposit
+    API->>API: Kiểm tra BR-05 (Trước >= 4h hoặc Quản lý Override)
+    alt Đủ điều kiện hoàn cọc (Trước >= 4h hoặc Quản lý Override)
+        API->>VNPAY: POST /merchant_webapi/api/transaction (Refund)
+        VNPAY-->>API: 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)
+        API->>DB: Cập nhật Reservation -> Cancelled_Refunded, Table -> Available
+        API-->>Web: 200 OK (Đã hủy bàn & Hoàn 100% cọc)
+        Web-->>User: Thông báo hủy thành công & Hoàn cọc về tài khoản
+    else Hủy trễ dưới 4 tiếng (Khách tự hủy, không Override)
+        API->>DB: Cập nhật Reservation -> Cancelled_Forfeited, Table -> Available
+        API-->>Web: 200 OK (Đã hủy bàn, Phạt 100% cọc theo BR-05)
+        Web-->>User: Thông báo hủy thành công & Cọc bị phạt do hủy trễ
+    end
 ```
 
 ---
@@ -791,16 +886,16 @@ sequenceDiagram
 | Mã yêu cầu | Tên yêu cầu nghiệp vụ cấp cao | Mã Use Case | Mã Activity | Mã Sequence | Quy tắc nghiệp vụ | Mã Test Case kiểm thử |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-01` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
-| **REQ-02** | Quản lý sơ đồ bàn & Vòng đời trạng thái bàn | `UC-10` | `AD-01`, `AD-05` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
+| **REQ-02** | Quản lý sơ đồ bàn & Vòng đời trạng thái bàn | `UC-10` | `AD-01`, `AD-04` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
 | **REQ-03** | Xem E-Menu qua Digital Display | `UC-02` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
-| **REQ-04** | Nhân viên tạo Order trực tiếp & In Bếp | `UC-03`, `UC-04` | `AD-02`, `AD-04` | `SD-02`, `SD-03` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
-| **REQ-05** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-05` | `AD-05` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
+| **REQ-04** | Nhân viên tạo Order trực tiếp & In Bếp | `UC-03`, `UC-04` | `AD-02`, `AD-03` | `SD-02`, `SD-03` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
+| **REQ-05** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-05` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
 | **REQ-06** | Quản trị danh mục và thực đơn món ăn | `UC-06` | — | — | — | `TC-MNU-01` |
 | **REQ-07** | Phân quyền người dùng theo vai trò (RBAC) | `UC-08` | — | — | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
-| **REQ-08** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-07` | — | — | `BR-05` | `TC-REF-01` |
+| **REQ-08** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-07` | `AD-05` | `SD-05` | `BR-05` | `TC-REF-01` |
 | **REQ-09** | Khách hàng đánh giá chất lượng dịch vụ | `UC-13` | — | — | — | `TC-FB-01` |
 | **REQ-10** | Xem Báo cáo Dashboard & Thống kê | `UC-12` | — | — | — | `TC-REP-01` |
-| **REQ-N/A**| Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-09` | — | — | `BR-05` | `TC-RES-03` |
+| **REQ-N/A**| Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-09` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
 | **REQ-N/A**| Chuyển bàn / Đổi bàn | `UC-11` | — | — | — | `TC-TBL-03` |
 
 ---

@@ -68,6 +68,7 @@ classDiagram
         +decimal VatAmount
         +decimal DeductedDeposit
         +decimal AmountPayable
+        +PaymentMethod PaymentMethod
         +DateTime IssuedAt
         +bool IsPaid
     }

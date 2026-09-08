@@ -48,40 +48,59 @@
     {
       "from": "api",
       "to": "api",
-      "label": "5. Kiểm tra BR-05 (Trước >= 4h hoặc Quản lý Override)"
+      "label": "5. Kiểm tra điều kiện BR-05 (Thời gian hẹn - Hiện tại)"
+    },
+    {
+      "note": "[alt: Đủ điều kiện hoàn cọc (Trước >= 4h HOẶC Quản lý Override)]",
+      "over": "api"
     },
     {
       "from": "api",
       "to": "vn",
-      "label": "6. POST /merchant_webapi/api/transaction (Refund)"
+      "label": "6a. POST /merchant_webapi/api/transaction (Refund)"
     },
     {
       "from": "vn",
       "to": "api",
-      "label": "7. 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)",
+      "label": "7a. 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)",
       "return": true
     },
     {
       "from": "api",
       "to": "db",
-      "label": "8. Cập nhật Reservation: Cancelled, Table: Available"
-    },
-    {
-      "from": "db",
-      "to": "api",
-      "label": "9. Lưu thay đổi CSDL thành công",
-      "return": true
+      "label": "8a. Cập nhật Reservation: Cancelled_Refunded, Table: Available"
     },
     {
       "from": "api",
       "to": "fe",
-      "label": "10. 200 OK (Đã hủy bàn & Hoàn 100% cọc)",
+      "label": "9a. 200 OK (Đã hủy bàn & Hoàn 100% cọc)",
       "return": true
     },
     {
       "from": "fe",
       "to": "g",
-      "label": "11. Thông báo hủy bàn thành công & Gửi Email xác nhận",
+      "label": "10a. Thông báo hủy thành công & Tiền hoàn về tài khoản",
+      "return": true
+    },
+    {
+      "note": "[else: Hủy trễ dưới 4 tiếng (Khách tự hủy, không Override)]",
+      "over": "api"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "6b. Cập nhật Reservation: Cancelled_Forfeited, Table: Available"
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "7b. 200 OK (Đã hủy bàn, Phạt 100% cọc theo BR-05)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "g",
+      "label": "8b. Thông báo hủy thành công & Cọc bị phạt do hủy trễ",
       "return": true
     }
   ]

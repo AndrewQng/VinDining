@@ -55,6 +55,14 @@ A specific instance of a MenuItem within an Order.
 The final itemized financial settlement for an Order after dining, accounting for 5% service charge, 10% VAT, and deducting the pre-paid Deposit.
 _Avoid_: Bill, receipt
 
+**PaymentMethod**:
+The recorded method used to settle an Invoice balance:
+- `Cash`: Cash paid at table / counter.
+- `Card`: Credit / Debit card swiped via portable bank POS terminal.
+- `BankTransfer`: Direct bank transfer via static VietQR code.
+- `DepositCovered`: Used when the pre-paid deposit covers 100% of the bill (Amount Payable = 0 VNĐ).
+
+
 ---
 
 ## 2. Core Domain Invariants & Rules

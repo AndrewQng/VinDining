@@ -24,6 +24,12 @@ package "ENUMS" {
         Served
         Cancelled
     }
+    enum PaymentMethod {
+        Cash
+        Card
+        BankTransfer
+        DepositCovered
+    }
 }
 
 package "CONTROLLERS & HUBS (API)" {
@@ -80,6 +86,7 @@ package "DB ENTITIES (DOMAIN)" {
     class Invoice {
         + Guid Id
         + decimal AmountPayable
+        + PaymentMethod PaymentMethod
         + bool IsPaid
     }
 

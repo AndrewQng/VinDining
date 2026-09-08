@@ -74,33 +74,38 @@
     {
       "from": "g",
       "to": "w",
-      "label": "9. Thanh toán số tiền còn thiếu"
+      "label": "9. Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)"
     },
     {
       "from": "w",
       "to": "tab",
-      "label": "10. Bấm 'Hoàn tất thanh toán'"
+      "label": "10. Chọn phương thức thanh toán & Bấm 'Hoàn tất thanh toán'"
     },
     {
       "from": "tab",
       "to": "api",
-      "label": "11. POST /invoices/{id}/settle"
+      "label": "11. POST /invoices/{id}/settle { paymentMethod }"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "12. Cập nhật Invoice -> Paid, Table -> Cleaning"
+      "label": "12. Cập nhật Invoice -> Paid (lưu PaymentMethod), Table -> Cleaning"
     },
     {
       "from": "api",
       "to": "prn",
-      "label": "13. In hóa đơn tài chính cuối cùng"
+      "label": "13. In hóa đơn tài chính cuối cùng (kèm PaymentMethod)"
     },
     {
       "from": "api",
       "to": "tab",
-      "label": "14. 200 OK (Bàn chuyển sang Cleaning)",
+      "label": "14. 200 OK (Hóa đơn đã thanh toán thành công)",
       "return": true
+    },
+    {
+      "from": "api",
+      "to": "tab",
+      "label": "15. [SignalR] Broadcast TableStatusChanged(tableId, 'Cleaning')"
     }
   ]
 }
