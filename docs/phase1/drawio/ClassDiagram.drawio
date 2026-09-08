@@ -1,10 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="app.diagrams.net">
   <diagram name="Trang-1" id="uQdYlPrtXEr024f0ts6Q">
     <mxGraphModel dx="1598" dy="919" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <UserObject label="" plantUmlData="{&#xa;  &quot;data&quot;: &quot;@startuml\n!theme plain\nskinparam linetype ortho\nskinparam nodesep 70\nskinparam ranksep 70\nskinparam packageStyle rectangle\n\npackage \&quot;ENUMS\&quot; {\n    enum TableStatus {\n        Available\n        LockedForPayment\n        Reserved\n        Occupied\n        Cleaning\n    }\n    enum ReservationStatus {\n        AwaitingPayment\n        Confirmed\n        Cancelled\n        Completed\n    }\n    enum OrderItemStatus {\n        Preparing\n        Served\n        Cancelled\n    }\n}\n\npackage \&quot;CONTROLLERS &amp; HUBS (API)\&quot; {\n    class ReservationController &lt;&lt;Controller&gt;&gt;\n    class OrderController &lt;&lt;Controller&gt;&gt;\n    class TableController &lt;&lt;Controller&gt;&gt;\n    class TableHub &lt;&lt;SignalR&gt;&gt;\n    class KitchenHub &lt;&lt;SignalR&gt;&gt;\n}\n\npackage \&quot;SERVICES (CQRS)\&quot; {\n    class ReservationCommandHandler &lt;&lt;Handler&gt;&gt;\n    class OrderCommandHandler &lt;&lt;Handler&gt;&gt;\n    class TableQueryHandler &lt;&lt;Handler&gt;&gt;\n}\n\npackage \&quot;DB ENTITIES (DOMAIN)\&quot; {\n    class Guest {\n        + Guid Id\n        + string FullName\n        + string PhoneNumber\n    }\n    class Table {\n        + Guid Id\n        + string Name\n        + int Capacity\n        + TableStatus Status\n    }\n    class MenuItem {\n        + Guid Id\n        + string Name\n        + decimal Price\n    }\n    class Reservation {\n        + Guid Id\n        + DateTime ReservationTime\n        + int PartySize\n        + ReservationStatus Status\n    }\n    class Order {\n        + Guid Id\n        + Guid TableId\n    }\n    class OrderItem {\n        + Guid Id\n        + int Quantity\n        + OrderItemStatus Status\n    }\n    class Deposit {\n        + Guid Id\n        + decimal Amount\n        + string PaymentMethod\n    }\n    class Invoice {\n        + Guid Id\n        + decimal AmountPayable\n        + bool IsPaid\n    }\n\n    &#39; Ép layout theo dạng lưới 3 cột x 3 hàng để đường thẳng tắp\n    Guest -[hidden]right-&gt; Table\n    Table -[hidden]right-&gt; MenuItem\n\n    Reservation -[hidden]right-&gt; Order\n    Order -[hidden]right-&gt; OrderItem\n\n    Deposit -[hidden]right-&gt; Invoice\n\n    &#39; Định nghĩa các quan hệ có cardinality (0..1, 1..*) và chiều mũi tên\n    Guest \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Reservation : Makes\n    Table \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Reservation : Hosted at\n    Table \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Order : Has active\n    \n    OrderItem \&quot;0..*\&quot; -up-&gt; \&quot;1\&quot; MenuItem : Represents\n\n    Reservation \&quot;1\&quot; -down-&gt; \&quot;0..1\&quot; Deposit : Confirmed by\n    Order \&quot;1\&quot; -down-&gt; \&quot;0..1\&quot; Invoice : Billed as\n\n    Order \&quot;1\&quot; -right-&gt; \&quot;1..*\&quot; OrderItem : Contains\n    Order \&quot;0..*\&quot; .-left.&gt; \&quot;0..1\&quot; Reservation : Links to\n}\n\nReservationController ..&gt; ReservationCommandHandler\nOrderController ..&gt; OrderCommandHandler\nTableController ..&gt; TableQueryHandler\n\nReservationCommandHandler --&gt; Reservation\nOrderCommandHandler --&gt; Order\nTableQueryHandler --&gt; Table\n\nTableHub ..&gt; Table\nKitchenHub ..&gt; OrderItem\n\n@enduml&quot;,&#xa;  &quot;config&quot;: null&#xa;}" id="L4j4HWrY6qfBj0S-LTg2-513">
+        <UserObject label="" plantUmlData="{&#10;  &quot;data&quot;: &quot;@startuml\n!theme plain\nskinparam linetype ortho\nskinparam nodesep 70\nskinparam ranksep 70\nskinparam packageStyle rectangle\n\npackage \&quot;ENUMS\&quot; {\n    enum TableStatus {\n        Available\n        LockedForPayment\n        Reserved\n        Occupied\n        Cleaning\n    }\n    enum ReservationStatus {\n        AwaitingPayment\n        Confirmed\n        Cancelled\n        Completed\n    }\n    enum OrderItemStatus {\n        Preparing\n        Served\n        Cancelled\n    }\n}\n\npackage \&quot;CONTROLLERS &amp; HUBS (API)\&quot; {\n    class ReservationController &lt;&lt;Controller&gt;&gt;\n    class OrderController &lt;&lt;Controller&gt;&gt;\n    class TableController &lt;&lt;Controller&gt;&gt;\n    class TableHub &lt;&lt;SignalR&gt;&gt;\n    class KitchenHub &lt;&lt;SignalR&gt;&gt;\n}\n\npackage \&quot;SERVICES (CQRS)\&quot; {\n    class ReservationCommandHandler &lt;&lt;Handler&gt;&gt;\n    class OrderCommandHandler &lt;&lt;Handler&gt;&gt;\n    class TableQueryHandler &lt;&lt;Handler&gt;&gt;\n}\n\npackage \&quot;DB ENTITIES (DOMAIN)\&quot; {\n    class Guest {\n        + Guid Id\n        + string FullName\n        + string PhoneNumber\n    }\n    class Table {\n        + Guid Id\n        + string Name\n        + int Capacity\n        + TableStatus Status\n    }\n    class MenuItem {\n        + Guid Id\n        + string Name\n        + decimal Price\n    }\n    class Reservation {\n        + Guid Id\n        + DateTime ReservationTime\n        + int PartySize\n        + ReservationStatus Status\n    }\n    class Order {\n        + Guid Id\n        + Guid TableId\n    }\n    class OrderItem {\n        + Guid Id\n        + int Quantity\n        + OrderItemStatus Status\n    }\n    class Deposit {\n        + Guid Id\n        + decimal Amount\n        + string PaymentMethod\n    }\n    class Invoice {\n        + Guid Id\n        + decimal AmountPayable\n        + bool IsPaid\n    }\n\n    ' Ép layout theo dạng lưới 3 cột x 3 hàng để đường thẳng tắp\n    Guest -[hidden]right-&gt; Table\n    Table -[hidden]right-&gt; MenuItem\n\n    Reservation -[hidden]right-&gt; Order\n    Order -[hidden]right-&gt; OrderItem\n\n    Deposit -[hidden]right-&gt; Invoice\n\n    ' Định nghĩa các quan hệ có cardinality (0..1, 1..*) và chiều mũi tên\n    Guest \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Reservation : Makes\n    Table \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Reservation : Hosted at\n    Table \&quot;1\&quot; -down-&gt; \&quot;0..*\&quot; Order : Has active\n    \n    OrderItem \&quot;0..*\&quot; -up-&gt; \&quot;1\&quot; MenuItem : Represents\n\n    Reservation \&quot;1\&quot; -down-&gt; \&quot;0..1\&quot; Deposit : Confirmed by\n    Order \&quot;1\&quot; -down-&gt; \&quot;0..1\&quot; Invoice : Billed as\n\n    Order \&quot;1\&quot; -right-&gt; \&quot;1..*\&quot; OrderItem : Contains\n    Order \&quot;0..*\&quot; .-left.&gt; \&quot;0..1\&quot; Reservation : Links to\n}\n\nReservationController ..&gt; ReservationCommandHandler\nOrderController ..&gt; OrderCommandHandler\nTableController ..&gt; TableQueryHandler\n\nReservationCommandHandler --&gt; Reservation\nOrderCommandHandler --&gt; Order\nTableQueryHandler --&gt; Table\n\nTableHub ..&gt; Table\nKitchenHub ..&gt; OrderItem\n\n@enduml&quot;,&#10;  &quot;config&quot;: null&#10;}" id="L4j4HWrY6qfBj0S-LTg2-513">
           <mxCell connectable="0" parent="1" style="group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;" vertex="1">
             <mxGeometry height="1720" width="1543.13" as="geometry" />
           </mxCell>
@@ -124,7 +125,7 @@
             <mxGeometry height="114" width="843.1299999999999" x="609.53" y="530" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Controller»&#xa;ReservationController" plantUmlId="cls_27" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#xa;ReservationController" id="L4j4HWrY6qfBj0S-LTg2-537">
+        <UserObject label="«Controller»&#10;ReservationController" plantUmlId="cls_27" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#10;ReservationController" id="L4j4HWrY6qfBj0S-LTg2-537">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-536" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="179.03" x="20" y="35" as="geometry" />
           </mxCell>
@@ -139,7 +140,7 @@
             <mxGeometry height="8" width="179.03" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Controller»&#xa;OrderController" plantUmlId="cls_30" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#xa;OrderController" id="L4j4HWrY6qfBj0S-LTg2-540">
+        <UserObject label="«Controller»&#10;OrderController" plantUmlId="cls_30" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#10;OrderController" id="L4j4HWrY6qfBj0S-LTg2-540">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-536" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="139.11" x="234.02999999999997" y="35" as="geometry" />
           </mxCell>
@@ -154,7 +155,7 @@
             <mxGeometry height="8" width="139.11" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Controller»&#xa;TableController" plantUmlId="cls_33" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#xa;TableController" id="L4j4HWrY6qfBj0S-LTg2-543">
+        <UserObject label="«Controller»&#10;TableController" plantUmlId="cls_33" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Controller»&#10;TableController" id="L4j4HWrY6qfBj0S-LTg2-543">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-536" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="137.4" x="408.14" y="35" as="geometry" />
           </mxCell>
@@ -169,7 +170,7 @@
             <mxGeometry height="8" width="137.4" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«SignalR»&#xa;TableHub" plantUmlId="cls_36" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«SignalR»&#xa;TableHub" id="L4j4HWrY6qfBj0S-LTg2-546">
+        <UserObject label="«SignalR»&#10;TableHub" plantUmlId="cls_36" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«SignalR»&#10;TableHub" id="L4j4HWrY6qfBj0S-LTg2-546">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-536" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="97.03" x="580.54" y="35" as="geometry" />
           </mxCell>
@@ -184,7 +185,7 @@
             <mxGeometry height="8" width="97.03" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«SignalR»&#xa;KitchenHub" plantUmlId="cls_39" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«SignalR»&#xa;KitchenHub" id="L4j4HWrY6qfBj0S-LTg2-549">
+        <UserObject label="«SignalR»&#10;KitchenHub" plantUmlId="cls_39" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«SignalR»&#10;KitchenHub" id="L4j4HWrY6qfBj0S-LTg2-549">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-536" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="110.56" x="712.5699999999999" y="35" as="geometry" />
           </mxCell>
@@ -204,7 +205,7 @@
             <mxGeometry height="114" width="700.06" x="391.29999999999995" y="729" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Handler»&#xa;ReservationCommandHandler" plantUmlId="cls_42" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#xa;ReservationCommandHandler" id="L4j4HWrY6qfBj0S-LTg2-553">
+        <UserObject label="«Handler»&#10;ReservationCommandHandler" plantUmlId="cls_42" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#10;ReservationCommandHandler" id="L4j4HWrY6qfBj0S-LTg2-553">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-552" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="233.62" x="20" y="35" as="geometry" />
           </mxCell>
@@ -219,7 +220,7 @@
             <mxGeometry height="8" width="233.62" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Handler»&#xa;OrderCommandHandler" plantUmlId="cls_45" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#xa;OrderCommandHandler" id="L4j4HWrY6qfBj0S-LTg2-556">
+        <UserObject label="«Handler»&#10;OrderCommandHandler" plantUmlId="cls_45" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#10;OrderCommandHandler" id="L4j4HWrY6qfBj0S-LTg2-556">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-552" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="193.7" x="288.62" y="35" as="geometry" />
           </mxCell>
@@ -234,7 +235,7 @@
             <mxGeometry height="8" width="193.7" y="52.5" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="«Handler»&#xa;TableQueryHandler" plantUmlId="cls_48" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#xa;TableQueryHandler" id="L4j4HWrY6qfBj0S-LTg2-559">
+        <UserObject label="«Handler»&#10;TableQueryHandler" plantUmlId="cls_48" plantUmlBaseStyle="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" plantUmlBaseValue="«Handler»&#10;TableQueryHandler" id="L4j4HWrY6qfBj0S-LTg2-559">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-552" style="swimlane;collapsible=0;fontStyle=0;align=center;fontSize=14;fontColor=#000000;startSize=47;spacingLeft=25;fillColor=#FFFFFF;strokeColor=#000000;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;stackSpacing=0;marginTop=5.5;shadow=0;strokeWidth=1;fontFamily=Verdana;swimlaneFillColor=#FFFFFF;" vertex="1">
             <mxGeometry height="63" width="162.74" x="517.3199999999999" y="35" as="geometry" />
           </mxCell>
@@ -711,7 +712,7 @@
         </UserObject>
         <UserObject label="1" plantUmlId="card_142" plantUmlBaseStyle="text;html=1;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontSize=13;fontColor=#000000;" plantUmlBaseValue="1" id="L4j4HWrY6qfBj0S-LTg2-654">
           <mxCell parent="L4j4HWrY6qfBj0S-LTg2-562" style="text;html=1;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontSize=13;fontColor=#000000;" vertex="1">
-            <mxGeometry height="22.595419847328245" width="17.794137921912743" x="487.29280372106194" y="463.206106870229" as="geometry" />
+            <mxGeometry height="22.595419847328245" width="17.794137921912743" x="515" y="463.206106870229" as="geometry" />
           </mxCell>
         </UserObject>
         <UserObject label="0..1" plantUmlId="card_143" plantUmlBaseStyle="text;html=1;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontSize=13;fontColor=#000000;" plantUmlBaseValue="0..1" id="L4j4HWrY6qfBj0S-LTg2-655">
@@ -750,23 +751,15 @@
           </mxCell>
         </UserObject>
         <UserObject label="" plantUmlId="rel_150" plantUmlBaseStyle="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" plantUmlBaseValue="" id="L4j4HWrY6qfBj0S-LTg2-662">
-          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-553" style="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-592">
+          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-553" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-592">
             <mxGeometry relative="1" as="geometry">
-              <Array as="points">
-                <mxPoint x="476" y="923" />
-                <mxPoint x="476" y="1048" />
-              </Array>
-            </mxGeometry>
+              </mxGeometry>
           </mxCell>
         </UserObject>
         <UserObject label="" plantUmlId="rel_151" plantUmlBaseStyle="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" plantUmlBaseValue="" id="L4j4HWrY6qfBj0S-LTg2-663">
-          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-556" style="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-603">
+          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-556" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-603">
             <mxGeometry relative="1" as="geometry">
-              <Array as="points">
-                <mxPoint x="677" y="913" />
-                <mxPoint x="677" y="1057" />
-              </Array>
-            </mxGeometry>
+              </mxGeometry>
           </mxCell>
         </UserObject>
         <UserObject label="" plantUmlId="rel_152" plantUmlBaseStyle="endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" plantUmlBaseValue="" id="L4j4HWrY6qfBj0S-LTg2-664">
@@ -775,13 +768,9 @@
           </mxCell>
         </UserObject>
         <UserObject label="" plantUmlId="rel_153" plantUmlBaseStyle="dashed=1;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" plantUmlBaseValue="" id="L4j4HWrY6qfBj0S-LTg2-665">
-          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-546" style="dashed=1;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-572">
+          <mxCell edge="1" parent="L4j4HWrY6qfBj0S-LTg2-513" source="L4j4HWrY6qfBj0S-LTg2-546" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" target="L4j4HWrY6qfBj0S-LTg2-572">
             <mxGeometry relative="1" as="geometry">
-              <Array as="points">
-                <mxPoint x="1085" y="754" />
-                <mxPoint x="1085" y="837" />
-              </Array>
-            </mxGeometry>
+              </mxGeometry>
           </mxCell>
         </UserObject>
         <UserObject label="" plantUmlId="rel_154" plantUmlBaseStyle="dashed=1;endArrow=open;html=1;strokeColor=#000000;fontColor=#000000;fontSize=11;strokeWidth=1;fontFamily=Verdana;exitX=0.05;exitY=1;exitDx=0;exitDy=0;entryX=0.95;entryY=0;entryDx=0;entryDy=0;curved=0;rounded=0;endSize=6;sourcePerimeterSpacing=0;targetPerimeterSpacing=0;" plantUmlBaseValue="" id="L4j4HWrY6qfBj0S-LTg2-666">

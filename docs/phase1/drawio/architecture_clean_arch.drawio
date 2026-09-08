@@ -27,7 +27,7 @@
         <mxCell id="api_ctrl" value="RESTful API Controllers&#xa;(Routing, JWT Bearer Auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
           <mxGeometry x="40" y="45" width="340" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="signalr_hub" value="SignalR Real-Time Hubs&#xa;(FloorPlanHub &amp; OrderHub)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
+        <mxCell id="signalr_hub" value="SignalR Real-Time Hubs (ADR 0001)&#xa;(TableHub &amp; KitchenHub)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
           <mxGeometry x="470" y="45" width="340" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="middleware" value="Global Exception Middleware&#xa;&amp; FluentValidation Pipelines" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="tier_api">
@@ -44,7 +44,7 @@
         <mxCell id="mediatr_query" value="Queries &amp; Handlers (Đọc dữ liệu)&#xa;GetAvailableTables, GetActiveOrders" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
           <mxGeometry x="490" y="45" width="380" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="biz_rules" value="Business Rules Engine&#xa;BR-01 (15m lock), BR-03 (Formula), BR-05 (Refund)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
+        <mxCell id="biz_rules" value="Business Rules Engine&#xa;BR-01 (17m lock), BR-03 (Formula), BR-05 (Refund)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="tier_app">
           <mxGeometry x="920" y="45" width="320" height="60" as="geometry"/>
         </mxCell>
 
@@ -55,7 +55,7 @@
         <mxCell id="entities" value="Domain Entities &amp; Value Objects&#xa;Guest, Table, Reservation, Order, OrderItem, Deposit, Invoice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
           <mxGeometry x="40" y="45" width="700" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="enums" value="Domain Enums &amp; Invariants&#xa;TableStatus, OrderStatus, ShiftTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
+        <mxCell id="enums" value="Domain Enums &amp; Invariants&#xa;TableStatus, ReservationStatus, OrderItemStatus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
           <mxGeometry x="800" y="45" width="440" height="55" as="geometry"/>
         </mxCell>
 

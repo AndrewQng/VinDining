@@ -21,8 +21,8 @@
           <mxGeometry x="170" y="210" width="220" height="90" as="geometry"/>
         </mxCell>
 
-        <!-- State 2: TemporaryHold -->
-        <mxCell id="st_hold" value="TemporaryHold (Giữ tạm 15p)&#xa;-----------------------------------&#xa;entry / Bắt đầu đếm ngược 15 phút (BR-01)&#xa;do / Chờ xác thực IPN từ cổng VNPAY&#xa;exit / Dừng bộ đếm Timer" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <!-- State 2: LockedForPayment -->
+        <mxCell id="st_hold" value="LockedForPayment (Khóa 17p)&#xa;-----------------------------------&#xa;entry / Đếm ngược 17 phút (BR-01)&#xa;do / Chờ xác thực IPN từ cổng VNPAY&#xa;exit / Dừng bộ đếm Timer" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="490" y="100" width="240" height="90" as="geometry"/>
         </mxCell>
 
@@ -55,8 +55,8 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Available -> TemporaryHold -->
-        <mxCell id="tr1" value="Khách chọn bàn &amp; Bấm 'Đặt cọc'&#xa;[Còn bàn trống] / LockTable(15m)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_hold" parent="1">
+        <!-- Available -> LockedForPayment -->
+        <mxCell id="tr1" value="Khách chọn bàn &amp; Bấm 'Đặt cọc'&#xa;[Còn bàn trống] / LockTable(17m)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_hold" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="280" y="145"/>
@@ -64,8 +64,8 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- TemporaryHold -> Available (Timeout) -->
-        <mxCell id="tr2" value="[Quá 15 phút chưa thanh toán cọc] /&#xa;Tự động mở khóa giải phóng bàn (BR-01)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_hold" target="st_avail" parent="1">
+        <!-- LockedForPayment -> Available (Timeout) -->
+        <mxCell id="tr2" value="[Quá 17 phút chưa thanh toán cọc] /&#xa;Tự động mở khóa giải phóng bàn (BR-01)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_hold" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="430" y="170"/>
@@ -74,8 +74,8 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- TemporaryHold -> Reserved -->
-        <mxCell id="tr3" value="Nhận tín hiệu IPN VNPAY thành công&#xa;/ Ghi nhận tiền cọc Deposit &amp; Gửi mã" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_hold" target="st_res" parent="1">
+        <!-- LockedForPayment -> Reserved -->
+        <mxCell id="tr3" value="Nhận tín hiệu IPN VNPAY thành công (&lt; 17p)&#xa;/ Ghi nhận tiền cọc Deposit &amp; Gửi mã" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_hold" target="st_res" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="920" y="145"/>

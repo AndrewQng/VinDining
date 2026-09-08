@@ -16,7 +16,7 @@
     },
     {
       "id": "db",
-      "label": "SQL Server"
+      "label": "SQL Server & Cache"
     },
     {
       "id": "vn",
@@ -32,7 +32,7 @@
     {
       "from": "fe",
       "to": "api",
-      "label": "2. GET /api/v1/tables/available"
+      "label": "2. GET /api/v1/tables/available?shift=..."
     },
     {
       "from": "api",
@@ -42,7 +42,7 @@
     {
       "from": "db",
       "to": "api",
-      "label": "4. Trả về danh sách bàn",
+      "label": "4. Trả về trạng thái bàn",
       "return": true
     },
     {
@@ -54,17 +54,17 @@
     {
       "from": "g",
       "to": "fe",
-      "label": "6. Nhập thông tin & Bấm Đặt cọc"
+      "label": "6. Nhập thông tin cá nhân & Bấm Đặt cọc"
     },
     {
       "from": "fe",
       "to": "api",
-      "label": "7. POST /api/v1/reservations/hold"
+      "label": "7. POST /api/v1/reservations/create-hold"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "8. Khóa bàn tạm thời 17p (BR-01)"
+      "label": "8. Khóa giữ bàn 17 phút (Expire: 17p - BR-01)"
     },
     {
       "from": "api",
@@ -91,34 +91,68 @@
     {
       "from": "g",
       "to": "vn",
-      "label": "13. Quét mã QR thanh toán cọc"
+      "label": "13. Quét mã QR thanh toán tiền cọc"
     },
     {
       "from": "vn",
       "to": "api",
-      "label": "14. POST /api/v1/payments/ipn (Callback)"
+      "label": "14. POST /api/v1/payments/vnpay-ipn (Server-to-Server)"
     },
     {
       "from": "api",
       "to": "api",
-      "label": "15. VerifyChecksum & Confirm"
+      "label": "15. Kiểm tra chữ ký Checksum & Số tiền"
+    },
+    {
+      "note": "[alt: IPN đúng hạn (< 17 phút)]",
+      "over": "api"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "16. Cập nhật Reservation -> Reserved"
-    },
-    {
-      "from": "api",
-      "to": "vn",
-      "label": "17. Confirm Success (RspCode 00)",
-      "return": true
+      "label": "16a. Cập nhật Reservation -> Reserved, Table -> Reserved"
     },
     {
       "from": "api",
       "to": "g",
-      "label": "18. Gửi SMS/Email kèm BookingCode",
+      "label": "17a. Gửi Email & SMS xác nhận kèm BookingCode",
       "async": true
+    },
+    {
+      "note": "[else: IPN trễ (> 17 phút) & Bàn đã mất]",
+      "over": "api"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "16b. Quét tìm bàn trống tương đương (Auto-Reallocate)"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "17b. Trả kết quả tìm bàn tương đương",
+      "return": true
+    },
+    {
+      "note": "[Còn bàn: Gán bàn mới | Hết bàn: Paid_TableLost + Báo CSKH]",
+      "over": "api"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "18b. Gán bàn mới (Reserved) HOẶC Lưu Paid_TableLost"
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "19b. SignalR Push Notification cho CSKH (nếu TableLost)",
+      "async": true
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "20. RspCode: 00 (Confirm Success)",
+      "return": true
     }
   ]
 }
