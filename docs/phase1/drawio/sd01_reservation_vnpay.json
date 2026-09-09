@@ -32,7 +32,7 @@
     {
       "from": "fe",
       "to": "api",
-      "label": "2. GET /api/v1/tables/available?shift=..."
+      "label": "2. GET /api/tables/layout"
     },
     {
       "from": "api",
@@ -59,7 +59,7 @@
     {
       "from": "fe",
       "to": "api",
-      "label": "7. POST /api/v1/reservations/create-hold"
+      "label": "7. POST /api/reservations/hold"
     },
     {
       "from": "api",
@@ -96,7 +96,7 @@
     {
       "from": "vn",
       "to": "api",
-      "label": "14. POST /api/v1/payments/vnpay-ipn (Server-to-Server)"
+      "label": "14. POST /api/payments/vnpay-ipn (Server-to-Server)"
     },
     {
       "from": "api",

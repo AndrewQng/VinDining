@@ -52,7 +52,7 @@
         <mxCell id="m4" value="5. Bấm nút 'Tạo đơn &amp; Gửi Bếp'" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3061;entryX=0;entryY=0.2273;" edge="1" parent="1" source="act2" target="act3">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m5" value="6. POST /api/v1/orders/create-direct" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3409;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act0">
+        <mxCell id="m5" value="6. POST /api/orders" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3409;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act0">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="m6" value="7. Lưu Order (Status: Processing)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2083;entryX=1;entryY=0.3333;" edge="1" parent="1" source="act0" target="act0">

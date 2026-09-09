@@ -10,13 +10,13 @@
         <mxCell id="tier_pres" value="1. Tầng Trình Diễn / Client (Presentation Layer)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="40" width="1280" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="fe_guest" value="Khách hàng (Guest)&#xa;Mobile Web E-Menu (React + Vite)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+        <mxCell id="fe_guest" value="Thực khách (Guest)&#xa;Mobile Web Đặt bàn &amp; Digital Display tại bàn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
           <mxGeometry x="40" y="45" width="340" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="fe_staff" value="Nhân viên Phục vụ (Waitstaff)&#xa;Tablet Web (SignalR Client)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+        <mxCell id="fe_staff" value="Phục vụ (Waitstaff) &amp; Điều phối (Expediter)&#xa;Tablet di động &amp; Tablet quầy Pass (SignalR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
           <mxGeometry x="470" y="45" width="340" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="fe_admin" value="Quản lý &amp; Admin (Manager/Admin)&#xa;Desktop Web Portal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
+        <mxCell id="fe_admin" value="Quản lý &amp; Admin (Manager/Admin)&#xa;Desktop Web Portal &amp; Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="tier_pres">
           <mxGeometry x="900" y="45" width="340" height="60" as="geometry"/>
         </mxCell>
 
@@ -49,14 +49,14 @@
         </mxCell>
 
         <!-- Tier 4: Core Domain -->
-        <mxCell id="tier_dom" value="4. Tầng Thực thể Miền (Core Domain Layer)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;rounded=1;" vertex="1" parent="1">
+        <mxCell id="tier_dom" value="4. Tầng Thực thể Miền (Core Domain Layer - Clean Architecture)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;rounded=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="550" width="1280" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="entities" value="Domain Entities &amp; Value Objects&#xa;Guest, Table, Reservation, Order, OrderItem, Deposit, Invoice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
+        <mxCell id="entities" value="Domain Entities &amp; Value Objects (BaseEntity)&#xa;Guest, Staff, Table, Reservation, Deposit, Order, OrderItem, MenuItem, Category, Invoice, Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
           <mxGeometry x="40" y="45" width="700" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="enums" value="Domain Enums &amp; Invariants&#xa;TableStatus, ReservationStatus, OrderItemStatus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
-          <mxGeometry x="800" y="45" width="440" height="55" as="geometry"/>
+        <mxCell id="enums" value="Domain Enums &amp; Invariants&#xa;StaffRole, TableStatus, TableZone, ReservationStatus, DepositStatus, OrderStatus, PaymentMethod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="tier_dom">
+          <mxGeometry x="780" y="45" width="460" height="55" as="geometry"/>
         </mxCell>
 
         <!-- Tier 5: Infrastructure & Persistence -->

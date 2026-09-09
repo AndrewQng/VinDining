@@ -3,12 +3,12 @@
   "participants": [
     {
       "id": "g",
-      "label": "Khách hàng",
+      "label": "Khách hàng (Guest)",
       "actor": true
     },
     {
       "id": "w",
-      "label": "Phục vụ / Thu ngân",
+      "label": "Phục vụ (Waitstaff)",
       "actor": true
     },
     {
@@ -42,7 +42,7 @@
     {
       "from": "tab",
       "to": "api",
-      "label": "3. GET /invoices/preview/{tableId}"
+      "label": "3. GET /api/invoices/preview/{tableId}"
     },
     {
       "from": "api",
@@ -84,7 +84,7 @@
     {
       "from": "tab",
       "to": "api",
-      "label": "11. POST /invoices/{id}/settle { paymentMethod }"
+      "label": "11. POST /api/invoices/settle { tableId, paymentMethod }"
     },
     {
       "from": "api",

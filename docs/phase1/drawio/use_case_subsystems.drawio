@@ -1,159 +1,228 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
   <diagram name="Use Case Subsystems VinDining" id="uc_subsystems_vindining">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="1080" math="0" shadow="0">
+    <mxGraphModel dx="1600" dy="1500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1440" pageHeight="1360" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- Actors Left -->
-        <mxCell id="act_guest" value="Khách hàng&#xa;(Guest)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="60" y="150" width="50" height="90" as="geometry"/>
-        </mxCell>
-        <mxCell id="act_waitstaff" value="Nhân viên Phục vụ&#xa;(Waitstaff)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="60" y="620" width="50" height="90" as="geometry"/>
+        <!-- ==================== ACTORS (LEFT) ==================== -->
+        <mxCell id="act_guest" value="Khách hàng&#xa;(Guest)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="110" width="50" height="85" as="geometry"/>
         </mxCell>
 
-        <!-- Subsystem 1: Đặt bàn & Xem Menu -->
-        <mxCell id="subsys1" value="1. Phân hệ Đặt bàn trực tuyến &amp; Xem E-Menu Digital Display" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="180" y="30" width="1080" height="310" as="geometry"/>
+        <mxCell id="act_waitstaff" value="Nhân viên Phục vụ&#xa;(Waitstaff)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="50" height="85" as="geometry"/>
         </mxCell>
-        <!-- Row 1: Reservation -->
-        <mxCell id="uc1_1" value="UC1.1: Tra cứu sơ đồ bàn trống" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="40" y="55" width="280" height="50" as="geometry"/>
+
+        <mxCell id="act_expediter" value="Điều phối viên&#xa;(Expediter / Checkfood)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="50" height="85" as="geometry"/>
         </mxCell>
-        <mxCell id="uc1_2" value="UC1.2: Khóa giữ bàn tạm thời 15p" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="400" y="55" width="280" height="50" as="geometry"/>
+
+        <mxCell id="act_manager" value="Quản lý&#xa;(Manager)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="860" width="50" height="85" as="geometry"/>
         </mxCell>
-        <mxCell id="uc1_3" value="UC1.3: Thanh toán cọc giữ chỗ Deposit" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="760" y="55" width="280" height="50" as="geometry"/>
+
+        <mxCell id="act_admin" value="Quản trị viên&#xa;(Admin)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1030" width="50" height="85" as="geometry"/>
         </mxCell>
-        <!-- Row 2: Digital Display Menu -->
-        <mxCell id="uc2_1" value="UC2.1: Xem màn hình Digital Display" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="40" y="180" width="280" height="50" as="geometry"/>
+
+        <mxCell id="act_system" value="Hệ thống tự động&#xa;(Background)" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1220" width="110" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="uc2_2" value="UC2.2: Xem chi tiết món &amp; Giá bán" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="400" y="180" width="280" height="50" as="geometry"/>
+
+        <!-- ==================== SUBSYSTEM 1 ==================== -->
+        <mxCell id="subsys1" value="1. Phân hệ Khách hàng (User Subsystem — UC-U1 đến UC-U4)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="30" width="1180" height="310" as="geometry"/>
         </mxCell>
-        <mxCell id="uc2_3" value="UC2.3: Gọi Waitstaff để đặt món" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=0;fontSize=12;" vertex="1" parent="subsys1">
-          <mxGeometry x="760" y="180" width="280" height="50" as="geometry"/>
+        <!-- Row 1: UC-U1 Reservation -->
+        <mxCell id="uc_u1_1" value="UC-U1.1: Tra cứu sơ đồ bàn trống" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="40" y="45" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_u1_2" value="UC-U1.2: Khóa giữ bàn tạm thời 17p (BR-01)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="440" y="45" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_u1_3" value="UC-U1.3: Thanh toán cọc giữ chỗ VNPAY" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="850" y="45" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <!-- Row 2: UC-U2 E-Menu Digital Display -->
+        <mxCell id="uc_u2_1" value="UC-U2.1: Xem màn hình Digital Display (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="40" y="115" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_u2_2" value="UC-U2.2: Xem chi tiết món &amp; Cảnh báo dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="440" y="115" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_u2_3" value="UC-U2.3: Báo Waitstaff tại bàn để đặt món" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="subsys1">
+          <mxGeometry x="850" y="115" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <!-- Row 3: UC-U3 and UC-U4 -->
+        <mxCell id="uc_u3" value="UC-U3: Hủy đặt bàn &amp; Hoàn cọc tự động (Trước &gt;= 4h - BR-05)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="subsys1">
+          <mxGeometry x="40" y="195" width="460" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_u4" value="UC-U4: Đánh giá chất lượng dịch vụ &amp; Phản hồi bữa ăn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="subsys1">
+          <mxGeometry x="580" y="195" width="460" height="45" as="geometry"/>
         </mxCell>
 
         <!-- Edges inside Subsystem 1 -->
-        <mxCell id="e_uc1_1_2" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc1_1" target="uc1_2" parent="subsys1">
+        <mxCell id="e_u1_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc_u1_1" target="uc_u1_2" parent="subsys1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc1_2_3" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc1_2" target="uc1_3" parent="subsys1">
+        <mxCell id="e_u1_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc_u1_2" target="uc_u1_3" parent="subsys1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc2_1_2" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc2_1" target="uc2_2" parent="subsys1">
+        <mxCell id="e_u2_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc_u2_1" target="uc_u2_2" parent="subsys1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc2_2_3" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc2_2" target="uc2_3" parent="subsys1">
+        <mxCell id="e_u2_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;fontSize=10;html=1;" edge="1" source="uc_u2_2" target="uc_u2_3" parent="subsys1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Subsystem 2: Điều phối Bếp & Phục vụ -->
-        <mxCell id="subsys2" value="2. Phân hệ Điều phối Bếp &amp; Phục vụ món" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="180" y="370" width="1080" height="310" as="geometry"/>
+        <!-- ==================== SUBSYSTEM 2 ==================== -->
+        <mxCell id="subsys2" value="2. Phân hệ Nhân viên Nội bộ (Employee Subsystem — UC-E1 đến UC-E5)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="360" width="1180" height="420" as="geometry"/>
         </mxCell>
-        <!-- Row 1: Order & Kitchen Print -->
-        <mxCell id="uc3_1" value="UC3.1: Check-in khách vào bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontStyle=0;fontSize=12;" vertex="1" parent="subsys2">
-          <mxGeometry x="40" y="55" width="280" height="50" as="geometry"/>
+        <!-- Row 1: UC-E1 Order & Kitchen Print (Waitstaff) -->
+        <mxCell id="uc_e1_1" value="UC-E1.1: Check-in khách vào bàn (Occupied)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="40" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc3_2" value="UC3.2: Lắng nghe &amp; Tư vấn gọi món" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontStyle=0;fontSize=12;" vertex="1" parent="subsys2">
-          <mxGeometry x="400" y="55" width="280" height="50" as="geometry"/>
+        <mxCell id="uc_e1_2" value="UC-E1.2: Tư vấn món &amp; Nhập ghi chú dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="440" y="45" width="300" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc3_3" value="UC3.3: Bấm tạo đơn kích hoạt in Bếp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontStyle=0;fontSize=12;" vertex="1" parent="subsys2">
-          <mxGeometry x="760" y="55" width="280" height="50" as="geometry"/>
+        <mxCell id="uc_e1_3" value="UC-E1.3: Tạo đơn kích hoạt in nhiệt Bếp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="850" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
-        <!-- Row 2: Pass & Serving -->
-        <mxCell id="uc4_1" value="UC4.1: Nhận món từ quầy Pass" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontStyle=0;fontSize=12;" vertex="1" parent="subsys2">
-          <mxGeometry x="40" y="180" width="280" height="50" as="geometry"/>
+        <!-- Row 2: UC-E2 Pass Serving Confirmation (Expediter) -->
+        <mxCell id="uc_e2_1" value="UC-E2.1: Kiểm tra đĩa món tại quầy Pass" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="40" y="115" width="280" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc4_2" value="UC4.2: Bưng món &amp; Xác nhận hoàn thành" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontStyle=0;fontSize=12;" vertex="1" parent="subsys2">
-          <mxGeometry x="400" y="180" width="280" height="50" as="geometry"/>
+        <mxCell id="uc_e2_2" value="UC-E2.2: Bấm xác nhận hoàn thành món (BR-04)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="440" y="115" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_e2_3" value="UC-E2.3: Điều phối Waitstaff bưng ra bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="850" y="115" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <!-- Row 3: UC-E3 Invoice Settlement -->
+        <mxCell id="uc_e3_1" value="UC-E3.1: Tính tổng tiền món thực tế" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="40" y="185" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_e3_2" value="UC-E3.2: Áp 5% SVC + 10% VAT" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="310" y="185" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_e3_3" value="UC-E3.3: Cấn trừ cọc Deposit (BR-03)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="580" y="185" width="240" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_e3_4" value="UC-E3.4: In HĐ tài chính &amp; Đóng bàn Cleaning" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="subsys2">
+          <mxGeometry x="870" y="185" width="270" height="45" as="geometry"/>
+        </mxCell>
+        <!-- Row 4: UC-E4 and UC-E5 -->
+        <mxCell id="uc_e4" value="UC-E4: Chuyển bàn / Đổi bàn / Ghép bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;fontStyle=1;" vertex="1" parent="subsys2">
+          <mxGeometry x="40" y="270" width="460" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_e5" value="UC-E5: Đăng nhập &amp; Xác thực tài khoản nội bộ (JWT)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;fontStyle=1;" vertex="1" parent="subsys2">
+          <mxGeometry x="580" y="270" width="460" height="45" as="geometry"/>
         </mxCell>
 
         <!-- Edges inside Subsystem 2 -->
-        <mxCell id="e_uc3_2_3" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc3_2" target="uc3_3" parent="subsys2">
+        <mxCell id="e_e1_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc_e1_1" target="uc_e1_2" parent="subsys2">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc4_1_2" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc4_1" target="uc4_2" parent="subsys2">
+        <mxCell id="e_e1_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc_e1_2" target="uc_e1_3" parent="subsys2">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-
-        <!-- Subsystem 3: Thanh toán & Đóng bàn -->
-        <mxCell id="subsys3" value="3. Phân hệ Thanh toán &amp; Cấn trừ tiền cọc" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="180" y="710" width="1080" height="280" as="geometry"/>
-        </mxCell>
-        <!-- Chain 4 nodes in a row -->
-        <mxCell id="uc5_1" value="UC5.1: Tính tổng tiền món thực tế" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontStyle=0;fontSize=12;" vertex="1" parent="subsys3">
-          <mxGeometry x="40" y="70" width="230" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc5_2" value="UC5.2: Áp dụng 5% SVC + 10% VAT" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontStyle=0;fontSize=12;" vertex="1" parent="subsys3">
-          <mxGeometry x="300" y="70" width="230" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc5_3" value="UC5.3: Cấn trừ khoản cọc Deposit" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontStyle=0;fontSize=12;" vertex="1" parent="subsys3">
-          <mxGeometry x="560" y="70" width="230" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc5_4" value="UC5.4: In HĐ &amp; Chuyển sang Cleaning" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontStyle=0;fontSize=12;" vertex="1" parent="subsys3">
-          <mxGeometry x="820" y="70" width="230" height="50" as="geometry"/>
-        </mxCell>
-
-        <!-- Edges inside Subsystem 3 -->
-        <mxCell id="e_uc5_1_2" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc5_1" target="uc5_2" parent="subsys3">
+        <mxCell id="e_e2_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc_e2_1" target="uc_e2_2" parent="subsys2">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc5_2_3" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc5_2" target="uc5_3" parent="subsys3">
+        <mxCell id="e_e2_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#d79b00;fontSize=10;html=1;" edge="1" source="uc_e2_2" target="uc_e2_3" parent="subsys2">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_uc5_3_4" value="&lt;&lt;include&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc5_3" target="uc5_4" parent="subsys3">
+        <mxCell id="e_e3_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc_e3_1" target="uc_e3_2" parent="subsys2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_e3_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc_e3_2" target="uc_e3_3" parent="subsys2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_e3_3_4" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#82b366;fontSize=10;html=1;" edge="1" source="uc_e3_3" target="uc_e3_4" parent="subsys2">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Outer Edges: Actor to Use Cases -->
-        <!-- Guest -> UC1.1 and UC2.1 -->
-        <mxCell id="e_g_uc1_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;" edge="1" parent="1" source="act_guest" target="uc1_1">
+        <!-- ==================== SUBSYSTEM 3 ==================== -->
+        <mxCell id="subsys3" value="3. Phân hệ Quản trị &amp; Quản lý (Admin &amp; Manager Subsystem — UC-A1 đến UC-A5)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="800" width="1180" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_a1" value="UC-A1: Quản trị Danh mục &amp; Thực đơn (Món ăn, Giá, Dị ứng)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="subsys3">
+          <mxGeometry x="40" y="50" width="340" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_a2" value="UC-A2: Quản lý Sơ đồ bàn &amp; Ghép nối Digital Display (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="subsys3">
+          <mxGeometry x="420" y="50" width="350" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_a3" value="UC-A3: Duyệt hoàn tiền cọc thủ công ngoại lệ (BR-05)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="subsys3">
+          <mxGeometry x="800" y="50" width="340" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_a4" value="UC-A4: Quản trị Tài khoản nhân sự &amp; Phân quyền RBAC" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="subsys3">
+          <mxGeometry x="180" y="135" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_a5" value="UC-A5: Báo cáo Thống kê Doanh thu &amp; Dashboard Real-time" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="subsys3">
+          <mxGeometry x="620" y="135" width="380" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== SUBSYSTEM 4 ==================== -->
+        <mxCell id="subsys4" value="4. Phân hệ Tự động Hệ thống (System Background Services — UC-S1)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1050" width="1180" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_s1_1" value="UC-S1.1: Quét định kỳ bàn mỗi 60s" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="subsys4">
+          <mxGeometry x="40" y="60" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_s1_2" value="UC-S1.2: Phát hiện quá hạn cọc 17p (BR-01)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="subsys4">
+          <mxGeometry x="440" y="60" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_s1_3" value="UC-S1.3: Giải phóng bàn Available &amp; Bắn SignalR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="subsys4">
+          <mxGeometry x="850" y="60" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s1_1_2" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#9673a6;fontSize=10;html=1;" edge="1" source="uc_s1_1" target="uc_s1_2" parent="subsys4">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_g_uc2_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;" edge="1" parent="1" source="act_guest" target="uc2_1">
+        <mxCell id="e_s1_2_3" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#9673a6;fontSize=10;html=1;" edge="1" source="uc_s1_2" target="uc_s1_3" parent="subsys4">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Waitstaff -> UC3.1, UC3.2, UC4.1, UC5.1 -->
-        <mxCell id="e_w_uc3_2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;exitX=0;exitY=0.2;entryX=0.5;entryY=0;" edge="1" parent="1" source="act_waitstaff" target="uc3_2">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="130" y="638"/>
-              <mxPoint x="130" y="410"/>
-              <mxPoint x="720" y="410"/>
-            </Array>
-          </mxGeometry>
+        <!-- ==================== OUTER EDGES: ACTORS TO USE CASES ==================== -->
+        <!-- Guest -> UC-U1.1 and UC-U2.1 -->
+        <mxCell id="e_g_u1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2b579a;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" source="act_guest" target="uc_u1_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_w_uc3_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="act_waitstaff" target="uc3_1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="150" y="665"/>
-              <mxPoint x="150" y="450"/>
-            </Array>
-          </mxGeometry>
+        <mxCell id="e_g_u2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2b579a;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" source="act_guest" target="uc_u2_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_w_uc4_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;" edge="1" parent="1" source="act_waitstaff" target="uc4_1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="160" y="680"/>
-              <mxPoint x="160" y="575"/>
-            </Array>
-          </mxGeometry>
+
+        <!-- Waitstaff -> UC-E1.1 and UC-E3.1 -->
+        <mxCell id="e_w_e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b45f06;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" source="act_waitstaff" target="uc_e1_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e_w_uc5_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#333333;" edge="1" parent="1" source="act_waitstaff" target="uc5_1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="140" y="700"/>
-              <mxPoint x="140" y="805"/>
-            </Array>
-          </mxGeometry>
+        <mxCell id="e_w_e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#274e13;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" source="act_waitstaff" target="uc_e3_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Expediter -> UC-E2.1 -->
+        <mxCell id="e_exp_e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b45f06;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act_expediter" target="uc_e2_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Manager -> UC-A1, UC-A2, UC-A3, UC-A5 -->
+        <mxCell id="e_mgr_a1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act_manager" target="uc_a1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Admin -> UC-A4, and generalization to Manager -->
+        <mxCell id="e_adm_mgr" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;html=1;endArrow=block;endFill=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" source="act_admin" target="act_manager" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_adm_a4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act_admin" target="uc_a4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- System -> UC-S1.1 -->
+        <mxCell id="e_sys_s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act_system" target="uc_s1_1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
       </root>

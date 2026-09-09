@@ -8,12 +8,12 @@
     },
     {
       "id": "exp",
-      "label": "Nhân viên Checkfood",
+      "label": "Điều phối (Expediter)",
       "actor": true
     },
     {
       "id": "w",
-      "label": "Nhân viên Phục vụ",
+      "label": "Phục vụ (Waitstaff)",
       "actor": true
     },
     {
@@ -48,7 +48,7 @@
     {
       "from": "tab",
       "to": "api",
-      "label": "4. POST /api/v1/orders/items/{itemId}/mark-served"
+      "label": "4. PATCH /api/orders/{orderId}/items/{itemId}/serve"
     },
     {
       "from": "api",

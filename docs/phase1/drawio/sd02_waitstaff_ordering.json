@@ -57,7 +57,7 @@
     {
       "from": "tab",
       "to": "api",
-      "label": "6. POST /api/v1/orders/create-direct"
+      "label": "6. POST /api/orders"
     },
     {
       "from": "api",

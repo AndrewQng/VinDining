@@ -52,7 +52,7 @@
         <mxCell id="m0" value="1. Chọn ngày, ca, số khách, khu vực bàn" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0629;entryX=0;entryY=0.0;" edge="1" parent="1" source="g" target="act6">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m1" value="2. GET /api/v1/tables/available?shift=..." style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0385;entryX=0;entryY=0.0;" edge="1" parent="1" source="act6" target="act1">
+        <mxCell id="m1" value="2. GET /api/tables/layout" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0385;entryX=0;entryY=0.0;" edge="1" parent="1" source="act6" target="act1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="m2" value="3. Query bàn trống khả dụng" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3333;entryX=0;entryY=0.0;" edge="1" parent="1" source="act1" target="act0">
@@ -67,7 +67,7 @@
         <mxCell id="m5" value="6. Nhập thông tin cá nhân &amp; Bấm Đặt cọc" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.2378;entryX=0;entryY=0.1923;" edge="1" parent="1" source="g" target="act6">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m6" value="7. POST /api/v1/reservations/create-hold" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2308;entryX=0;entryY=0.0;" edge="1" parent="1" source="act6" target="act3">
+        <mxCell id="m6" value="7. POST /api/reservations/hold" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2308;entryX=0;entryY=0.0;" edge="1" parent="1" source="act6" target="act3">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="m7" value="8. Khóa giữ bàn 17 phút (Expire: 17p - BR-01)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act4">
@@ -88,7 +88,7 @@
         <mxCell id="m12" value="13. Quét mã QR thanh toán tiền cọc" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.4825;entryX=0;entryY=0.0667;" edge="1" parent="1" source="g" target="act7">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="m13" value="14. POST /api/v1/payments/vnpay-ipn (Server-to-Server)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0;exitY=0.1333;entryX=1;entryY=0.0;" edge="1" parent="1" source="act7" target="act5">
+        <mxCell id="m13" value="14. POST /api/payments/vnpay-ipn (Server-to-Server)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0;exitY=0.1333;entryX=1;entryY=0.0;" edge="1" parent="1" source="act7" target="act5">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="m14" value="15. Kiểm tra chữ ký Checksum &amp; Số tiền" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0833;entryX=1;entryY=0.1333;" edge="1" parent="1" source="act5" target="act5">

@@ -32,7 +32,7 @@
     {
       "from": "fe",
       "to": "api",
-      "label": "2. POST /api/v1/reservations/{id}/cancel"
+      "label": "2. POST /api/reservations/{id}/cancel (hoặc manual-refund)"
     },
     {
       "from": "api",
