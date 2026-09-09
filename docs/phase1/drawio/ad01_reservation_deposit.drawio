@@ -168,8 +168,8 @@
                 <mxCell id="e1_late_no" value="Hết bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;exitX=0;exitY=0.5;entryX=0;entryY=0.25;" parent="1" source="s1_dec_late" target="s1_act_alert" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="395" y="815"/>
-                            <mxPoint x="395" y="988.75"/>
+                            <mxPoint x="370" y="815"/>
+                            <mxPoint x="370" y="988.75"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>

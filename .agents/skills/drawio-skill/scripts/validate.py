@@ -293,7 +293,7 @@ def geometry_warnings(cells, ids, parents):
     return warns
 
 
-def check_page(diagram):
+def check_page(diagram, is_ad=False):
     """Return (errors, warnings) for one <diagram> page, as structured findings."""
     name = diagram.get("name", "?")
     model = diagram.find("mxGraphModel")
@@ -406,8 +406,176 @@ def check_page(diagram):
                     f"edge {e1.get('id')!r} end overlaps edge {e2.get('id')!r} start at "
                     f"({round(t1[0], 1):g},{round(t1[1], 1):g})" + (f" on vertex {vid!r}" if vid else ""),
                     "offset exitX/exitY or entryX/entryY so a line end does not overlap a line start"))
+
+    # Crooked endpoint check: flag when first/last waypoint is slightly misaligned with pinned port (0.5 < |delta| <= 30)
+    for e in edges:
+        pts = edge_waypoints(e)
+        if not pts:
+            continue
+        style = e.get("style") or ""
+        s_pt = endpoint(e, "source", ids)
+        t_pt = endpoint(e, "target", ids)
+        ex_y = style_num(style, "exitY")
+        ex_x = style_num(style, "exitX")
+        en_y = style_num(style, "entryY")
+        en_x = style_num(style, "entryX")
+
+        if s_pt:
+            if ex_y in (0.0, 1.0):
+                delta = abs(pts[0][0] - s_pt[0])
+                if 0.5 < delta <= 30.0:
+                    errors.append(diag(
+                        "E-CROOKED-ENDPOINT", "error", e.get("id"),
+                        f"edge {e.get('id')!r} source connection crooked by {round(delta, 1)}px (waypoint x={pts[0][0]} vs port x={round(s_pt[0], 1)})",
+                        "align waypoint x with source port x or run validate.py --fix"))
+            elif ex_x in (0.0, 1.0):
+                delta = abs(pts[0][1] - s_pt[1])
+                if 0.5 < delta <= 30.0:
+                    errors.append(diag(
+                        "E-CROOKED-ENDPOINT", "error", e.get("id"),
+                        f"edge {e.get('id')!r} source connection crooked by {round(delta, 1)}px (waypoint y={pts[0][1]} vs port y={round(s_pt[1], 1)})",
+                        "align waypoint y with source port y or run validate.py --fix"))
+
+        if t_pt:
+            if en_y in (0.0, 1.0):
+                delta = abs(pts[-1][0] - t_pt[0])
+                if 0.5 < delta <= 30.0:
+                    errors.append(diag(
+                        "E-CROOKED-ENDPOINT", "error", e.get("id"),
+                        f"edge {e.get('id')!r} target connection crooked by {round(delta, 1)}px (waypoint x={pts[-1][0]} vs port x={round(t_pt[0], 1)})",
+                        "align waypoint x with target port x or run validate.py --fix"))
+            elif en_x in (0.0, 1.0):
+                delta = abs(pts[-1][1] - t_pt[1])
+                if 0.5 < delta <= 30.0:
+                    errors.append(diag(
+                        "E-CROOKED-ENDPOINT", "error", e.get("id"),
+                        f"edge {e.get('id')!r} target connection crooked by {round(delta, 1)}px (waypoint y={pts[-1][1]} vs port y={round(t_pt[1], 1)})",
+                        "align waypoint y with target port y or run validate.py --fix"))
+
+    # Label-vertex overlap check: text can only overlap lines, never boxes (enforced for activity diagrams)
+    diagram_name = (diagram.get("name") or "").lower()
+    leaves = [(c.get("id"), abs_rect(c, ids)) for c in cells
+              if c.get("vertex") == "1" and c.get("id") not in parents
+              and not is_edge_label(c)]
+    leaves = [(vid, box) for vid, box in leaves if box]
+
+    # Check labels for AD files (or diagrams with ad in name/file)
+    is_ad_diag = is_ad or "ad0" in diagram_name or "activity" in diagram_name
+    if is_ad_diag:
+        for c in edges:
+            val = c.get("value")
+            if not val or not val.strip():
+                continue
+            s, t = endpoint(c, "source", ids), endpoint(c, "target", ids)
+            if s is None or t is None:
+                continue
+            pts = edge_waypoints(c)
+            poly = [s] + pts + [t]
+            seg_lengths = []
+            total_len = 0.0
+            for p1, p2 in zip(poly, poly[1:]):
+                l = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
+                seg_lengths.append(l)
+                total_len += l
+            if total_len < 1e-3:
+                continue
+
+            geom = c.find("mxGeometry")
+            rx = float(geom.get("x", "0")) if geom is not None else 0.0
+            target_dist = ((rx + 1.0) / 2.0) * total_len
+            cur_dist = 0.0
+            lx, ly = poly[len(poly) // 2]
+            for (p1, p2), sl in zip(zip(poly, poly[1:]), seg_lengths):
+                if cur_dist + sl >= target_dist:
+                    ratio = (target_dist - cur_dist) / sl if sl > 0 else 0.5
+                    lx = p1[0] + ratio * (p2[0] - p1[0])
+                    ly = p1[1] + ratio * (p2[1] - p1[1])
+                    break
+                cur_dist += sl
+
+            if geom is not None:
+                off = geom.find("mxPoint")
+                if off is not None and off.get("as") == "offset":
+                    try:
+                        lx += float(off.get("x", "0"))
+                        ly += float(off.get("y", "0"))
+                    except ValueError:
+                        pass
+
+            clean_val = val.replace("&#xa;", "\n").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("<br>", "\n")
+            lines = clean_val.split("\n")
+            max_len = max(len(line.strip()) for line in lines) if lines else 0
+            num_lines = len(lines)
+            lw = max(30.0, max_len * 7.2 + 8.0)
+            lh = max(20.0, num_lines * 16.0 + 4.0)
+            label_box = (lx - lw / 2.0, ly - lh / 2.0, lw, lh)
+
+            ends = {c.get("source"), c.get("target")}
+            for vid, box in leaves:
+                if vid not in ends and overlap(label_box, box):
+                    errors.append(diag(
+                        "E-LABEL-OVERLAP-VERTEX", "error", c.get("id"),
+                        f"edge {c.get('id')!r} label {val[:30]!r} overlaps vertex {vid!r}",
+                        "wrap label text with &#xa;, adjust offset, or route edge further from vertex"))
+
     warns += geometry_warnings(cells, ids, parents)
     return errors, warns
+
+
+def auto_fix_crooked(tree, file_path):
+    """Auto-align crooked edge waypoints to pinned ports."""
+    modified = False
+    for diagram in tree.getroot().findall("diagram") or [tree.getroot()]:
+        model = diagram.find("mxGraphModel")
+        if model is None:
+            continue
+        root = model.find("root")
+        cells = [c for c in root if c.tag == "mxCell"]
+        ids = {c.get("id"): c for c in cells}
+        edges = [c for c in cells if c.get("edge") == "1"]
+        for e in edges:
+            pts = edge_waypoints(e)
+            if not pts:
+                continue
+            style = e.get("style") or ""
+            s_pt = endpoint(e, "source", ids)
+            t_pt = endpoint(e, "target", ids)
+            ex_y = style_num(style, "exitY")
+            ex_x = style_num(style, "exitX")
+            en_y = style_num(style, "entryY")
+            en_x = style_num(style, "entryX")
+
+            geom = e.find("mxGeometry")
+            arr = geom.find("Array") if geom is not None else None
+            mx_pts = arr.findall("mxPoint") if arr is not None else []
+
+            if s_pt and mx_pts:
+                if ex_y in (0.0, 1.0):
+                    delta = abs(pts[0][0] - s_pt[0])
+                    if 0.5 < delta <= 30.0:
+                        mx_pts[0].set("x", str(round(s_pt[0], 1)))
+                        modified = True
+                elif ex_x in (0.0, 1.0):
+                    delta = abs(pts[0][1] - s_pt[1])
+                    if 0.5 < delta <= 30.0:
+                        mx_pts[0].set("y", str(round(s_pt[1], 1)))
+                        modified = True
+
+            if t_pt and mx_pts:
+                if en_y in (0.0, 1.0):
+                    delta = abs(pts[-1][0] - t_pt[0])
+                    if 0.5 < delta <= 30.0:
+                        mx_pts[-1].set("x", str(round(t_pt[0], 1)))
+                        modified = True
+                elif en_x in (0.0, 1.0):
+                    delta = abs(pts[-1][1] - t_pt[1])
+                    if 0.5 < delta <= 30.0:
+                        mx_pts[-1].set("y", str(round(t_pt[1], 1)))
+                        modified = True
+    if modified:
+        tree.write(file_path, encoding="utf-8", xml_declaration=True)
+        print(f"fixed crooked endpoints in {file_path}")
+    return modified
 
 
 def render(d, severity):
@@ -416,11 +584,14 @@ def render(d, severity):
 
 
 def main():
+    import os
     ap = argparse.ArgumentParser(description="Lint a .drawio file for structural errors.")
     ap.add_argument("file")
     ap.add_argument("--strict", action="store_true", help="treat warnings as failure too")
     ap.add_argument("--json", action="store_true",
                     help="emit findings as structured JSON instead of prose lines")
+    ap.add_argument("--fix", action="store_true",
+                    help="auto-fix crooked endpoints and write back to file")
     ap.add_argument("--score", action="store_true",
                     help="also print a readability score (lower is better) — "
                          "useful for comparing layout variants of the same graph")
@@ -429,10 +600,16 @@ def main():
         tree = ET.parse(args.file)
     except (ET.ParseError, OSError) as exc:
         sys.exit(f"error: cannot parse {args.file}: {exc}")
+
+    if args.fix:
+        if auto_fix_crooked(tree, args.file):
+            tree = ET.parse(args.file)
+
+    is_ad_file = os.path.basename(args.file).lower().startswith("ad")
     pages = tree.getroot().findall("diagram") or [tree.getroot()]
     errors, warns = [], []
     for page in pages:
-        e, w = check_page(page)
+        e, w = check_page(page, is_ad=is_ad_file)
         errors += e
         warns += w
     if args.json:
