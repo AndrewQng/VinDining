@@ -33,26 +33,26 @@
 
 ### 1.2 Ma trận phân quyền chức năng (Role-Based Access Control - RBAC)
 
-| Phân hệ chức năng | Chức năng chi tiết | Khách hàng (Guest) | Phục vụ (Waitstaff) | Quản lý (Manager) | Quản trị (Admin) |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| **Tài khoản & Hồ sơ** | Đăng ký / Đăng nhập tài khoản | ✓ | ✓ | ✓ | ✓ |
-| | Quản lý thông tin cá nhân & Lịch sử | ✓ | ✓ | ✓ | ✓ |
-| | Quản trị người dùng & Phân quyền | ✗ | ✗ | ✗ | **✓** |
-| **Đặt bàn & Đặt cọc** | Tra cứu sơ đồ bàn & Đặt bàn trực tuyến | **✓** | ✗ | ✗ | ✗ |
-| | Thanh toán tiền cọc giữ chỗ (VNPAY) | **✓** | ✗ | ✗ | ✗ |
-| | Hủy đặt bàn tự động (Trước >= 4h) | **✓** | ✗ | ✗ | ✗ |
-| | Duyệt hoàn cọc thủ công ngoại lệ | ✗ | ✗ | **✓** | **✓** |
-| **Sơ đồ bàn & Digital Display** | Theo dõi sơ đồ bàn trực quan Real-time | ✗ | **✓** | **✓** | **✓** |
-| | Check-in khách vào bàn (`Occupied`) | ✗ | **✓** | **✓** | ✗ |
-| | Kết nối thiết bị Digital Display theo bàn | ✗ | ✗ | **✓** | **✓** |
-| | Chuyển trạng thái bàn sau dọn dẹp (`Available`) | ✗ | **✓** | **✓** | ✗ |
-| **Gọi món & Bếp** | Khách xem Menu qua Digital Display | **✓** | ✗ | ✗ | ✗ |
-| | Tạo đơn trực tiếp & Kích hoạt in Bếp | ✗ | **✓** | **✓** | ✗ |
-| | Bấm xác nhận "Đã phục vụ món" tại Pass | ✗ | ✗ (Expediter: ✓) | **✓** | ✗ |
-| **Hóa đơn & Doanh thu** | Yêu cầu tính tiền từ Web E-Menu | **✓** | ✗ | ✗ | ✗ |
-| | Xuất hóa đơn tạm tính (Cấn trừ cọc) | ✗ | **✓** | **✓** | ✗ |
-| | Xác nhận thanh toán & Đóng bàn | ✗ | **✓** | **✓** | ✗ |
-| | Báo cáo thống kê doanh thu & Món bán chạy | ✗ | ✗ | **✓** | **✓** |
+| Phân hệ chức năng               | Chức năng chi tiết                              | Khách hàng (Guest) | Phục vụ (Waitstaff) | Quản lý (Manager) | Quản trị (Admin) |
+| :--------------------------------| :------------------------------------------------| :------------------:| :-------------------:| :-----------------:| :----------------:|
+| **Tài khoản & Hồ sơ**           | Đăng nhập hệ thống (Nội bộ)                     | ✗                  | ✓                   | ✓                 | ✓                |
+|                                 | Quản lý hồ sơ nhân sự                           | ✗                  | ✓                   | ✓                 | ✓                |
+|                                 | Quản trị người dùng & Phân quyền                | ✗                  | ✗                   | ✗                 | **✓**            |
+| **Đặt bàn & Đặt cọc**           | Tra cứu sơ đồ bàn & Đặt bàn trực tuyến          | **✓**              | ✗                   | ✗                 | ✗                |
+|                                 | Thanh toán tiền cọc giữ chỗ (VNPAY)             | **✓**              | ✗                   | ✗                 | ✗                |
+|                                 | Hủy đặt bàn tự động (Trước >= 4h)               | **✓**              | ✗                   | ✗                 | ✗                |
+|                                 | Duyệt hoàn cọc thủ công ngoại lệ                | ✗                  | ✗                   | **✓**             | **✓**            |
+| **Sơ đồ bàn & Digital Display** | Theo dõi sơ đồ bàn trực quan Real-time          | ✗                  | **✓**               | **✓**             | **✓**            |
+|                                 | Check-in khách vào bàn (`Occupied`)             | ✗                  | **✓**               | **✓**             | ✗                |
+|                                 | Kết nối thiết bị Digital Display theo bàn       | ✗                  | ✗                   | **✓**             | **✓**            |
+|                                 | Chuyển trạng thái bàn sau dọn dẹp (`Available`) | ✗                  | **✓**               | **✓**             | ✗                |
+| **Gọi món & Bếp**               | Khách xem Menu qua Digital Display              | **✓**              | ✗                   | ✗                 | ✗                |
+|                                 | Tạo đơn trực tiếp & Kích hoạt in Bếp            | ✗                  | **✓**               | **✓**             | ✗                |
+|                                 | Bấm xác nhận "Đã phục vụ món" tại Pass          | ✗                  | ✗ (Expediter: ✓)    | **✓**             | ✗                |
+| **Hóa đơn & Doanh thu**         | Yêu cầu tính tiền từ Web E-Menu                 | **✓**              | ✗                   | ✗                 | ✗                |
+|                                 | Xuất hóa đơn tạm tính (Cấn trừ cọc)             | ✗                  | **✓**               | **✓**             | ✗                |
+|                                 | Xác nhận thanh toán & Đóng bàn                  | ✗                  | **✓**               | **✓**             | ✗                |
+|                                 | Báo cáo thống kê doanh thu & Món bán chạy       | ✗                  | ✗                   | **✓**             | **✓**            |
 
 ---
 
@@ -60,117 +60,118 @@
 
 ### 2.1 Sơ đồ Use Case tổng quát toàn hệ thống (Overall Use Case Diagram)
 
-> 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/use_case_overall.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](./drawio/use_case_overall.drawio)
 
 ```mermaid
 graph LR
-    subgraph Actors [Tác nhân]
+    subgraph Actors [Tác nhân Hệ thống]
         Guest(("Khách hàng<br/>(Guest)"))
         Waitstaff(("Nhân viên Phục vụ<br/>(Waitstaff)"))
+        Expediter(("Điều phối viên<br/>(Expediter)"))
         Manager(("Quản lý<br/>(Manager)"))
         Admin(("Quản trị viên<br/>(Admin)"))
+        SystemAuto(("Hệ thống tự động<br/>(Background System)"))
         VNPAY["Cổng VNPAY"]
-        Printer["Máy in Bếp"]
+        Printer["Máy in nhiệt Bếp"]
     end
 
-    subgraph System [Hệ thống VinDining]
-        UC1(["UC-01: Đặt bàn trực tuyến & Đặt cọc"])
-        UC2(["UC-02: Xem E-Menu qua Digital Display"])
-        UC3(["UC-03: Nhân viên tạo Order & In Bếp"])
-        UC4(["UC-04: Phục vụ & Xác nhận hoàn thành"])
-        UC5(["UC-05: Thanh toán & Cấn trừ tiền cọc"])
-        UC6(["UC-06: Quản trị Danh mục & Thực đơn"])
-        UC7(["UC-07: Duyệt hoàn cọc thủ công ngoại lệ"])
-        UC8(["UC-08: Quản trị Tài khoản & Phân quyền"])
-        UC9(["UC-09: Hủy đặt bàn & Hoàn cọc"])
-        UC10(["UC-10: Quản lý Sơ đồ bàn & Digital Display"])
-        UC11(["UC-11: Đổi bàn / Chuyển bàn"])
-        UC12(["UC-12: Báo cáo Thống kê & Dashboard"])
-        UC13(["UC-13: Đánh giá chất lượng dịch vụ"])
+    subgraph SystemBoundary [Hệ thống VinDining]
+        subgraph GroupUser [1. Phân hệ Khách hàng (User)]
+            UCU1(["UC-U1: Đặt bàn trực tuyến & Đặt cọc"])
+            UCU2(["UC-U2: Xem E-Menu qua Digital Display"])
+            UCU3(["UC-U3: Hủy đặt bàn & Hoàn cọc tự động"])
+            UCU4(["UC-U4: Đánh giá chất lượng dịch vụ"])
+        end
+
+        subgraph GroupEmployee [2. Phân hệ Nhân viên (Employee)]
+            UCE1(["UC-E1: Nhân viên tạo Order & In Bếp"])
+            UCE2(["UC-E2: Phục vụ & Xác nhận hoàn thành (Pass)"])
+            UCE3(["UC-E3: Thanh toán & Cấn trừ tiền cọc"])
+            UCE4(["UC-E4: Đổi bàn / Chuyển bàn"])
+            UCE5(["UC-E5: Đăng nhập & Xác thực hệ thống"])
+        end
+
+        subgraph GroupAdmin [3. Phân hệ Quản trị & Quản lý (Admin & Manager)]
+            UCA1(["UC-A1: Quản trị Danh mục & Thực đơn"])
+            UCA2(["UC-A2: Quản lý Sơ đồ bàn & Digital Display"])
+            UCA3(["UC-A3: Duyệt hoàn cọc thủ công ngoại lệ"])
+            UCA4(["UC-A4: Quản trị Tài khoản & Phân quyền"])
+            UCA5(["UC-A5: Báo cáo Thống kê & Dashboard"])
+        end
+
+        subgraph GroupSystem [4. Phân hệ Tự động (System Services)]
+            UCS1(["UC-S1: Tự động giải phóng bàn hết hạn cọc"])
+        end
     end
 
-    Guest --> UC1
-    UC1 -.->|Thanh toán cọc| VNPAY
-    Guest --> UC2
-    Waitstaff --> UC3
-    UC3 -.->|Lệnh in nhiệt| Printer
-    Waitstaff --> UC4
-    Waitstaff --> UC5
-    Manager --> UC6
-    Manager --> UC7
-    UC7 -.->|Hoàn tiền| VNPAY
-    Admin --> UC8
-    Guest --> UC9
-    UC9 -.->|Hoàn tiền tự động| VNPAY
-    Manager --> UC10
-    Waitstaff --> UC11
-    Manager --> UC12
-    Admin --> UC12
-    Guest --> UC13
+    %% Tương tác Khách hàng
+    Guest --> UCU1
+    UCU1 -.->|include| VNPAY
+    Guest --> UCU2
+    Guest --> UCU3
+    UCU3 -.->|include| VNPAY
+    Guest --> UCU4
+
+    %% Tương tác Nhân viên & Include Đăng nhập
+    Waitstaff --> UCE1
+    UCE1 -.->|include| Printer
+    UCE1 -.->|include| UCE5
+    Expediter --> UCE2
+    UCE2 -.->|include| UCE5
+    Waitstaff --> UCE3
+    UCE3 -.->|include| UCE5
+    Waitstaff --> UCE4
+    UCE4 -.->|include| UCE5
+    Waitstaff --> UCE5
+
+    %% Tương tác Quản lý / Admin
+    Manager --> UCE5
+    Admin --> UCE5
+    Manager --> UCA1
+    UCA1 -.->|include| UCE5
+    Manager --> UCA2
+    UCA2 -.->|include| UCE5
+    Manager --> UCA3
+    UCA3 -.->|include| UCE5
+    UCA3 -.->|include| VNPAY
+    Admin --> UCA4
+    UCA4 -.->|include| UCE5
+    Manager --> UCA5
+    Admin --> UCA5
+    UCA5 -.->|include| UCE5
+
+    %% Tương tác Hệ thống tự động
+    SystemAuto --> UCS1
+    UCS1 -.->|extend| UCU1
 ```
 
 ---
 
 ### 2.2 Sơ đồ Use Case phân rã theo Phân hệ
 
-> 📐 **Tệp thiết kế Draw.io**: [`use_case_subsystems.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/use_case_subsystems.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`use_case_subsystems.drawio`](./drawio/use_case_subsystems.drawio)
 
-```mermaid
-graph TD
-    subgraph "Phân hệ Đặt bàn & Gọi món"
-        G(("Khách hàng"))
-        UC1_1(["Tra cứu bàn trống"])
-        UC1_2(["Khóa bàn tạm thời 15p"])
-        UC1_3(["Thanh toán cọc VNPAY"])
-        UC2_1(["Xem màn hình Digital Display"])
-        UC2_2(["Xem chi tiết món & Giá bán"])
-        UC2_3(["Gọi Waitstaff để đặt món"])
-    end
-
-    G --> UC1_1
-    UC1_1 --> UC1_2
-    UC1_2 --> UC1_3
-    G --> UC2_1
-    UC2_1 --> UC2_2
-    UC2_2 --> UC2_3
-
-    subgraph "Phân hệ Điều phối Bếp & Phục vụ"
-        W(("Nhân viên Phục vụ"))
-        UC3_1(["Check-in khách vào bàn"])
-        UC3_2(["Lắng nghe & Tư vấn gọi món"])
-        UC3_3(["Bấm tạo đơn kích hoạt in Bếp"])
-        UC4_1(["Nhận món từ quầy Pass"])
-        UC4_2(["Bưng món & Xác nhận hoàn thành"])
-    end
-
-    W --> UC3_1
-    W --> UC3_2
-    UC3_2 --> UC3_3
-    W --> UC4_1
-    UC4_1 --> UC4_2
-
-    subgraph "Phân hệ Thanh toán & Đóng bàn"
-        UC5_1(["Tính tổng tiền món thực tế"])
-        UC5_2(["Áp dụng 5% SVC + 10% VAT"])
-        UC5_3(["Cấn trừ khoản tiền cọc Deposit"])
-        UC5_4(["In hóa đơn & Chuyển bàn sang Cleaning"])
-    end
-
-    W --> UC5_1
-    UC5_1 --> UC5_2
-    UC5_2 --> UC5_3
-    UC5_3 --> UC5_4
-```
 
 ---
 
 ### 2.3 Đặc tả chi tiết các Use Case (Use Case Specifications)
 
-#### 📋 UC-01: Đặt bàn trực tuyến & Đặt cọc (Table Reservation & Deposit)
-* **Mã Use Case**: `UC-01`
+> 💡 **Quy ước mã định danh & Cấu trúc phân nhóm Use Case**:
+> - **Nhóm Khách hàng (User - `UC-U`)**: Các chức năng trực tiếp của thực khách trải nghiệm trên Smartphone & Digital Display tại bàn.
+> - **Nhóm Nhân viên (Employee - `UC-E`)**: Các chức năng thao tác nghiệp vụ tại bàn, quầy Pass và thanh toán của Phục vụ & Điều phối.
+> - **Nhóm Quản lý & Quản trị (Admin & Manager - `UC-A`)**: Các chức năng quản trị danh mục, sơ đồ bàn, duyệt hoàn cọc và thống kê báo cáo.
+> - **Nhóm Tự động Hệ thống (System - `UC-S`)**: Các tác vụ nền chạy ngầm tự động bảo toàn trạng thái dữ liệu và giải phóng tài nguyên.
+
+---
+
+#### 2.3.1 Nhóm Use Case Khách hàng (User / Guest Use Cases)
+
+#### 📋 UC-U1: Đặt bàn trực tuyến & Đặt cọc (Table Reservation & Deposit)
+* **Mã Use Case**: `UC-U1`
 * **Tên Use Case**: Đặt bàn trực tuyến & Đặt cọc giữ chỗ (TableReservationUseCase)
 * **Tác nhân**: Khách hàng (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<include>> Cổng VNPAY (Xử lý giao dịch cọc trực tuyến); <<extend>> UC-S1 (Hệ thống tự động giải phóng bàn khi quá hạn cọc 17 phút).
 * **Mục tiêu tóm tắt**: Cho phép khách hàng truy cập trang Web, chọn ngày/ca/vị trí bàn và hoàn tất đặt chỗ bằng cách thanh toán khoản tiền cọc cố định qua cổng VNPAY.
 * **Điều kiện tiên quyết**: Khách hàng truy cập vào hệ thống Web; sơ đồ bàn đang hoạt động.
 * **Điều kiện sau hoàn thành**: Bàn ăn chuyển sang trạng thái `Reserved`; hệ thống ghi nhận khoản cọc thành công và tự động gửi `BookingCode` qua SMS/Email cho khách.
@@ -191,11 +192,12 @@ graph TD
 
 ---
 
-#### 📋 UC-02: Xem E-Menu qua Digital Display (Table Digital Menu)
-* **Mã Use Case**: `UC-02`
+#### 📋 UC-U2: Xem E-Menu qua Digital Display (Table Digital Menu)
+* **Mã Use Case**: `UC-U2`
 * **Tên Use Case**: Xem E-Menu qua Digital Display (ViewDigitalMenuUseCase)
 * **Tác nhân**: Khách hàng (Chính).
 * **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: Độc lập (Chỉ hiển thị dữ liệu danh mục thực đơn tại bàn).
 * **Mục tiêu tóm tắt**: Khách hàng tại bàn xem danh mục các món ăn (A La Carte) qua thiết bị màn hình Digital Display (chỉ xem, không có tính năng đặt món trực tiếp).
 * **Điều kiện tiên quyết**: Khách hàng đã ngồi tại bàn thực tế; thiết bị Digital Display đang hoạt động.
 * **Điều kiện sau hoàn thành**: Khách hàng xem xong thực đơn và quyết định gọi món thông qua nhân viên phục vụ.
@@ -209,11 +211,53 @@ graph TD
 
 ---
 
-#### 📋 UC-03: Nhân viên tạo Order trực tiếp & In phiếu Bếp (Order Creation & Dispatching)
-* **Mã Use Case**: `UC-03`
+#### 📋 UC-U3: Hủy đặt bàn trực tuyến & Hoàn cọc tự động (Cancel Reservation)
+* **Mã Use Case**: `UC-U3`
+* **Tên Use Case**: Hủy đặt bàn trực tuyến & Hoàn cọc (CancelReservationUseCase)
+* **Tác nhân**: Khách hàng (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
+* **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<include>> Cổng VNPAY (Xử lý API hoàn trả tiền cọc tự động 100% khi hủy trước >= 4h theo BR-05).
+* **Mục tiêu tóm tắt**: Cho phép khách hàng tự chủ động hủy lịch đặt bàn của mình trên Web. Hệ thống kiểm tra điều kiện thời gian để tự động hoàn tiền cọc qua VNPAY hoặc phạt cọc theo chính sách.
+* **Điều kiện tiên quyết**: Khách hàng có một mã đặt bàn (`BookingCode`) đang ở trạng thái `Reserved`.
+* **Điều kiện sau hoàn thành**: Trạng thái đặt bàn chuyển sang `Cancelled`, bàn ăn được giải phóng về `Available`, ghi nhận giao dịch hoàn tiền hoặc phạt cọc thành công.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Khách hàng truy cập trang Tra cứu đặt bàn, nhập SĐT và `BookingCode`.
+  2. Hệ thống hiển thị chi tiết lịch đặt bàn và nút "Hủy đặt bàn".
+  3. Khách hàng bấm "Hủy đặt bàn" và xác nhận thao tác.
+  4. Hệ thống kiểm tra thời gian hiện tại so với giờ hẹn (`BR-05`). Thời gian cách giờ hẹn $\ge$ 4 tiếng.
+  5. Hệ thống gọi API VNPAY (Refund API) để hoàn trả 100% số tiền cọc về tài khoản của khách.
+  6. Hệ thống cập nhật trạng thái Reservation -> `Cancelled`, Table -> `Available`.
+  7. Gửi thông báo Email/SMS xác nhận hủy và hoàn tiền cho khách.
+* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
+  - *4a. Khách hủy bàn khi thời gian cách giờ hẹn < 4 tiếng*: Hệ thống cảnh báo khách sẽ bị mất 100% cọc (không hoàn tiền). Khách đồng ý, hệ thống ghi nhận trạng thái `Cancelled` nhưng giữ lại tiền cọc làm phí phạt. Bàn vẫn được giải phóng về `Available`.
+
+---
+
+#### 📋 UC-U4: Đánh giá chất lượng dịch vụ (Feedback / Review)
+* **Mã Use Case**: `UC-U4`
+* **Tên Use Case**: Gửi đánh giá dịch vụ (SubmitFeedbackUseCase)
+* **Tác nhân**: Khách hàng (Chính).
+* **Mức độ ưu tiên**: Bổ sung (Could Have).
+* **Quan hệ (Relationships)**: Độc lập (Thu thập khảo sát phản hồi của khách hàng sau bữa ăn).
+* **Mục tiêu tóm tắt**: Thu thập ý kiến của khách hàng về chất lượng món ăn và dịch vụ ngay sau khi dùng bữa.
+* **Điều kiện tiên quyết**: Khách hàng đã thanh toán hóa đơn.
+* **Điều kiện sau hoàn thành**: Lưu feedback vào hệ thống.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Khách hàng nhận được Email cảm ơn kèm link đánh giá, hoặc quét mã QR thanh toán tích hợp link đánh giá.
+  2. Khách hàng điền mức độ hài lòng (1-5 sao) và ghi chú.
+  3. Bấm Gửi.
+  4. Hệ thống lưu đánh giá vào CSDL. Quản lý có thể xem lại tại Dashboard.
+
+---
+
+#### 2.3.2 Nhóm Use Case Nhân viên Nội bộ (Employee Use Cases)
+
+#### 📋 UC-E1: Nhân viên tạo Order trực tiếp & In phiếu Bếp (Order Creation & Dispatching)
+* **Mã Use Case**: `UC-E1`
 * **Tên Use Case**: Nhân viên tạo Order & In Bếp (OrderCreationUseCase)
 * **Tác nhân**: Nhân viên Phục vụ (Chính), Máy in nhiệt Bếp (Phụ), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Máy in nhiệt Bếp (Tự động in phiếu order ESC/POS theo phân khu).
 * **Mục tiêu tóm tắt**: Nhân viên phục vụ đứng tại bàn, nhập đơn gọi món trực tiếp vào thiết bị di động theo yêu cầu của khách, hệ thống lưu đơn ở trạng thái `Processing` và tự động in phiếu Bếp.
 * **Điều kiện tiên quyết**: Bàn ăn đã được check-in (`Occupied`), khách hàng đã quyết định xong món.
 * **Điều kiện sau hoàn thành**: Đơn hàng được tạo (Status: `Processing`), máy in nhiệt tại các phân khu bếp nhả phiếu order chuẩn xác.
@@ -229,11 +273,12 @@ graph TD
 
 ---
 
-#### 📋 UC-04: Phục vụ món & Xác nhận hoàn thành món tại quầy Pass (Serving Confirmation)
-* **Mã Use Case**: `UC-04`
+#### 📋 UC-E2: Phục vụ món & Xác nhận hoàn thành món tại quầy Pass (Serving Confirmation)
+* **Mã Use Case**: `UC-E2`
 * **Tên Use Case**: Phục vụ & Xác nhận hoàn thành món (ServiceConfirmationUseCase)
 * **Tác nhân**: Nhân viên Điều phối / Checkfood (Chính), Nhân viên Phục vụ (Phụ), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
 * **Mục tiêu tóm tắt**: Nhân viên Checkfood tại quầy Pass nhận món từ bếp, đối chiếu, giao cho Waitstaff bưng đi, và bấm xác nhận "Đã hoàn thành" trên tablet tại quầy.
 * **Điều kiện tiên quyết**: Món ăn đã được nhà bếp hoàn thành và đặt tại quầy Pass.
 * **Điều kiện sau hoàn thành**: Trạng thái món ăn chuyển sang `Served`, hệ thống ghi nhận mốc thời gian phục vụ thực tế (`ServeTimestamp`).
@@ -248,11 +293,12 @@ graph TD
 
 ---
 
-#### 📋 UC-05: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (Checkout & Invoice Settlement)
-* **Mã Use Case**: `UC-05` *(Được bổ sung hoàn thiện chuẩn theo RTM)*
+#### 📋 UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (Checkout & Invoice Settlement)
+* **Mã Use Case**: `UC-E3`
 * **Tên Use Case**: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (InvoiceSettlementUseCase)
 * **Tác nhân**: Nhân viên Phục vụ (Chính), Khách hàng (Chính), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Tự động cấn trừ tiền cọc theo công thức tài chính (BR-03).
 * **Mục tiêu tóm tắt**: Tự động tổng hợp toàn bộ tiền món ăn, tính 5% phí dịch vụ, 10% VAT, tự động cấn trừ số tiền cọc (Deposit) đã thanh toán trước đó, xuất hóa đơn tài chính và chuyển trạng thái bàn sang chờ dọn dẹp (`Cleaning`).
 * **Điều kiện tiên quyết**: Bàn ăn đang ở trạng thái `Occupied` và toàn bộ các món ăn đã được phục vụ hoàn tất (`Served`).
 * **Điều kiện sau hoàn thành**: Hóa đơn được thanh toán thành công, đơn hàng hoàn tất, bàn chuyển trạng thái sang `Cleaning`.
@@ -274,84 +320,12 @@ graph TD
 
 ---
 
-#### 📋 UC-06: Quản trị Danh mục & Thực đơn món ăn (Menu Management)
-* **Mã Use Case**: UC-06
-* **Tên Use Case**: Quản trị Thực đơn (MenuManagementUseCase)
-* **Tác nhân**: Quản lý (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Mục tiêu tóm tắt**: Cho phép Quản lý (Manager) thêm, sửa, xóa, vô hiệu hóa các món ăn và danh mục món ăn (A La Carte) trên hệ thống.
-* **Điều kiện tiên quyết**: Quản lý đã đăng nhập thành công vào hệ thống.
-* **Điều kiện sau hoàn thành**: Dữ liệu thực đơn được cập nhật đồng bộ lên CSDL và hiển thị tức thời trên Digital Display/Tablet phục vụ.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý truy cập trang Quản trị Thực đơn trên Web Portal.
-  2. Hệ thống hiển thị danh sách các món ăn hiện có.
-  3. Quản lý chọn chức năng 'Thêm món mới'.
-  4. Quản lý nhập thông tin món ăn (Tên món, Hình ảnh, Giá bán, Phân loại, Cảnh báo dị ứng).
-  5. Quản lý bấm 'Lưu'.
-  6. Hệ thống kiểm tra tính hợp lệ của dữ liệu (Validation) và lưu vào CSDL.
-  7. Hệ thống cập nhật Menu trên các thiết bị của Khách và Nhân viên phục vụ.
-
----
-
-#### 📋 UC-07: Duyệt hoàn tiền cọc thủ công ngoại lệ (Manual Refund)
-* **Mã Use Case**: UC-07
-* **Tên Use Case**: Duyệt hoàn tiền cọc thủ công (ManualRefundUseCase)
-* **Tác nhân**: Quản lý / Admin (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Mục tiêu tóm tắt**: Quản lý xử lý hoàn tiền cọc cho khách hàng trong các trường hợp bất khả kháng (lỗi hệ thống, thiên tai...) mà không tuân theo quy tắc hoàn tự động.
-* **Điều kiện tiên quyết**: Đặt bàn có trạng thái Cancelled nhưng tiền cọc chưa được hoàn trả, hoặc có khiếu nại từ khách.
-* **Điều kiện sau hoàn thành**: Tiền cọc được hoàn trả qua VNPAY, ghi nhận lịch sử xử lý khiếu nại.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý tiếp nhận khiếu nại và tra cứu mã BookingCode trên hệ thống.
-  2. Quản lý bấm nút 'Hoàn tiền thủ công (Override)' đối với khoản cọc đã thu.
-  3. Quản lý nhập lý do hoàn tiền bắt buộc.
-  4. Hệ thống gọi API VNPAY (Refund API) để hoàn trả tiền cho khách.
-  5. Hệ thống lưu vết (Audit Log) giao dịch hoàn tiền với UserID của người Quản lý đã duyệt.
-
----
-
-#### 📋 UC-08: Quản trị Tài khoản & Phân quyền (Account & RBAC Management)
-* **Mã Use Case**: UC-08
-* **Tên Use Case**: Quản trị Tài khoản & Phân quyền (AccountManagementUseCase)
-* **Tác nhân**: Quản trị viên - Admin (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Mục tiêu tóm tắt**: Admin cấp phát, khóa tài khoản và gán vai trò (Role) cho các nhân viên trong nhà hàng (Waitstaff, Checkfood, Manager).
-* **Điều kiện tiên quyết**: Admin đăng nhập với tài khoản có quyền cao nhất.
-* **Điều kiện sau hoàn thành**: Thông tin tài khoản nhân viên được cập nhật, quyền truy cập thay đổi có hiệu lực trong lần đăng nhập tiếp theo.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Admin truy cập trang Quản lý Nhân viên.
-  2. Admin bấm 'Tạo tài khoản mới'.
-  3. Admin nhập thông tin nhân sự và chọn Vai trò (Waitstaff / Expediter / Manager).
-  4. Hệ thống lưu tài khoản và gửi Email cấp mật khẩu mặc định cho nhân viên.
-
----
-
-#### 📋 UC-09: Hủy đặt bàn trực tuyến & Hoàn cọc tự động (Cancel Reservation)
-* **Mã Use Case**: `UC-09`
-* **Tên Use Case**: Hủy đặt bàn trực tuyến & Hoàn cọc (CancelReservationUseCase)
-* **Tác nhân**: Khách hàng (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Mục tiêu tóm tắt**: Cho phép khách hàng tự chủ động hủy lịch đặt bàn của mình trên Web. Hệ thống kiểm tra điều kiện thời gian để tự động hoàn tiền cọc qua VNPAY hoặc phạt cọc theo chính sách.
-* **Điều kiện tiên quyết**: Khách hàng có một mã đặt bàn (`BookingCode`) đang ở trạng thái `Reserved`.
-* **Điều kiện sau hoàn thành**: Trạng thái đặt bàn chuyển sang `Cancelled`, bàn ăn được giải phóng về `Available`, ghi nhận giao dịch hoàn tiền hoặc phạt cọc thành công.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng truy cập trang Tra cứu đặt bàn, nhập SĐT và `BookingCode`.
-  2. Hệ thống hiển thị chi tiết lịch đặt bàn và nút "Hủy đặt bàn".
-  3. Khách hàng bấm "Hủy đặt bàn" và xác nhận thao tác.
-  4. Hệ thống kiểm tra thời gian hiện tại so với giờ hẹn (`BR-05`). Thời gian cách giờ hẹn $\ge$ 4 tiếng.
-  5. Hệ thống gọi API VNPAY (Refund API) để hoàn trả 100% số tiền cọc về tài khoản của khách.
-  6. Hệ thống cập nhật trạng thái Reservation -> `Cancelled`, Table -> `Available`.
-  7. Gửi thông báo Email/SMS xác nhận hủy và hoàn tiền cho khách.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *4a. Khách hủy bàn khi thời gian cách giờ hẹn < 4 tiếng*: Hệ thống cảnh báo khách sẽ bị mất 100% cọc (không hoàn tiền). Khách đồng ý, hệ thống ghi nhận trạng thái `Cancelled` nhưng giữ lại tiền cọc làm phí phạt. Bàn vẫn được giải phóng về `Available`.
-
----
-
-#### 📋 UC-11: Đổi bàn / Chuyển bàn (Change & Merge Tables)
-* **Mã Use Case**: `UC-11`
+#### 📋 UC-E4: Đổi bàn / Chuyển bàn (Change & Merge Tables)
+* **Mã Use Case**: `UC-E4`
 * **Tên Use Case**: Đổi bàn / Chuyển bàn (ChangeTableUseCase)
 * **Tác nhân**: Nhân viên Phục vụ (Chính), Quản lý (Phụ).
 * **Mức độ ưu tiên**: Quan trọng (Should Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<extend>> Ghép bàn (Merge Tables - mở rộng khi khách có nhu cầu gộp nhóm bàn).
 * **Mục tiêu tóm tắt**: Cho phép nhân viên phục vụ chuyển toàn bộ đơn hàng (Order) và tiền cọc (nếu có) từ bàn hiện tại sang một bàn khác trống trên hệ thống khi khách có nhu cầu đổi chỗ ngồi.
 * **Điều kiện tiên quyết**: Khách đang ngồi tại bàn cũ (`Occupied`); bàn mới mục tiêu phải ở trạng thái `Available`.
 * **Điều kiện sau hoàn thành**: Bàn cũ chuyển về trạng thái `Cleaning`, bàn mới chuyển sang `Occupied` và kế thừa toàn bộ Order.
@@ -367,12 +341,52 @@ graph TD
 
 ---
 
+#### 📋 UC-E5: Đăng nhập & Xác thực hệ thống (Authentication)
+* **Mã Use Case**: `UC-E5`
+* **Tên Use Case**: Đăng nhập hệ thống nội bộ (LoginUseCase)
+* **Tác nhân**: Nhân viên Phục vụ, Quản lý, Admin (Chính).
+* **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: Use Case cơ sở (Base Use Case) được <<include>> bởi toàn bộ các Use Case nghiệp vụ nội bộ của Phục vụ, Điều phối, Quản lý và Quản trị viên.
+* **Mục tiêu tóm tắt**: Cung cấp cơ chế đăng nhập an toàn để nhân viên truy cập vào các chức năng nghiệp vụ tương ứng với quyền hạn (Role).
+* **Điều kiện tiên quyết**: Tài khoản đã được cấp phát bởi Admin.
+* **Điều kiện sau hoàn thành**: Người dùng được cấp phiên đăng nhập (JWT token) và chuyển hướng tới Dashboard/Sơ đồ bàn theo quyền.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Người dùng truy cập trang Đăng nhập hệ thống.
+  2. Người dùng nhập Username / Email và Password.
+  3. Bấm "Đăng nhập".
+  4. Hệ thống kiểm tra thông tin định danh và quyền hạn.
+  5. Hệ thống cấp JWT token và chuyển hướng tới màn hình tương ứng (Tablet Order cho Waitstaff, Dashboard cho Manager).
 
-#### 📋 UC-10: Quản lý Sơ đồ bàn & Cấu hình Digital Display (Floor Plan Management)
-* **Mã Use Case**: UC-10
+---
+
+#### 2.3.3 Nhóm Use Case Quản trị & Quản lý (Admin & Manager Use Cases)
+
+#### 📋 UC-A1: Quản trị Danh mục & Thực đơn món ăn (Menu Management)
+* **Mã Use Case**: `UC-A1`
+* **Tên Use Case**: Quản trị Thực đơn (MenuManagementUseCase)
+* **Tác nhân**: Quản lý (Chính), Hệ thống (Phụ).
+* **Mức độ ưu tiên**: Quan trọng (Should Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
+* **Mục tiêu tóm tắt**: Cho phép Quản lý (Manager) thêm, sửa, xóa, vô hiệu hóa các món ăn và danh mục món ăn (A La Carte) trên hệ thống.
+* **Điều kiện tiên quyết**: Quản lý đã đăng nhập thành công vào hệ thống.
+* **Điều kiện sau hoàn thành**: Dữ liệu thực đơn được cập nhật đồng bộ lên CSDL và hiển thị tức thời trên Digital Display/Tablet phục vụ.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Quản lý truy cập trang Quản trị Thực đơn trên Web Portal.
+  2. Hệ thống hiển thị danh sách các món ăn hiện có.
+  3. Quản lý chọn chức năng 'Thêm món mới'.
+  4. Quản lý nhập thông tin món ăn (Tên món, Hình ảnh, Giá bán, Phân loại, Cảnh báo dị ứng).
+  5. Quản lý bấm 'Lưu'.
+  6. Hệ thống kiểm tra tính hợp lệ của dữ liệu (Validation) và lưu vào CSDL.
+  7. Hệ thống cập nhật Menu trên các thiết bị của Khách và Nhân viên phục vụ.
+
+---
+
+#### 📋 UC-A2: Quản lý Sơ đồ bàn & Cấu hình Digital Display (Floor Plan Management)
+* **Mã Use Case**: `UC-A2`
 * **Tên Use Case**: Quản lý Sơ đồ bàn (FloorPlanUseCase)
 * **Tác nhân**: Quản lý (Chính), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Quan trọng (Should Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
 * **Mục tiêu tóm tắt**: Quản lý thiết lập sơ đồ các bàn, khu vực (VIP, Sảnh) và liên kết các thiết bị Tablet (Digital Display) vật lý với ID bàn tương ứng trên hệ thống.
 * **Điều kiện tiên quyết**: Quản lý đăng nhập thành công.
 * **Điều kiện sau hoàn thành**: Sơ đồ bàn được cập nhật, Tablet hiển thị đúng ID bàn của mình.
@@ -385,11 +399,47 @@ graph TD
 
 ---
 
-#### 📋 UC-12: Xem Báo cáo Dashboard & Thống kê (Reporting & Analytics)
-* **Mã Use Case**: UC-12
+#### 📋 UC-A3: Duyệt hoàn tiền cọc thủ công ngoại lệ (Manual Refund)
+* **Mã Use Case**: `UC-A3`
+* **Tên Use Case**: Duyệt hoàn tiền cọc thủ công (ManualRefundUseCase)
+* **Tác nhân**: Quản lý / Admin (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
+* **Mức độ ưu tiên**: Quan trọng (Should Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Cổng VNPAY (Xử lý API hoàn tiền cọc thủ công ngoại lệ).
+* **Mục tiêu tóm tắt**: Quản lý xử lý hoàn tiền cọc cho khách hàng trong các trường hợp bất khả kháng (lỗi hệ thống, thiên tai...) mà không tuân theo quy tắc hoàn tự động.
+* **Điều kiện tiên quyết**: Đặt bàn có trạng thái Cancelled nhưng tiền cọc chưa được hoàn trả, hoặc có khiếu nại từ khách.
+* **Điều kiện sau hoàn thành**: Tiền cọc được hoàn trả qua VNPAY, ghi nhận lịch sử xử lý khiếu nại.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Quản lý tiếp nhận khiếu nại và tra cứu mã BookingCode trên hệ thống.
+  2. Quản lý bấm nút 'Hoàn tiền thủ công (Override)' đối với khoản cọc đã thu.
+  3. Quản lý nhập lý do hoàn tiền bắt buộc.
+  4. Hệ thống gọi API VNPAY (Refund API) để hoàn trả tiền cho khách.
+  5. Hệ thống lưu vết (Audit Log) giao dịch hoàn tiền với UserID của người Quản lý đã duyệt.
+
+---
+
+#### 📋 UC-A4: Quản trị Tài khoản & Phân quyền (Account & RBAC Management)
+* **Mã Use Case**: `UC-A4`
+* **Tên Use Case**: Quản trị Tài khoản & Phân quyền (AccountManagementUseCase)
+* **Tác nhân**: Quản trị viên - Admin (Chính), Hệ thống (Phụ).
+* **Mức độ ưu tiên**: Quan trọng (Should Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
+* **Mục tiêu tóm tắt**: Admin cấp phát, khóa tài khoản và gán vai trò (Role) cho các nhân viên trong nhà hàng (Waitstaff, Checkfood, Manager).
+* **Điều kiện tiên quyết**: Admin đăng nhập với tài khoản có quyền cao nhất.
+* **Điều kiện sau hoàn thành**: Thông tin tài khoản nhân viên được cập nhật, quyền truy cập thay đổi có hiệu lực trong lần đăng nhập tiếp theo.
+* **Luồng sự kiện chính (Basic Flow)**:
+  1. Admin truy cập trang Quản lý Nhân viên.
+  2. Admin bấm 'Tạo tài khoản mới'.
+  3. Admin nhập thông tin nhân sự và chọn Vai trò (Waitstaff / Expediter / Manager).
+  4. Hệ thống lưu tài khoản và gửi Email cấp mật khẩu mặc định cho nhân viên.
+
+---
+
+#### 📋 UC-A5: Xem Báo cáo Dashboard & Thống kê (Reporting & Analytics)
+* **Mã Use Case**: `UC-A5`
 * **Tên Use Case**: Xem Báo cáo Thống kê (ViewReportsUseCase)
 * **Tác nhân**: Quản lý / Admin (Chính).
 * **Mức độ ưu tiên**: Bổ sung (Could Have).
+* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
 * **Mục tiêu tóm tắt**: Xem doanh thu, tỷ lệ lấp đầy bàn, thống kê số lượng khách bùng bàn (No-show), món ăn bán chạy nhất.
 * **Điều kiện tiên quyết**: Quản lý đăng nhập vào hệ thống.
 * **Điều kiện sau hoàn thành**: Hiển thị biểu đồ báo cáo thành công.
@@ -401,305 +451,62 @@ graph TD
 
 ---
 
-#### 📋 UC-13: Đánh giá chất lượng dịch vụ (Feedback / Review)
-* **Mã Use Case**: UC-13
-* **Tên Use Case**: Gửi đánh giá dịch vụ (SubmitFeedbackUseCase)
-* **Tác nhân**: Khách hàng (Chính).
-* **Mức độ ưu tiên**: Bổ sung (Could Have).
-* **Mục tiêu tóm tắt**: Thu thập ý kiến của khách hàng về chất lượng món ăn và dịch vụ ngay sau khi dùng bữa.
-* **Điều kiện tiên quyết**: Khách hàng đã thanh toán hóa đơn.
-* **Điều kiện sau hoàn thành**: Lưu feedback vào hệ thống.
+#### 2.3.4 Nhóm Use Case Hệ thống Tự động (System Background Use Cases)
+
+#### 📋 UC-S1: Tự động giải phóng bàn hết hạn giữ cọc (Auto-Release Expired Reservation Lock)
+* **Mã Use Case**: `UC-S1`
+* **Tên Use Case**: Tự động giải phóng bàn hết hạn giữ cọc (AutoReleaseExpiredLockUseCase)
+* **Tác nhân**: Hệ thống tự động (Background Service / Cron Worker - Chính).
+* **Mức độ ưu tiên**: Trọng yếu (Must Have).
+* **Quan hệ (Relationships)**: <<extend>> Mở rộng từ UC-U1 (Kích hoạt tự động bởi Background Service khi phiên giữ cọc vượt quá thời hạn 17 phút - BR-01).
+* **Mục tiêu tóm tắt**: Hệ thống chạy ngầm định kỳ mỗi 60 giây, tự động phát hiện và hủy các phiên đặt bàn tạm thời quá 17 phút (15 phút hạn QR VNPAY + 2 phút Grace Period theo BR-01) mà chưa nhận được xác nhận IPN thanh toán, giải phóng bàn ăn về trạng thái `Available` và gửi thông báo real-time qua SignalR tới Sơ đồ bàn của Nhân viên & Quản lý.
+* **Điều kiện tiên quyết**: Bản ghi đặt bàn đang ở trạng thái giữ tạm (`PendingPayment/Locked`) có thời gian tạo vượt quá 17 phút.
+* **Điều kiện sau hoàn thành**: Bàn ăn được giải phóng về trạng thái `Available`, phiên đặt bàn chuyển sang `Expired_Cancelled`, sự kiện SignalR cập nhật tức thì trên sơ đồ bàn trực quan.
 * **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng nhận được Email cảm ơn kèm link đánh giá, hoặc quét mã QR thanh toán tích hợp link đánh giá.
-  2. Khách hàng điền mức độ hài lòng (1-5 sao) và ghi chú.
-  3. Bấm Gửi.
-  4. Hệ thống lưu đánh giá vào CSDL. Quản lý có thể xem lại tại Dashboard.
+  1. Hệ thống chạy tác vụ nền (Background Worker / Hangfire Job) định kỳ mỗi 60 giây.
+  2. Truy vấn cơ sở dữ liệu tìm các đơn đặt bàn có trạng thái `PendingPayment` và thời điểm tạo đã quá 17 phút (`BR-01`).
+  3. Cập nhật trạng thái phiên đặt bàn thành `Expired_Cancelled`.
+  4. Cập nhật trạng thái vị trí bàn ăn tương ứng từ `Locked` về `Available`.
+  5. Phát thông điệp qua SignalR Hub (`TableStatusChanged`) để đổi màu trạng thái bàn thành xanh lá (Available) trên màn hình của Waitstaff và Quản lý.
+  6. Ghi nhật ký kiểm toán hệ thống (System Audit Log) lưu vết thời điểm giải phóng bàn tự động.
+* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
+  - *Xung đột IPN trễ (Late IPN > 17 phút)*: Cổng VNPAY gửi tín hiệu IPN thành công nhưng trễ sau 17 phút và bàn cũ đã được giải phóng cho khách khác đặt. Hệ thống tự động kích hoạt logic gán bàn tương đương cùng khu vực và sức chứa. Nếu hết bàn tương đương, đánh dấu `Paid_TableLost` và bắn cảnh báo đỏ ưu tiên tới Dashboard của Quản lý để gọi điện hỗ trợ đổi lịch hẹn hoặc hoàn tiền thủ công (`UC-A3`).
 
 ---
+
 ## CHƯƠNG 3: MÔ HÌNH HÓA QUY TRÌNH NGHIỆP VỤ (SWIMLANE ACTIVITY DIAGRAMS)
 
 ### 3.1 AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY (3 Làn: Khách hàng | Hệ thống | VNPAY)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad01_reservation_deposit.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/ad01_reservation_deposit.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad01_reservation_deposit.drawio`](./drawio/ad01_reservation_deposit.drawio)
 
-```mermaid
-flowchart TD
-    subgraph Guest ["Khách hàng (Guest)"]
-        direction TB
-        G_Start(( ))
-        G1["Chọn Ngày, Giờ (Ca),<br/>Số khách & Khu vực bàn"]
-        G2["Nhập thông tin cá nhân<br/>& Ghi chú dị ứng"]
-        G3["Bấm 'Tiến hành đặt cọc'"]
-        G4["Quét mã QR thanh toán<br/>trên giao diện VNPAY"]
-        G_Fail["Nhận thông báo<br/>đặt bàn thất bại"]
-        G_EndFail(((X)))
-        G_Success["Nhận Email/SMS<br/>kèm BookingCode"]
-        G_EndSuccess(((OK)))
-    end
-
-    subgraph System ["Hệ thống VinDining (Web API)"]
-        direction TB
-        S1["Kiểm tra sơ đồ bàn<br/>thời gian thực"]
-        S_Dec1{"Còn bàn<br/>khả dụng?"}
-        S_Alt["Gợi ý ca / khu vực<br/>khác còn trống"]
-        S2["Khóa giữ bàn 17 phút (BR-01)<br/>(15p QR + 2p Grace Period)"]
-        S_Dec2{"IPN về<br/>trong 17p?"}
-        S_Cancel["Hủy phiên giữ chỗ,<br/>giải phóng bàn về Available"]
-        S_Confirm["Cập nhật bàn sang 'Reserved'<br/>& Sinh mã BookingCode"]
-        S_LateIPN{"Tìm bàn<br/>tương đương?"}
-        S_Reallocate["Gán bàn mới<br/>& Sinh BookingCode"]
-        S_Alert["Lưu Paid_TableLost<br/>& Báo động CSKH"]
-    end
-
-    subgraph VNPAY ["Cổng thanh toán VNPAY"]
-        direction TB
-        V1["Hiển thị màn hình<br/>thanh toán VNPAY-QR"]
-        V2["Xử lý giao dịch & gửi tín<br/>hiệu IPN callback về Backend"]
-    end
-
-    G_Start --> G1
-    G1 --> S1
-    S1 --> S_Dec1
-    S_Dec1 -->|No| S_Alt
-    S_Alt --> G1
-    S_Dec1 -->|Yes| G2
-    G2 --> G3
-    G3 --> S2
-    S2 --> V1
-    V1 --> G4
-    G4 --> V2
-    V2 --> S_Dec2
-    S_Dec2 -->|Quá 17p khách bỏ| S_Cancel
-    S_Cancel --> G_Fail
-    G_Fail --> G_EndFail
-    S_Dec2 -->|Đúng 17p| S_Confirm
-    S_Confirm --> G_Success
-    S_Dec2 -->|IPN trễ quá 17p| S_LateIPN
-    S_LateIPN -->|Còn bàn| S_Reallocate
-    S_Reallocate --> G_Success
-    S_LateIPN -->|Hết bàn| S_Alert
-    S_Alert --> G_Fail
-    G_Success --> G_EndSuccess
-
-    style G_Start fill:#e53935,stroke:#b71c1c
-    style G_EndFail fill:#ffffff,stroke:#e53935,stroke-width:2px
-    style G_EndSuccess fill:#ffffff,stroke:#2e7d32,stroke-width:2px
-    style S_Dec1 fill:#fce4ec,stroke:#c2185b,color:#880e4f
-    style S_Dec2 fill:#fce4ec,stroke:#c2185b,color:#880e4f
-    style G1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G4 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G_Fail fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G_Success fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Alt fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Cancel fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Confirm fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style V1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style V2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-```
 
 ---
 
 ### 3.2 AD-02: Quy trình Nhân viên Order trực tiếp & In Bếp (3 Làn: Khách hàng | Phục vụ | Hệ thống & Máy in)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad02_waitstaff_ordering.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/ad02_waitstaff_ordering.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad02_waitstaff_ordering.drawio`](./drawio/ad02_waitstaff_ordering.drawio)
 
-```mermaid
-flowchart TD
-    subgraph Guest ["Khách hàng (Guest)"]
-        direction TB
-        G_Start(( ))
-        G1["Xem E-Menu qua màn hình<br/>Digital Display tại bàn"]
-        G2["Thảo luận và gọi nhân viên<br/>phục vụ để order món"]
-    end
-
-    subgraph Waitstaff ["Nhân viên Phục vụ (Waitstaff)"]
-        direction TB
-        W1["Có mặt tại bàn, mở ứng dụng<br/>trên Tablet di động"]
-        W2["Thêm món vào giỏ hàng<br/>& Nhập ghi chú dị ứng"]
-        W3["Bấm nút 'Tạo đơn & Gửi Bếp'"]
-    end
-
-    subgraph System ["Hệ thống VinDining & Máy in"]
-        direction TB
-        S1["Lưu Order vào Database<br/>(Status: Processing)"]
-        S2["Tự động điều phối lệnh in<br/>ra máy in ESC/POS khu vực bếp"]
-        S3["Máy in nhả phiếu Order vật lý<br/>cho đầu bếp (In đậm dị ứng)"]
-        S_End(((OK)))
-    end
-
-    G_Start --> G1
-    G1 --> G2
-    G2 --> W1
-    W1 --> W2
-    W2 --> W3
-    W3 --> S1
-    S1 --> S2
-    S2 --> S3
-    S3 --> S_End
-```
 ---
 
 ### 3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món (3 Làn: Nhà bếp | Expediter | Hệ thống)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad03_serving_confirmation.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad03_serving_confirmation.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad03_serving_confirmation.drawio`](./drawio/ad03_serving_confirmation.drawio)
 
-```mermaid
-flowchart TD
-    subgraph Kitchen ["Nhà bếp (Kitchen)"]
-        direction TB
-        K_Start(( ))
-        K1["Đầu bếp nấu xong món<br/>& đặt ra quầy Pass"]
-    end
-
-    subgraph Expediter ["Nhân viên Điều phối (Checkfood)"]
-        direction TB
-        E1["Kiểm tra đĩa món,<br/>đối chiếu phiếu Bếp/Tablet"]
-        E2["Bấm 'Xác nhận hoàn thành món'<br/>trên màn hình Tablet (BR-04)"]
-        E3["Giao cho Waitstaff bưng<br/>ra bàn cho khách"]
-    end
-
-    subgraph System ["Hệ thống VinDining"]
-        direction TB
-        S1["Cập nhật OrderItem -> 'Served'<br/>& Ghi nhận ServeTimestamp"]
-        S_End(((OK)))
-    end
-
-    K_Start --> K1
-    K1 --> E1
-    E1 --> E2
-    E2 --> S1
-    S1 --> S_End
-    E2 --> E3
-```
 
 ---
 
 ### 3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn (3 Làn: Khách hàng | Phục vụ/Thu ngân | Hệ thống)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad04_invoice_settlement.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad04_invoice_settlement.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad04_invoice_settlement.drawio`](./drawio/ad04_invoice_settlement.drawio)
 
-```mermaid
-flowchart TD
-    subgraph Guest ["Khách hàng (Guest)"]
-        direction TB
-        G_Start(( ))
-        G1["Nhấn 'Yêu cầu thanh toán'<br/>trên Web hoặc báo Phục vụ"]
-        G2["Kiểm tra Hóa đơn tạm tính<br/>& dòng tiền cấn trừ cọc Deposit"]
-        G3["Thanh toán số tiền còn thiếu<br/>(Tiền mặt / Thẻ POS / Chuyển khoản)"]
-    end
-
-    subgraph Waitstaff ["Nhân viên Phục vụ / Thu ngân"]
-        direction TB
-        W1["Chọn 'Thanh toán hóa đơn'<br/>cho bàn trên Tablet"]
-        W2["Cầm Hóa đơn tạm tính<br/>đem ra bàn cho khách kiểm tra"]
-        W3["Xác nhận nhận đủ tiền & bấm<br/>'Hoàn tất thanh toán' trên Tablet"]
-        W4["Giao Hóa đơn tài chính cho khách<br/>& tiến hành dọn dẹp bàn"]
-        W5["Dọn dẹp xong, bấm chuyển bàn<br/>về trạng thái 'Available' (Trống)"]
-        W_End(((OK)))
-    end
-
-    subgraph System ["Hệ thống VinDining (Invoice Engine)"]
-        direction TB
-        S1["Áp công thức tài chính BR-03:<br/>Subtotal + 5% SVC + 10% VAT - Deposit Paid"]
-        S2["In phiếu Hóa đơn tạm tính<br/>qua máy in nhiệt thu ngân"]
-        S3["Ngắt liên kết hóa đơn với Digital Display,<br/>in Hóa đơn tài chính cuối cùng"]
-        S4["Chuyển trạng thái bàn sang<br/>'Cleaning' (Chờ dọn dẹp)"]
-    end
-
-    G_Start --> G1
-    G1 --> W1
-    W1 --> S1
-    S1 --> S2
-    S2 --> W2
-    W2 --> G2
-    G2 --> G3
-    G3 --> W3
-    W3 --> S3
-    S3 --> S4
-    S4 --> W4
-    W4 --> W5
-    W5 --> W_End
-
-    style G_Start fill:#e53935,stroke:#b71c1c
-    style W_End fill:#ffffff,stroke:#2e7d32,stroke-width:2px
-    style G1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style G3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W4 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style W5 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S2 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S3 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S4 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-```
 
 ---
 
 ### 3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY (3 Làn: Khách/Quản lý | Hệ thống | Cổng VNPAY)
 
-> 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/ad05_cancellation_refund.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](./drawio/ad05_cancellation_refund.drawio)
 
-```mermaid
-flowchart TD
-    subgraph Actor ["Khách hàng / Quản lý"]
-        direction TB
-        A_Start(( ))
-        A1["Bấm 'Hủy đặt bàn' trên Web<br/>hoặc Quản lý 'Manual Override'"]
-        A_Penalty["Nhận thông báo: Hủy bàn thành công,<br/>phạt 100% cọc (Hủy dưới 4 tiếng)"]
-        A_EndPenalty(((Phạt)))
-        A_Refund["Nhận Email/SMS xác nhận hoàn cọc 100%<br/>& tiền hoàn về tài khoản"]
-        A_EndSuccess(((Hoàn)))
-    end
-
-    subgraph System ["Hệ thống VinDining (Policy Engine)"]
-        direction TB
-        S_Check["Kiểm tra điều kiện BR-05:<br/>DeltaTime = BookingTime - Now"]
-        S_Dec{"Hủy trước >= 4h (BR-05)<br/>HOẶC Manager Override?"}
-        S_Forfeit["Cập nhật Reservation -> Cancelled_Forfeited;<br/>Giải phóng bàn về Available (Phạt 100% cọc)"]
-        S_ReqRefund["Gửi yêu cầu RefundTransaction sang VNPAY<br/>với mã giao dịch gốc & số tiền cọc"]
-        S_DoneRefund["Cập nhật Reservation -> Cancelled_Refunded;<br/>Giải phóng bàn về Available & Gửi thông báo"]
-    end
-
-    subgraph VNPAY ["Cổng thanh toán VNPAY (Refund API)"]
-        direction TB
-        V_Process["Tiếp nhận yêu cầu hoàn tiền<br/>& đối soát giao dịch gốc"]
-        V_Done["Hoàn tiền về tài khoản thẻ/ngân hàng<br/>& Phản hồi RspCode: 00 (Thành công)"]
-    end
-
-    A_Start --> A1
-    A1 --> S_Check
-    S_Check --> S_Dec
-    S_Dec -->|Không đủ điều kiện| S_Forfeit
-    S_Forfeit --> A_Penalty
-    A_Penalty --> A_EndPenalty
-    S_Dec -->|Đủ điều kiện >= 4h / Override| S_ReqRefund
-    S_ReqRefund --> V_Process
-    V_Process --> V_Done
-    V_Done --> S_DoneRefund
-    S_DoneRefund --> A_Refund
-    A_Refund --> A_EndSuccess
-
-    style A_Start fill:#e53935,stroke:#b71c1c
-    style A_EndPenalty fill:#ffffff,stroke:#e53935,stroke-width:2px
-    style A_EndSuccess fill:#ffffff,stroke:#2e7d32,stroke-width:2px
-    style S_Dec fill:#fce4ec,stroke:#c2185b,color:#880e4f
-    style A1 fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style A_Penalty fill:#757575,stroke:#424242,color:#ffffff
-    style A_Refund fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Check fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_Forfeit fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_ReqRefund fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style S_DoneRefund fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style V_Process fill:#5b40ff,stroke:#4527a0,color:#ffffff
-    style V_Done fill:#5b40ff,stroke:#4527a0,color:#ffffff
-```
 
 ---
 
@@ -707,165 +514,35 @@ flowchart TD
 
 ### 4.1 SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY
 
-> 📐 **Tệp thiết kế Draw.io**: [`sd01_reservation_vnpay.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/sd01_reservation_vnpay.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`sd01_reservation_vnpay.drawio`](./drawio/sd01_reservation_vnpay.drawio)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Guest as Khách hàng
-    participant Web as Web Frontend (React)
-    participant API as ASP.NET Core Web API
-    participant DB as SQL Server
-    participant VNPAY as Cổng thanh toán VNPAY
-
-    Guest->>Web: Chọn Ngày, Ca, Số khách, Khu vực bàn
-    Web->>API: GET /api/v1/tables/available?shift=...
-    API->>DB: Query bàn trống khả dụng
-    DB-->>API: Trả về danh sách bàn trống
-    API-->>Web: 200 OK (Danh sách bàn)
-    Guest->>Web: Nhập thông tin, ghi chú dị ứng & Bấm Đặt cọc
-    Web->>API: POST /api/v1/reservations/create-hold
-    API->>DB: Tạo Reservation (Status: TemporaryHold, Expire: 17p)
-    API->>VNPAY: Khởi tạo URL giao dịch VNPAY (CreatePaymentUrl)
-    VNPAY-->>API: Trả về PaymentUrl
-    API-->>Web: 200 OK (PaymentUrl)
-    Web->>Guest: Chuyển hướng sang giao diện VNPAY
-    Guest->>VNPAY: Quét mã QR thanh toán tiền cọc
-    VNPAY->>API: POST /api/v1/payments/vnpay-ipn (Server-to-Server)
-    API->>API: Kiểm tra chữ ký Checksum & Số tiền
-    alt IPN về đúng hạn (dưới 17 phút)
-        API->>DB: Cập nhật Reservation -> Reserved, Table -> Reserved
-        API-->>Guest: Gửi Email và SMS xác nhận kèm BookingCode
-    else IPN trễ (quá 17 phút) và Bàn đã mất
-        API->>DB: Quét tìm bàn trống tương đương (Auto-Reallocate)
-        alt Còn bàn tương đương
-            API->>DB: Gán bàn mới, Cập nhật Reservation -> Reserved
-            API-->>Guest: Gửi Email & SMS xác nhận bàn mới
-        else Hết bàn tương đương (Orphaned Payment)
-            API->>DB: Lưu trạng thái Reservation -> Paid_TableLost
-            API-->>Web: Push Notification (SignalR) cho CSKH
-        end
-    end
-    API-->>VNPAY: {"RspCode": "00", "Message": "Confirm Success"}
-```
 
 ---
 
 ### 4.2 SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp
 
-> 📐 **Tệp thiết kế Draw.io**: [`sd02_waitstaff_ordering.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/sd02_waitstaff_ordering.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`sd02_waitstaff_ordering.drawio`](./drawio/sd02_waitstaff_ordering.drawio)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Guest as Khách hàng
-    actor Waitstaff as Nhân viên Phục vụ
-    participant Display as Màn hình Digital Display
-    participant Tablet as Tablet Phục vụ
-    participant API as Web API (.NET 9)
-    participant Printer as Máy in Bếp nhiệt
-
-    Guest->>Display: Xem danh mục món ăn (A La Carte)
-    Guest->>Waitstaff: Gọi nhân viên để đặt món
-    Waitstaff->>Tablet: Chọn bàn & Thêm các món ăn vào giỏ hàng
-    Waitstaff->>Tablet: Điền ghi chú dị ứng (Nếu có)
-    Waitstaff->>Tablet: Bấm nút "Tạo đơn & Gửi Bếp"
-    Tablet->>API: POST /api/v1/orders/create-direct
-    API->>API: Lưu Order (Status: Processing)
-    API->>Printer: Gửi lệnh in ESC/POS (Phân trạm Bếp/Bar, In đậm Dị ứng)
-    Printer-->>Printer: Nhả phiếu order Bếp vật lý
-    API-->>Tablet: 200 OK (Đã gửi Bếp thành công)
-```
 ---
 
 ### 4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
 
-> 📐 **Tệp thiết kế Draw.io**: [`sd03_serving_confirmation.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/sd03_serving_confirmation.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`sd03_serving_confirmation.drawio`](./drawio/sd03_serving_confirmation.drawio)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Kitchen as Nhà bếp (Offline)
-    actor Expediter as Nhân viên Checkfood
-    actor Waitstaff as Nhân viên Phục vụ
-    participant Tablet as Tablet tại Pass
-    participant API as Web API (.NET 9)
-    participant DB as SQL Server
-
-    Kitchen->>Expediter: Đặt món đã nấu xong ra quầy Pass
-    Expediter->>Expediter: Đối chiếu món ăn với đơn hàng (Kiểm tra dị ứng)
-    Expediter->>Tablet: Bấm "Xác nhận món đã hoàn thành" (BR-04)
-    Tablet->>API: POST /api/v1/orders/items/{itemId}/mark-served
-    API->>DB: Cập nhật OrderItem -> Served, Lưu ServeTimestamp
-    DB-->>API: Ghi nhận CSDL thành công
-    API-->>Tablet: 200 OK (Item Status: Served)
-    Expediter->>Waitstaff: Giao món ăn, đọc số bàn để phục vụ bưng ra
-```
 
 ---
 
 ### 4.4 SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn
 
-> 📐 **Tệp thiết kế Draw.io**: [`sd04_invoice_settlement.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/sd04_invoice_settlement.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`sd04_invoice_settlement.drawio`](./drawio/sd04_invoice_settlement.drawio)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Guest as Khách hàng
-    actor Waitstaff as Nhân viên Phục vụ
-    participant Tablet as Tablet Phục vụ
-    participant API as Web API (.NET 9)
-    participant DB as SQL Server
-    participant Printer as Máy in Hóa đơn
-
-    Guest->>Waitstaff: Yêu cầu thanh toán
-    Waitstaff->>Tablet: Chọn "Thanh toán hóa đơn" cho bàn
-    Tablet->>API: GET /api/v1/invoices/preview/{tableId}
-    API->>DB: Query OrderItems + Tiền cọc Deposit
-    API->>API: Áp công thức BR-03: Subtotal + 5% SVC + 10% VAT - Deposit
-    API-->>Tablet: 200 OK (Chi tiết Hóa đơn tạm tính)
-    Waitstaff->>Printer: In Hóa đơn tạm tính đem cho khách kiểm tra
-    Guest->>Waitstaff: Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)
-    Waitstaff->>Tablet: Chọn phương thức thanh toán & Bấm "Hoàn tất thanh toán"
-    Tablet->>API: POST /api/v1/invoices/{id}/settle { paymentMethod }
-    API->>DB: Cập nhật Invoice -> Paid (lưu PaymentMethod), Table -> Cleaning
-    API->>Printer: In hóa đơn tài chính cuối cùng (kèm PaymentMethod)
-    API-->>Tablet: 200 OK (Hóa đơn đã thanh toán thành công)
-    API-->>Tablet: [SignalR TableHub] Broadcast TableStatusChanged(tableId, "Cleaning")
-```
 
 ---
 
 ### 4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY
 
-> 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/phase1/drawio/sd05_cancellation_refund.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](./drawio/sd05_cancellation_refund.drawio)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Khách hàng / Quản lý
-    participant Web as Web App / Portal
-    participant API as Web API (.NET 9)
-    participant DB as SQL Server
-    participant VNPAY as Cổng VNPAY
-
-    User->>Web: Bấm yêu cầu Hủy bàn (Nhập lý do)
-    Web->>API: POST /api/v1/reservations/{id}/cancel
-    API->>DB: Query thông tin đặt bàn & mã giao dịch cọc
-    DB-->>API: Trả về thông tin Reservation & Deposit
-    API->>API: Kiểm tra BR-05 (Trước >= 4h hoặc Quản lý Override)
-    alt Đủ điều kiện hoàn cọc (Trước >= 4h hoặc Quản lý Override)
-        API->>VNPAY: POST /merchant_webapi/api/transaction (Refund)
-        VNPAY-->>API: 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)
-        API->>DB: Cập nhật Reservation -> Cancelled_Refunded, Table -> Available
-        API-->>Web: 200 OK (Đã hủy bàn & Hoàn 100% cọc)
-        Web-->>User: Thông báo hủy thành công & Hoàn cọc về tài khoản
-    else Hủy trễ dưới 4 tiếng (Khách tự hủy, không Override)
-        API->>DB: Cập nhật Reservation -> Cancelled_Forfeited, Table -> Available
-        API-->>Web: 200 OK (Đã hủy bàn, Phạt 100% cọc theo BR-05)
-        Web-->>User: Thông báo hủy thành công & Cọc bị phạt do hủy trễ
-    end
-```
 
 ---
 
@@ -885,19 +562,21 @@ sequenceDiagram
 
 | Mã yêu cầu | Tên yêu cầu nghiệp vụ cấp cao | Mã Use Case | Mã Activity | Mã Sequence | Quy tắc nghiệp vụ | Mã Test Case kiểm thử |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-01` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
-| **REQ-02** | Quản lý sơ đồ bàn & Vòng đời trạng thái bàn | `UC-10` | `AD-01`, `AD-04` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
-| **REQ-03** | Xem E-Menu qua Digital Display | `UC-02` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
-| **REQ-04** | Nhân viên tạo Order trực tiếp & In Bếp | `UC-03`, `UC-04` | `AD-02`, `AD-03` | `SD-02`, `SD-03` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
-| **REQ-05** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-05` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
-| **REQ-06** | Quản trị danh mục và thực đơn món ăn | `UC-06` | — | — | — | `TC-MNU-01` |
-| **REQ-07** | Phân quyền người dùng theo vai trò (RBAC) | `UC-08` | — | — | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
-| **REQ-08** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-07` | `AD-05` | `SD-05` | `BR-05` | `TC-REF-01` |
-| **REQ-09** | Khách hàng đánh giá chất lượng dịch vụ | `UC-13` | — | — | — | `TC-FB-01` |
-| **REQ-10** | Xem Báo cáo Dashboard & Thống kê | `UC-12` | — | — | — | `TC-REP-01` |
-| **REQ-N/A**| Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-09` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
-| **REQ-N/A**| Chuyển bàn / Đổi bàn | `UC-11` | — | — | — | `TC-TBL-03` |
-
+| **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-U1` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
+| **REQ-02** | Xem E-Menu qua Digital Display tại bàn | `UC-U2` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
+| **REQ-03** | Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-U3` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
+| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | — | — | — | `TC-FB-01` |
+| **REQ-05** | Nhân viên tạo Order trực tiếp & In phiếu Bếp | `UC-E1` | `AD-02` | `SD-02` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
+| **REQ-06** | Phục vụ món & Xác nhận hoàn thành tại quầy Pass | `UC-E2` | `AD-03` | `SD-03` | `BR-04` | `TC-SER-01` |
+| **REQ-07** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-E3` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
+| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | — | — | — | `TC-TBL-03` |
+| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | — | — | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
+| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | — | — | — | `TC-MNU-01` |
+| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-01`, `AD-04` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
+| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-05` | `SD-05` | `BR-05` | `TC-REF-01` |
+| **REQ-13** | Quản trị Tài khoản nhân viên & Phân quyền | `UC-A4` | — | — | `BR-04` | `TC-SEC-03` |
+| **REQ-14** | Báo cáo Thống kê Doanh thu & Dashboard | `UC-A5` | — | — | — | `TC-REP-01` |
+| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-01` | `SD-01` | `BR-01` | `TC-SYS-01` |
 ---
 
 ## CHƯƠNG 7: DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)
