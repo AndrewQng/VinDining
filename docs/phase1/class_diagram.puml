@@ -1,127 +1,208 @@
-@startuml
+@startuml VinDining_ClassDiagram
 !theme plain
+skinparam classAttributeIconSize 0
 skinparam linetype ortho
-skinparam nodesep 70
-skinparam ranksep 70
-skinparam packageStyle rectangle
 
-package "ENUMS" {
-    enum TableStatus {
-        Available
-        LockedForPayment
-        Reserved
-        Occupied
-        Cleaning
-    }
-    enum ReservationStatus {
-        AwaitingPayment
-        Confirmed
-        Cancelled
-        Completed
-    }
-    enum OrderItemStatus {
-        Preparing
-        Served
-        Cancelled
-    }
-    enum PaymentMethod {
-        Cash
-        Card
-        BankTransfer
-        DepositCovered
-    }
+abstract class BaseEntity {
+    +Guid Id
+    +DateTime CreatedAtUtc
+    +DateTime? UpdatedAtUtc
 }
 
-package "CONTROLLERS & HUBS (API)" {
-    class ReservationController <<Controller>>
-    class OrderController <<Controller>>
-    class TableController <<Controller>>
-    class TableHub <<SignalR>>
-    class KitchenHub <<SignalR>>
+enum StaffRole {
+    Waitstaff
+    Expediter
+    Manager
+    Admin
 }
 
-package "SERVICES (CQRS)" {
-    class ReservationCommandHandler <<Handler>>
-    class OrderCommandHandler <<Handler>>
-    class TableQueryHandler <<Handler>>
+enum TableStatus {
+    Available
+    LockedForPayment
+    Reserved
+    Occupied
+    Cleaning
 }
 
-package "DB ENTITIES (DOMAIN)" {
-    class Guest {
-        + Guid Id
-        + string FullName
-        + string PhoneNumber
-    }
-    class Table {
-        + Guid Id
-        + string Name
-        + int Capacity
-        + TableStatus Status
-    }
-    class MenuItem {
-        + Guid Id
-        + string Name
-        + decimal Price
-    }
-    class Reservation {
-        + Guid Id
-        + DateTime ReservationTime
-        + int PartySize
-        + ReservationStatus Status
-    }
-    class Order {
-        + Guid Id
-        + Guid TableId
-    }
-    class OrderItem {
-        + Guid Id
-        + int Quantity
-        + OrderItemStatus Status
-    }
-    class Deposit {
-        + Guid Id
-        + decimal Amount
-        + string PaymentMethod
-    }
-    class Invoice {
-        + Guid Id
-        + decimal AmountPayable
-        + PaymentMethod PaymentMethod
-        + bool IsPaid
-    }
-
-    ' Ép layout theo dạng lưới 3 cột x 3 hàng để đường thẳng tắp
-    Guest -[hidden]right-> Table
-    Table -[hidden]right-> MenuItem
-
-    Reservation -[hidden]right-> Order
-    Order -[hidden]right-> OrderItem
-
-    Deposit -[hidden]right-> Invoice
-
-    ' Định nghĩa các quan hệ có cardinality (0..1, 1..*) và chiều mũi tên
-    Guest "1" -down-> "0..*" Reservation : Makes
-    Table "1" -down-> "0..*" Reservation : Hosted at
-    Table "1" -down-> "0..*" Order : Has active
-    
-    OrderItem "0..*" -up-> "1" MenuItem : Represents
-
-    Reservation "1" -down-> "0..1" Deposit : Confirmed by
-    Order "1" -down-> "0..1" Invoice : Billed as
-
-    Order "1" -right-> "1..*" OrderItem : Contains
-    Order "0..*" .-left.> "0..1" Reservation : Links to
+enum TableZone {
+    MainHall
+    VIP
+    Balcony
 }
 
-ReservationController ..> ReservationCommandHandler
-OrderController ..> OrderCommandHandler
-TableController ..> TableQueryHandler
+enum ReservationStatus {
+    AwaitingPayment
+    Confirmed
+    Completed
+    Cancelled
+    Expired
+}
 
-ReservationCommandHandler --> Reservation
-OrderCommandHandler --> Order
-TableQueryHandler --> Table
+enum DepositStatus {
+    Pending
+    Paid
+    Refunded
+    Forfeited
+}
 
-TableHub ..> Table
-KitchenHub ..> OrderItem
+enum OrderStatus {
+    Processing
+    Completed
+    Cancelled
+}
+
+enum OrderItemStatus {
+    Preparing
+    Served
+    Cancelled
+}
+
+enum PaymentMethod {
+    Cash
+    Card
+    BankTransfer
+    DepositCovered
+    VNPAY
+}
+
+class Guest {
+    +string FullName
+    +string PhoneNumber
+    +string Email
+    +string? Address
+}
+
+class Staff {
+    +string FullName
+    +string Username
+    +string Email
+    +string PasswordHash
+    +StaffRole Role
+    +bool IsActive
+}
+
+class Table {
+    +string TableNumber
+    +int Capacity
+    +TableZone Zone
+    +TableStatus Status
+    +string? PairingCode
+    +string? DeviceId
+    +bool IsActive
+}
+
+class Reservation {
+    +string BookingCode
+    +Guid GuestId
+    +Guid TableId
+    +DateTime ReservationTime
+    +string DiningShift
+    +int PartySize
+    +ReservationStatus Status
+    +string? SpecialNotes
+    +DateTime? CancelledAt
+    +string? CancellationReason
+}
+
+class Deposit {
+    +Guid ReservationId
+    +decimal Amount
+    +string TransactionId
+    +PaymentMethod PaymentMethod
+    +DepositStatus Status
+    +DateTime? PaidAt
+    +decimal? RefundAmount
+    +DateTime? RefundedAt
+    +string? RefundReason
+    +Guid? ApprovedByStaffId
+}
+
+class Category {
+    +string Name
+    +string Description
+    +int DisplayOrder
+    +bool IsActive
+}
+
+class MenuItem {
+    +Guid CategoryId
+    +string Name
+    +string Description
+    +decimal Price
+    +string? ImageUrl
+    +bool IsAvailable
+    +string? AllergyInfo
+}
+
+class Order {
+    +Guid TableId
+    +Guid? ReservationId
+    +Guid CreatedByStaffId
+    +OrderStatus Status
+    +DateTime OpenedAt
+    +DateTime? ClosedAt
+}
+
+class OrderItem {
+    +Guid OrderId
+    +Guid MenuItemId
+    +int Quantity
+    +decimal UnitPrice
+    +string? Note
+    +OrderItemStatus Status
+    +Guid? ServedByStaffId
+    +DateTime? ServedAt
+}
+
+class Invoice {
+    +Guid OrderId
+    +Guid SettledByStaffId
+    +decimal Subtotal
+    +decimal ServiceCharge
+    +decimal VatAmount
+    +decimal DeductedDeposit
+    +decimal AmountPayable
+    +PaymentMethod PaymentMethod
+    +DateTime IssuedAt
+    +bool IsPaid
+}
+
+class Feedback {
+    +Guid GuestId
+    +Guid? ReservationId
+    +int Rating
+    +string? Comment
+    +DateTime CreatedAtUtc
+}
+
+BaseEntity <|-- Guest
+BaseEntity <|-- Staff
+BaseEntity <|-- Table
+BaseEntity <|-- Reservation
+BaseEntity <|-- Deposit
+BaseEntity <|-- Category
+BaseEntity <|-- MenuItem
+BaseEntity <|-- Order
+BaseEntity <|-- OrderItem
+BaseEntity <|-- Invoice
+BaseEntity <|-- Feedback
+
+Guest "1" --> "0..*" Reservation : Makes
+Guest "1" --> "0..*" Feedback : Submits
+Table "1" --> "0..*" Reservation : Hosted at
+Table "1" --> "0..*" Order : Has active
+Reservation "1" *-- "1" Deposit : Guaranteed by
+Reservation "0..1" <-- "0..*" Order : Inherits deposit
+Reservation "0..1" --> "0..1" Feedback : Reviewed by
+
+Category "1" *-- "0..*" MenuItem : Classifies
+Order "1" *-- "1..*" OrderItem : Composes
+MenuItem "1" <-- "0..*" OrderItem : Refers to
+Order "1" --> "0..1" Invoice : Billed as
+
+Staff "1" --> "0..*" Order : Waitstaff Creates
+Staff "1" --> "0..*" OrderItem : Expediter Confirms
+Staff "1" --> "0..*" Invoice : Waitstaff Settles
+Staff "0..1" --> "0..*" Deposit : Manager Overrides
 
 @enduml

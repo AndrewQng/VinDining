@@ -2,17 +2,22 @@ flowchart LR
     %% ENUMS
     subgraph Enums["📌 ENUMS"]
         direction TB
-        E1["<b>&lt;&lt;Enum&gt;&gt;<br>TableStatus</b><hr>Available<br>LockedForPayment<br>Reserved<br>Occupied<br>Cleaning"]
-        E2["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Cancelled<br>Completed"]
-        E3["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Preparing<br>Served<br>Cancelled"]
+        E1["<b>&lt;&lt;Enum&gt;&gt;<br>StaffRole</b><hr>Waitstaff<br>Expediter<br>Manager<br>Admin"]
+        E2["<b>&lt;&lt;Enum&gt;&gt;<br>TableStatus</b><hr>Available<br>LockedForPayment<br>Reserved<br>Occupied<br>Cleaning"]
+        E3["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Completed<br>Cancelled<br>Expired"]
+        E4["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Preparing<br>Served<br>Cancelled"]
+        E5["<b>&lt;&lt;Enum&gt;&gt;<br>PaymentMethod</b><hr>Cash<br>Card<br>BankTransfer<br>DepositCovered<br>VNPAY"]
     end
 
     %% CONTROLLERS & HUBS
     subgraph API["🚀 CONTROLLERS & HUBS (API)"]
         direction TB
-        C1["<b>ReservationController</b><hr>+ CreateReservation()<br>+ GetReservation()"]
-        C2["<b>OrderController</b><hr>+ CreateOrder()"]
-        C3["<b>TableController</b><hr>+ GetTables()"]
+        C0["<b>AuthController</b><hr>+ Login()<br>+ GetMe()"]
+        C1["<b>ReservationController</b><hr>+ CreateReservation()<br>+ CancelReservation()"]
+        C2["<b>OrderController</b><hr>+ CreateOrder()<br>+ ServeItem()"]
+        C3["<b>TableController</b><hr>+ GetTables()<br>+ TransferTable()"]
+        C4["<b>InvoiceController</b><hr>+ PreviewInvoice()<br>+ SettleInvoice()"]
+        C5["<b>AdminController</b><hr>+ ManageStaff()<br>+ ManageMenu()<br>+ ManualRefund()"]
         H1["<b>TableHub (SignalR)</b><hr>+ SendTableStatusUpdate()"]
         H2["<b>KitchenHub (SignalR)</b><hr>+ NotifyNewOrder()<br>+ MarkDishAsServed()"]
     end
@@ -20,9 +25,11 @@ flowchart LR
     %% SERVICES (APPLICATION / MEDIATR)
     subgraph Services["⚙️ SERVICES (APPLICATION / CQRS)"]
         direction TB
-        S1["<b>ReservationCommandHandler</b><hr>+ Handle()"]
-        S2["<b>OrderCommandHandler</b><hr>+ Handle()"]
-        S3["<b>TableQueryHandler</b><hr>+ Handle()"]
+        S0["<b>AuthCommandHandler</b><hr>+ Handle(LoginCommand)"]
+        S1["<b>ReservationCommandHandler</b><hr>+ Handle(CreateReservationCommand)"]
+        S2["<b>OrderCommandHandler</b><hr>+ Handle(CreateOrderCommand)"]
+        S3["<b>TableQueryHandler</b><hr>+ Handle(GetTablesQuery)"]
+        S4["<b>InvoiceCommandHandler</b><hr>+ Handle(SettleInvoiceCommand)"]
     end
 
     %% ENTITIES (DOMAIN)
@@ -30,42 +37,59 @@ flowchart LR
         direction TB
         Base["<b>BaseEntity</b><hr>+ Guid Id<br>+ DateTime CreatedAtUtc<br>+ DateTime? UpdatedAtUtc"]
         
-        Guest["<b>Guest</b><hr>+ string FullName<br>+ string PhoneNumber<br>+ string? Email"]
-        Table["<b>Table</b><hr>+ string Name<br>+ int Capacity<br>+ string Zone<br>+ TableStatus Status"]
-        Reservation["<b>Reservation</b><hr>+ Guid GuestId<br>+ Guid TableId<br>+ DateTime ReservationTime<br>+ int PartySize<br>+ ReservationStatus Status"]
-        Deposit["<b>Deposit</b><hr>+ Guid ReservationId<br>+ decimal Amount<br>+ string TransactionId<br>+ string PaymentMethod"]
-        Order["<b>Order</b><hr>+ Guid TableId<br>+ Guid? ReservationId"]
-        OrderItem["<b>OrderItem</b><hr>+ Guid OrderId<br>+ Guid MenuItemId<br>+ int Quantity<br>+ decimal UnitPrice<br>+ OrderItemStatus Status"]
-        MenuItem["<b>MenuItem</b><hr>+ string Name<br>+ decimal Price<br>+ string Category<br>+ bool IsAvailable"]
-        Invoice["<b>Invoice</b><hr>+ Guid OrderId<br>+ decimal Subtotal<br>+ decimal AmountPayable<br>+ bool IsPaid"]
+        Guest["<b>Guest</b><hr>+ string FullName<br>+ string PhoneNumber<br>+ string Email"]
+        Staff["<b>Staff</b><hr>+ string FullName<br>+ string Username<br>+ StaffRole Role<br>+ bool IsActive"]
+        Table["<b>Table</b><hr>+ string TableNumber<br>+ int Capacity<br>+ string Zone<br>+ TableStatus Status<br>+ string? PairingCode"]
+        Reservation["<b>Reservation</b><hr>+ string BookingCode<br>+ Guid GuestId<br>+ Guid TableId<br>+ ReservationStatus Status"]
+        Deposit["<b>Deposit</b><hr>+ Guid ReservationId<br>+ decimal Amount<br>+ string TransactionId<br>+ PaymentMethod PaymentMethod"]
+        Category["<b>Category</b><hr>+ string Name<br>+ int DisplayOrder"]
+        MenuItem["<b>MenuItem</b><hr>+ Guid CategoryId<br>+ string Name<br>+ decimal Price<br>+ string? AllergyInfo"]
+        Order["<b>Order</b><hr>+ Guid TableId<br>+ Guid? ReservationId<br>+ Guid CreatedByStaffId"]
+        OrderItem["<b>OrderItem</b><hr>+ Guid OrderId<br>+ Guid MenuItemId<br>+ int Quantity<br>+ OrderItemStatus Status<br>+ Guid? ServedByStaffId"]
+        Invoice["<b>Invoice</b><hr>+ Guid OrderId<br>+ Guid SettledByStaffId<br>+ decimal Subtotal<br>+ decimal AmountPayable<br>+ bool IsPaid"]
+        Feedback["<b>Feedback</b><hr>+ Guid GuestId<br>+ Guid? ReservationId<br>+ int Rating<br>+ string? Comment"]
         
         Guest -.->|Inherits| Base
+        Staff -.->|Inherits| Base
         Table -.->|Inherits| Base
         Reservation -.->|Inherits| Base
         Deposit -.->|Inherits| Base
+        Category -.->|Inherits| Base
+        MenuItem -.->|Inherits| Base
         Order -.->|Inherits| Base
         OrderItem -.->|Inherits| Base
-        MenuItem -.->|Inherits| Base
         Invoice -.->|Inherits| Base
+        Feedback -.->|Inherits| Base
     end
 
     %% RELATIONS
+    C0 -.->|Dispatches| S0
     C1 -.->|Dispatches| S1
     C2 -.->|Dispatches| S2
     C3 -.->|Dispatches| S3
+    C4 -.->|Dispatches| S4
 
+    S0 -->|Validates| Staff
     S1 -->|Creates| Reservation
     S2 -->|Creates| Order
     S3 -->|Reads| Table
+    S4 -->|Creates| Invoice
 
     Guest -->|Makes| Reservation
+    Guest -->|Submits| Feedback
     Table -->|Hosted at| Reservation
     Table -->|Has active| Order
     Reservation -->|Confirmed by| Deposit
+    Reservation -->|Reviewed by| Feedback
+    Category -->|Classifies| MenuItem
     Order -->|Optionally links to| Reservation
     Order -->|Contains| OrderItem
     OrderItem -->|Represents| MenuItem
     Order -->|Billed as| Invoice
     
+    Staff -->|Creates| Order
+    Staff -->|Confirms| OrderItem
+    Staff -->|Settles| Invoice
+
     TableHub -.->|Observes| Table
     KitchenHub -.->|Observes| OrderItem

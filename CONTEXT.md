@@ -7,11 +7,11 @@ Core domain managing fine dining reservations, real-time table layout, QR self-o
 ## 1. Ubiquitous Language
 
 **Guest**:
-A customer reserving a table online or dining in person at the restaurant.
+A dining customer reserving a table online or dining in person. Guests do **not** have accounts or login credentials; they are identified purely by Contact Information (FullName, PhoneNumber, Email) tied to their specific Reservation or Table session.
 _Avoid_: Client, customer, account, user
 
 **Staff**:
-Internal restaurant employees interacting with the system, categorized into:
+Internal restaurant employees authenticated via system accounts (ASP.NET Core Identity + JWT Bearer), categorized by RBAC roles:
 - **Waitstaff / Server**: Floor staff handling check-in, order creation, serving dishes to guests, and bill handover.
 - **Expediter / Checkfood**: Staff stationed at the Kitchen Pass who verifies completed dishes, coordinates delivery, and marks items as served in the system.
 - **Manager**: Supervisor managing menus, table layouts, shifts, reports, and exception refunds.
@@ -89,11 +89,15 @@ The recorded method used to settle an Invoice balance:
 
 ## 3. Entity Relationships
 
-- A **Guest** creates one or more **Reservations**.
-- A **Reservation** holds exactly one **Deposit** transaction.
+- A **Guest** creates one or more **Reservations**, and optionally submits a **Feedback** review after dining.
+- A **Reservation** holds exactly one **Deposit** transaction with advance payment details.
 - A **Reservation** is assigned to exactly one **Table** for a given dining shift.
-- An `Occupied` **Table** maintains an active **Order**.
+- A **Table** is physically bound to one **DigitalDisplay** device via pairing code (`BR-02`).
+- An `Occupied` **Table** maintains an active **Order** initiated by a **Staff** (Waitstaff).
 - An **Order** contains multiple **OrderItems**.
-- An **Order** optionally links back to a **Reservation** (nullable foreign key) to allow the **Invoice** to trace and deduct the **Deposit**.
-- An **Order** produces exactly one **Invoice** upon checkout.
+- An **OrderItem** represents a chosen **MenuItem** and is marked `Served` by a **Staff** (Expediter at Pass).
+- A **Category** categorizes multiple **MenuItems** for structured display on the E-Menu.
+- An **Order** optionally links back to a **Reservation** (nullable foreign key) to allow the **Invoice** to trace and deduct the pre-paid **Deposit**.
+- An **Order** produces exactly one **Invoice** upon checkout settled by a **Staff** (Waitstaff/Cashier).
 - Completing the **Invoice** transitions the **Table** from `Occupied` $\rightarrow$ `Cleaning` $\rightarrow$ `Available`.
+- A **Staff** member possesses an internal account with one designated RBAC role (Waitstaff, Expediter, Manager, Admin).

@@ -30,10 +30,11 @@ Tuy nhiên, việc vận hành thủ công thông thường đang kìm hãm hi�
 
 ### 1.3 Giải pháp hệ thống đề xuất
 Xây dựng **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)** dưới dạng một ứng dụng Web Responsive đa nền tảng kết hợp Backend RESTful Web API hiện đại, tập trung 100% vào mô hình **Phục vụ tại chỗ (In-House Dining)**:
-* **Khách hàng (Guest)**: Truy cập Web đặt bàn trực tuyến, đặt cọc giữ chỗ qua cổng VNPAY; khi đến nhà hàng, xem thực đơn qua thiết bị Digital Display (màn hình hiển thị) tại bàn để lựa chọn Tasting Menu và Course.
-* **Nhân viên Phục vụ (Waitstaff)**: Sử dụng thiết bị di động/tablet cầm tay để check-in bàn, tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng và đặt món trực tiếp trên phần mềm (kích hoạt in phiếu bếp tự động), nhận món từ quầy Pass bưng ra bàn. **Nhân viên Điều phối (Expediter/Checkfood)** tại quầy Pass chịu trách nhiệm kiểm tra món và bấm xác nhận hoàn thành trên hệ thống.
-* **Nhà bếp (Kitchen)**: Tiếp nhận order thông qua hệ thống máy in nhiệt phân khu (Hot kitchen, Cold kitchen, Bar) tự động nhả phiếu ngay khi nhân viên duyệt đơn, phiếu in làm nổi bật các lưu ý dị ứng và phân nhóm món rõ ràng.
-* **Quản lý & Admin (Manager & Admin)**: Sử dụng máy tính quản trị toàn diện danh mục thực đơn, sơ đồ bàn, gán ca, cấu hình mã QR bàn, theo dõi doanh thu thời gian thực và xử lý hoàn cọc ngoại lệ.
+* **Khách hàng (Guest)**: Truy cập Web đặt bàn trực tuyến, đặt cọc giữ chỗ qua cổng VNPAY (khóa bàn tạm 17 phút theo `BR-01`); khi đến nhà hàng, xem thực đơn qua thiết bị Digital Display (màn hình hiển thị) tại bàn. Thực khách **hoàn toàn không cần đăng ký tài khoản**, chỉ lưu thông tin liên lạc nhận diện theo lượt đặt bàn.
+* **Nhân viên Phục vụ (Waitstaff)**: Sử dụng thiết bị di động/tablet cầm tay để check-in bàn, tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng và tạo đơn trực tiếp trên phần mềm (kích hoạt in phiếu bếp tự động), nhận món từ quầy Pass bưng ra bàn.
+* **Nhân viên Điều phối (Expediter / Checkfood)**: Túc trực cố định tại quầy Pass, đối chiếu chất lượng đĩa món và bấm "Xác nhận hoàn thành món" (`Served`) trên hệ thống theo quy tắc `BR-04`.
+* **Nhà bếp (Kitchen Operations)**: Tiếp nhận order thông qua hệ thống máy in nhiệt phân khu (Hot kitchen, Cold kitchen, Bar) tự động nhả phiếu ngay khi nhân viên gửi đơn, phiếu in làm nổi bật các lưu ý dị ứng và phân nhóm món rõ ràng.
+* **Quản lý & Admin (Manager & Admin)**: Sử dụng máy tính quản trị toàn diện danh mục thực đơn, sơ đồ bàn, ghép nối mã Pairing Code cho thiết bị Digital Display (`BR-02`), gán quyền nhân sự RBAC, theo dõi doanh thu thời gian thực và xử lý duyệt hoàn cọc ngoại lệ (`BR-05`).
 
 ---
 
@@ -60,19 +61,19 @@ pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
 ```
 
 #### M - Must Have (Bắt buộc phải có trong phiên bản hiện tại):
-* **REQ-01**: Đặt bàn trực tuyến, lựa chọn ngày/ca/vị trí bàn và thực hiện thanh toán đặt cọc giữ chỗ (Deposit) qua cổng VNPAY (giữ chỗ tạm 15 phút).
-* **REQ-02**: Quản lý sơ đồ bàn trực quan, quản lý vòng đời trạng thái bàn (`Available` $\rightarrow$ `Reserved` $\rightarrow$ `Occupied` $\rightarrow$ `Cleaning`) và liên kết thiết bị Digital Display theo từng bàn.
-* **REQ-03**: Khách xem thực đơn qua màn hình Digital Display tại bàn (chỉ xem, không cho phép đặt món trực tiếp).
-* **REQ-04**: Nhân viên phục vụ tiếp nhận yêu cầu, tạo đơn trực tiếp trên thiết bị di động và kích hoạt in Bếp; Nhân viên Checkfood tại quầy Pass đối chiếu món và xác nhận hoàn thành.
-* **REQ-05**: Lập hóa đơn thanh toán tự động cấn trừ tiền cọc đặt trước, tính phí dịch vụ 5%, VAT 10% và đóng bàn giải phóng trạng thái dọn dẹp.
+* **REQ-01**: Đặt bàn trực tuyến, lựa chọn ngày/ca/vị trí bàn và thực hiện thanh toán đặt cọc giữ chỗ (Deposit) qua cổng VNPAY (khóa giữ chỗ tạm 17 phút theo `BR-01`).
+* **REQ-02**: Quản lý sơ đồ bàn trực quan, quản lý vòng đời trạng thái bàn (`Available` $\rightarrow$ `LockedForPayment` $\rightarrow$ `Reserved` $\rightarrow$ `Occupied` $\rightarrow$ `Cleaning`) và ghép nối thiết bị Digital Display theo từng bàn (`BR-02`).
+* **REQ-03**: Khách xem thực đơn qua màn hình Digital Display tại bàn (chỉ xem E-Menu, nhân viên phục vụ nhận order trực tiếp).
+* **REQ-04**: Nhân viên phục vụ tiếp nhận yêu cầu, tạo đơn trực tiếp trên thiết bị di động và kích hoạt in Bếp; Nhân viên Checkfood tại quầy Pass đối chiếu món và xác nhận hoàn thành (`BR-04`).
+* **REQ-05**: Lập hóa đơn thanh toán tự động cấn trừ tiền cọc đặt trước, tính phí dịch vụ 5%, VAT 10% theo công thức `BR-03` và đóng bàn chuyển sang `Cleaning`.
 
 #### S - Should Have (Quan trọng cần có để tối ưu vận hành):
-* **REQ-06**: Quản trị danh mục thực đơn động tùy biến cao (Tasting Menu, các Course phân loại món, gợi ý đồ uống Wine Pairing).
-* **REQ-07**: Cơ chế phân quyền chi tiết Role-Based Access Control (Admin, Manager, Waitstaff, Guest).
-* **REQ-08**: Cơ chế duyệt hoàn tiền cọc thủ công (Manual Refund Override) dành riêng cho cấp Quản lý khi khách gặp sự cố bất khả kháng.
+* **REQ-06**: Quản trị danh mục thực đơn động tùy biến cao (A La Carte, Category món ăn, cảnh báo dị ứng thực phẩm).
+* **REQ-07**: Cơ chế phân quyền tài khoản nội bộ Role-Based Access Control (Admin, Manager, Waitstaff, Expediter) xác thực bằng JWT Bearer Token. Khách hàng không duy trì tài khoản.
+* **REQ-08**: Cơ chế duyệt hoàn tiền cọc thủ công ngoại lệ (Manual Refund Override) dành riêng cho cấp Quản lý khi khách gặp sự cố bất khả kháng (`BR-05`).
 
 #### C - Could Have (Khuyến khích có nếu đủ thời gian):
-* **REQ-09**: Khách hàng gửi đánh giá, phản hồi trực tiếp về chất lượng món ăn và dịch vụ trên Web sau bữa ăn.
+* **REQ-09**: Khách hàng gửi đánh giá sao (1–5 sao) và phản hồi trực tiếp về chất lượng dịch vụ trên Web sau bữa ăn.
 * **REQ-10**: Dashboard báo cáo thống kê trực quan doanh thu theo ca/ngày/tháng và các món ăn bán chạy nhất.
 
 #### W - Won't Have (Không phát triển trong khuôn khổ đồ án hiện tại):
@@ -86,13 +87,13 @@ pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
 ### 3.1 Kiến trúc tổng thể hệ thống (Clean Architecture & 3-Layer)
 Hệ thống được thiết kế theo mô hình **Client-Server phân tách hoàn toàn**, tầng Backend áp dụng chuẩn **Clean Architecture** kết hợp mô hình **CQRS** với **MediatR** nhằm đảm bảo nguyên tắc **SOLID**, khả năng mở rộng và kiểm thử độc lập:
 
-> 📐 **Tệp thiết kế Draw.io**: [`architecture_clean_arch.drawio`](file:///c:/Users/Admin/Documents/antigravity/blissful-hertz/docs/phase1/drawio/architecture_clean_arch.drawio)
+> 📐 **Tệp thiết kế Draw.io**: [`architecture_clean_arch.drawio`](./drawio/architecture_clean_arch.drawio)
 
 ```mermaid
 graph TD
     subgraph Presentation Layer [Tầng Trình Diễn / Client]
         FE_Guest["Khách hàng (Mobile Web E-Menu & Booking)"]
-        FE_Staff["Nhân viên Phục vụ (Mobile/Tablet Web)"]
+        FE_Staff["Nhân viên Phục vụ & Điều phối (Tablet Web)"]
         FE_Admin["Quản lý & Admin (Desktop Portal)"]
     end
 
@@ -109,9 +110,9 @@ graph TD
     end
 
     subgraph Domain Layer [Core Domain Layer]
-        Entities["Domain Entities (Guest, Table, Reservation, Order, Invoice)"]
-        Enums["Enums (TableStatus, OrderStatus)"]
-        BusinessRules["Domain Rules & Calculations"]
+        Entities["Domain Entities (Guest, Staff, Table, Reservation, Deposit, Category, MenuItem, Order, OrderItem, Invoice, Feedback)"]
+        Enums["Enums (StaffRole, TableStatus, ReservationStatus, OrderStatus, OrderItemStatus, PaymentMethod)"]
+        BusinessRules["Domain Rules & Financial Calculations (BR-01..BR-05)"]
     end
 
     subgraph Infrastructure Layer [Infrastructure & Persistence Layer]
@@ -152,23 +153,30 @@ graph TD
 
 ## CHƯƠNG 4: DANH MỤC PHÂN HỆ CHỨC NĂNG CỐT LÕI
 
-1. **Phân hệ 1: Xác thực & Quản trị tài khoản (Authentication & RBAC)**:
-   - Đăng ký tài khoản khách hàng, đăng nhập an toàn với JWT Bearer Token và Refresh Token.
-   - Phân quyền theo vai trò (Guest, Waitstaff, Manager, Admin).
-2. **Phân hệ 2: Đặt bàn trực tuyến & Thu tiền cọc (Reservation & Deposit)**:
-   - Chọn ngày, ca phục vụ, số lượng khách, khu vực bàn ăn.
-   - Khóa giữ bàn tạm thời 15 phút, thanh toán cọc cố định theo loại bàn qua VNPAY, tự động sinh mã `BookingCode`.
-   - Cơ chế tự động giải phóng bàn nếu quá 15 phút không hoàn tất thanh toán.
-3. **Phân hệ 3: Quản lý Thực đơn & Sơ đồ bàn (Menu & Floor Plan Management)**:
-   - Quản lý các món ăn, Tasting Menu, phân loại Course và cảnh báo dị ứng.
-   - Quản lý sơ đồ bàn trực quan, quản lý thiết bị Digital Display tại bàn thực tế.
-4. **Phân hệ 4: Gọi món & In phiếu Bếp (Waitstaff Ordering & Kitchen Dispatch)**:
-   - Khách xem E-Menu qua Digital Display khi bàn ở trạng thái `Occupied`.
-   - Nhân viên phục vụ tạo đơn hàng trực tiếp trên thiết bị cầm tay; hệ thống tự động in phiếu Bếp ngay khi tạo đơn.
-   - Nhân viên phục vụ lấy món từ quầy Pass bưng ra bàn và bấm xác nhận "Đã phục vụ".
-5. **Phân hệ 5: Thanh toán & Xuất hóa đơn cấn trừ cọc (Billing & Invoice Settlement)**:
-   - Tự động cộng dồn tiền món, tính 5% phí dịch vụ, 10% VAT và tự động cấn trừ số tiền cọc (Deposit) đã thanh toán.
-   - In hóa đơn tạm tính và hóa đơn tài chính cuối cùng, đóng bàn và chuyển trạng thái sang `Cleaning`.
+Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năng** bám sát 15 Use Case chuẩn hóa:
+
+1. **Phân hệ 1: Khách hàng (Guest / Public Subsystem — `UC-U1` $\rightarrow$ `UC-U4`)**:
+   - Đặt bàn trực tuyến, chọn khu vực bàn, ca hẹn và thanh toán tiền cọc giữ chỗ cố định qua cổng VNPAY (khóa bàn tạm 17 phút theo `BR-01`). Khách không cần tài khoản.
+   - Xem danh mục thực đơn A La Carte và cảnh báo dị ứng trên thiết bị Digital Display tại bàn (`BR-02`).
+   - Tự động hoàn cọc 100% khi khách hủy bàn trước giờ hẹn $\ge$ 4 tiếng (`BR-05`).
+   - Gửi đánh giá sao và phản hồi chất lượng dịch vụ sau khi dùng bữa.
+
+2. **Phân hệ 2: Nghiệp vụ Nhân viên Nội bộ (Employee Subsystem — `UC-E1` $\rightarrow$ `UC-E5`)**:
+   - Đăng nhập an toàn bằng tài khoản nhân sự với JWT Bearer Token (`UC-E5`).
+   - Nhân viên phục vụ (Waitstaff) theo dõi sơ đồ bàn real-time, check-in khách vào bàn (`Occupied`), tạo đơn gọi món trực tiếp tại bàn và tự động kích hoạt in phiếu Bếp (`UC-E1`).
+   - Nhân viên Điều phối (Expediter) tại quầy Pass kiểm tra món và bấm xác nhận "Đã phục vụ" (`Served`) theo quy tắc `BR-04` (`UC-E2`).
+   - Tự động tính toán hóa đơn cấn trừ tiền cọc (`BR-03`), đóng bàn và chuyển trạng thái sang `Cleaning` (`UC-E3`).
+   - Hỗ trợ đổi bàn hoặc ghép nhiều bàn ăn theo yêu cầu thực tế của khách (`UC-E4`).
+
+3. **Phân hệ 3: Quản lý & Quản trị (Admin & Manager Subsystem — `UC-A1` $\rightarrow$ `UC-A5`)**:
+   - Quản trị danh mục thực đơn, cập nhật giá, quản lý trạng thái còn/hết món và thông tin dị ứng (`UC-A1`).
+   - Thiết lập sơ đồ bàn ăn trực quan và ghép nối mã Pairing Code với thiết bị Digital Display tại bàn (`UC-A2`, `BR-02`).
+   - Quản lý duyệt hoàn tiền cọc thủ công (Manual Refund Override) khi có sự cố bất khả kháng (`UC-A3`, `BR-05`).
+   - Quản trị tài khoản nhân viên nội bộ và phân quyền RBAC (`UC-A4`).
+   - Báo cáo thống kê trực quan doanh thu, tỷ lệ lấp đầy bàn và món ăn bán chạy (`UC-A5`).
+
+4. **Phân hệ 4: Tự động Hệ thống (System Background Subsystem — `UC-S1`)**:
+   - Tác vụ nền ngầm (Background Worker) định kỳ mỗi 60 giây quét và tự động giải phóng các vị trí bàn giữ cọc quá 17 phút (`BR-01`) mà chưa nhận được xác nhận IPN thanh toán, đưa bàn về trạng thái `Available` và bắn thông báo SignalR Hub.
 
 ---
 

@@ -119,7 +119,7 @@ flowchart TD
 | **Phù hợp phân khúc Fine Dining** | Trung bình | Thấp | Rất cao | Rất cao | **Rất cao (Chuyên biệt)** |
 | **Đặt cọc trực tuyến cổng VN (VNPAY)** | Hạn chế | Không | Không (Chỉ Stripe) | Không (Chỉ Stripe) | **Có (VNPAY IPN tự động)** |
 | **Tự động cấn trừ cọc trên Hóa đơn** | Thủ công | Thủ công | Tự động | Tự động | **Tự động 100% (BR-03)** |
-| **E-Menu QR tĩnh cá nhân hóa theo Bàn** | Có | Có | Không | Hạn chế | **Có (Kích hoạt theo ca bàn)** |
+| **E-Menu Digital Display gắn theo Bàn** | Hạn chế | Không | Không | Hạn chế | **Có (Màn hình Tablet hiển thị tại bàn - BR-02)** |
 | **In Bếp tự động & Nổi bật cảnh báo dị ứng** | Có | Có | Hạn chế | Hạn chế | **Có (In nhiệt ESC/POS)** |
 | **Đồng bộ thời gian thực (SignalR / WebSocket)** | Polling | Polling | WebSocket | WebSocket | **SignalR (Độ trễ < 100ms)** |
 | **Chi phí triển khai & Tự chủ công nghệ** | Thuê bao tháng | Thuê bao tháng | Rất đắt | Rất đắt | **Mã nguồn mở / Tự chủ 100%** |
@@ -135,15 +135,16 @@ Do đó, việc phát triển **Hệ thống VinDining** là hoàn toàn cấp t
 
 ## CHƯƠNG 3: KHẢO SÁT NHU CẦU NGƯỜI DÙNG (STAKEHOLDER NEEDS ASSESSMENT)
 
-Nhóm đã tiến hành khảo sát và tổng hợp yêu cầu từ 4 nhóm đối tượng chính:
+Nhóm đã tiến hành khảo sát và tổng hợp yêu cầu từ 5 nhóm tác nhân chính trong chu trình vận hành:
 
 ```mermaid
 graph TD
     subgraph "Nhu cầu của các Bên liên quan (Stakeholders)"
-        G["1. Thực khách (Guest)<br/>- Đặt bàn giữ chỗ minh bạch<br/>- Menu QR trực quan, ghi chú dị ứng<br/>- Thanh toán rõ ràng khoản cọc"]
-        W["2. Phục vụ (Waitstaff)<br/>- Sơ đồ bàn trực quan real-time<br/>- Nhận thông báo đơn mới tức thì<br/>- Thao tác nhanh trên di động"]
-        K["3. Nhà bếp (Kitchen)<br/>- Phiếu in order rõ ràng phân khu<br/>- Cảnh báo đỏ nổi bật dị ứng<br/>- Không bị nhầm bàn/nhầm món"]
-        M["4. Quản lý (Manager)<br/>- Giảm thiểu 100% rủi ro bùng bàn<br/>- Kiểm soát doanh thu thời gian thực<br/>- Linh hoạt xử lý hoàn cọc"]
+        G["1. Thực khách (Guest)<br/>- Đặt bàn giữ chỗ minh bạch cọc VNPAY 17p (BR-01)<br/>- Xem E-Menu qua Digital Display (BR-02)<br/>- Đánh giá chất lượng dịch vụ (UC-U4)<br/>- Không cần tạo tài khoản đăng nhập"]
+        W["2. Phục vụ (Waitstaff)<br/>- Sơ đồ bàn trực quan real-time, check-in bàn<br/>- Tạo order trực tiếp tại bàn và kích hoạt in Bếp<br/>- Xuất hóa đơn cấn trừ cọc tự động (BR-03)"]
+        E["3. Điều phối (Expediter / Checkfood)<br/>- Nhận món từ Bếp tại quầy Pass<br/>- Bấm xác nhận hoàn thành món (BR-04)<br/>- Đảm bảo độ nóng và tính chuẩn xác của món"]
+        K["4. Nhà bếp (Kitchen Operations)<br/>- Phiếu in order rõ ràng phân khu Bếp/Bar<br/>- Cảnh báo in đậm dị ứng thực phẩm<br/>- Vận hành qua phiếu in, không bám bẩn màn hình"]
+        M["5. Quản lý & Admin (Manager & Admin)<br/>- Triệt tiêu rủi ro bùng bàn No-show<br/>- Cấu hình ghép nối Tablet Digital Display (BR-02)<br/>- Duyệt hoàn cọc ngoại lệ & Quản trị RBAC"]
     end
 ```
 
@@ -151,10 +152,11 @@ graph TD
 
 | Nhóm đối tượng | Kênh tương tác | Nhu cầu & Kỳ vọng cốt lõi | Yêu cầu hệ thống đáp ứng |
 | :--- | :--- | :--- | :--- |
-| **Thực khách (Guest)** | Smartphone cá nhân (Mobile Web) | Đặt bàn nhanh chóng không cần gọi điện; xem thực đơn hình ảnh bắt mắt; ghi chú dị ứng chuẩn xác; thanh toán cọc an toàn; hóa đơn minh bạch. | Web Responsive mượt mà, tích hợp VNPAY, E-Menu QR tĩnh không cần cài đặt App native. |
-| **Nhân viên Phục vụ (Waitstaff)** | Tablet / Điện thoại cầm tay | Nắm bắt sơ đồ bàn trực quan; nhận thông báo rung tức thời khi khách gọi món; xác nhận duyệt đơn và ghi nhận phục vụ nhanh chóng. | SignalR Hub truyền nhận tín hiệu < 100ms, giao diện một chạm (One-touch action) tối ưu trên tablet. |
-| **Nhà bếp (Kitchen Operations)** | Máy in nhiệt phân khu (Bếp nóng, Bếp lạnh, Bar) | Nhận phiếu order in rõ ràng số bàn, tên món, Course và in đậm ghi chú dị ứng nguy hiểm; không phải đọc màn hình phức tạp trong môi trường dầu mỡ. | Lệnh in ESC/POS tự động phân loại trạm in (Station split printing) ngay khi phục vụ bấm duyệt. |
-| **Quản lý & Admin (Manager/Admin)** | Máy tính cá nhân (Desktop Web) | Giám sát tỷ lệ lấp đầy bàn ăn; theo dõi doanh thu theo ca/ngày; quản trị danh mục món ăn linh hoạt; duyệt hoàn cọc khi có sự cố bất khả kháng. | Web Portal trang bị biểu đồ thống kê, phân quyền RBAC chặt chẽ và tính năng Manual Refund Override. |
+| **Thực khách (Guest)** | Smartphone cá nhân & Digital Display tại bàn | Đặt bàn nhanh chóng; thanh toán cọc an toàn; xem thực đơn hình ảnh bắt mắt tại bàn; ghi chú dị ứng chuẩn xác; hóa đơn minh bạch. Khách không cần tạo tài khoản. | Web Responsive mượt mà, tích hợp VNPAY, ứng dụng Digital Display tại bàn chỉ xem (`BR-02`). |
+| **Nhân viên Phục vụ (Waitstaff)** | Tablet / Điện thoại cầm tay | Nắm bắt sơ đồ bàn trực quan; check-in khách; tạo order trực tiếp tại bàn kích hoạt in Bếp; bưng món; xuất hóa đơn cấn trừ cọc tức thời. | SignalR Hub truyền nhận tín hiệu < 100ms, giao diện một chạm (One-touch action) tối ưu trên tablet. |
+| **Nhân viên Điều phối (Expediter)** | Tablet cố định tại quầy Pass | Kiểm tra món ăn từ Bếp ra, đối chiếu phiếu in, bấm xác nhận hoàn thành món (`BR-04`) và điều phối Waitstaff bưng ra bàn. | Giao diện điều phối trực quan tại Pass, nút xác nhận `Served` thời gian thực. |
+| **Nhà bếp (Kitchen Operations)** | Máy in nhiệt phân khu (Bếp nóng, Bếp lạnh, Bar) | Nhận phiếu order in rõ ràng số bàn, tên món, Course và in đậm ghi chú dị ứng nguy hiểm; không phải thao tác màn hình cảm ứng trong môi trường dầu mỡ. | Lệnh in ESC/POS tự động phân loại trạm in (Station split printing) ngay khi phục vụ gửi order. |
+| **Quản lý & Admin (Manager/Admin)** | Máy tính cá nhân (Desktop Web) | Giám sát tỷ lệ lấp đầy bàn ăn; theo dõi doanh thu theo ca/ngày; quản trị danh mục thực đơn; ghép nối thiết bị Digital Display; phân quyền RBAC và duyệt hoàn cọc ngoại lệ. | Web Portal trang bị biểu đồ thống kê, phân quyền RBAC chặt chẽ và tính năng Manual Refund Override (`BR-05`). |
 
 ---
 
@@ -186,7 +188,7 @@ quadrantChart
 
 ### 4.2 Tính khả thi về mặt Vận hành (Operational Feasibility)
 * Hệ thống được thiết kế theo tư duy tối giản thao tác:
-  - Khách hàng không cần đăng ký tài khoản bắt buộc để xem menu và quét QR gọi món.
+  - Khách hàng hoàn toàn không cần đăng ký tài khoản; xem thực đơn trực quan qua Digital Display tại bàn và được nhân viên phục vụ tận tình theo chuẩn Fine Dining.
   - Nhân viên phục vụ thao tác trên màn hình cảm ứng với các nút bấm trực quan, giảm thiểu thời gian đào tạo nhân sự mới xuống dưới 30 phút.
   - Nhà bếp giữ nguyên thói quen nhìn phiếu in truyền thống nhưng phiếu in giờ đây chuẩn xác, rõ ràng và không thể thất lạc.
 * $\rightarrow$ **Kết luận vận hành**: **Rất thuận tiện và dễ tiếp nhận**.
