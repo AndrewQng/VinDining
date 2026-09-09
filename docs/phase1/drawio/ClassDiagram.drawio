@@ -181,7 +181,7 @@
         </mxCell>
 
         <!-- OrderItem -> MenuItem (Association) -->
-        <mxCell id="rel_item_menu" value="Refers to&#xa;0..* ────── 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" source="cls_order_item" target="cls_menu_item" parent="1">
+        <mxCell id="rel_item_menu" value="Refers to&#xa;0..* ────── 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.3;exitY=0;entryX=0.5;entryY=1;" edge="1" source="cls_order_item" target="cls_menu_item" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
@@ -233,7 +233,7 @@
         <mxCell id="rel_hub_tbl" value="Observes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="hub_table" target="cls_table" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="rel_hub_kit" value="Observes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="hub_kitchen" target="cls_order_item" parent="1">
+        <mxCell id="rel_hub_kit" value="Observes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#6c8ebf;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.75;entryY=0;" edge="1" source="hub_kitchen" target="cls_order_item" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 

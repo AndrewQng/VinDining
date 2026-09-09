@@ -173,7 +173,7 @@
         </mxCell>
 
         <!-- System Auto Background -->
-        <mxCell id="e_sys_s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act_system" target="uc_s1" parent="1">
+        <mxCell id="e_sys_s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.7;" edge="1" source="act_system" target="uc_s1" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
@@ -196,10 +196,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e_s1_extend_u1" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#9673a6;html=1;fontSize=10;exitX=0;exitY=0.5;entryX=0;entryY=0.2;" edge="1" source="uc_s1" target="uc_u1" parent="1">
+        <mxCell id="e_s1_extend_u1" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;dashed=1;strokeColor=#9673a6;html=1;fontSize=10;exitX=0;exitY=0.3;entryX=0;entryY=0.2;" edge="1" source="uc_s1" target="uc_u1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="360" y="1095" />
+              <mxPoint x="360" y="1085" />
               <mxPoint x="360" y="125" />
             </Array>
           </mxGeometry>

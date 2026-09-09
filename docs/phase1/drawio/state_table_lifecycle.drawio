@@ -56,49 +56,50 @@
         </mxCell>
 
         <!-- Available -> LockedForPayment -->
-        <mxCell id="tr1" value="Khách chọn bàn &amp; Bấm 'Đặt cọc'&#xa;[Còn bàn trống] / LockTable(17m)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_hold" parent="1">
+        <mxCell id="tr1" value="Khách chọn bàn &amp; Bấm 'Đặt cọc'&#xa;[Còn bàn trống] / LockTable(17m)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.8;exitY=0;entryX=0;entryY=0.3;" edge="1" source="st_avail" target="st_hold" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="280" y="145"/>
+              <mxPoint x="346" y="127"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
         <!-- LockedForPayment -> Available (Timeout) -->
-        <mxCell id="tr2" value="[Quá 17 phút chưa thanh toán cọc] /&#xa;Tự động mở khóa giải phóng bàn (BR-01)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_hold" target="st_avail" parent="1">
+        <mxCell id="tr2" value="[Quá 17 phút chưa thanh toán cọc] /&#xa;Tự động mở khóa giải phóng bàn (BR-01)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;exitX=0;exitY=0.75;entryX=1;entryY=0.2;" edge="1" source="st_hold" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="430" y="170"/>
-              <mxPoint x="430" y="230"/>
+              <mxPoint x="430" y="167.5"/>
+              <mxPoint x="430" y="228"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
         <!-- LockedForPayment -> Reserved -->
-        <mxCell id="tr3" value="Nhận tín hiệu IPN VNPAY thành công (&lt; 17p)&#xa;/ Ghi nhận tiền cọc Deposit &amp; Gửi mã" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_hold" target="st_res" parent="1">
+        <mxCell id="tr3" value="Nhận tín hiệu IPN VNPAY thành công (&lt; 17p)&#xa;/ Ghi nhận tiền cọc Deposit &amp; Gửi mã" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_hold" target="st_res" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="920" y="145"/>
+              <mxPoint x="765" y="145"/>
+              <mxPoint x="765" y="255"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
         <!-- Reserved -> Available (Cancel &amp; Refund) -->
-        <mxCell id="tr4" value="Khách hủy bàn trước &gt;= 4 tiếng (BR-05)&#xa;hoặc Quản lý duyệt Override / Hoàn cọc 100%" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_res" target="st_avail" parent="1">
+        <mxCell id="tr4" value="Khách hủy bàn trước &gt;= 4 tiếng (BR-05)&#xa;hoặc Quản lý duyệt Override / Hoàn cọc 100%" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.25;entryY=0;" edge="1" source="st_res" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="920" y="85"/>
-              <mxPoint x="280" y="85"/>
+              <mxPoint x="225" y="85"/>
             </Array>
           </mxGeometry>
         </mxCell>
 
         <!-- Reserved -> Available (No-show penalty) -->
-        <mxCell id="tr5" value="Hủy &lt; 4 tiếng hoặc No-show quá 30p&#xa;[Phạt 100% cọc] / Giải phóng bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;" edge="1" source="st_res" target="st_avail" parent="1">
+        <mxCell id="tr5" value="Hủy &lt; 4 tiếng hoặc No-show quá 30p&#xa;[Phạt 100% cọc] / Giải phóng bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#c00000;exitX=0.3;exitY=1;entryX=0.8;entryY=1;" edge="1" source="st_res" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="870" y="320"/>
-              <mxPoint x="340" y="320"/>
+              <mxPoint x="872" y="330"/>
+              <mxPoint x="346" y="330"/>
             </Array>
           </mxGeometry>
         </mxCell>
@@ -113,7 +114,7 @@
         </mxCell>
 
         <!-- Available -> Occupied (Walk-in) -->
-        <mxCell id="tr7" value="Khách vãng lai (Walk-in) vào ăn trực tiếp&#xa;/ Phục vụ check-in mở bàn ngay" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" source="st_avail" target="st_occ" parent="1">
+        <mxCell id="tr7" value="Khách vãng lai (Walk-in) vào ăn trực tiếp&#xa;/ Phục vụ check-in mở bàn ngay" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" source="st_avail" target="st_occ" parent="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="280" y="430"/>
@@ -131,7 +132,7 @@
         </mxCell>
 
         <!-- Cleaning -> Available -->
-        <mxCell id="tr9" value="Nhân viên phục vụ dọn bàn xong&#xa;&amp; bấm 'Hoàn tất dọn dẹp' trên Tablet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;" edge="1" source="st_clean" target="st_avail" parent="1">
+        <mxCell id="tr9" value="Nhân viên phục vụ dọn bàn xong&#xa;&amp; bấm 'Hoàn tất dọn dẹp' trên Tablet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;exitX=0.25;exitY=0;entryX=0.25;entryY=1;" edge="1" source="st_clean" target="st_avail" parent="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 

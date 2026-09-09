@@ -133,7 +133,8 @@ def endpoint(edge, end, by_id):
     """Absolute (x, y) where ``edge`` meets its source/target vertex.
 
     Honours exitX/exitY (source) and entryX/entryY (target) if the style pins
-    them; otherwise the vertex centre. Returns None if the vertex is unresolved.
+    them. If not pinned, infers perimeter contact point from adjacent waypoint
+    or connecting vertex; falls back to vertex centre if unresolved.
     """
     vid = edge.get(end)
     if not vid or vid not in by_id:
@@ -145,8 +146,37 @@ def endpoint(edge, end, by_id):
     style = edge.get("style") or ""
     fx = style_num(style, "exitX" if end == "source" else "entryX")
     fy = style_num(style, "exitY" if end == "source" else "entryY")
-    return (x + (fx if fx is not None else 0.5) * w,
-            y + (fy if fy is not None else 0.5) * h)
+    if fx is not None or fy is not None:
+        return (x + (fx if fx is not None else 0.5) * w,
+                y + (fy if fy is not None else 0.5) * h)
+
+    waypoints = edge_waypoints(edge)
+    cx, cy = x + 0.5 * w, y + 0.5 * h
+    if end == "source":
+        if waypoints:
+            adj = waypoints[0]
+        else:
+            other_id = edge.get("target")
+            other_box = abs_rect(by_id[other_id], by_id) if other_id in by_id else None
+            adj = (other_box[0] + 0.5 * other_box[2], other_box[1] + 0.5 * other_box[3]) if other_box else None
+    else:
+        if waypoints:
+            adj = waypoints[-1]
+        else:
+            other_id = edge.get("source")
+            other_box = abs_rect(by_id[other_id], by_id) if other_id in by_id else None
+            adj = (other_box[0] + 0.5 * other_box[2], other_box[1] + 0.5 * other_box[3]) if other_box else None
+
+    if adj is None:
+        return (cx, cy)
+
+    dx, dy = adj[0] - cx, adj[1] - cy
+    if abs(dx) < 1e-6 and abs(dy) < 1e-6:
+        return (cx, cy)
+    if abs(dx) * h > abs(dy) * w:
+        return (x + w, cy) if dx > 0 else (x, cy)
+    else:
+        return (cx, y + h) if dy > 0 else (cx, y)
 
 
 def edge_waypoints(edge):
@@ -351,6 +381,31 @@ def check_page(diagram):
                     "W-OVERLAP", "warning", f"{ia},{ib}",
                     f"vertices {ia!r} and {ib!r} overlap",
                     "move the siblings apart or nest one inside the other"))
+    # Endpoint overlap: a line end cannot overlap a line start (and vice versa).
+    # Line end CAN overlap line end; line start CAN overlap line start.
+    edges = [c for c in cells if c.get("edge") == "1"]
+    seen_overlaps = set()
+    for e1 in edges:
+        t1 = endpoint(e1, "target", ids)
+        if t1 is None:
+            continue
+        for e2 in edges:
+            if e1 is e2:
+                continue
+            s2 = endpoint(e2, "source", ids)
+            if s2 is None:
+                continue
+            if abs(t1[0] - s2[0]) < 2.0 and abs(t1[1] - s2[1]) < 2.0:
+                pair_key = (e1.get("id"), e2.get("id"))
+                if pair_key in seen_overlaps:
+                    continue
+                seen_overlaps.add(pair_key)
+                vid = e1.get("target") if e1.get("target") == e2.get("source") else None
+                errors.append(diag(
+                    "E-ENDPOINT-OVERLAP", "error", f"{e1.get('id')},{e2.get('id')}",
+                    f"edge {e1.get('id')!r} end overlaps edge {e2.get('id')!r} start at "
+                    f"({round(t1[0], 1):g},{round(t1[1], 1):g})" + (f" on vertex {vid!r}" if vid else ""),
+                    "offset exitX/exitY or entryX/entryY so a line end does not overlap a line start"))
     warns += geometry_warnings(cells, ids, parents)
     return errors, warns
 
