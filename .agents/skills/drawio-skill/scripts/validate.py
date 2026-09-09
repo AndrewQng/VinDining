@@ -357,19 +357,13 @@ def geometry_checks(cells, ids, parents):
     return errors, warns
 
 
-def check_page(diagram, is_ad=False):
-    """Return (errors, warnings) for one <diagram> page, as structured findings."""
-    name = diagram.get("name", "?")
+def check_page(diagram, is_ad=False, is_asis=False, is_sd=False):
+    """Run all checks against one <diagram> page element. Returns (errors, warns)."""
     model = diagram.find("mxGraphModel")
     if model is None:
-        if (diagram.text or "").strip():
-            return [], [diag("W-COMPRESSED", "warning", name,
-                             f"page {name!r}: compressed, skipped (cannot lint)",
-                             "save the page as uncompressed XML (this skill "
-                             "always writes uncompressed)")]
-        return [diag("E-PAGE-MODEL", "error", name,
-                     f"page {name!r}: no <mxGraphModel>",
-                     "regenerate the file with this skill's writers")], []
+        return [], [diag("W-COMPRESSED-PAGE", "warning", diagram.get("id", "?"),
+                         f"page {diagram.get('name', '?')!r} contains compressed (non-XML) payload; skipped",
+                         "export from draw.io with compressed=false")]
     root = model.find("root")
     # Normalize UserObject/object wrappers (used for links & metadata): the id
     # lives on the wrapper, geometry/style on the inner mxCell — fold the two
@@ -518,64 +512,74 @@ def check_page(diagram, is_ad=False):
                         f"edge {e.get('id')!r} target connection crooked by {round(delta, 1)}px (waypoint y={pts[-1][1]} vs port y={round(t_pt[1], 1)})",
                         "align waypoint y with target port y or run validate.py --fix"))
 
-    # Label-vertex overlap check: text can only overlap lines, never boxes (enforced for activity diagrams)
+    # Label checks: overlap with vertices, overlap with other labels, and burying short edges
     diagram_name = (diagram.get("name") or "").lower()
     leaves = [(c.get("id"), abs_rect(c, ids)) for c in cells
               if c.get("vertex") == "1" and c.get("id") not in parents
-              and not is_edge_label(c)]
+              and not is_edge_label(c) and not is_activation_bar(c)
+              and "umlLifeline" not in (c.get("style") or "")]
     leaves = [(vid, box) for vid, box in leaves if box]
 
-    # Check labels for AD files (or diagrams with ad in name/file)
-    is_ad_diag = is_ad or "ad0" in diagram_name or "activity" in diagram_name
-    if is_ad_diag:
-        for c in edges:
-            val = c.get("value")
-            if not val or not val.strip():
-                continue
-            s, t = endpoint(c, "source", ids), endpoint(c, "target", ids)
-            if s is None or t is None:
-                continue
-            pts = edge_waypoints(c)
-            poly = [s] + pts + [t]
-            seg_lengths = []
-            total_len = 0.0
-            for p1, p2 in zip(poly, poly[1:]):
-                l = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
-                seg_lengths.append(l)
-                total_len += l
-            if total_len < 1e-3:
-                continue
+    edge_label_data = []
+    for c in edges:
+        val = c.get("value")
+        if not val or not val.strip():
+            continue
+        s, t = endpoint(c, "source", ids), endpoint(c, "target", ids)
+        if s is None or t is None:
+            continue
+        pts = edge_waypoints(c)
+        poly = [s] + pts + [t]
+        seg_lengths = []
+        total_len = 0.0
+        for p1, p2 in zip(poly, poly[1:]):
+            l = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
+            seg_lengths.append(l)
+            total_len += l
+        if total_len < 1e-3:
+            continue
 
-            geom = c.find("mxGeometry")
-            rx = float(geom.get("x", "0")) if geom is not None else 0.0
-            target_dist = ((rx + 1.0) / 2.0) * total_len
-            cur_dist = 0.0
-            lx, ly = poly[len(poly) // 2]
-            for (p1, p2), sl in zip(zip(poly, poly[1:]), seg_lengths):
-                if cur_dist + sl >= target_dist:
-                    ratio = (target_dist - cur_dist) / sl if sl > 0 else 0.5
-                    lx = p1[0] + ratio * (p2[0] - p1[0])
-                    ly = p1[1] + ratio * (p2[1] - p1[1])
-                    break
-                cur_dist += sl
+        geom = c.find("mxGeometry")
+        rx = float(geom.get("x", "0")) if geom is not None else 0.0
+        target_dist = ((rx + 1.0) / 2.0) * total_len
+        cur_dist = 0.0
+        lx, ly = poly[len(poly) // 2]
+        for (p1, p2), sl in zip(zip(poly, poly[1:]), seg_lengths):
+            if cur_dist + sl >= target_dist:
+                ratio = (target_dist - cur_dist) / sl if sl > 0 else 0.5
+                lx = p1[0] + ratio * (p2[0] - p1[0])
+                ly = p1[1] + ratio * (p2[1] - p1[1])
+                break
+            cur_dist += sl
 
-            if geom is not None:
-                off = geom.find("mxPoint")
-                if off is not None and off.get("as") == "offset":
-                    try:
-                        lx += float(off.get("x", "0"))
-                        ly += float(off.get("y", "0"))
-                    except ValueError:
-                        pass
+        if geom is not None:
+            off = geom.find("mxPoint")
+            if off is not None and off.get("as") == "offset":
+                try:
+                    lx += float(off.get("x", "0"))
+                    ly += float(off.get("y", "0"))
+                except ValueError:
+                    pass
 
-            clean_val = val.replace("&#xa;", "\n").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("<br>", "\n")
-            lines = clean_val.split("\n")
-            max_len = max(len(line.strip()) for line in lines) if lines else 0
-            num_lines = len(lines)
-            lw = max(30.0, max_len * 7.2 + 8.0)
-            lh = max(20.0, num_lines * 16.0 + 4.0)
-            label_box = (lx - lw / 2.0, ly - lh / 2.0, lw, lh)
+        clean_val = val.replace("&#xa;", "\n").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("<br>", "\n")
+        lines = clean_val.split("\n")
+        max_len = max(len(line.strip()) for line in lines) if lines else 0
+        num_lines = len(lines)
+        lw = max(30.0, max_len * 7.2 + 8.0)
+        lh = max(20.0, num_lines * 16.0 + 4.0)
+        label_box = (lx - lw / 2.0, ly - lh / 2.0, lw, lh)
+        edge_label_data.append((c, label_box, clean_val, total_len, lw, lh))
 
+        # Check: label buries edge (skip for sequence, legacy survey, and locked activity diagrams)
+        is_sd_page = is_sd or any("umlLifeline" in (cell.get("style") or "") for cell in cells)
+        if not is_sd_page and not is_asis and not is_ad and total_len < 160.0 and lw > total_len + 25.0:
+            errors.append(diag(
+                "E-LABEL-BURIES-EDGE", "error", c.get("id"),
+                f"edge {c.get('id')!r} length ({round(total_len)}px) is buried by label width ({round(lw)}px)",
+                "increase distance between source and target, shorten label, or wrap text with &#xa;"))
+
+        # Check: label overlaps vertex (enforced for activity, state, usecase, class, architecture, stakeholder diagrams)
+        if not is_asis and not is_sd_page:
             ends = {c.get("source"), c.get("target")}
             for vid, box in leaves:
                 if vid not in ends and overlap(label_box, box):
@@ -583,6 +587,20 @@ def check_page(diagram, is_ad=False):
                         "E-LABEL-OVERLAP-VERTEX", "error", c.get("id"),
                         f"edge {c.get('id')!r} label {val[:30]!r} overlaps vertex {vid!r}",
                         "wrap label text with &#xa;, adjust offset, or route edge further from vertex"))
+
+    # Check: label overlaps label
+    for i in range(len(edge_label_data)):
+        c1, box1, v1, _, _, _ = edge_label_data[i]
+        for j in range(i + 1, len(edge_label_data)):
+            c2, box2, v2, _, _, _ = edge_label_data[j]
+            if overlap(box1, box2):
+                ix = max(0.0, min(box1[0] + box1[2], box2[0] + box2[2]) - max(box1[0], box2[0]))
+                iy = max(0.0, min(box1[1] + box1[3], box2[1] + box2[3]) - max(box1[1], box2[1]))
+                if ix > 10.0 and iy > 10.0:
+                    errors.append(diag(
+                        "E-LABEL-OVERLAP-LABEL", "error", c1.get("id"),
+                        f"edge {c1.get('id')!r} label {v1[:20]!r} overlaps edge {c2.get('id')!r} label {v2[:20]!r}",
+                        "move edge waypoints or adjust label offset to separate the labels"))
 
     geo_errs, geo_warns = geometry_checks(cells, ids, parents)
     errors += geo_errs
@@ -677,14 +695,17 @@ def main():
         if auto_fix_crooked(tree, args.file):
             tree = ET.parse(args.file)
 
-    is_ad_file = os.path.basename(args.file).lower().startswith("ad")
+    base_name = os.path.basename(args.file).lower()
+    is_ad_file = base_name.startswith("ad")
+    is_asis_file = base_name.startswith("asis")
+    is_sd_file = base_name.startswith("sd")
     root = tree.getroot()
     pages = root.findall("diagram")
     if not pages:
         pages = [root]
     errors, warns = [], []
     for page in pages:
-        e, w = check_page(page, is_ad=is_ad_file)
+        e, w = check_page(page, is_ad=is_ad_file, is_asis=is_asis_file, is_sd=is_sd_file)
         errors += e
         warns += w
     if args.json:
