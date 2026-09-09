@@ -83,6 +83,24 @@ def is_edge_label(cell):
     return g is not None and g.get("relative") == "1"
 
 
+def is_activation_bar(cell):
+    """True if cell is a sequence diagram lifeline activation bar.
+
+    In UML sequence diagrams, messages pass across lifelines and activation bars
+    between non-adjacent participants, so these are not obstacles to route around.
+    """
+    style = cell.get("style") or ""
+    if "outlineConnect=0" in style or "perimeter=orthogonalPerimeter" in style:
+        return True
+    g = cell.find("mxGeometry")
+    if g is not None:
+        try:
+            return float(g.get("width", "999")) <= 15
+        except ValueError:
+            pass
+    return False
+
+
 def overlap(a, b):
     ax, ay, aw, ah = a
     bx, by, bw, bh = b
@@ -170,13 +188,32 @@ def endpoint(edge, end, by_id):
     if adj is None:
         return (cx, cy)
 
-    dx, dy = adj[0] - cx, adj[1] - cy
-    if abs(dx) < 1e-6 and abs(dy) < 1e-6:
+    adj_x, adj_y = adj
+    if abs(adj_x - cx) < 1e-6 and abs(adj_y - cy) < 1e-6:
         return (cx, cy)
-    if abs(dx) * h > abs(dy) * w:
-        return (x + w, cy) if dx > 0 else (x, cy)
+
+    # For orthogonal edges and cardinal-port shapes:
+    # 1. Inside horizontal span [x, x + w] -> connects to top or bottom port
+    if x <= adj_x <= x + w:
+        return (cx, y) if adj_y < cy else (cx, y + h)
+    # 2. Inside vertical span [y, y + h] -> connects to left or right port
+    if y <= adj_y <= y + h:
+        return (x, cy) if adj_x < cx else (x + w, cy)
+
+    # 3. Diagonal relative to box -> find closest cardinal face
+    dist_top = abs(adj_y - y) if adj_y < y else float("inf")
+    dist_bot = abs(adj_y - (y + h)) if adj_y > y + h else float("inf")
+    dist_left = abs(adj_x - x) if adj_x < x else float("inf")
+    dist_right = abs(adj_x - (x + w)) if adj_x > x + w else float("inf")
+    min_d = min(dist_top, dist_bot, dist_left, dist_right)
+    if min_d == dist_top:
+        return (cx, y)
+    elif min_d == dist_bot:
+        return (cx, y + h)
+    elif min_d == dist_left:
+        return (x, cy)
     else:
-        return (cx, y + h) if dy > 0 else (cx, y)
+        return (x + w, cy)
 
 
 def edge_waypoints(edge):
@@ -199,18 +236,45 @@ def edge_waypoints(edge):
 
 
 def edge_route(edge, by_id):
-    """Absolute polyline [(x, y), ...] for a waypointed edge, or None.
+    """Absolute polyline [(x, y), ...] for an edge, or None.
 
-    Returns None when the edge has no explicit waypoints (auto-routed; path
-    unknown) or an endpoint cannot be resolved.
+    Returns full polyline for waypointed edges, or auto-routes straight/orthogonal
+    segments when unwaypointed so through-vertex and crossing errors are caught.
     """
-    waypoints = edge_waypoints(edge)
-    if not waypoints:
-        return None
     s, t = endpoint(edge, "source", by_id), endpoint(edge, "target", by_id)
     if s is None or t is None:
         return None
-    return [s] + waypoints + [t]
+    waypoints = edge_waypoints(edge)
+    if waypoints:
+        return [s] + waypoints + [t]
+
+    # For unwaypointed edges:
+    # 1. Collinear straight lines (horizontal or vertical)
+    if abs(s[0] - t[0]) < 1e-3 or abs(s[1] - t[1]) < 1e-3:
+        return [s, t]
+
+    # 2. Orthogonal edge routing fallback
+    style = edge.get("style") or ""
+    if "edgeStyle=orthogonalEdgeStyle" in style or "orthogonal" in style:
+        ex_x = style_num(style, "exitX")
+        ex_y = style_num(style, "exitY")
+        en_x = style_num(style, "entryX")
+        en_y = style_num(style, "entryY")
+        if ex_y in (0.0, 1.0) and en_x in (0.0, 1.0):
+            return [s, (s[0], t[1]), t]
+        elif ex_x in (0.0, 1.0) and en_y in (0.0, 1.0):
+            return [s, (t[0], s[1]), t]
+        elif ex_y in (0.0, 1.0) and en_y in (0.0, 1.0):
+            mid_y = (s[1] + t[1]) / 2.0
+            return [s, (s[0], mid_y), (t[0], mid_y), t]
+        elif ex_x in (0.0, 1.0) and en_x in (0.0, 1.0):
+            mid_x = (s[0] + t[0]) / 2.0
+            return [s, (mid_x, s[1]), (mid_x, t[1]), t]
+        else:
+            mid_x = (s[0] + t[0]) / 2.0
+            return [s, (mid_x, s[1]), (mid_x, t[1]), t]
+
+    return [s, t]
 
 
 def _orient(a, b, c):
@@ -256,8 +320,9 @@ def routes_cross(pa, pb):
     return False
 
 
-def geometry_warnings(cells, ids, parents):
-    """Edge-through-vertex and edge-crossing warnings for waypointed edges."""
+def geometry_checks(cells, ids, parents):
+    """Edge-through-vertex (error) and edge-crossing (warning) checks."""
+    errors = []
     warns = []
     routed = []          # (edge_id, polyline, {source, target})
     for c in cells:
@@ -270,16 +335,15 @@ def geometry_warnings(cells, ids, parents):
     # an edge legitimately traverses them — restrict to leaves, as overlap does).
     leaves = [(c.get("id"), abs_rect(c, ids)) for c in cells
               if c.get("vertex") == "1" and c.get("id") not in parents
-              and not is_edge_label(c)]
+              and not is_edge_label(c) and not is_activation_bar(c)]
     leaves = [(vid, box) for vid, box in leaves if box]
     for eid, pts, ends in routed:
         for vid, box in leaves:
             if vid not in ends and route_hits_rect(pts, box):
-                warns.append(diag(
-                    "W-EDGE-THROUGH-VERTEX", "warning", eid,
+                errors.append(diag(
+                    "E-EDGE-THROUGH-VERTEX", "error", eid,
                     f"edge {eid!r} routes through vertex {vid!r}",
-                    "add waypoints (<Array as=\"points\">) so the route goes "
-                    "around the vertex"))
+                    "add waypoints (<Array as=\"points\">) or reroute so the path goes around the vertex"))
     # Edge-edge crossings (both routes known).
     for i in range(len(routed)):
         for j in range(i + 1, len(routed)):
@@ -290,7 +354,7 @@ def geometry_warnings(cells, ids, parents):
                     f"edges {ia!r} and {ib!r} cross",
                     "add waypoints to one edge or reroute it so the paths "
                     "do not cross"))
-    return warns
+    return errors, warns
 
 
 def check_page(diagram, is_ad=False):
@@ -395,12 +459,14 @@ def check_page(diagram, is_ad=False):
             s2 = endpoint(e2, "source", ids)
             if s2 is None:
                 continue
-            if abs(t1[0] - s2[0]) < 2.0 and abs(t1[1] - s2[1]) < 2.0:
+            same_vertex = (e1.get("target") == e2.get("source")) and (e1.get("target") is not None)
+            dist = ((t1[0] - s2[0])**2 + (t1[1] - s2[1])**2)**0.5
+            if (same_vertex and dist <= 10.0) or (not same_vertex and dist < 2.0):
                 pair_key = (e1.get("id"), e2.get("id"))
                 if pair_key in seen_overlaps:
                     continue
                 seen_overlaps.add(pair_key)
-                vid = e1.get("target") if e1.get("target") == e2.get("source") else None
+                vid = e1.get("target") if same_vertex else None
                 errors.append(diag(
                     "E-ENDPOINT-OVERLAP", "error", f"{e1.get('id')},{e2.get('id')}",
                     f"edge {e1.get('id')!r} end overlaps edge {e2.get('id')!r} start at "
@@ -518,14 +584,20 @@ def check_page(diagram, is_ad=False):
                         f"edge {c.get('id')!r} label {val[:30]!r} overlaps vertex {vid!r}",
                         "wrap label text with &#xa;, adjust offset, or route edge further from vertex"))
 
-    warns += geometry_warnings(cells, ids, parents)
+    geo_errs, geo_warns = geometry_checks(cells, ids, parents)
+    errors += geo_errs
+    warns += geo_warns
     return errors, warns
 
 
 def auto_fix_crooked(tree, file_path):
     """Auto-align crooked edge waypoints to pinned ports."""
     modified = False
-    for diagram in tree.getroot().findall("diagram") or [tree.getroot()]:
+    root = tree.getroot()
+    pages = root.findall("diagram")
+    if not pages:
+        pages = [root]
+    for diagram in pages:
         model = diagram.find("mxGraphModel")
         if model is None:
             continue
@@ -606,7 +678,10 @@ def main():
             tree = ET.parse(args.file)
 
     is_ad_file = os.path.basename(args.file).lower().startswith("ad")
-    pages = tree.getroot().findall("diagram") or [tree.getroot()]
+    root = tree.getroot()
+    pages = root.findall("diagram")
+    if not pages:
+        pages = [root]
     errors, warns = [], []
     for page in pages:
         e, w = check_page(page, is_ad=is_ad_file)
