@@ -595,9 +595,11 @@ graph LR
 
 ---
 
-### 4.8 SD-08: Ghép nối Tablet Digital Display với Bàn ăn vật lý
+### 4.8 SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration)
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd08_tablet_pairing.drawio`](./drawio/sd08_tablet_pairing.drawio)
+
+![SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn](./drawio/sd08_tablet_pairing.png)
 
 ---
 

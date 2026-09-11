@@ -12,7 +12,7 @@
         </mxCell>
 
         <!-- Central System Hub -->
-        <mxCell id="hub_sys" value="HỆ THỐNG VINDINING&#xa;(Core Restaurant Platform)&#xa;──────────────────────────────────────&#xa;• ASP.NET Core (.NET 9) Web API &amp; MediatR CQRS&#xa;• Real-time Floor &amp; Kitchen Hubs (SignalR)&#xa;• Cổng thanh toán cọc tự động VNPAY (BR-01, BR-05)&#xa;• Module chia lệnh in nhiệt ESC/POS trạm Bếp/Bar&#xa;• Digital Display tại bàn xác thực mã PIN (BR-02)&#xa;• Tự động cấn trừ tiền cọc vào hóa đơn (BR-03)" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;fontColor=#ffffff;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+        <mxCell id="hub_sys" value="HỆ THỐNG VINDINING&#xa;(Core Restaurant Platform)&#xa;──────────────────────────────────────&#xa;• ASP.NET Core (.NET 9) Web API &amp; MediatR CQRS&#xa;• Real-time Floor &amp; Kitchen Hubs (SignalR)&#xa;• Cổng thanh toán cọc tự động VNPAY (BR-01, BR-05)&#xa;• Module chia lệnh in nhiệt ESC/POS trạm Bếp/Bar&#xa;• Màn hình E-Menu hiển thị thực đơn tĩnh tại bàn (BR-02)&#xa;• Tự động cấn trừ tiền cọc vào hóa đơn (BR-03)" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;fontColor=#ffffff;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
           <mxGeometry x="670" y="380" width="380" height="210" as="geometry"/>
         </mxCell>
 
@@ -37,7 +37,7 @@
         </mxCell>
 
         <!-- 5. Quản lý & Admin (Manager & Admin) - Bottom Right -->
-        <mxCell id="card_mgr" value="QUẢN LÝ &amp; ADMIN (MANAGEMENT)&#xa;[Kênh: Web Portal Quản trị trên Desktop]&#xa;──────────────────────────────────────&#xa;• Triệt tiêu tổn thất bùng bàn nhờ chính sách đặt cọc VNPAY&#xa;• Giám sát doanh thu và tỷ lệ lấp đầy bàn ăn theo thời gian thực&#xa;• Quản trị thực đơn, giá món &amp; thiết lập mã PIN Digital Display&#xa;• Thẩm quyền duyệt hoàn cọc thủ công trong tình huống bất khả kháng&#xa;• Quản lý tài khoản, phân quyền RBAC &amp; báo cáo hiệu quả theo ca" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#166534;fontStyle=1;fontSize=11;align=left;verticalAlign=middle;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="card_mgr" value="QUẢN LÝ &amp; ADMIN (MANAGEMENT)&#xa;[Kênh: Web Portal Quản trị trên Desktop]&#xa;──────────────────────────────────────&#xa;• Triệt tiêu tổn thất bùng bàn nhờ chính sách đặt cọc VNPAY&#xa;• Giám sát doanh thu và tỷ lệ lấp đầy bàn ăn theo thời gian thực&#xa;• Quản trị thực đơn, giá món &amp; cấu hình sơ đồ bàn ăn&#xa;• Thẩm quyền duyệt hoàn cọc thủ công trong tình huống bất khả kháng&#xa;• Quản lý tài khoản, phân quyền RBAC &amp; báo cáo hiệu quả theo ca" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#166534;fontStyle=1;fontSize=11;align=left;verticalAlign=middle;spacingLeft=16;" vertex="1" parent="1">
           <mxGeometry x="1280" y="600" width="380" height="190" as="geometry"/>
         </mxCell>
 

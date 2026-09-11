@@ -89,7 +89,7 @@
         <mxCell id="uc_a1" value="UC-A1: Quản trị Danh mục &amp; Thực đơn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontSize=12;fontStyle=1;" vertex="1" parent="grp3">
           <mxGeometry x="140" y="32" width="480" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="uc_a2" value="UC-A2: Quản lý Sơ đồ bàn &amp; Digital Display (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontSize=12;fontStyle=1;" vertex="1" parent="grp3">
+        <mxCell id="uc_a2" value="UC-A2: Quản trị &amp; Cấu hình Sơ đồ bàn ăn (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontSize=12;fontStyle=1;" vertex="1" parent="grp3">
           <mxGeometry x="140" y="85" width="480" height="42" as="geometry" />
         </mxCell>
         <mxCell id="uc_a3" value="UC-A3: Duyệt hoàn cọc thủ công ngoại lệ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontSize=12;fontStyle=1;" vertex="1" parent="grp3">

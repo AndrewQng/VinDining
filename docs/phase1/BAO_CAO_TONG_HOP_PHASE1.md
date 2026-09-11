@@ -78,7 +78,7 @@ Xây dựng **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (Vi
 * **Nhân viên Phục vụ (Waitstaff)**: Sử dụng thiết bị di động/tablet cầm tay để check-in bàn, tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng và tạo đơn trực tiếp trên phần mềm (kích hoạt in phiếu bếp tự động), nhận món từ quầy Pass bưng ra bàn.
 * **Nhân viên Điều phối (Expediter / Checkfood)**: Túc trực cố định tại quầy Pass, đối chiếu chất lượng đĩa món và bấm "Xác nhận hoàn thành món" (`Served`) trên hệ thống theo quy tắc `BR-04`.
 * **Nhà bếp (Kitchen Operations)**: Tiếp nhận order thông qua hệ thống máy in nhiệt phân khu (Hot kitchen, Cold kitchen, Bar) tự động nhả phiếu ngay khi nhân viên gửi đơn, phiếu in làm nổi bật các lưu ý dị ứng và phân nhóm món rõ ràng.
-* **Quản lý & Admin (Manager & Admin)**: Sử dụng máy tính quản trị toàn diện danh mục thực đơn, sơ đồ bàn, ghép nối mã Pairing Code cho thiết bị Digital Display (`BR-02`), gán quyền nhân sự RBAC, theo dõi doanh thu thời gian thực và xử lý duyệt hoàn cọc ngoại lệ (`BR-05`).
+* **Quản lý & Admin (Manager & Admin)**: Sử dụng máy tính quản trị toàn diện danh mục thực đơn, cấu hình sơ đồ bàn ăn trực quan (`BR-02`), gán quyền nhân sự RBAC, theo dõi doanh thu thời gian thực và xử lý duyệt hoàn cọc ngoại lệ (`BR-05`).
 
 ---
 
@@ -167,7 +167,7 @@ Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năn
 
 3. **Phân hệ 3: Quản lý & Quản trị (Admin & Manager Subsystem — `UC-A1` $\rightarrow$ `UC-A5`)**:
    - Quản trị danh mục thực đơn, cập nhật giá, quản lý trạng thái còn/hết món và thông tin dị ứng (`UC-A1`).
-   - Thiết lập sơ đồ bàn ăn trực quan và ghép nối mã Pairing Code với thiết bị Digital Display tại bàn (`UC-A2`, `BR-02`).
+   - Thiết lập và cấu hình sơ đồ bàn ăn trực quan 2D theo từng khu vực (`UC-A2`, `BR-02`).
    - Quản lý duyệt hoàn tiền cọc thủ công (Manual Refund Override) khi có sự cố bất khả kháng (`UC-A3`, `BR-05`).
    - Quản trị tài khoản nhân viên nội bộ và phân quyền RBAC (`UC-A4`).
    - Báo cáo thống kê trực quan doanh thu, tỷ lệ lấp đầy bàn và món ăn bán chạy (`UC-A5`).
@@ -941,11 +941,11 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 ---
 
-### 4.8 SD-08: Ghép nối Tablet Digital Display với Bàn ăn vật lý
+### 4.8 SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration)
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd08_tablet_pairing.drawio`](./drawio/sd08_tablet_pairing.drawio)
 
-![SD-08: Ghép nối Tablet Digital Display với Bàn ăn](./drawio/sd08_tablet_pairing.png)
+![SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn](./drawio/sd08_tablet_pairing.png)
 
 ---
 

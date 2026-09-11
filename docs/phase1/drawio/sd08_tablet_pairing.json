@@ -1,13 +1,9 @@
 {
-  "title": "SD-08: Ghép nối Digital Display qua Pairing Code (UC-A2 / BR-02)",
+  "title": "SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration)",
   "participants": [
     {
-      "id": "tablet",
-      "label": "Digital Display (Tablet)"
-    },
-    {
       "id": "mgr",
-      "label": "Quản lý (Manager)",
+      "label": "Quản lý (Manager / Admin)",
       "actor": true
     },
     {
@@ -16,89 +12,78 @@
     },
     {
       "id": "api",
-      "label": "Web API (DisplayController)"
+      "label": "Web API (TableController)"
     },
     {
       "id": "cqrs",
-      "label": "MediatR (BindDeviceCmd)"
+      "label": "MediatR (UpdateFloorPlanCmd)"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core)"
+      "label": "SQL Server (EF Core 9)"
     },
     {
       "id": "hub",
-      "label": "SignalR Hub"
+      "label": "SignalR FloorPlanHub"
+    },
+    {
+      "id": "waitstaff",
+      "label": "Ứng dụng Phục vụ (Waitstaff)"
     }
   ],
   "messages": [
     {
-      "from": "tablet",
-      "to": "api",
-      "label": "1. POST /api/v1/display/request-code (Khởi động)"
-    },
-    {
-      "from": "api",
-      "to": "db",
-      "label": "2. Sinh PairingCode (6 ký tự) hạn 10 phút"
-    },
-    {
-      "from": "db",
-      "to": "api",
-      "label": "3. Lưu PairingSession tạm",
-      "return": true
-    },
-    {
-      "from": "api",
-      "to": "tablet",
-      "label": "4. 200 OK (Hiển thị PairingCode trên màn hình)",
-      "return": true
+      "from": "mgr",
+      "to": "fe",
+      "label": "1. Kéo thả định vị tọa độ bàn (X, Y) & Sức chứa"
     },
     {
       "from": "mgr",
       "to": "fe",
-      "label": "5. Mở Sơ đồ bàn, chọn Bàn ăn cần ghép nối"
-    },
-    {
-      "from": "mgr",
-      "to": "fe",
-      "label": "6. Nhập PairingCode từ màn hình Tablet"
+      "label": "2. Bấm 'Lưu thay đổi Sơ đồ bàn'"
     },
     {
       "from": "fe",
       "to": "api",
-      "label": "7. POST /api/v1/display/bind-device { TableId, Code }"
+      "label": "3. PUT /api/admin/tables/layout (TableLayoutDto[])"
     },
     {
       "from": "api",
       "to": "cqrs",
-      "label": "8. Send(BindDeviceCommand)"
+      "label": "4. Send(UpdateFloorPlanCommand)"
     },
     {
       "from": "cqrs",
       "to": "db",
-      "label": "9. Validate code, gán DeviceId cố định với TableId (BR-02)"
-    },
-    {
-      "from": "cqrs",
-      "to": "db",
-      "label": "10. Khóa chế độ View-Only (Chặn API đặt món)"
+      "label": "5. Kiểm tra mã bàn duy nhất & trạng thái bàn"
     },
     {
       "from": "db",
       "to": "cqrs",
-      "label": "11. Lưu cấu hình thành công",
+      "label": "6. Dữ liệu hợp lệ (Validation OK)",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "7. SaveChangesAsync() lưu tọa độ & khu vực bàn"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "8. Commit transaction thành công",
       "return": true
     },
     {
       "from": "cqrs",
       "to": "hub",
-      "label": "12. SendToDevice(DeviceId, 'DeviceActivated', { TableId })"
+      "label": "9. Clients.All.SendAsync(\"FloorPlanConfigUpdated\", layout)",
+      "async": true
     },
     {
       "from": "hub",
-      "to": "tablet",
-      "label": "13. Chuyển màn hình sang E-Menu View-Only của Bàn",
+      "to": "waitstaff",
+      "label": "10. Broadcast SignalR tới Tablet phục vụ & Re-render",
       "async": true,
       "activate": false,
       "deactivate": true
@@ -106,19 +91,20 @@
     {
       "from": "cqrs",
       "to": "api",
-      "label": "14. BindSuccessDto",
+      "label": "11. Return Result.Success()",
       "return": true
     },
     {
       "from": "api",
       "to": "fe",
-      "label": "15. 200 OK (Ghép nối thành công)",
+      "label": "12. 200 OK (LayoutUpdatedResponse)",
       "return": true
     },
     {
       "from": "fe",
       "to": "mgr",
-      "label": "16. Bàn ăn hiển thị icon 'Đã kết nối Display'",
+      "label": "13. Hiển thị thông báo lưu thành công & cập nhật trực quan",
+      "return": true,
       "activate": false
     }
   ]
