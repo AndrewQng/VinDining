@@ -68,8 +68,8 @@ The recorded method used to settle an Invoice balance:
 ## 2. Core Domain Invariants & Rules
 
 1. **Scope Boundary**: 100% In-House Dining. No third-party online delivery or shipper actors.
-2. **Digital Display Session (BR-02)**: Each table is equipped with a digital display (tablet) that functions as a view-only E-Menu. Guests use this display to view the available menu items. The ordering capability on this display is disabled.
-3. **Waitstaff Ordering (BR-02b)**: Orders are taken and entered entirely by the Waitstaff on their portable tablet/device after guests have selected their meals from the digital display. The `Pending` order state from Guest self-ordering is eliminated.
+2. **Digital Display (BR-02)**: A passive, non-interactive digital screen at the dining area/table functioning as a view-only E-Menu. Guests use this display solely to view dishes, wine pairings, and allergen information. The screen has no ordering or input capabilities.
+3. **Waitstaff Ordering (BR-02b)**: Orders are taken and entered entirely by the Waitstaff on their portable handheld device by selecting the Table from the real-time Floor Plan. The `Pending` order state from Guest self-ordering is eliminated.
 4. **Kitchen Dispatching (BR-04)**: When Waitstaff submits the order, the system immediately dispatches automatic print commands to thermal printers at designated stations (Hot kitchen, Cold kitchen, Bar) with allergy notes prominently highlighted.
 5. **Serving Confirmation (BR-04)**: When the kitchen places completed dishes on the Pass, the Expediter (Nhân viên Checkfood) verifies the order, dispatches a Waitstaff to deliver it, and taps "Mark as Served" on their tablet at the Pass to record actual serving timestamps.
 6. **Reservation Lock & Refund Policy (BR-01, BR-05)**:
@@ -92,7 +92,7 @@ The recorded method used to settle an Invoice balance:
 - A **Guest** creates one or more **Reservations**, and optionally submits a **Feedback** review after dining.
 - A **Reservation** holds exactly one **Deposit** transaction with advance payment details.
 - A **Reservation** is assigned to exactly one **Table** for a given dining shift.
-- A **Table** is physically bound to one **DigitalDisplay** device via pairing code (`BR-02`).
+- A **Table** is optionally accompanied by a passive **DigitalDisplay** showing the E-Menu (`BR-02`).
 - An `Occupied` **Table** maintains an active **Order** initiated by a **Staff** (Waitstaff).
 - An **Order** contains multiple **OrderItems**.
 - An **OrderItem** represents a chosen **MenuItem** and is marked `Served` by a **Staff** (Expediter at Pass).

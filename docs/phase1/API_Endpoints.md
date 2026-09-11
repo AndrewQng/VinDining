@@ -63,8 +63,8 @@ Toàn bộ các API Endpoints được chuẩn hóa và phân nhóm trực tiế
 | **DELETE** | `/api/admin/menu-items/{id}` | Xóa hoặc vô hiệu hóa món ăn khỏi thực đơn | `UC-A1` | Manager, Admin | **Res**: Món bị ẩn khỏi menu phục vụ |
 | **POST** | `/api/admin/categories` | Quản trị danh mục món ăn (Khai vị, Rượu vang...) | `UC-A1` | Manager, Admin | **Req**: `Name`, `DisplayOrder`<br>**Res**: Danh mục mới được thiết lập |
 | **POST** | `/api/admin/tables` | Thêm vị trí bàn ăn mới vào sơ đồ nhà hàng | `UC-A2` | Manager, Admin | **Req**: `TableNumber`, `Capacity`, `Zone`<br>**Res**: Bàn mới được thêm vào CSDL |
-| **PUT** | `/api/admin/tables/{id}` | Chỉnh sửa sức chứa, khu vực hoặc tọa độ bàn | `UC-A2` | Manager, Admin | **Req**: Cấu hình tọa độ Canvas và thông số bàn |
-| **POST** | `/api/admin/tables/{id}/pair-device` | Ghép nối mã Pairing Code cho màn hình Display | `UC-A2` | Manager, Admin | **Req**: `TableId`, `PairingCode` sinh ra từ Tablet vật lý<br>**Res**: Thiết bị được bind cố định vào bàn (`BR-02`) |
+| **PUT** | `/api/admin/tables/{id}` | Chỉnh sửa sức chứa, khu vực hoặc tên bàn | `UC-A2` | Manager, Admin | **Req**: `TableNumber`, `Capacity`, `Zone`<br>**Res**: Trạng thái cập nhật thành công |
+| **PUT** | `/api/admin/tables/layout` | Cập nhật tọa độ bố trí sơ đồ bàn ăn (Floor Plan) | `UC-A2` | Manager, Admin | **Req**: Danh sách `{TableId, CoordX, CoordY, Zone}`<br>**Res**: Lưu tọa độ và phát SignalR đồng bộ sơ đồ mới (`UC-A2`) |
 | **POST** | `/api/admin/reservations/{id}/manual-refund` | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | Manager, Admin | **Req**: `ReservationId`, `RefundReason`, `OverrideNotes`<br>**Res**: Kích hoạt VNPAY Refund API và lưu vết Audit Log (`BR-05`) |
 | **GET** | `/api/admin/staff` | Lấy danh sách tài khoản nhân viên và vai trò | `UC-A4` | Admin | **Res**: Danh sách nhân sự nội bộ kèm trạng thái hoạt động |
 | **POST** | `/api/admin/staff` | Tạo tài khoản nhân viên mới và gán quyền RBAC | `UC-A4` | Admin | **Req**: `FullName`, `Username`, `Email`, `Role`<br>**Res**: Cấp tài khoản và gửi thông tin kích hoạt qua Email |

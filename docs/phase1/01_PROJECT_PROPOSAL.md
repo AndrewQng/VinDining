@@ -80,6 +80,16 @@ pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
 * **REQ-11**: Module Giao hàng tận nơi (Online Delivery) và tính phí vận chuyển theo khoảng cách (không phù hợp với định vị Fine Dining).
 * **REQ-12**: Tích hợp API với các hãng giao nhận thức ăn bên thứ ba (GrabFood, ShopeeFood).
 
+### 2.3 Các quy tắc nghiệp vụ bất biến (Core Business Rules)
+
+| Mã quy tắc | Tên quy tắc nghiệp vụ | Công thức & Nội dung áp dụng chi tiết |
+| :---: | :--- | :--- |
+| **BR-01** | **Khóa bàn giữ chỗ tạm (17 Phút)** | Khi khách bấm chuyển hướng sang VNPAY, bàn chuyển sang `LockedForPayment` trong 17 phút. Quá 17 phút chưa thanh toán thành công, Worker tự động giải phóng về `Available`. |
+| **BR-02** | **Ghép nối thiết bị Digital Display** | Thiết bị màn hình tại bàn phải nhập mã ghép nối (Pairing Code) 6 ký tự do Quản lý tạo để định danh đúng bàn ăn, đảm bảo tính bảo mật và độc lập thiết bị. |
+| **BR-03** | **Tính toán Hóa đơn & Cấn trừ cọc** | $\text{Tổng hóa đơn} = \text{Tiền món} + (\text{Tiền món} \times 5\% \text{ Service Charge}) + (\text{Tiền món} \times 10\% \text{ VAT}) - \text{Tiền cọc}$. |
+| **BR-04** | **Quyền xác nhận món ra bàn (Quầy Pass)** | Chỉ duy nhất Nhân viên Điều phối (Expediter / Checkfood) tại quầy Pass mới có quyền bấm xác nhận "Đã phục vụ" (`Served`) trên hệ thống sau khi đối chiếu chất lượng đĩa món. |
+| **BR-05** | **Chính sách hủy bàn & Hoàn cọc** | Hủy trước giờ hẹn $\ge$ 4 tiếng: Tự động hoàn 100% tiền cọc qua cổng VNPAY. Hủy dưới 4 tiếng hoặc No-show: Mất 100% cọc. Quản lý có quyền duyệt hoàn ngoại lệ (Manual Refund Override). |
+
 ---
 
 ## CHƯƠNG 3: MÔ TẢ GIẢI PHÁP & KIẾN TRÚC KỸ THUẬT
@@ -88,6 +98,8 @@ pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
 Hệ thống được thiết kế theo mô hình **Client-Server phân tách hoàn toàn**, tầng Backend áp dụng chuẩn **Clean Architecture** kết hợp mô hình **CQRS** với **MediatR** nhằm đảm bảo nguyên tắc **SOLID**, khả năng mở rộng và kiểm thử độc lập:
 
 > 📐 **Tệp thiết kế Draw.io**: [`architecture_clean_arch.drawio`](./drawio/architecture_clean_arch.drawio)
+
+![Sơ đồ Kiến trúc Tổng thể Hệ thống Clean Architecture & 3-Layer](./drawio/architecture_clean_arch.png)
 
 ```mermaid
 graph TD
@@ -152,6 +164,10 @@ graph TD
 ---
 
 ## CHƯƠNG 4: DANH MỤC PHÂN HỆ CHỨC NĂNG CỐT LÕI
+
+> 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](./drawio/use_case_overall.drawio)
+
+![Sơ đồ Use Case Tổng thể Hệ thống VinDining](./drawio/use_case_overall.png)
 
 Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năng** bám sát 15 Use Case chuẩn hóa:
 

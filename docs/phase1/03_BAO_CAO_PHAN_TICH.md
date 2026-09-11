@@ -381,21 +381,22 @@ graph LR
 
 ---
 
-#### 📋 UC-A2: Quản lý Sơ đồ bàn & Cấu hình Digital Display (Floor Plan Management)
+#### 📋 UC-A2: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Management)
 * **Mã Use Case**: `UC-A2`
-* **Tên Use Case**: Quản lý Sơ đồ bàn (FloorPlanUseCase)
-* **Tác nhân**: Quản lý (Chính), Hệ thống (Phụ).
+* **Tên Use Case**: Quản trị Sơ đồ bàn (FloorPlanUseCase)
+* **Tác nhân**: Quản lý / Admin (Chính), Hệ thống (Phụ).
 * **Mức độ ưu tiên**: Quan trọng (Should Have).
 * **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Quản lý thiết lập sơ đồ các bàn, khu vực (VIP, Sảnh) và liên kết các thiết bị Tablet (Digital Display) vật lý với ID bàn tương ứng trên hệ thống.
-* **Điều kiện tiên quyết**: Quản lý đăng nhập thành công.
-* **Điều kiện sau hoàn thành**: Sơ đồ bàn được cập nhật, Tablet hiển thị đúng ID bàn của mình.
+* **Mục tiêu tóm tắt**: Quản lý/Admin thiết lập và cấu hình bố cục không gian bàn ăn theo từng khu vực (Sảnh chính, Phòng VIP, Ban công), định vị tọa độ hiển thị trực quan 2D và đồng bộ thời gian thực cho nhân viên phục vụ qua SignalR.
+* **Điều kiện tiên quyết**: Quản lý / Admin đăng nhập thành công.
+* **Điều kiện sau hoàn thành**: Sơ đồ bàn được lưu vào CSDL và tự động đồng bộ xuống thiết bị cầm tay của toàn bộ nhân viên phục vụ.
 * **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý mở chức năng Sơ đồ bàn.
-  2. Hệ thống hiển thị sơ đồ trực quan (Canvas).
-  3. Quản lý thực hiện thêm/xóa/sửa trạng thái (Bảo trì) của bàn.
-  4. Để cấu hình Tablet, Quản lý nhập mã kết nối (Pairing Code) sinh ra từ Tablet vào hệ thống.
-  5. Hệ thống liên kết (bind) Tablet đó với TableId thành công (BR-02).
+  1. Quản lý mở chức năng Quản trị Sơ đồ bàn trên Web Portal.
+  2. Hệ thống hiển thị giao diện sơ đồ bố trí trực quan 2D (Floor Plan Canvas).
+  3. Quản lý chọn khu vực hoặc thêm mới khu vực, sau đó thêm/xóa/sửa vị trí, tên bàn, sức chứa (Capacity) và trạng thái hoạt động của bàn.
+  4. Quản lý sắp xếp lại vị trí tọa độ các bàn ăn khớp với không gian thực tế của nhà hàng.
+  5. Quản lý bấm 'Lưu thay đổi Sơ đồ bàn'.
+  6. Hệ thống kiểm tra hợp lệ (mã bàn không trùng lặp, bàn đang phục vụ không bị đổi sức chứa), lưu CSDL qua UnitOfWork và phát sự kiện SignalR cập nhật tức thời xuống app của nhân viên phục vụ.
 
 ---
 
@@ -518,7 +519,7 @@ graph LR
 
 ---
 
-### 3.8 AD-08: Quy trình Quản lý Sơ đồ bàn & Ghép nối Digital Display (3 Làn: Quản lý | Hệ thống API | Tablet Display tại bàn)
+### 3.8 AD-08: Quy trình Quản trị & Cấu hình Sơ đồ bàn ăn (3 Làn: Quản lý | Hệ thống API & DB | Ứng dụng Phục vụ)
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad08_floor_plan_pairing.drawio`](./drawio/ad08_floor_plan_pairing.drawio)
 
@@ -631,7 +632,7 @@ graph LR
 | Mã quy tắc | Tên quy tắc | Mô tả nội dung logic nghiệp vụ bắt buộc | Tầng kiểm soát |
 | :--- | :--- | :--- | :--- |
 | **BR-01** | **Thời hạn giữ cọc tạm thời (Reservation Lock Timeout)** | Khi khách hàng chọn bàn và bấm đặt cọc, hệ thống khóa giữ chỗ tạm thời trên sơ đồ trong **tối đa 15 phút**. Quá 15 phút không nhận được xác nhận IPN thành công từ VNPAY, hệ thống tự động giải phóng vị trí bàn về trạng thái `Available`. | Backend Background Worker / Hangfire |
-| **BR-02** | **Quản lý thiết bị Digital Display theo Bàn (Digital Display Association)** | Mỗi bàn ăn vật lý được liên kết với một thiết bị Digital Display (Tablet) có cài đặt ID cố định. Thiết bị này chỉ hoạt động với vai trò hiển thị (View-only E-Menu) và không cấp quyền gửi API đặt món vào hệ thống. | Backend API Middleware & Frontend Router |
+| **BR-02** | **Màn hình hiển thị thực đơn tĩnh (Passive Digital Display)** | Mỗi bàn ăn vật lý được trang bị một màn hình hiển thị thụ động (View-only E-Menu) để khách ngắm thực đơn và cảnh báo dị ứng. Màn hình hoàn toàn không có tương tác đặt món. Toàn bộ thao tác chọn bàn và tạo Order do Nhân viên phục vụ (Waitstaff) thực hiện trên ứng dụng cầm tay qua Sơ đồ bàn trực tuyến. | Backend API Middleware & Frontend Router |
 | **BR-03** | **Công thức tính Hóa đơn chuẩn (Financial Calculation Formula)** | Công thức tính bắt buộc áp dụng theo trình tự tuần tự:<br>1. $\text{Subtotal} = \sum (\text{Tiền món dùng thực tế})$<br>2. $\text{Phí dịch vụ (5\%)} = \text{Subtotal} \times 0.05$<br>3. $\text{Thuế VAT (10\%)} = (\text{Subtotal} + \text{Phí dịch vụ}) \times 0.10$<br>4. $\text{Số tiền phải trả} = (\text{Subtotal} + \text{Phí dịch vụ} + \text{Thuế VAT}) - \text{Deposit Paid}$ | Application Service Layer & Domain Entity |
 | **BR-04** | **Thẩm quyền xác nhận phục vụ món (Service Confirmation Privilege)** | Chỉ có tài khoản Nhân viên Điều phối (Expediter/Checkfood) hoặc Quản lý (Manager) mới có quyền bấm nút "Xác nhận món đã hoàn thành" trên thiết bị tại quầy Pass. Đầu bếp và Khách hàng không có quyền thực hiện thao tác này để tránh lỗi báo khống tiến độ phục vụ. | Backend JWT Role-based Authorization |
 | **BR-05** | **Chính sách hủy bàn & Hoàn phạt tiền cọc (Cancellation & Refund Policy)** | - Khách được **hoàn cọc tự động 100%** nếu thực hiện hủy đặt bàn trước giờ hẹn **tối thiểu 04 tiếng**.<br>- Mọi giao dịch hủy **dưới 04 tiếng** sẽ bị phạt 100% tiền cọc (không hoàn tiền).<br>- *Ngoại lệ*: Quản lý (Manager) có quyền sử dụng chức năng `Manual Refund Override` để hoàn cọc thủ công trong các tình huống bất khả kháng. | Application Service Layer & VNPAY API |
@@ -652,7 +653,7 @@ graph LR
 | **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | `AD-07` | `SD-07` | `BR-02` | `TC-TBL-03` |
 | **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | `AD-06` | `SD-06` | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
 | **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | `AD-11` | `SD-11` | `BR-04` | `TC-MNU-01` |
-| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-08` | `SD-08` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
+| **REQ-11** | Quản trị & Cấu hình Sơ đồ bàn ăn | `UC-A2` | `AD-08` | `SD-08` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
 | **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-09` | `SD-09` | `BR-05` | `TC-REF-01` |
 | **REQ-13** | Quản trị Tài khoản nhân viên & Phân quyền | `UC-A4` | — | — | `BR-04` | `TC-SEC-03` |
 | **REQ-14** | Báo cáo Thống kê Doanh thu & Dashboard | `UC-A5` | — | — | — | `TC-REP-01` |
