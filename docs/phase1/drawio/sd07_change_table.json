@@ -1,0 +1,143 @@
+{
+  "title": "SD-07: Đổi bàn & Ghép bàn trong ca phục vụ (UC-E4)",
+  "participants": [
+    {
+      "id": "guest",
+      "label": "Khách hàng (Guest)",
+      "actor": true
+    },
+    {
+      "id": "waitstaff",
+      "label": "Nhân viên Phục vụ",
+      "actor": true
+    },
+    {
+      "id": "tablet",
+      "label": "Tablet Web (React)"
+    },
+    {
+      "id": "api",
+      "label": "Web API (TablesController)"
+    },
+    {
+      "id": "cqrs",
+      "label": "MediatR (ChangeTableCmd)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server (EF Core 9)"
+    },
+    {
+      "id": "hub",
+      "label": "SignalR Hub (Realtime)"
+    },
+    {
+      "id": "exp",
+      "label": "Expediter (Quầy Pass)"
+    }
+  ],
+  "messages": [
+    {
+      "from": "guest",
+      "to": "waitstaff",
+      "label": "1. Yêu cầu chuyển sang bàn khác (VD: Ra ban công)"
+    },
+    {
+      "from": "waitstaff",
+      "to": "tablet",
+      "label": "2. Chọn chức năng Đổi bàn trên giao diện bàn hiện tại",
+      "deactivate": true
+    },
+    {
+      "from": "tablet",
+      "to": "api",
+      "label": "3. GET /api/v1/tables/available"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "4. Query các bàn trống (Status = Available)"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "5. Danh sách bàn trống khả dụng",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "tablet",
+      "label": "6. 200 OK (Danh sách bàn)",
+      "return": true
+    },
+    {
+      "from": "waitstaff",
+      "to": "tablet",
+      "label": "7. Chọn Bàn mới mục tiêu & Xác nhận chuyển"
+    },
+    {
+      "from": "tablet",
+      "to": "api",
+      "label": "8. POST /api/v1/tables/change-table"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "9. Send(ChangeTableCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "10. Di chuyển Order, OrderItems, Deposit sang TableId mới"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "11. Set Bàn cũ = Cleaning, Bàn mới = Occupied"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "12. Commit Transaction thành công",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "hub",
+      "label": "13. Broadcast TableChanged & OrderMoved"
+    },
+    {
+      "from": "hub",
+      "to": "exp",
+      "label": "14. Notify Pass: Cập nhật số bàn mới cho món đang chờ",
+      "async": true,
+      "activate": false
+    },
+    {
+      "from": "hub",
+      "to": "tablet",
+      "label": "15. Sync Sơ đồ bàn: Bàn cũ (Cleaning), Bàn mới (Occupied)",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "16. Result (Success)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "tablet",
+      "label": "17. 200 OK (Chuyển bàn thành công)",
+      "return": true
+    },
+    {
+      "from": "tablet",
+      "to": "waitstaff",
+      "label": "18. Thông báo thành công & Mở đơn tại bàn mới",
+      "activate": false
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "title": "SD-12: Khách hàng gửi đánh giá chất lượng dịch vụ (UC-U4)",
+  "participants": [
+    {
+      "id": "guest",
+      "label": "Khách hàng (Guest)",
+      "actor": true
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile Web (Khách)"
+    },
+    {
+      "id": "api",
+      "label": "Web API (FeedbackController)"
+    },
+    {
+      "id": "cqrs",
+      "label": "MediatR (FeedbackCmd)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server (EF Core 9)"
+    },
+    {
+      "id": "hub",
+      "label": "SignalR Hub"
+    },
+    {
+      "id": "mgr",
+      "label": "Manager Dashboard"
+    }
+  ],
+  "messages": [
+    {
+      "from": "guest",
+      "to": "mobile",
+      "label": "1. Mở link từ Email/QR hóa đơn sau khi dùng bữa"
+    },
+    {
+      "from": "mobile",
+      "to": "api",
+      "label": "2. GET /api/v1/feedback/context?bookingCode=..."
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "3. Kiểm tra mã đặt bàn & Hóa đơn đã thanh toán"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "4. Thông tin bữa ăn hợp lệ",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "mobile",
+      "label": "5. 200 OK (Render form đánh giá)"
+    },
+    {
+      "from": "guest",
+      "to": "mobile",
+      "label": "6. Chọn số sao (1-5), nhập nhận xét món & dịch vụ"
+    },
+    {
+      "from": "mobile",
+      "to": "api",
+      "label": "7. POST /api/v1/feedback/submit"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "8. Send(SubmitFeedbackCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "9. Lưu Feedback (Rating, Comment, BookingCode, Timestamp)"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "10. SaveChangesAsync()",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "hub",
+      "label": "11. Push NewFeedbackReceived event"
+    },
+    {
+      "from": "hub",
+      "to": "mgr",
+      "label": "12. Cập nhật chỉ số CSAT & Thông báo đánh giá mới",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "13. FeedbackResponseDto",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "mobile",
+      "label": "14. 200 OK (Cảm ơn quý khách)",
+      "return": true
+    },
+    {
+      "from": "mobile",
+      "to": "guest",
+      "label": "15. Hiển thị thông điệp triân thực khách",
+      "activate": false
+    }
+  ]
+}

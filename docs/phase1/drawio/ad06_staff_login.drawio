@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="AD-06 Đăng nhập &amp; Xác thực hệ thống" id="ad-06_staff_login">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Lane 1: Nhân viên (Staff) -->
+        <mxCell id="lane1" value="Nhân viên (Waitstaff / Expediter / Manager)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="start1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;" vertex="1" parent="lane1">
+          <mxGeometry x="155" y="60" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="act1_1" value="Mở ứng dụng &amp; Nhập&#xa;Username, Password" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="120" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act1_2" value="Bấm &#39;Đăng nhập&#39;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="210" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act1_fail" value="Xem thông báo lỗi:&#xa;Sai mật khẩu / Nhập lại thông tin" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="390" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act1_succ" value="Truy cập Dashboard nghiệp vụ&#xa;theo quyền hạn được cấp" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="600" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="end_succ" value="" style="ellipse;html=1;shape=endState;fillColor=#2e7d32;strokeColor=#1b5e20;" vertex="1" parent="lane1">
+          <mxGeometry x="155" y="690" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 2: Web Frontend (React) -->
+        <mxCell id="lane2" value="Web Frontend (React SPA)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="act2_1" value="Kiểm tra form validation&#xa;(Trường rỗng, định dạng)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="210" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act2_2" value="Gửi POST /api/v1/auth/login&#xa;kèm credentials" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="300" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act2_3" value="Lưu JWT AccessToken &amp;&#xa;RefreshToken vào Store/Cookie" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="500" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act2_4" value="Đọc Roles &amp; Điều hướng:&#xa;Waitstaff (Bàn) / Expediter (Pass)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="600" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 3: Backend (ASP.NET Core Identity & JWT) -->
+        <mxCell id="lane3" value="Hệ thống Backend (Identity &amp; JWT)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="act3_1" value="Truy vấn User &amp; Xác minh&#xa;Password Hash qua UserManager" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3">
+          <mxGeometry x="65" y="300" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="dec3_1" value="Xác thực&#xa;hợp lệ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane3">
+          <mxGeometry x="110" y="390" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="act3_succ" value="Tạo JWT AccessToken kèm Claims&#xa;+ RefreshToken lưu CSDL" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3">
+          <mxGeometry x="65" y="500" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="start1" target="act1_1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="act1_1" target="act1_2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act1_2" target="act2_1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="act2_1" target="act2_2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act2_2" target="act3_1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="act3_1" target="dec3_1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7_fail" value="Sai thông tin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b71c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="dec3_1" target="act1_fail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- e_retry loops back to act1_1 along outer left margin at abs x=55 -->
+        <mxCell id="e_retry" value="Nhập lại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b71c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="act1_fail" target="act1_1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="55" y="457.5" />
+              <mxPoint x="55" y="187.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7_succ" value="Hợp lệ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="dec3_1" target="act3_succ" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="act3_succ" target="act2_3" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="act2_3" target="act2_4" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="act2_4" target="act1_succ" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="act1_succ" target="end_succ" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

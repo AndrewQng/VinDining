@@ -1,0 +1,103 @@
+{
+  "title": "SD-06: Đăng nhập hệ thống & Cấp phát JWT Token (UC-E5)",
+  "participants": [
+    {
+      "id": "staff",
+      "label": "Nhân viên (Staff)",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Web Frontend (React)"
+    },
+    {
+      "id": "api",
+      "label": "Web API (AuthController)"
+    },
+    {
+      "id": "cqrs",
+      "label": "MediatR (LoginCommand)"
+    },
+    {
+      "id": "id",
+      "label": "ASP.NET Identity / DB"
+    },
+    {
+      "id": "jwt",
+      "label": "JwtTokenService"
+    }
+  ],
+  "messages": [
+    {
+      "from": "staff",
+      "to": "fe",
+      "label": "1. Nhập Username & Password, bấm Đăng nhập"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "2. POST /api/v1/auth/login"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "3. Send(LoginCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "id",
+      "label": "4. FindByNameAsync(username)"
+    },
+    {
+      "from": "id",
+      "to": "cqrs",
+      "label": "5. Trả về AppUser Entity & Roles",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "id",
+      "label": "6. CheckPasswordSignInAsync(user, pass)"
+    },
+    {
+      "from": "id",
+      "to": "cqrs",
+      "label": "7. Xác thực credentials hợp lệ",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "jwt",
+      "label": "8. GenerateTokens(user, roles)"
+    },
+    {
+      "from": "jwt",
+      "to": "cqrs",
+      "label": "9. AccessToken (JWT) + RefreshToken",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "10. AuthResponseDto",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "11. 200 OK (Token, Roles, Profile)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "fe",
+      "label": "12. Lưu JWT vào Zustand Store & Cookie"
+    },
+    {
+      "from": "fe",
+      "to": "staff",
+      "label": "13. Điều hướng màn hình theo Role (Waitstaff/Pass/Admin)",
+      "activate": false
+    }
+  ]
+}

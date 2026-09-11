@@ -96,7 +96,8 @@ Xây dựng **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (Vi
 
 ### 2.2 Phân loại mức độ ưu tiên yêu cầu (MoSCoW Prioritization)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Biểu đồ Phân bổ Mức độ Ưu tiên Yêu cầu (MoSCoW)]**
+![Biểu đồ MoSCoW Prioritization](./drawio/moscow_prioritization.png)
+> 📐 **Tệp thiết kế Draw.io**: [`moscow_prioritization.drawio`](./drawio/moscow_prioritization.drawio)
 
 #### M - Must Have (Bắt buộc phải có trong phiên bản hiện tại):
 * **REQ-01**: Đặt bàn trực tuyến, lựa chọn ngày/ca/vị trí bàn và thực hiện thanh toán đặt cọc giữ chỗ (Deposit) qua cổng VNPAY (khóa giữ chỗ tạm 17 phút theo `BR-01`).
@@ -127,7 +128,8 @@ Hệ thống được thiết kế theo mô hình **Client-Server phân tách ho
 
 > 📐 **Tệp thiết kế Draw.io**: [`architecture_clean_arch.drawio`](./drawio/architecture_clean_arch.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Kiến trúc Tổng thể Hệ thống (Clean Architecture & 3-Layer)]**
+![Sơ đồ Kiến trúc Tổng thể Hệ thống](./drawio/architecture_clean_arch.png)
+> 📐 **Tệp thiết kế Draw.io**: [`architecture_clean_arch.drawio`](./drawio/architecture_clean_arch.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/architecture_clean_arch.drawio`)*
 
 ### 3.2 Bảng công nghệ sử dụng (Technology Stack)
@@ -211,7 +213,8 @@ Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năn
 ### 1.1 Khảo sát quy trình Đặt bàn & Thu cọc thủ công
 Trong các nhà hàng Fine Dining truyền thống hiện nay tại Việt Nam, quy trình đặt bàn chủ yếu diễn ra qua điện thoại (Hotline), Fanpage Facebook/Instagram hoặc ứng dụng nhắn tin (Zalo):
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Quy trình Đặt bàn & Thu cọc truyền thống (As-Is Flow)]**
+![Quy trình Đặt bàn & Thu cọc truyền thống](./drawio/asis01_survey_reservation.png)
+> 📐 **Tệp thiết kế Draw.io**: [`asis01_survey_reservation.drawio`](./drawio/asis01_survey_reservation.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/asis01_survey_reservation.drawio`)*
 
 #### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
@@ -223,7 +226,8 @@ Trong các nhà hàng Fine Dining truyền thống hiện nay tại Việt Nam, 
 ### 1.2 Khảo sát quy trình Gọi món & Điều phối Bếp truyền thống
 Đặc thù của ẩm thực Fine Dining là các set ăn công phu (**Tasting Menu**) phân chia theo các nhóm món (**Course**: Khai vị $\rightarrow$ Món chính $\rightarrow$ Tráng miệng) và kết hợp đồ uống/rượu vang (**Wine Pairing**):
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Quy trình Gọi món & Điều phối Bếp truyền thống (As-Is Flow)]**
+![Quy trình Gọi món & Điều phối Bếp truyền thống](./drawio/asis02_survey_ordering.png)
+> 📐 **Tệp thiết kế Draw.io**: [`asis02_survey_ordering.drawio`](./drawio/asis02_survey_ordering.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/asis02_survey_ordering.drawio`)*
 
 #### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
@@ -235,7 +239,8 @@ Trong các nhà hàng Fine Dining truyền thống hiện nay tại Việt Nam, 
 ### 1.3 Khảo sát quy trình Thanh toán & Cấn trừ cọc cuối bữa
 Khi khách kết thúc bữa ăn, quy trình thanh toán diễn ra như sau:
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Quy trình Thanh toán & Cấn cọc thủ công (As-Is Flow)]**
+![Quy trình Thanh toán & Cấn cọc thủ công](./drawio/asis03_survey_billing.png)
+> 📐 **Tệp thiết kế Draw.io**: [`asis03_survey_billing.drawio`](./drawio/asis03_survey_billing.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/asis03_survey_billing.drawio`)*
 
 #### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
@@ -312,7 +317,8 @@ Do đó, việc phát triển **Hệ thống VinDining** là hoàn toàn cấp t
 
 Nhóm đã tiến hành khảo sát và tổng hợp yêu cầu từ 5 nhóm tác nhân chính trong chu trình vận hành:
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Nhu cầu Các bên liên quan (Stakeholder Needs Assessment)]**
+![Sơ đồ Nhu cầu Các bên liên quan](./drawio/stakeholder_needs.png)
+> 📐 **Tệp thiết kế Draw.io**: [`stakeholder_needs.drawio`](./drawio/stakeholder_needs.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/stakeholder_needs.drawio`)*
 
 ### Bảng tổng hợp nhu cầu & Kỳ vọng chi tiết:
@@ -329,7 +335,8 @@ Nhóm đã tiến hành khảo sát và tổng hợp yêu cầu từ 5 nhóm tá
 
 ## CHƯƠNG 4: BÁO CÁO NGHIÊN CỨU TÍNH KHẢ THI (FEASIBILITY STUDY)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Ma trận Đánh giá Tính khả thi Dự án (Feasibility Quadrant Chart)]**
+![Ma trận Đánh giá Tính khả thi Dự án](./drawio/feasibility_matrix.png)
+> 📐 **Tệp thiết kế Draw.io**: [`feasibility_matrix.drawio`](./drawio/feasibility_matrix.drawio)
 
 ### 4.1 Tính khả thi về mặt Kỹ thuật (Technical Feasibility)
 * **Backend (.NET 9 + ASP.NET Core Web API)**: Cung cấp nền tảng xử lý đa luồng mạnh mẽ, hỗ trợ Dependency Injection, Entity Framework Core 9 tối ưu truy vấn SQL Server, và SignalR Hub tích hợp sẵn cho giao tiếp WebSocket hai chiều.
@@ -433,7 +440,8 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](./drawio/use_case_overall.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Use Case Tổng quan Toàn hệ thống (Overall Use Case Diagram)]**
+![Sơ đồ Use Case Tổng quan Toàn hệ thống](./drawio/use_case_overall.png)
+> 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](./drawio/use_case_overall.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/use_case_overall.drawio`)*
 
 ---
@@ -442,7 +450,8 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`use_case_subsystems.drawio`](./drawio/use_case_subsystems.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Use Case Phân rã theo Phân hệ (Subsystem Use Case Diagram)]**
+![Sơ đồ Use Case Phân rã theo Phân hệ](./drawio/use_case_subsystems.png)
+> 📐 **Tệp thiết kế Draw.io**: [`use_case_subsystems.drawio`](./drawio/use_case_subsystems.drawio)
 > *(Tệp thiết kế tương ứng: `./drawio/use_case_subsystems.drawio`)*
 
 
@@ -774,8 +783,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad01_reservation_deposit.drawio`](./drawio/ad01_reservation_deposit.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Hoạt động Swimlane - 3.1 AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY]**
-> *(Tệp thiết kế tương ứng: `./drawio/ad01_reservation_deposit.drawio`)*
+![AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY](./drawio/ad01_reservation_deposit.png)
 
 
 ---
@@ -784,8 +792,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad02_waitstaff_ordering.drawio`](./drawio/ad02_waitstaff_ordering.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Hoạt động Swimlane - 3.2 AD-02: Quy trình Nhân viên Order trực tiếp & In Bếp]**
-> *(Tệp thiết kế tương ứng: `./drawio/ad02_waitstaff_ordering.drawio`)*
+![AD-02: Quy trình Nhân viên Order trực tiếp & In Bếp](./drawio/ad02_waitstaff_ordering.png)
 
 ---
 
@@ -793,8 +800,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad03_serving_confirmation.drawio`](./drawio/ad03_serving_confirmation.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Hoạt động Swimlane - 3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass]**
-> *(Tệp thiết kế tương ứng: `./drawio/ad03_serving_confirmation.drawio`)*
+![AD-03: Quy trình Kiểm đồ & Xác nhận hoàn thành món](./drawio/ad03_serving_confirmation.png)
 
 
 ---
@@ -803,8 +809,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad04_invoice_settlement.drawio`](./drawio/ad04_invoice_settlement.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Hoạt động Swimlane - 3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn]**
-> *(Tệp thiết kế tương ứng: `./drawio/ad04_invoice_settlement.drawio`)*
+![AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn](./drawio/ad04_invoice_settlement.png)
 
 
 ---
@@ -813,8 +818,63 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](./drawio/ad05_cancellation_refund.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Hoạt động Swimlane - 3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY]**
-> *(Tệp thiết kế tương ứng: `./drawio/ad05_cancellation_refund.drawio`)*
+![AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY](./drawio/ad05_cancellation_refund.png)
+
+---
+
+### 3.6 AD-06: Quy trình Đăng nhập & Xác thực nhân viên nội bộ (3 Làn: Nhân viên | Trình duyệt / Web POS | ASP.NET Core API & DB)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad06_staff_login.drawio`](./drawio/ad06_staff_login.drawio)
+
+![AD-06: Đăng nhập & Xác thực nhân viên](./drawio/ad06_staff_login.png)
+
+---
+
+### 3.7 AD-07: Quy trình Chuyển bàn / Đổi bàn phục vụ (3 Làn: Phục vụ | Hệ thống & UnitOfWork | Màn hình Khách & Bếp)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad07_change_table.drawio`](./drawio/ad07_change_table.drawio)
+
+![AD-07: Chuyển bàn / Đổi bàn phục vụ](./drawio/ad07_change_table.png)
+
+---
+
+### 3.8 AD-08: Quy trình Quản lý Sơ đồ bàn & Ghép nối Digital Display (3 Làn: Quản lý | Hệ thống API | Tablet Display tại bàn)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad08_floor_plan_pairing.drawio`](./drawio/ad08_floor_plan_pairing.drawio)
+
+![AD-08: Quản lý Sơ đồ bàn & Ghép nối Digital Display](./drawio/ad08_floor_plan_pairing.png)
+
+---
+
+### 3.9 AD-09: Quy trình Duyệt hoàn cọc thủ công ngoại lệ (3 Làn: Quản lý / Thu ngân | Hệ thống API & DB | Cổng VNPAY)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad09_manual_refund.drawio`](./drawio/ad09_manual_refund.drawio)
+
+![AD-09: Duyệt hoàn cọc thủ công ngoại lệ](./drawio/ad09_manual_refund.png)
+
+---
+
+### 3.10 AD-10: Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc (3 Làn: Hangfire Background Job | Cơ sở dữ liệu | SignalR Hub)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad10_auto_release_timeout.drawio`](./drawio/ad10_auto_release_timeout.drawio)
+
+![AD-10: Tự động quét & Giải phóng bàn hết hạn giữ cọc](./drawio/ad10_auto_release_timeout.png)
+
+---
+
+### 3.11 AD-11: Quy trình Quản trị Thực đơn & Trạng thái món (3 Làn: Quản lý Bếp / Admin | Hệ thống API | POS Phục vụ & Digital Display)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad11_menu_management.drawio`](./drawio/ad11_menu_management.drawio)
+
+![AD-11: Quản trị Thực đơn & Trạng thái món](./drawio/ad11_menu_management.png)
+
+---
+
+### 3.12 AD-12: Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT (3 Làn: Khách hàng | Hệ thống API | Dashboard Quản trị)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad12_guest_feedback.drawio`](./drawio/ad12_guest_feedback.drawio)
+
+![AD-12: Khách hàng đánh giá & Phản hồi dịch vụ CSAT](./drawio/ad12_guest_feedback.png)
 
 
 ---
@@ -825,8 +885,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd01_reservation_vnpay.drawio`](./drawio/sd01_reservation_vnpay.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Tuần tự - 4.1 SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY]**
-> *(Tệp thiết kế tương ứng: `./drawio/sd01_reservation_vnpay.drawio`)*
+![SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY](./drawio/sd01_reservation_vnpay.png)
 
 
 ---
@@ -835,8 +894,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd02_waitstaff_ordering.drawio`](./drawio/sd02_waitstaff_ordering.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Tuần tự - 4.2 SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp]**
-> *(Tệp thiết kế tương ứng: `./drawio/sd02_waitstaff_ordering.drawio`)*
+![SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp](./drawio/sd02_waitstaff_ordering.png)
 
 ---
 
@@ -844,8 +902,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd03_serving_confirmation.drawio`](./drawio/sd03_serving_confirmation.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Tuần tự - 4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass]**
-> *(Tệp thiết kế tương ứng: `./drawio/sd03_serving_confirmation.drawio`)*
+![SD-03: Kiểm đồ & Xác nhận hoàn thành món](./drawio/sd03_serving_confirmation.png)
 
 
 ---
@@ -854,8 +911,7 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd04_invoice_settlement.drawio`](./drawio/sd04_invoice_settlement.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Tuần tự - 4.4 SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn]**
-> *(Tệp thiết kế tương ứng: `./drawio/sd04_invoice_settlement.drawio`)*
+![SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn](./drawio/sd04_invoice_settlement.png)
 
 
 ---
@@ -864,8 +920,63 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](./drawio/sd05_cancellation_refund.drawio)
 
-> 🖼️ **[KHUNG CHÈN HÌNH ẢNH: Sơ đồ Tuần tự - 4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY]**
-> *(Tệp thiết kế tương ứng: `./drawio/sd05_cancellation_refund.drawio`)*
+![SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY](./drawio/sd05_cancellation_refund.png)
+
+---
+
+### 4.6 SD-06: Đăng nhập & Xác thực JWT Token nhân viên nội bộ
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd06_staff_login.drawio`](./drawio/sd06_staff_login.drawio)
+
+![SD-06: Đăng nhập & Xác thực JWT Token](./drawio/sd06_staff_login.png)
+
+---
+
+### 4.7 SD-07: Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd07_change_table.drawio`](./drawio/sd07_change_table.drawio)
+
+![SD-07: Chuyển bàn / Đổi bàn trực tiếp](./drawio/sd07_change_table.png)
+
+---
+
+### 4.8 SD-08: Ghép nối Tablet Digital Display với Bàn ăn vật lý
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd08_tablet_pairing.drawio`](./drawio/sd08_tablet_pairing.drawio)
+
+![SD-08: Ghép nối Tablet Digital Display với Bàn ăn](./drawio/sd08_tablet_pairing.png)
+
+---
+
+### 4.9 SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd09_manual_refund.drawio`](./drawio/sd09_manual_refund.drawio)
+
+![SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ](./drawio/sd09_manual_refund.png)
+
+---
+
+### 4.10 SD-10: Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd10_auto_release_late_ipn.drawio`](./drawio/sd10_auto_release_late_ipn.drawio)
+
+![SD-10: Tự động giải phóng bàn hết hạn giữ cọc](./drawio/sd10_auto_release_late_ipn.png)
+
+---
+
+### 4.11 SD-11: Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd11_menu_management.drawio`](./drawio/sd11_menu_management.drawio)
+
+![SD-11: Quản trị Thực đơn & Trạng thái món](./drawio/sd11_menu_management.png)
+
+---
+
+### 4.12 SD-12: Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd12_guest_feedback.drawio`](./drawio/sd12_guest_feedback.drawio)
+
+![SD-12: Khách hàng đánh giá dịch vụ & CSAT](./drawio/sd12_guest_feedback.png)
 
 
 ---
@@ -889,19 +1000,59 @@ Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (Syst
 | **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-U1` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
 | **REQ-02** | Xem E-Menu qua Digital Display tại bàn | `UC-U2` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
 | **REQ-03** | Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-U3` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
-| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | — | — | — | `TC-FB-01` |
+| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | `AD-12` | `SD-12` | `BR-03` | `TC-FB-01` |
 | **REQ-05** | Nhân viên tạo Order trực tiếp & In phiếu Bếp | `UC-E1` | `AD-02` | `SD-02` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
 | **REQ-06** | Phục vụ món & Xác nhận hoàn thành tại quầy Pass | `UC-E2` | `AD-03` | `SD-03` | `BR-04` | `TC-SER-01` |
 | **REQ-07** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-E3` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
-| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | — | — | — | `TC-TBL-03` |
-| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | — | — | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
-| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | — | — | — | `TC-MNU-01` |
-| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-01`, `AD-04` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
-| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-05` | `SD-05` | `BR-05` | `TC-REF-01` |
+| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | `AD-07` | `SD-07` | `BR-02` | `TC-TBL-03` |
+| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | `AD-06` | `SD-06` | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
+| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | `AD-11` | `SD-11` | `BR-04` | `TC-MNU-01` |
+| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-08` | `SD-08` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
+| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-09` | `SD-09` | `BR-05` | `TC-REF-01` |
 | **REQ-13** | Quản trị Tài khoản nhân viên & Phân quyền | `UC-A4` | — | — | `BR-04` | `TC-SEC-03` |
 | **REQ-14** | Báo cáo Thống kê Doanh thu & Dashboard | `UC-A5` | — | — | — | `TC-REP-01` |
-| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-01` | `SD-01` | `BR-01` | `TC-SYS-01` |
+| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-10` | `SD-10` | `BR-01` | `TC-SYS-01` |
 ---
+
+
+---
+
+## PHỤ LỤC A: THIẾT KẾ KIẾN TRÚC MẠNG & CƠ SỞ DỮ LIỆU
+
+### A.1 Sơ đồ Triển khai Hệ thống Vật lý & Mạng (Deployment Architecture)
+> 📐 **Tệp thiết kế Draw.io**: [`deployment_architecture.drawio`](./drawio/deployment_architecture.drawio)
+
+![Sơ đồ Triển khai Hệ thống Vật lý & Mạng](./drawio/deployment_architecture.png)
+
+### A.2 Sơ đồ Thực thể Liên kết Cơ sở dữ liệu (Database ERD)
+> 📐 **Tệp thiết kế Draw.io**: [`database_erd.drawio`](./drawio/database_erd.drawio)
+
+![Sơ đồ Thực thể Liên kết Database ERD](./drawio/database_erd.png)
+
+---
+
+## PHỤ LỤC B: SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI THỰC THỂ (STATE MACHINE DIAGRAMS)
+
+### B.1 Vòng đời Đặt bàn & Tiền cọc (Reservation Lifecycle)
+> 📐 **Tệp thiết kế Draw.io**: [`state_reservation_lifecycle.drawio`](./drawio/state_reservation_lifecycle.drawio)
+
+![Vòng đời Đặt bàn & Tiền cọc](./drawio/state_reservation_lifecycle.png)
+
+### B.2 Vòng đời Hóa đơn & Quyết toán (Invoice Lifecycle)
+> 📐 **Tệp thiết kế Draw.io**: [`state_invoice_lifecycle.drawio`](./drawio/state_invoice_lifecycle.drawio)
+
+![Vòng đời Hóa đơn & Quyết toán](./drawio/state_invoice_lifecycle.png)
+
+### B.3 Vòng đời Bàn ăn (Table Lifecycle)
+> 📐 **Tệp thiết kế Draw.io**: [`state_table_lifecycle.drawio`](./drawio/state_table_lifecycle.drawio)
+
+![Vòng đời Bàn ăn](./drawio/state_table_lifecycle.png)
+
+### B.4 Vòng đời Đơn hàng & Món (Order Lifecycle)
+> 📐 **Tệp thiết kế Draw.io**: [`state_order_lifecycle.drawio`](./drawio/state_order_lifecycle.drawio)
+
+![Vòng đời Đơn hàng & Món](./drawio/state_order_lifecycle.png)
+
 
 ## CHƯƠNG 7: DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)
 

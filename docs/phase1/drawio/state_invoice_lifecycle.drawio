@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="State Machine Vòng đời Hóa đơn" id="state_inv_lifecycle">
+    <mxGraphModel dx="1300" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI HÓA ĐƠN &amp; QUYẾT TOÁN (INVOICE &amp; SETTLEMENT LIFECYCLE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=14;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="700" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="init" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="260" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="st_draft" value="Draft (Hóa đơn tạm tính)&#xa;──────────────────────────────&#xa;entry / Tổng hợp OrderItems đã hoàn thành (Served)&#xa;do / Tính Subtotal + 5% SVC + 10% VAT [BR-03]&#xa;exit / Cấn trừ Deposit: Payable = max(0, Total - Deposit)" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="225" width="280" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="st_pending" value="PendingSettlement (Chờ khách thanh toán)&#xa;──────────────────────────────&#xa;entry / In phiếu tạm tính đưa khách kiểm tra đối soát&#xa;do / Khách chọn phương thức: Tiền mặt, Thẻ, hoặc Chuyển khoản&#xa;exit / Xác nhận nhận đủ tiền hoặc cọc bao trọn" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0284c7;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="540" y="225" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="st_settled" value="Settled (Đã quyết toán thành công)&#xa;──────────────────────────────&#xa;entry / Ghi nhận PaymentMethod (Cash/Card/BankTransfer)&#xa;do / Xuất hóa đơn VAT điện tử &amp; đóng bàn chuyển sang Cleaning&#xa;exit / Ghi nhận doanh thu tài chính vào ca làm việc" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="940" y="225" width="310" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="st_covered" value="DepositCovered (Cọc bao trọn - Trả 0 VNĐ)&#xa;──────────────────────────────&#xa;entry / Tổng hóa đơn &lt;= Tiền cọc đặt trước [BR-03]&#xa;do / Làm tròn Số tiền phải trả = 0 VNĐ (Không thối tiền thừa)&#xa;exit / Xuất hóa đơn quyết toán 0đ &amp; đóng bàn" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffe4e6;strokeColor=#e11d48;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="540" y="450" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="st_void" value="Voided (Hủy hóa đơn do sai sót)&#xa;──────────────────────────────&#xa;entry / Quản lý duyệt hủy tạm tính (Nhập sai món, đổi chiết khấu)&#xa;do / Ghi Audit Log người duyệt &amp; phục hồi đơn món về bàn&#xa;exit / Cho phép xuất lại hóa đơn mới" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="450" width="280" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="end1" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="485" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="end_void" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="295" y="620" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tr0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="init" target="st_draft" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr1" value="Khách yêu cầu&#xa;tính tiền" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_draft" target="st_pending" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr2" value="Khách trả&#xa;số còn thiếu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#16a34a;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_pending" target="st_settled" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr3" value="Cọc &gt;= Tổng&#xa;[BR-03]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#e11d48;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_pending" target="st_covered" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr4" value="Quyết toán 0đ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#16a34a;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0.2;entryY=1;" edge="1" source="st_covered" target="st_settled" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1002" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tr5" value="Phát hiện sai sót;&#xa;Manager hủy hóa đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b91c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_draft" target="st_void" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr_void_end" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_void" target="end_void" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr_end" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_settled" target="end1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

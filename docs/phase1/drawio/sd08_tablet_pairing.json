@@ -1,0 +1,125 @@
+{
+  "title": "SD-08: Ghép nối Digital Display qua Pairing Code (UC-A2 / BR-02)",
+  "participants": [
+    {
+      "id": "tablet",
+      "label": "Digital Display (Tablet)"
+    },
+    {
+      "id": "mgr",
+      "label": "Quản lý (Manager)",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Manager Web Portal"
+    },
+    {
+      "id": "api",
+      "label": "Web API (DisplayController)"
+    },
+    {
+      "id": "cqrs",
+      "label": "MediatR (BindDeviceCmd)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server (EF Core)"
+    },
+    {
+      "id": "hub",
+      "label": "SignalR Hub"
+    }
+  ],
+  "messages": [
+    {
+      "from": "tablet",
+      "to": "api",
+      "label": "1. POST /api/v1/display/request-code (Khởi động)"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "2. Sinh PairingCode (6 ký tự) hạn 10 phút"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "3. Lưu PairingSession tạm",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "tablet",
+      "label": "4. 200 OK (Hiển thị PairingCode trên màn hình)",
+      "return": true
+    },
+    {
+      "from": "mgr",
+      "to": "fe",
+      "label": "5. Mở Sơ đồ bàn, chọn Bàn ăn cần ghép nối"
+    },
+    {
+      "from": "mgr",
+      "to": "fe",
+      "label": "6. Nhập PairingCode từ màn hình Tablet"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "7. POST /api/v1/display/bind-device { TableId, Code }"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "8. Send(BindDeviceCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "9. Validate code, gán DeviceId cố định với TableId (BR-02)"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "10. Khóa chế độ View-Only (Chặn API đặt món)"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "11. Lưu cấu hình thành công",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "hub",
+      "label": "12. SendToDevice(DeviceId, 'DeviceActivated', { TableId })"
+    },
+    {
+      "from": "hub",
+      "to": "tablet",
+      "label": "13. Chuyển màn hình sang E-Menu View-Only của Bàn",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "14. BindSuccessDto",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "15. 200 OK (Ghép nối thành công)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "mgr",
+      "label": "16. Bàn ăn hiển thị icon 'Đã kết nối Display'",
+      "activate": false
+    }
+  ]
+}

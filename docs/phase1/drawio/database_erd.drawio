@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="Sơ đồ Thực thể Quan hệ CSDL" id="database_erd">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="SƠ ĐỒ THỰC THỂ QUAN HỆ CƠ SỞ DỮ LIỆU VẬT LÝ (PHYSICAL RELATIONAL ERD - VINDINING SQL SERVER)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=14;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="350" y="15" width="900" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Column 1: Guests, Deposits, Feedbacks -->
+        <!-- Table: Guests -->
+        <mxCell id="tb_guests" value="«table» Guests&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    FullName : nvarchar(150)&#xa;    PhoneNumber : varchar(20)&#xa;    Email : varchar(150)&#xa;    Address : nvarchar(250) NULL&#xa;    CreatedAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="90" width="260" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Table: Deposits -->
+        <mxCell id="tb_deposits" value="«table» Deposits&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  ReservationId : uniqueidentifier&#xa;    Amount : decimal(18,2)&#xa;    Status : int [0:Pending..3:Forfeited]&#xa;    TransactionCode : varchar(50) NULL&#xa;    PaidAtUtc : datetime2 NULL&#xa;    RefundReason : nvarchar(300) NULL&#xa;    CreatedAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="320" width="260" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Table: Feedbacks -->
+        <mxCell id="tb_feedbacks" value="«table» Feedbacks&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  GuestId : uniqueidentifier&#xa;    BookingCode : varchar(20)&#xa;    Rating : int [1..5]&#xa;    Comment : nvarchar(1000) NULL&#xa;    CreatedAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="560" width="260" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Column 2: Reservations, Invoices, AppUsers -->
+        <!-- Table: Reservations -->
+        <mxCell id="tb_reservations" value="«table» Reservations&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    BookingCode : varchar(20) UNIQUE&#xa;FK  GuestId : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;    ReservationDate : date&#xa;    ShiftTime : time&#xa;    PartySize : int&#xa;    Status : int [0:Pending..4:Expired]&#xa;    AllergyNotes : nvarchar(500) NULL&#xa;    CreatedAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="390" y="90" width="280" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- Table: Invoices -->
+        <mxCell id="tb_invoices" value="«table» Invoices&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  OrderId : uniqueidentifier&#xa;    Subtotal : decimal(18,2)&#xa;    ServiceChargeAmount : decimal(18,2) [5%]&#xa;    VatAmount : decimal(18,2) [10%]&#xa;    DepositDeducted : decimal(18,2) [BR-03]&#xa;    TotalPayable : decimal(18,2)&#xa;    PaymentMethod : int&#xa;    SettledAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="390" y="380" width="280" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- Table: AppUsers -->
+        <mxCell id="tb_users" value="«table» AppUsers (Identity)&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    UserName : varchar(50)&#xa;    Email : varchar(100)&#xa;    PasswordHash : varchar(255)&#xa;    FullName : nvarchar(100)&#xa;    Role : int [Waitstaff, Expediter, Manager, Admin]&#xa;    IsActive : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="390" y="670" width="280" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- Column 3: Tables, Orders, OrderItems -->
+        <!-- Table: Tables -->
+        <mxCell id="tb_tables" value="«table» Tables&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    TableNumber : int&#xa;    Capacity : int&#xa;    Zone : int [0:MainHall, 1:VIP, 2:Balcony]&#xa;    Status : int [0:Avail..4:Cleaning]&#xa;    IsActive : bit&#xa;    CreatedAtUtc : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="750" y="90" width="280" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- Table: Orders -->
+        <mxCell id="tb_orders" value="«table» Orders&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;FK  ReservationId : uniqueidentifier NULL&#xa;FK  WaitstaffId : uniqueidentifier&#xa;    Status : int [0:Processing, 1:Done, 2:Void]&#xa;    OpenedAtUtc : datetime2&#xa;    ClosedAtUtc : datetime2 NULL" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="750" y="380" width="280" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Table: OrderItems -->
+        <mxCell id="tb_orderitems" value="«table» OrderItems&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  OrderId : uniqueidentifier&#xa;FK  MenuItemId : uniqueidentifier&#xa;    Quantity : int&#xa;    UnitPrice : decimal(18,2)&#xa;    AllergyAlert : nvarchar(250) NULL&#xa;    Status : int [0:Preparing, 1:Served, 2:Cancel]&#xa;    ServedAtUtc : datetime2 NULL" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="750" y="640" width="280" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Column 4: DigitalDisplays, Categories, MenuItems -->
+        <!-- Table: DigitalDisplays -->
+        <mxCell id="tb_displays" value="«table» DigitalDisplays&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;    DeviceCode : varchar(50)&#xa;    PairingCode : varchar(10) NULL&#xa;    PairingExpiresAt : datetime2 NULL&#xa;    IsActive : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="90" width="270" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Table: Categories -->
+        <mxCell id="tb_categories" value="«table» Categories&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    Name : nvarchar(100)&#xa;    Description : nvarchar(250) NULL&#xa;    DisplayOrder : int&#xa;    IsActive : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="380" width="270" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Table: MenuItems -->
+        <mxCell id="tb_menuitems" value="«table» MenuItems&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  CategoryId : uniqueidentifier&#xa;    Name : nvarchar(150)&#xa;    Description : nvarchar(500) NULL&#xa;    Price : decimal(18,2)&#xa;    CourseType : int [Appetizer, Main, Dessert]&#xa;    ImageUrl : varchar(255) NULL&#xa;    AllergenInfo : nvarchar(250) NULL&#xa;    IsAvailable : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="610" width="270" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- Relationships -->
+        <!-- 1. Guests -> Reservations (1 : N) -->
+        <mxCell id="rel1" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.2;" edge="1" source="tb_guests" target="tb_reservations" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Reservations -> Deposits (1 : 1) -->
+        <mxCell id="rel2" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.7;entryX=1;entryY=0.3;" edge="1" source="tb_reservations" target="tb_deposits" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="251" />
+              <mxPoint x="350" y="374" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. Tables -> Reservations (1 : N) -->
+        <mxCell id="rel3" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3;entryX=1;entryY=0.2;" edge="1" source="tb_tables" target="tb_reservations" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Tables -> DigitalDisplays (1 : 1) -->
+        <mxCell id="rel4" value="1 : 1 [BR-02]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" edge="1" source="tb_tables" target="tb_displays" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Tables -> Orders (1 : N) -->
+        <mxCell id="rel5" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_tables" target="tb_orders" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 6. Reservations -> Orders (0..1 : 1) -->
+        <mxCell id="rel6" value="0..1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7;entryX=0;entryY=0.2;" edge="1" source="tb_reservations" target="tb_orders" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="710" y="251" />
+              <mxPoint x="710" y="416" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 7. Orders -> OrderItems (1 : N) -->
+        <mxCell id="rel7" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_orders" target="tb_orderitems" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 8. MenuItems -> OrderItems (1 : N) -->
+        <mxCell id="rel8" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3;entryX=1;entryY=0.2;" edge="1" source="tb_menuitems" target="tb_orderitems" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 9. Categories -> MenuItems (1 : N) -->
+        <mxCell id="rel9" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_categories" target="tb_menuitems" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 10. Orders -> Invoices (1 : 1) -->
+        <mxCell id="rel10" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.6;entryX=1;entryY=0.5;" edge="1" source="tb_orders" target="tb_invoices" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11. Guests -> Feedbacks (1 : N) -->
+        <mxCell id="rel11" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;entryX=0;entryY=0.3;" edge="1" source="tb_guests" target="tb_feedbacks" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="210" />
+              <mxPoint x="20" y="605" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 12. AppUsers (Waitstaff) -> Orders (1 : N) -->
+        <mxCell id="rel12" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.8;" edge="1" source="tb_users" target="tb_orders" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="710" y="721" />
+              <mxPoint x="710" y="524" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

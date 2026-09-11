@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="AD-12 Khách hàng đánh giá &amp; Phản hồi dịch vụ" id="ad-12_guest_feedback">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Lane 1: Khách hàng (Guest) -->
+        <mxCell id="lane1" value="Khách hàng (Guest)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="start1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;" vertex="1" parent="lane1">
+          <mxGeometry x="155" y="60" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="g1_act1" value="Quét mã QR trên phiếu hóa đơn&#xa;hoặc mở link khảo sát qua Email" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="120" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g1_act2" value="Chọn số sao đánh giá (1-5 sao)&#xa;&amp; Nhập ý kiến đóng góp / món thích nhất" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="290" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g1_act3" value="Bấm &#39;Gửi đánh giá&#39;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="390" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="g1_succ" value="Nhận thông điệp tri ân thực khách&#xa;&amp; Mã ưu đãi cho lần ghé thăm kế tiếp" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane1">
+          <mxGeometry x="65" y="600" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="end_g" value="" style="ellipse;html=1;shape=endState;fillColor=#2e7d32;strokeColor=#1b5e20;" vertex="1" parent="lane1">
+          <mxGeometry x="155" y="690" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 2: Web API & Database -->
+        <mxCell id="lane2" value="Hệ thống Backend (Web API &amp; CSDL)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="api_act1" value="Xác thực mã BookingCode &amp;&#xa;Hóa đơn đã thanh toán thành công" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="200" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="api_act2" value="Lưu Feedback vào CSDL SQL Server&#xa;(Rating, Content, Timestamp)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="390" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="api_dec" value="Đánh giá&#xa;&lt; 3 sao?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="110" y="475" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="api_warn" value="Gắn cờ khẩn cấp &amp; Gửi cảnh báo&#xa;tới Dashboard Quản lý" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane2">
+          <mxGeometry x="65" y="565" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 3: Quản lý & Dashboard CSAT -->
+        <mxCell id="lane3" value="Quản lý &amp; Dashboard CSAT" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="340" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="mgr_act1" value="Nhận tín hiệu SignalR Hub:&#xa;Đánh giá trải nghiệm mới" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3">
+          <mxGeometry x="65" y="475" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mgr_act2" value="Cập nhật chỉ số CSAT thời gian thực&#xa;&amp; Tiếp nhận khiếu nại (nếu có)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane3">
+          <mxGeometry x="65" y="565" width="210" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="end_mgr" value="" style="ellipse;html=1;shape=endState;fillColor=#2e7d32;strokeColor=#1b5e20;" vertex="1" parent="lane3">
+          <mxGeometry x="155" y="670" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="start1" target="g1_act1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- e2 enters top face of api_act1 (abs: 550, 240) -->
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" edge="1" source="g1_act1" target="api_act1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="187.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- e3 exits left face of api_act1 (abs: 445, 267.5) to g1_act2 right face (abs: 315, 357.5) -->
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="api_act1" target="g1_act2" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="267.5" />
+              <mxPoint x="350" y="357.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g1_act2" target="g1_act3" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- e5 connects g1_act3 -> api_act2: straight horizontal at abs y=457.5 across lane boundary! -->
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="g1_act3" target="api_act2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="api_act2" target="api_dec" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7_warn" value="Có" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b71c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="api_dec" target="api_warn" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7_norm" value="Không" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="api_dec" target="mgr_act1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="api_warn" target="mgr_act2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="mgr_act1" target="mgr_act2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- e10 exits left face of api_dec (abs: 490, 545), down along x=340 to g1_succ right face (abs: 315, 667.5) -->
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="api_dec" target="g1_succ" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="545" />
+              <mxPoint x="340" y="667.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="g1_succ" target="end_g" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="mgr_act2" target="end_mgr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

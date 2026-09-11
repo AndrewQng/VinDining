@@ -1,0 +1,137 @@
+{
+  "title": "SD-09: Quản lý duyệt hoàn cọc thủ công ngoại lệ (UC-A3 / BR-05)",
+  "participants": [
+    {
+      "id": "guest",
+      "label": "Khách hàng (Khiếu nại)",
+      "actor": true
+    },
+    {
+      "id": "mgr",
+      "label": "Quản lý / Admin",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Manager Web Portal"
+    },
+    {
+      "id": "api",
+      "label": "Web API (RefundController)"
+    },
+    {
+      "id": "cqrs",
+      "label": "MediatR (ManualRefundCmd)"
+    },
+    {
+      "id": "vn",
+      "label": "Cổng VNPAY (Refund API)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server & Audit Log"
+    },
+    {
+      "id": "mail",
+      "label": "Email Service"
+    }
+  ],
+  "messages": [
+    {
+      "from": "guest",
+      "to": "mgr",
+      "label": "1. Phản ánh sự cố bất khả kháng xin hoàn cọc"
+    },
+    {
+      "from": "mgr",
+      "to": "fe",
+      "label": "2. Tra cứu BookingCode, bấm 'Hoàn cọc thủ công (Override)'"
+    },
+    {
+      "from": "mgr",
+      "to": "fe",
+      "label": "3. Nhập lý do ngoại lệ bắt buộc (Audit Reason) & Mã OTP"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "4. POST /api/v1/reservations/{id}/manual-refund"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "5. Send(ManualRefundCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "6. Kiểm tra quyền Manager & Trạng thái cọc (Deposit = Paid)"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "7. Hợp lệ",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "vn",
+      "label": "8. Call VNPAY Refund API (Mã giao dịch, Số tiền cọc)"
+    },
+    {
+      "from": "vn",
+      "to": "cqrs",
+      "label": "9. VNPAY Callback: Hoàn tiền thành công (RspCode = 00)",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "10. Set DepositStatus = Refunded, Reservation = Cancelled"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "11. Ghi Audit Log: ManagerId, Reason, Timestamp"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "12. Commit Transaction",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "mail",
+      "label": "13. Gửi Email thông báo đã duyệt hoàn cọc cho khách",
+      "async": true,
+      "activate": false
+    },
+    {
+      "from": "mail",
+      "to": "guest",
+      "label": "14. Khách nhận Email xác nhận hoàn tiền cọc từ VNPAY",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "15. RefundSuccessDto",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "16. 200 OK (Hoàn tiền thủ công thành công)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "mgr",
+      "label": "17. Cập nhật trạng thái giao dịch: Hoàn cọc ngoại lệ",
+      "activate": false
+    }
+  ]
+}

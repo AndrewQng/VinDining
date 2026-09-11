@@ -1,0 +1,133 @@
+{
+  "title": "SD-10: Quét giải phóng bàn quá 17p & Xử lý Late IPN (UC-S1 / BR-01)",
+  "participants": [
+    {
+      "id": "vn",
+      "label": "Cổng VNPAY (Late IPN)"
+    },
+    {
+      "id": "api",
+      "label": "Web API (IPN Controller)"
+    },
+    {
+      "id": "worker",
+      "label": "Background Worker (Hangfire)"
+    },
+    {
+      "id": "db",
+      "label": "SQL Server (EF Core 9)"
+    },
+    {
+      "id": "hub",
+      "label": "SignalR Hub"
+    },
+    {
+      "id": "staff",
+      "label": "Nhân viên & Sơ đồ bàn"
+    },
+    {
+      "id": "mgr",
+      "label": "Quản lý / CSKH",
+      "actor": true
+    }
+  ],
+  "messages": [
+    {
+      "from": "worker",
+      "to": "db",
+      "label": "1. Query Reservation (PendingPayment & CreatedAt > 17m)"
+    },
+    {
+      "from": "db",
+      "to": "worker",
+      "label": "2. Danh sách đơn quá hạn 17 phút (BR-01)",
+      "return": true
+    },
+    {
+      "from": "worker",
+      "to": "db",
+      "label": "3. Update Reservation = Expired_Cancelled"
+    },
+    {
+      "from": "worker",
+      "to": "db",
+      "label": "4. Update Table = Available (Giải phóng bàn)"
+    },
+    {
+      "from": "db",
+      "to": "worker",
+      "label": "5. SaveChangesAsync()",
+      "return": true
+    },
+    {
+      "from": "worker",
+      "to": "hub",
+      "label": "6. Broadcast TableStatusChanged (TableId, Available)"
+    },
+    {
+      "from": "hub",
+      "to": "staff",
+      "label": "7. Sơ đồ bàn đổi màu Xanh (Available) tức thời",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "vn",
+      "to": "api",
+      "label": "8. Late IPN Callback: Giao dịch thành công (> 17 phút)"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "9. Kiểm tra Bàn cũ: Đã giải phóng hoặc khách khác đặt?"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "10. Bàn cũ đã bị khách khác đặt trước",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "11. Tìm kiếm Bàn trống tương đương (Khu vực, Sức chứa)"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "12. Hết sạch bàn tương đương trống!",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "13. Đánh dấu trạng thái Reservation = Paid_TableLost"
+    },
+    {
+      "from": "db",
+      "to": "api",
+      "label": "14. Lưu trạng thái sự cố",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "hub",
+      "label": "15. Bắn cảnh báo Đỏ khẩn cấp tới Dashboard Quản lý"
+    },
+    {
+      "from": "hub",
+      "to": "mgr",
+      "label": "16. Popup Alert: 'Late IPN - Gọi khách đổi bàn/hoàn cọc'",
+      "async": true,
+      "activate": false,
+      "deactivate": true
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "17. Trả về RspCode: 00 (Ghi nhận IPN)",
+      "return": true
+    }
+  ]
+}

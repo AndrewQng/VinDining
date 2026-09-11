@@ -442,6 +442,12 @@ def check_page(diagram, is_ad=False, is_asis=False, is_sd=False):
     # Endpoint overlap: a line end cannot overlap a line start (and vice versa).
     # Line end CAN overlap line end; line start CAN overlap line start.
     edges = [c for c in cells if c.get("edge") == "1"]
+    for e in edges:
+        if e.find("mxGeometry") is None:
+            errors.append(diag(
+                "E-MISSING-GEOMETRY", "error", e.get("id"),
+                f"edge {e.get('id')!r} is missing <mxGeometry relative=\"1\" as=\"geometry\"/> (edge line will not be rendered by draw.io)",
+                "add <mxGeometry relative=\"1\" as=\"geometry\"/> child element to edge"))
     seen_overlaps = set()
     for e1 in edges:
         t1 = endpoint(e1, "target", ids)

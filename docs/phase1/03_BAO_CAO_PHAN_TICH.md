@@ -506,6 +506,46 @@ graph LR
 ### 3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY (3 Làn: Khách/Quản lý | Hệ thống | Cổng VNPAY)
 
 > 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](./drawio/ad05_cancellation_refund.drawio)
+### 3.6 AD-06: Quy trình Đăng nhập & Xác thực nhân viên nội bộ (3 Làn: Nhân viên | Trình duyệt / Web POS | ASP.NET Core API & DB)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad06_staff_login.drawio`](./drawio/ad06_staff_login.drawio)
+
+---
+
+### 3.7 AD-07: Quy trình Chuyển bàn / Đổi bàn phục vụ (3 Làn: Phục vụ | Hệ thống & UnitOfWork | Màn hình Khách & Bếp)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad07_change_table.drawio`](./drawio/ad07_change_table.drawio)
+
+---
+
+### 3.8 AD-08: Quy trình Quản lý Sơ đồ bàn & Ghép nối Digital Display (3 Làn: Quản lý | Hệ thống API | Tablet Display tại bàn)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad08_floor_plan_pairing.drawio`](./drawio/ad08_floor_plan_pairing.drawio)
+
+---
+
+### 3.9 AD-09: Quy trình Duyệt hoàn cọc thủ công ngoại lệ (3 Làn: Quản lý / Thu ngân | Hệ thống API & DB | Cổng VNPAY)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad09_manual_refund.drawio`](./drawio/ad09_manual_refund.drawio)
+
+---
+
+### 3.10 AD-10: Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc (3 Làn: Hangfire Background Job | Cơ sở dữ liệu | SignalR Hub)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad10_auto_release_timeout.drawio`](./drawio/ad10_auto_release_timeout.drawio)
+
+---
+
+### 3.11 AD-11: Quy trình Quản trị Thực đơn & Trạng thái món (3 Làn: Quản lý Bếp / Admin | Hệ thống API | POS Phục vụ & Digital Display)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad11_menu_management.drawio`](./drawio/ad11_menu_management.drawio)
+
+---
+
+### 3.12 AD-12: Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT (3 Làn: Khách hàng | Hệ thống API | Dashboard Quản trị)
+
+> 📐 **Tệp thiết kế Draw.io**: [`ad12_guest_feedback.drawio`](./drawio/ad12_guest_feedback.drawio)
+
 
 
 ---
@@ -542,6 +582,46 @@ graph LR
 ### 4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY
 
 > 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](./drawio/sd05_cancellation_refund.drawio)
+### 4.6 SD-06: Đăng nhập & Xác thực JWT Token nhân viên nội bộ
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd06_staff_login.drawio`](./drawio/sd06_staff_login.drawio)
+
+---
+
+### 4.7 SD-07: Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd07_change_table.drawio`](./drawio/sd07_change_table.drawio)
+
+---
+
+### 4.8 SD-08: Ghép nối Tablet Digital Display với Bàn ăn vật lý
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd08_tablet_pairing.drawio`](./drawio/sd08_tablet_pairing.drawio)
+
+---
+
+### 4.9 SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd09_manual_refund.drawio`](./drawio/sd09_manual_refund.drawio)
+
+---
+
+### 4.10 SD-10: Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd10_auto_release_late_ipn.drawio`](./drawio/sd10_auto_release_late_ipn.drawio)
+
+---
+
+### 4.11 SD-11: Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd11_menu_management.drawio`](./drawio/sd11_menu_management.drawio)
+
+---
+
+### 4.12 SD-12: Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT
+
+> 📐 **Tệp thiết kế Draw.io**: [`sd12_guest_feedback.drawio`](./drawio/sd12_guest_feedback.drawio)
+
 
 
 ---
@@ -565,18 +645,18 @@ graph LR
 | **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-U1` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
 | **REQ-02** | Xem E-Menu qua Digital Display tại bàn | `UC-U2` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
 | **REQ-03** | Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-U3` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
-| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | — | — | — | `TC-FB-01` |
+| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | `AD-12` | `SD-12` | `BR-03` | `TC-FB-01` |
 | **REQ-05** | Nhân viên tạo Order trực tiếp & In phiếu Bếp | `UC-E1` | `AD-02` | `SD-02` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
 | **REQ-06** | Phục vụ món & Xác nhận hoàn thành tại quầy Pass | `UC-E2` | `AD-03` | `SD-03` | `BR-04` | `TC-SER-01` |
 | **REQ-07** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-E3` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
-| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | — | — | — | `TC-TBL-03` |
-| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | — | — | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
-| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | — | — | — | `TC-MNU-01` |
-| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-01`, `AD-04` | `SD-01`, `SD-04` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
-| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-05` | `SD-05` | `BR-05` | `TC-REF-01` |
+| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | `AD-07` | `SD-07` | `BR-02` | `TC-TBL-03` |
+| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | `AD-06` | `SD-06` | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
+| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | `AD-11` | `SD-11` | `BR-04` | `TC-MNU-01` |
+| **REQ-11** | Quản lý Sơ đồ bàn & Cấu hình Digital Display | `UC-A2` | `AD-08` | `SD-08` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
+| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-09` | `SD-09` | `BR-05` | `TC-REF-01` |
 | **REQ-13** | Quản trị Tài khoản nhân viên & Phân quyền | `UC-A4` | — | — | `BR-04` | `TC-SEC-03` |
 | **REQ-14** | Báo cáo Thống kê Doanh thu & Dashboard | `UC-A5` | — | — | — | `TC-REP-01` |
-| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-01` | `SD-01` | `BR-01` | `TC-SYS-01` |
+| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-10` | `SD-10` | `BR-01` | `TC-SYS-01` |
 ---
 
 ## CHƯƠNG 7: DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)

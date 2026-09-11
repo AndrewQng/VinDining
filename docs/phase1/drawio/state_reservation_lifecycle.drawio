@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="State Machine Vòng đời Đặt bàn &amp; Cọc" id="state_res_lifecycle">
+    <mxGraphModel dx="1400" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI ĐẶT BÀN &amp; TIỀN CỌC (RESERVATION &amp; DEPOSIT LIFECYCLE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=14;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="320" y="15" width="760" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Init -->
+        <mxCell id="init" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="240" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- State: Created -->
+        <mxCell id="st_created" value="Created (Khởi tạo yêu cầu)&#xa;──────────────────────────────&#xa;entry / Khách chọn ngày, ca, số khách &amp; bàn&#xa;do / Nhập thông tin liên lạc &amp; ghi chú dị ứng&#xa;exit / Bấm &apos;Tiến hành đặt cọc&apos;" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#64748b;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="205" width="250" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: AwaitingPayment -->
+        <mxCell id="st_await" value="AwaitingPayment (Chờ thanh toán cọc)&#xa;──────────────────────────────&#xa;entry / Khóa bàn tạm; sinh QR VNPAY (15p + 2p Grace) [BR-01]&#xa;do / Đếm ngược 17 phút &amp; lắng nghe IPN VNPAY&#xa;exit / Dừng bộ đếm Timer khi nhận callback" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="205" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Confirmed -->
+        <mxCell id="st_conf" value="Confirmed (Đã xác nhận &amp; Giữ cọc)&#xa;──────────────────────────────&#xa;entry / DepositStatus = Paid; sinh BookingCode gửi SMS/Email&#xa;do / Giữ bàn theo khung giờ ca hẹn; khóa trên sơ đồ bàn&#xa;exit / Khách đến nhà hàng &amp; Check-in" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0284c7;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="205" width="330" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: CheckedIn -->
+        <mxCell id="st_checkin" value="CheckedIn (Khách đã nhận bàn)&#xa;──────────────────────────────&#xa;entry / Waitstaff check-in; bàn chuyển Occupied [BR-02]&#xa;do / Khách xem Digital Display, gọi món &amp; dùng bữa&#xa;exit / Yêu cầu thanh toán hóa đơn" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="440" width="330" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Completed -->
+        <mxCell id="st_comp" value="Completed (Hoàn tất đặt bàn &amp; Tiệc)&#xa;──────────────────────────────&#xa;entry / Cấn trừ 100% tiền cọc vào hóa đơn thanh toán [BR-03]&#xa;do / Lưu vết doanh thu &amp; phát sinh điểm thưởng/CSAT&#xa;exit / Đóng phiên đặt bàn thành công" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="660" width="330" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Cancelled_Refunded -->
+        <mxCell id="st_can_ref" value="Cancelled (Hủy hoàn tiền 100%)&#xa;──────────────────────────────&#xa;entry / Khách hủy trước ca hẹn &gt;= 4 tiếng [BR-05]&#xa;do / Gọi API VNPAY Refund hoàn trả 100% tiền cọc&#xa;exit / Bàn giải phóng về Available; Deposit = Refunded" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#e0e7ff;strokeColor=#4338ca;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="440" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Cancelled_Forfeited -->
+        <mxCell id="st_can_forf" value="Cancelled (Hủy phạt 100% cọc)&#xa;──────────────────────────────&#xa;entry / Khách hủy &lt; 4 tiếng hoặc No-show [BR-05]&#xa;do / Phạt 100% cọc bù đắp chi phí nguyên liệu Tasting Menu&#xa;exit / Bàn giải phóng về Available; Deposit = Forfeited" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="660" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Expired -->
+        <mxCell id="st_exp" value="Expired (Hết hạn giữ chỗ 17p)&#xa;──────────────────────────────&#xa;entry / Quá 17 phút không nhận IPN thanh toán cọc [BR-01]&#xa;do / Tác vụ nền tự động giải phóng bàn về Available&#xa;exit / Hủy phiên đặt bàn" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f3f4f6;strokeColor=#4b5563;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="170" y="440" width="250" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- State: Paid_TableLost -->
+        <mxCell id="st_lost" value="Paid_TableLost (Sự cố Late IPN)&#xa;──────────────────────────────&#xa;entry / VNPAY báo thành công nhưng gửi trễ &gt; 17p &amp; bàn đã mất&#xa;do / Báo động đỏ Quản lý gọi khách đổi bàn / hoàn cọc&#xa;exit / Giải quyết thủ công ngoại lệ [UC-A3]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c2410c;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="65" width="320" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Final Ends -->
+        <mxCell id="end1" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="830" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="end2" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="600" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="end_can" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="635" y="830" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="end_lost" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="95" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <mxCell id="tr0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="init" target="st_created" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr1" value="Chọn bàn &amp;&#xa;ấn Đặt cọc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_created" target="st_await" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr2" value="IPN thành công&#xa;(&lt; 17p)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.2;entryX=0;entryY=0.2;" edge="1" source="st_await" target="st_conf" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr3" value="Khách đến, Waitstaff&#xa;bấm Check-in bàn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_conf" target="st_checkin" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr4" value="Cấn trừ cọc &amp;&#xa;Quyết toán" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#16a34a;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_checkin" target="st_comp" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_comp" target="end1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Timeout tr -->
+        <mxCell id="tr_exp" value="Quá hạn 17 phút&#xa;chưa thanh toán cọc [BR-01]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b91c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_await" target="st_exp" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="370" />
+              <mxPoint x="295" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tr_exp_end" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_exp" target="end2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Late IPN tr -->
+        <mxCell id="tr_late" value="Late IPN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c2410c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" source="st_await" target="st_lost" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tr_lost_end" value="Giải quyết xong [UC-A3]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c2410c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_lost" target="end_lost" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cancel tr -->
+        <mxCell id="tr_can1" value="Khách hủy &gt;= 4h&#xa;(Hoàn cọc 100%)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4338ca;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4;entryX=1;entryY=0.3;" edge="1" source="st_conf" target="st_can_ref" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="845" y="245" />
+              <mxPoint x="845" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tr_can2" value="Hủy &lt; 4h (Phạt 100% cọc) [BR-05]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b91c1c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.85;entryX=1;entryY=0.5;" edge="1" source="st_conf" target="st_can_forf" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="80" as="offset" />
+            <Array as="points">
+              <mxPoint x="870" y="290" />
+              <mxPoint x="870" y="710" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tr_can_ref_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4338ca;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_can_ref" target="end_can" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="490" />
+              <mxPoint x="450" y="845" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tr_can_forf_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b91c1c;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_can_forf" target="end_can" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

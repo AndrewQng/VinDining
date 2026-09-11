@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="Sơ đồ Triển khai Hệ thống" id="deployment_arch">
+    <mxGraphModel dx="1400" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="SƠ ĐỒ TRIỂN KHAI HỆ THỐNG VẬT LÝ &amp; MẠNG (SYSTEM DEPLOYMENT &amp; NETWORK TOPOLOGY - VINDINING)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=13;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="320" y="8" width="760" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Boundary 1: Client Devices -->
+        <mxCell id="box_clients" value="1. TẦNG THIẾT BỊ ĐẦU CUỐI (CLIENT DEVICES &amp; RUNTIME)" style="swimlane;startSize=30;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="30" y="70" width="280" height="970" as="geometry" />
+        </mxCell>
+        <!-- Device: Guest Smartphone -->
+        <mxCell id="dev_guest" value="«device: Mobile»&#xa;Guest Smartphone&#xa;──────────────────&#xa;OS: iOS / Android&#xa;Browser: Safari/Chrome&#xa;App: Responsive Web SPA" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+          <mxGeometry x="20" y="50" width="240" height="110" as="geometry" />
+        </mxCell>
+        <!-- Device: Table Digital Display -->
+        <mxCell id="dev_table" value="«device: Tablet»&#xa;Table Digital Display&#xa;──────────────────&#xa;OS: Android / iPadOS&#xa;App: React SPA (View-Only)&#xa;Role: E-Menu tại bàn (BR-02)" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+          <mxGeometry x="20" y="200" width="240" height="110" as="geometry" />
+        </mxCell>
+        <!-- Device: Waitstaff Tablet -->
+        <mxCell id="dev_waiter" value="«device: Tablet/Phone»&#xa;Waitstaff Handheld Device&#xa;──────────────────&#xa;OS: Android / iOS&#xa;App: Waitstaff POS Web App&#xa;Features: Check-in, Order, Pay" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+          <mxGeometry x="20" y="350" width="240" height="110" as="geometry" />
+        </mxCell>
+        <!-- Device: Expediter Tablet -->
+        <mxCell id="dev_exp" value="«device: Fixed Tablet»&#xa;Expediter Pass Station&#xa;──────────────────&#xa;OS: Android Tablet (10 inch)&#xa;App: Kitchen Pass Web App&#xa;Features: Checkfood &amp; Served" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+          <mxGeometry x="20" y="500" width="240" height="110" as="geometry" />
+        </mxCell>
+        <!-- Device: Manager PC -->
+        <mxCell id="dev_mgr" value="«device: PC / Laptop»&#xa;Manager &amp; Admin Workstation&#xa;──────────────────&#xa;OS: Windows / macOS&#xa;App: Web Management Portal&#xa;Role: RBAC, Reports, Menu" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+          <mxGeometry x="20" y="650" width="240" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Boundary 2: Restaurant LAN & Printers -->
+        <mxCell id="box_lan" value="2. MẠNG NỘI BỘ NHÀ HÀNG &amp; MÁY IN BẾP" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="350" y="70" width="280" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="net_router" value="«network node»&#xa;Restaurant Wi-Fi / LAN Router&#xa;──────────────────&#xa;VLAN 1: Guest Wi-Fi (Cách ly)&#xa;VLAN 2: Staff &amp; Device Wi-Fi&#xa;VLAN 3: LAN Máy in cố định" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+          <mxGeometry x="20" y="50" width="240" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="prn_hot" value="«device: ESC/POS Printer»&#xa;Máy in Bếp Nóng (Hot Kitchen)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+          <mxGeometry x="20" y="260" width="240" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="prn_cold" value="«device: ESC/POS Printer»&#xa;Máy in Bếp Lạnh (Cold Kitchen)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+          <mxGeometry x="20" y="410" width="240" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="prn_bar" value="«device: ESC/POS Printer»&#xa;Máy in Quầy Bar (Beverage/Wine)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+          <mxGeometry x="20" y="560" width="240" height="95" as="geometry" />
+        </mxCell>
+
+        <!-- Boundary 3: Cloud & Server Tier -->
+        <mxCell id="box_server" value="3. TẦNG MÁY CHỦ &amp; DỊCH VỤ ĐÁM MÂY (SERVER &amp; DOCKER STACK)" style="swimlane;startSize=30;fillColor=#eff6ff;strokeColor=#2563eb;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="690" y="70" width="370" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="srv_gateway" value="«reverse proxy / edge»&#xa;Cloudflare CDN &amp; Nginx Ingress&#xa;──────────────────&#xa;SSL Termination (HTTPS, WSS)&#xa;Static Assets Caching (Vite React Build)&#xa;Rate Limiting &amp; DDoS Protection" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#2563eb;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_server">
+          <mxGeometry x="30" y="50" width="310" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="srv_api" value="«docker container»&#xa;VinDining Web API (.NET 9)&#xa;──────────────────&#xa;Runtime: ASP.NET Core 9 (Kestrel)&#xa;Pattern: Clean Architecture + CQRS&#xa;Real-time: SignalR WebSockets Hub&#xa;Auth: JWT Bearer &amp; Identity Core" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#2563eb;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_server">
+          <mxGeometry x="30" y="250" width="310" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="srv_worker" value="«docker container»&#xa;Hangfire Background Worker&#xa;──────────────────&#xa;Job 1: Release Expired Table Lock 17m&#xa;Job 2: Auto Send Feedback Email&#xa;Job 3: Daily Financial Aggregation" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#2563eb;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_server">
+          <mxGeometry x="30" y="440" width="310" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="srv_db" value="«docker container / database»&#xa;Microsoft SQL Server 2022 (Linux)&#xa;──────────────────&#xa;Engine: Relational Database (ACID)&#xa;ORM: Entity Framework Core 9&#xa;Storage: Docker Persistent Volume&#xa;Schemas: Tables, Orders, Invoices, Roles" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#2563eb;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_server">
+          <mxGeometry x="30" y="620" width="310" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="srv_cache" value="«in-memory cache»&#xa;MemoryCache / Distributed Cache&#xa;──────────────────&#xa;Floor Plan States &amp; Menu Catalog" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#2563eb;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_server">
+          <mxGeometry x="30" y="810" width="310" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Boundary 4: External Services -->
+        <mxCell id="box_ext" value="4. DỊCH VỤ BÊN NGOÀI (EXTERNAL)" style="swimlane;startSize=30;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="70" width="250" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_vnpay" value="«payment gateway»&#xa;Cổng Thanh toán VNPAY&#xa;──────────────────&#xa;API: Sandbox / Merchant API&#xa;Protocol: HTTPS REST + IPN Webhook&#xa;Functions: Thu cọc, Hoàn cọc tự động,&#xa;Hoàn cọc thủ công ngoại lệ" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#c026d3;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_ext">
+          <mxGeometry x="20" y="250" width="210" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_mail" value="«mail gateway»&#xa;SMTP Mail Server (SendGrid)&#xa;──────────────────&#xa;Protocol: SMTP over TLS (Port 587)&#xa;Messages: BookingCode SMS/Email,&#xa;Hóa đơn điện tử, Link khảo sát CSAT" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#c026d3;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_ext">
+          <mxGeometry x="20" y="440" width="210" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Connections -->
+        <!-- 1. Guest to Gateway via Internet -->
+        <mxCell id="c_guest" value="4G / Wi-Fi&#xa;HTTPS / WSS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#16a34a;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" source="dev_guest" target="srv_gateway" parent="1">
+          <mxGeometry x="-0.85" y="0" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="170" y="45" />
+              <mxPoint x="875" y="45" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 2. Staff device to Router via Wi-Fi -->
+        <mxCell id="c_dev_router" value="Wi-Fi 6&#xa;VLAN 2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="dev_waiter" target="net_router" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330" y="475" />
+              <mxPoint x="330" y="175" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. Router WAN to Gateway -->
+        <mxCell id="c_router_gw" value="WAN Cáp quang&#xa;HTTPS / WSS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2563eb;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="net_router" target="srv_gateway" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Router to Printers (LAN Ethernet VLAN 3) -->
+        <mxCell id="c_r_prn_hot" value="Ethernet&#xa;VLAN 3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="net_router" target="prn_hot" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c_prn_cold" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="prn_hot" target="prn_cold" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c_prn_bar" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="prn_cold" target="prn_bar" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Gateway to API -->
+        <mxCell id="c_gw_api" value="Reverse Proxy&#xa;(Port 5000)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2563eb;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="srv_gateway" target="srv_api" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 6. API to Printers (ESC/POS Socket 9100) -->
+        <mxCell id="c_api_prn" value="ESC/POS&#xa;Port 9100" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4;entryX=1;entryY=0.5;" edge="1" source="srv_api" target="prn_hot" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 7. API to Database (Routed in the 60px corridor between box_lan and box_server at x=660) -->
+        <mxCell id="c_api_db" value="TCP 1433&#xa;(EF Core 9)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2563eb;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.85;entryX=0;entryY=0.2;" edge="1" source="srv_api" target="srv_db" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="439" />
+              <mxPoint x="660" y="718" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 8. Worker to Database -->
+        <mxCell id="c_wrk_db" value="Hangfire&#xa;Jobs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2563eb;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="srv_worker" target="srv_db" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 9. API to Cache -->
+        <mxCell id="c_api_cache" value="State Cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2563eb;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.85;entryX=1;entryY=0.5;" edge="1" source="srv_api" target="srv_cache" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1045" y="439" />
+              <mxPoint x="1045" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 10. API to VNPAY -->
+        <mxCell id="c_api_vnpay" value="HTTPS API &amp; IPN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c026d3;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" edge="1" source="srv_api" target="ext_vnpay" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11. API to Email -->
+        <mxCell id="c_api_mail" value="SMTP (Port 587)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c026d3;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;entryX=0;entryY=0.5;" edge="1" source="srv_api" target="ext_mail" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="404" />
+              <mxPoint x="1080" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
