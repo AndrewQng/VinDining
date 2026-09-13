@@ -4,19 +4,14 @@ VinDining là hệ thống quản lý và đặt bàn nhà hàng Fine Dining cao
 
 ---
 
-## 🏛️ Kiến trúc & Nguyên tắc Thiết kế (Architecture & Principles)
+## 🏛️ Kiến trúc Hệ thống (System Architecture)
 
-- **Clean Architecture**: Phân tách triệt để 4 tầng:
-  - `VinDining.Domain`: Core Entities, Enums, Value Objects, Domain Events, Domain Exceptions. Không phụ thuộc bất kỳ thư viện bên ngoài nào.
-  - `VinDining.Application`: CQRS Pattern với MediatR, DTOs, FluentValidation, Pipeline Behaviors (Logging, Validation, Transaction).
-  - `VinDining.Infrastructure`: EF Core, SQL Server, ASP.NET Core Identity, JWT Token Service, SignalR Hubs, Cloudinary/Upload, Email & Payment Gateways.
-  - `VinDining.API`: Controllers RESTful, API Middlewares (Global Exception Handling), Swagger/OpenAPI, SignalR Endpoints.
-- **Tuân thủ nguyên tắc SOLID**:
-  - **S (Single Responsibility)**: Mỗi Handler, Validator, Service, Component đảm nhiệm một trách nhiệm duy nhất.
-  - **O (Open/Closed)**: Mở rộng tính năng thông qua MediatR Pipeline Behavior, Middleware và Strategy Pattern mà không sửa đổi core hiện hữu.
-  - **L (Liskov Substitution)**: Đảm bảo các implementation thay thế hoàn toàn được interface mà không làm thay đổi tính đúng đắn của hệ thống.
-  - **I (Interface Segregation)**: Chia nhỏ interface (Repository, Read/Write, Specific Services) thay vì một monolithic interface.
-  - **D (Dependency Inversion)**: Các tầng cấp cao phụ thuộc vào Abstraction (Interface), áp dụng triệt để Dependency Injection.
+Dự án áp dụng mô hình **Clean Architecture** (phân tách 4 tầng độc lập) kết hợp **CQRS Pattern** nhằm đảm bảo tính phân tách trách nhiệm (Separation of Concerns), dễ bảo trì và mở rộng:
+
+- `VinDining.Domain`: Core Entities, Enums, Value Objects, Domain Exceptions. Độc lập hoàn toàn với framework và CSDL bên ngoài.
+- `VinDining.Application`: Xử lý Logic nghiệp vụ với MediatR (Commands/Queries), FluentValidation, Pipeline Behaviors (Validation, Logging, Transaction).
+- `VinDining.Infrastructure`: Triển khai CSDL (EF Core 9, SQL Server), ASP.NET Core Identity, JWT Service, SignalR Hubs, Cổng thanh toán VNPAY.
+- `VinDining.API`: RESTful Controllers, SignalR Endpoints, Global Exception Handling Middleware, Swagger/OpenAPI.
 
 ---
 
@@ -79,19 +74,19 @@ VinDining/
 
 ---
 
-## 📋 Nghiệp vụ Cốt lõi (Core Business Modules)
+## 📋 Phân hệ Nghiệp vụ Cốt lõi (Core Business Modules)
 
-1. **Authentication & Multi-role Authorization**:
-   - Khách hàng (Customer), Lễ tân (Host/Receptionist), Phục vụ (Server), Đầu bếp (Chef), Quản trị viên (Admin/Manager).
-2. **Quản lý Đặt bàn & Sơ đồ bàn Thời gian thực (Floor Plan & Reservation)**:
-   - Đặt bàn trực tuyến, chọn khu vực (VIP, Ban công, Sảnh), chọn khung giờ/ca phục vụ.
-   - Cơ chế cọc trực tuyến, quét đơn quá hạn thanh toán cọc.
-   - Sơ đồ bàn trực quan Real-time cập nhật trạng thái: Trống (Available), Đã đặt (Reserved), Đang dùng bữa (Occupied), Chờ dọn bàn (Cleaning).
-3. **Thực đơn Fine Dining & Course Progression**:
-   - Set Menu / Tasting Menu nhiều Course (Khai vị, Món chính, Món phụ, Tráng miệng, Wine Pairing).
-   - Ghi chú dị ứng và sở thích ẩm thực cá nhân hóa.
-   - Điều phối thứ tự ra món (Fire Course) giữa phục vụ và bếp qua SignalR.
-4. **Thanh toán, Hóa đơn & Thống kê**:
-   - Tính phí dịch vụ (Service Charge), VAT, trừ tiền cọc trước đó.
-   - Tích hợp cổng thanh toán trực tuyến (VNPAY/MoMo).
-   - Dashboard báo cáo doanh thu, tần suất lấp đầy bàn, món bán chạy.
+1. **Xác thực & Phân quyền nhân sự nội bộ (Staff RBAC)**:
+   - Phân quyền 4 vai trò nhân sự: Phục vụ bàn (Waitstaff), Điều phối viên (Expediter), Quản lý (Manager), Quản trị viên (Admin) bằng JWT Bearer Token.
+   - Khách hàng sử dụng dịch vụ trực tiếp, không cần đăng ký tài khoản (Zero Onboarding).
+2. **Quản lý Đặt bàn & Cọc trực tuyến (Reservation & Deposit)**:
+   - Khách đặt bàn trực tuyến, chọn khu vực (MainHall, VIP, Balcony), tiệc và ca dùng bữa.
+   - Tích hợp thanh toán cọc giữ chỗ qua VNPAY, quét tự động hủy đơn quá 15 phút không thanh toán và giải phóng bàn (BR-01).
+3. **Sơ đồ bàn Real-time & Gọi món tại bàn (Floor Plan & Ordering)**:
+   - Sơ đồ bàn trực quan cập nhật trạng thái Real-time qua SignalR: Available, LockedForPayment, Reserved, Occupied, Cleaning.
+   - Phục vụ (Waitstaff) tạo đơn gọi món trên tablet, tự động bắn lệnh in nhiệt ESC/POS xuống các trạm bếp.
+   - Điều phối viên (Expediter) kiểm tra tiêu chuẩn và cảnh báo dị ứng tại quầy Pass trước khi bấm xác nhận "Đã phục vụ" (Served - BR-04).
+4. **Hóa đơn, Cấn trừ cọc & Thống kê (Billing & Settlement)**:
+   - Tự động áp dụng phí dịch vụ (5%), VAT (10%) và cấn trừ chính xác khoản tiền cọc đã trả (BR-03).
+   - Quản lý (Manager) xử lý các trường hợp ngoại lệ hoàn cọc/tịch thu cọc có lưu vết phê duyệt (BR-05).
+   - Dashboard báo cáo doanh thu, tần suất lấp đầy bàn và hiệu suất phục vụ.
