@@ -36,6 +36,7 @@ enum ReservationStatus {
     Completed
     Cancelled
     Expired
+    Paid_TableLost
 }
 
 enum DepositStatus {
@@ -86,8 +87,6 @@ class Table {
     +int Capacity
     +TableZone Zone
     +TableStatus Status
-    +string? PairingCode
-    +string? DeviceId
     +bool IsActive
 }
 
@@ -99,7 +98,7 @@ class Reservation {
     +string DiningShift
     +int PartySize
     +ReservationStatus Status
-    +string? SpecialNotes
+    +string? AllergyNotes
     +DateTime? CancelledAt
     +string? CancellationReason
 }
@@ -172,7 +171,6 @@ class Feedback {
     +Guid? ReservationId
     +int Rating
     +string? Comment
-    +DateTime CreatedAtUtc
 }
 
 BaseEntity <|-- Guest
@@ -192,7 +190,7 @@ Guest "1" --> "0..*" Feedback : Submits
 Table "1" --> "0..*" Reservation : Hosted at
 Table "1" --> "0..*" Order : Has active
 Reservation "1" *-- "1" Deposit : Guaranteed by
-Reservation "0..1" <-- "0..*" Order : Inherits deposit
+Reservation "0..1" <-- "0..1" Order : Inherits deposit
 Reservation "0..1" --> "0..1" Feedback : Reviewed by
 
 Category "1" *-- "0..*" MenuItem : Classifies

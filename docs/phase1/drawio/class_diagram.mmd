@@ -4,7 +4,7 @@ flowchart LR
         direction TB
         E1["<b>&lt;&lt;Enum&gt;&gt;<br>StaffRole</b><hr>Waitstaff<br>Expediter<br>Manager<br>Admin"]
         E2["<b>&lt;&lt;Enum&gt;&gt;<br>TableStatus</b><hr>Available<br>LockedForPayment<br>Reserved<br>Occupied<br>Cleaning"]
-        E3["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Completed<br>Cancelled<br>Expired"]
+        E3["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Completed<br>Cancelled<br>Expired<br>Paid_TableLost"]
         E4["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Preparing<br>Served<br>Cancelled"]
         E5["<b>&lt;&lt;Enum&gt;&gt;<br>PaymentMethod</b><hr>Cash<br>Card<br>BankTransfer<br>DepositCovered<br>VNPAY"]
     end
@@ -39,7 +39,7 @@ flowchart LR
         
         Guest["<b>Guest</b><hr>+ string FullName<br>+ string PhoneNumber<br>+ string Email"]
         Staff["<b>Staff</b><hr>+ string FullName<br>+ string Username<br>+ StaffRole Role<br>+ bool IsActive"]
-        Table["<b>Table</b><hr>+ string TableNumber<br>+ int Capacity<br>+ string Zone<br>+ TableStatus Status<br>+ string? PairingCode"]
+        Table["<b>Table</b><hr>+ string TableNumber<br>+ int Capacity<br>+ string Zone<br>+ TableStatus Status<br>+ bool IsActive"]
         Reservation["<b>Reservation</b><hr>+ string BookingCode<br>+ Guid GuestId<br>+ Guid TableId<br>+ ReservationStatus Status"]
         Deposit["<b>Deposit</b><hr>+ Guid ReservationId<br>+ decimal Amount<br>+ string TransactionId<br>+ PaymentMethod PaymentMethod"]
         Category["<b>Category</b><hr>+ string Name<br>+ int DisplayOrder"]
