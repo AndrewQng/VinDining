@@ -1,97 +1,58 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+<mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="State Machine Vòng đời Đơn hàng &amp; Món" id="state_order_lifecycle">
-    <mxGraphModel dx="1200" dy="1020" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1040" math="0" shadow="0">
+    <mxGraphModel dx="2020" dy="1201" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1040" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Title block -->
-        <mxCell id="title_box" value="SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI ĐƠN HÀNG &amp; MÓN ĂN (ORDER &amp; ITEM LIFECYCLE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="60" y="30" width="1080" height="40" as="geometry"/>
+        <mxCell id="title_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=16;fontColor=#333333;" value="SƠ ĐỒ MÁY TRẠNG THÁI VÒNG ĐỜI ĐƠN HÀNG &amp;amp; MÓN ĂN (ORDER &amp;amp; ITEM LIFECYCLE)" vertex="1">
+          <mxGeometry height="40" width="850" x="210" y="120" as="geometry" />
         </mxCell>
-
-        <!-- Initial State -->
-        <mxCell id="init_state" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="60" y="220" width="30" height="30" as="geometry"/>
+        <mxCell id="init_state" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=none;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="70" y="340" as="geometry" />
         </mxCell>
-
-        <!-- State 1: Processing -->
-        <mxCell id="st_processing" value="Processing (Đang chế biến)&#xa;---------------------------------------&#xa;entry / Bắn lệnh in nhiệt ESC/POS&#xa;do / Bếp chế biến theo Course&#xa;exit / Đặt đĩa ra quầy Pass" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="240" y="180" width="260" height="110" as="geometry"/>
+        <mxCell id="st_preparing" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Preparing (Đang chế biến)&#xa;---------------------------------------&#xa;entry / Bắn lệnh in nhiệt ESC/POS&#xa;do / Bếp nhận vé &amp;amp; chế biến theo Course&#xa;exit / Đặt đĩa món hoàn tất ra quầy Pass" vertex="1">
+          <mxGeometry height="140" width="300" x="200" y="180" as="geometry" />
         </mxCell>
-
-        <!-- State 2: Ready -->
-        <mxCell id="st_ready" value="Ready (Sẵn sàng tại Pass)&#xa;---------------------------------------&#xa;entry / Chuông báo món hoàn thành&#xa;do / Đĩa giữ nhiệt tại quầy Pass&#xa;exit / Expediter đối chiếu phiếu in" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="700" y="180" width="260" height="110" as="geometry"/>
+        <mxCell id="st_served" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Served (Đã phục vụ tại bàn)&#xa;---------------------------------------&#xa;entry / Expediter kiểm đồ &amp;amp; bấm xác nhận (BR-04)&#xa;do / Waitstaff bưng phục vụ tại bàn&#xa;exit / Khách kết thúc bữa ăn" vertex="1">
+          <mxGeometry height="130" width="290" x="810" y="180" as="geometry" />
         </mxCell>
-
-        <!-- State 3: Served -->
-        <mxCell id="st_served" value="Served (Đã phục vụ tại bàn)&#xa;---------------------------------------&#xa;entry / Expediter xác nhận (BR-04)&#xa;do / Waitstaff bưng phục vụ tại bàn&#xa;exit / Khách kết thúc bữa ăn" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="700" y="460" width="260" height="110" as="geometry"/>
+        <mxCell id="st_paid" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Paid (Đã thanh toán)&#xa;---------------------------------------&#xa;entry / Áp công thức BR-03; Trừ cọc&#xa;do / In hóa đơn tài chính cuối&#xa;exit / Đóng phiên phục vụ" vertex="1">
+          <mxGeometry height="120" width="290" x="810" y="390" as="geometry" />
         </mxCell>
-
-        <!-- State 4: Paid -->
-        <mxCell id="st_paid" value="Paid (Đã thanh toán)&#xa;---------------------------------------&#xa;entry / Áp công thức BR-03; Trừ cọc&#xa;do / In hóa đơn tài chính cuối&#xa;exit / Đóng phiên phục vụ" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="700" y="730" width="260" height="110" as="geometry"/>
+        <mxCell id="st_cancelled" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cancelled (Hủy món)&#xa;---------------------------------------&#xa;entry / Báo Bếp dừng chế biến&#xa;do / Lưu vết hủy vào audit log" vertex="1">
+          <mxGeometry height="120" width="300" x="200" y="390" as="geometry" />
         </mxCell>
-
-        <!-- State Cancelled -->
-        <mxCell id="st_cancelled" value="Cancelled (Hủy món)&#xa;---------------------------------------&#xa;entry / Báo Bếp dừng chế biến&#xa;do / Lưu vết hủy vào audit log" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="240" y="460" width="260" height="110" as="geometry"/>
+        <mxCell id="end_state" parent="1" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="940" y="580" as="geometry" />
         </mxCell>
-
-        <!-- Final State Normal -->
-        <mxCell id="end_state" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="770" width="30" height="30" as="geometry"/>
+        <mxCell id="end_cancel" parent="1" style="ellipse;html=1;shape=endState;fillColor=#666666;strokeColor=#666666;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="335" y="580" as="geometry" />
         </mxCell>
-
-        <!-- Final State Cancelled -->
-        <mxCell id="end_cancel" value="" style="ellipse;html=1;shape=endState;fillColor=#666666;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="355" y="770" width="30" height="30" as="geometry"/>
+        <mxCell id="tr0" edge="1" parent="1" source="init_state" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="st_preparing" value="Tạo đơn">
+          <mxGeometry relative="1" x="0.5122" y="22" as="geometry">
+            <mxPoint x="-10" y="2" as="offset" />
+          </mxGeometry>
         </mxCell>
-
-        <!-- Transitions -->
-        <!-- init -> Processing -->
-        <mxCell id="tr0" value="Tạo đơn trên Tablet&#xa;/ Bắn in nhiệt Bếp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="init_state" target="st_processing" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="tr1" edge="1" parent="1" source="st_preparing" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;fontColor=#2e7d32;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="st_served" value="Bếp đặt đĩa ra Pass&#xa;Expediter kiểm tra &amp;amp; xác nhận [BR-04]">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Processing -> Ready -->
-        <mxCell id="tr1" value="Bếp nấu xong&#xa;/ Ra quầy Pass" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_processing" target="st_ready" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="tr_can" edge="1" parent="1" source="st_preparing" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;fontColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="st_cancelled" value="Hủy trước khi nấu&#xa;/ Báo Bếp dừng">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Processing -> Cancelled -->
-        <mxCell id="tr_can" value="Hủy trước khi nấu&#xa;/ Báo Bếp dừng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_processing" target="st_cancelled" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="tr_can_end" edge="1" parent="1" source="st_cancelled" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;fontColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="end_cancel" value="Ghi nhận hủy">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Cancelled -> end_cancel -->
-        <mxCell id="tr_can_end" value="Ghi nhận hủy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_cancelled" target="end_cancel" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="tr3" edge="1" parent="1" source="st_served" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="st_paid" value="Thanh toán&#xa;[BR-03] / Trừ cọc">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Ready -> Served -->
-        <mxCell id="tr2" value="Expediter kiểm đồ&#xa;[BR-04] / Ra món" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;fontColor=#2e7d32;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_ready" target="st_served" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="tr4" edge="1" parent="1" source="st_paid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" target="end_state" value="Đóng bàn&#xa;hoàn tất">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="550" />
+              <mxPoint x="960" y="550" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-
-        <!-- Served -> Paid -->
-        <mxCell id="tr3" value="Thanh toán&#xa;[BR-03] / Trừ cọc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="st_served" target="st_paid" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- Paid -> end_state -->
-        <mxCell id="tr4" value="Đóng bàn&#xa;hoàn tất" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="st_paid" target="end_state" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- Note on Allergies & Course progression -->
-        <mxCell id="note1" value="📌 QUY TẮC ĐIỀU PHỐI MÓN (BR-04):&#xa;Mỗi OrderItem chuyển từ Processing -&gt; Ready -&gt; Served độc lập theo tiến độ chế biến của Bếp &amp; kiểm tra của Expediter.&#xa;Expediter là vai trò duy nhất có thẩm quyền xác nhận chuyển trạng thái món sang Served tại quầy Pass." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#b45f06;fontSize=11;fontStyle=1;size=12;align=left;spacingLeft=15;" vertex="1" parent="1">
-          <mxGeometry x="160" y="900" width="880" height="75" as="geometry"/>
-        </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>

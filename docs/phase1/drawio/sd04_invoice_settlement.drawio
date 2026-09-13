@@ -1,94 +1,98 @@
-<mxfile>
+<mxfile host="app.diagrams.net">
   <diagram id="seqlayout" name="SD-04: Thanh toán hóa đơn &amp; Cấn trừ cọc">
-    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3113" dy="1302" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        <mxCell id="g" value="Khách hàng (Guest)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="40" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;fontSize=19;" value="Khách hàng (Guest)" vertex="1">
+          <mxGeometry height="900" width="100" x="-160" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="w" value="Phục vụ (Waitstaff)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="260" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="w" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;fontSize=19;" value="Phục vụ (Waitstaff)" vertex="1">
+          <mxGeometry height="900" width="100" x="170" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="tab" value="Tablet Phục vụ" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="480" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="act3" parent="w" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="770" width="10" x="45" y="90" as="geometry" />
         </mxCell>
-        <mxCell id="api" value="Web API (.NET 9)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="700" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="tab" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=19;" value="Tablet Phục vụ" vertex="1">
+          <mxGeometry height="900" width="100" x="490" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="db" value="SQL Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="920" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="act4" parent="tab" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="720" width="10" x="45" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="prn" value="Máy in Hóa đơn" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="1140" y="40" width="100" height="900" as="geometry"/>
+        <mxCell id="api" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=19;" value="Web API (.NET 9)" vertex="1">
+          <mxGeometry height="900" width="100" x="790" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act0" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="db">
-          <mxGeometry x="45" y="240" width="10" height="50" as="geometry"/>
+        <mxCell id="act1" parent="api" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="220" width="10" x="45" y="190" as="geometry" />
         </mxCell>
-        <mxCell id="act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
-          <mxGeometry x="45" y="190" width="10" height="220" as="geometry"/>
+        <mxCell id="act2" parent="api" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="150" width="10" x="45" y="610" as="geometry" />
         </mxCell>
-        <mxCell id="act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
-          <mxGeometry x="45" y="610" width="10" height="150" as="geometry"/>
+        <mxCell id="db" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=19;" value="SQL Server" vertex="1">
+          <mxGeometry height="900" width="100" x="1060" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="w">
-          <mxGeometry x="45" y="90" width="10" height="770" as="geometry"/>
+        <mxCell id="act0" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="50" width="10" x="45" y="240" as="geometry" />
         </mxCell>
-        <mxCell id="act4" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="tab">
-          <mxGeometry x="45" y="140" width="10" height="720" as="geometry"/>
+        <mxCell id="act6" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="200" width="10" x="45" y="660" as="geometry" />
         </mxCell>
-        <mxCell id="act5" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="prn">
-          <mxGeometry x="45" y="460" width="10" height="400" as="geometry"/>
+        <mxCell id="prn" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=19;" value="Máy in Hóa đơn" vertex="1">
+          <mxGeometry height="900" width="100" x="1260" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act6" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="db">
-          <mxGeometry x="45" y="660" width="10" height="200" as="geometry"/>
+        <mxCell id="act5" parent="prn" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="400" width="10" x="45" y="460" as="geometry" />
         </mxCell>
-        <mxCell id="m0" value="1. Yêu cầu tính tiền" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.1;entryX=0;entryY=0.0;" edge="1" parent="1" source="g" target="act3">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m0" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.1;entryX=0;entryY=0.0;fontSize=19;" target="act3" value="1. Yêu cầu tính tiền">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m1" value="2. Chọn 'Thanh toán bàn'" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0649;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m1" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0649;entryX=0;entryY=0.0;fontSize=19;" target="act4" value="2. Chọn &#39;Thanh toán bàn&#39;">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m2" value="3. GET /api/invoices/preview/{tableId}" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0694;entryX=0;entryY=0.0;" edge="1" parent="1" source="act4" target="act1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m2" edge="1" parent="1" source="act4" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0694;entryX=0;entryY=0.0;fontSize=19;" target="act1" value="3. GET /api/invoices/preview/{tableId}">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m3" value="4. Query tiền món &amp; tiền cọc Deposit" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2273;entryX=0;entryY=0.0;" edge="1" parent="1" source="act1" target="act0">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m3" edge="1" parent="1" source="act1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2273;entryX=0;entryY=0.0;fontSize=19;" target="act0" value="4. Query tiền món &amp;amp; tiền cọc Deposit">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m4" value="5. Trả về dữ liệu" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.4545;" edge="1" parent="1" source="act0" target="act1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m4" edge="1" parent="1" source="act0" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.4545;fontSize=19;" target="act1" value="5. Trả về dữ liệu">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m5" value="6. Áp công thức BR-03 (max(0, Subtotal + 5% SVC + 10% VAT - Deposit))" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6818;entryX=1;entryY=0.8182;" edge="1" parent="1" source="act1" target="act1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="810" y="380"/><mxPoint x="810" y="410"/></Array>
+        <mxCell id="m5" edge="1" parent="1" source="act1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6818;entryX=1;entryY=0.8182;fontSize=19;align=left;" target="act1" value="6. Áp công thức BR-03&amp;nbsp;&lt;div&gt;(max(0, Subtotal + 5% SVC&lt;/div&gt;&lt;div&gt;+ 10% VAT - Deposit))&lt;/div&gt;">
+          <mxGeometry relative="1" x="-0.3" y="-210" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="810" y="380" />
+              <mxPoint x="810" y="410" />
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="m6" value="7. 200 OK (Chi tiết hóa đơn tạm tính)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.375;" edge="1" parent="1" source="act1" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m6" edge="1" parent="1" source="act1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.375;fontSize=19;" target="act4" value="7. 200 OK (Chi tiết hóa đơn tạm tính)">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m7" value="8. In phiếu tạm tính đem cho khách kiểm tra" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4805;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act5">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m7" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4805;entryX=0;entryY=0.0;fontSize=19;" target="act5" value="8. In phiếu tạm tính đem cho khách kiểm tra">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m8" value="9. Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.5667;entryX=0;entryY=0.5455;" edge="1" parent="1" source="g" target="act3">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m8" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.5667;entryX=0;entryY=0.5455;fontSize=19;" target="act3" value="9. Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m9" value="10. Chọn phương thức thanh toán &amp; Bấm 'Hoàn tất thanh toán'" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6104;entryX=0;entryY=0.5833;" edge="1" parent="1" source="act3" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m9" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6104;entryX=0;entryY=0.5833;fontSize=19;" target="act4" value="10. Chọn phương thức thanh toán &amp;amp; Bấm &#39;Hoàn tất thanh toán&#39;">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m10" value="11. POST /api/invoices/settle { tableId, paymentMethod }" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6528;entryX=0;entryY=0.0;" edge="1" parent="1" source="act4" target="act2">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m10" edge="1" parent="1" source="act4" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6528;entryX=0;entryY=0.0;fontSize=19;" target="act2" value="11. POST /api/invoices/settle { tableId, paymentMethod }">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m11" value="12. Cập nhật Invoice -&gt; Paid (lưu PaymentMethod), Table -&gt; Cleaning" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3333;entryX=0;entryY=0.0;" edge="1" parent="1" source="act2" target="act6">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m11" edge="1" parent="1" source="act2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3333;entryX=0;entryY=0.0;fontSize=19;" target="act6" value="12. Cập nhật Invoice -&amp;gt; Paid (lưu PaymentMethod), Table -&amp;gt; Cleaning">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m12" value="13. In hóa đơn tài chính cuối cùng (kèm PaymentMethod)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6667;entryX=0;entryY=0.625;" edge="1" parent="1" source="act2" target="act5">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m12" edge="1" parent="1" source="act2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.6667;entryX=0;entryY=0.625;fontSize=19;" target="act5" value="13. In hóa đơn tài chính cuối cùng (kèm PaymentMethod)">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m13" value="14. 200 OK (Hóa đơn đã thanh toán thành công)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.8611;" edge="1" parent="1" source="act2" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m13" edge="1" parent="1" source="act2" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.8611;fontSize=19;" target="act4" value="14. 200 OK (Hóa đơn đã thanh toán thành công)">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m14" value="15. [SignalR] Broadcast TableStatusChanged(tableId, 'Cleaning')" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.9;entryX=1;entryY=0.9306;" edge="1" parent="1" source="api" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m14" edge="1" parent="1" source="api" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.9;entryX=1;entryY=0.9306;fontSize=19;" target="act4" value="15. [SignalR] Broadcast TableStatusChanged(tableId, &#39;Cleaning&#39;)">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

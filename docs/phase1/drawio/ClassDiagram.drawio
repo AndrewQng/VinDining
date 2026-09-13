@@ -1,226 +1,167 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
-  <diagram name="Domain Class Diagram VinDining" id="domain_class_diagram_vindining">
-    <mxGraphModel dx="1600" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1440" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- Title Block -->
-        <mxCell id="title_block" value="SƠ ĐỒ LỚP THỰC THỂ MIỀN (DOMAIN CLASS DIAGRAM - VINDINING FINE DINING SYSTEM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="60" y="20" width="1700" height="40" as="geometry"/>
-        </mxCell>
-
-        <!-- BaseEntity Abstract Class -->
-        <mxCell id="cls_base_entity" value="«Abstract»&#xa;BaseEntity&amp;lt;TId&amp;gt;&#xa;---------------------------------------&#xa;+ Id : TId&#xa;+ CreatedAtUtc : DateTime&#xa;+ UpdatedAtUtc : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=50;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="580" y="75" width="260" height="95" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== LEFT CLUSTER: GUEST &amp; BOOKING ==================== -->
-        <!-- Guest -->
-        <mxCell id="cls_guest" value="Guest&#xa;---------------------------------------&#xa;+ FullName : string&#xa;+ PhoneNumber : string&#xa;+ Email : string&#xa;+ Address : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="70" y="190" width="250" height="120" as="geometry"/>
-        </mxCell>
-
-        <!-- Reservation -->
-        <mxCell id="cls_reservation" value="Reservation&#xa;---------------------------------------&#xa;+ BookingCode : string&#xa;+ GuestId : Guid&#xa;+ TableId : Guid&#xa;+ ReservationTime : DateTime&#xa;+ DiningShift : string&#xa;+ PartySize : int&#xa;+ Status : ReservationStatus&#xa;+ SpecialNotes : string?&#xa;+ CancelledAt : DateTime?&#xa;+ CancellationReason : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="70" y="430" width="250" height="210" as="geometry"/>
-        </mxCell>
-
-        <!-- Deposit -->
-        <mxCell id="cls_deposit" value="Deposit&#xa;---------------------------------------&#xa;+ ReservationId : Guid&#xa;+ Amount : decimal&#xa;+ TransactionId : string&#xa;+ PaymentMethod : PaymentMethod&#xa;+ Status : DepositStatus&#xa;+ PaidAt : DateTime?&#xa;+ RefundAmount : decimal?&#xa;+ RefundedAt : DateTime?&#xa;+ RefundReason : string?&#xa;+ ApprovedByStaffId : Guid?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="70" y="760" width="250" height="200" as="geometry"/>
-        </mxCell>
-
-        <!-- Feedback -->
-        <mxCell id="cls_feedback" value="Feedback&#xa;---------------------------------------&#xa;+ GuestId : Guid&#xa;+ ReservationId : Guid?&#xa;+ Rating : int&#xa;+ Comment : string?&#xa;+ CreatedAtUtc : DateTime" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="70" y="1080" width="250" height="120" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== CENTER CLUSTER: FLOOR, ORDER &amp; INVOICE ==================== -->
-        <!-- Staff -->
-        <mxCell id="cls_staff" value="Staff&#xa;---------------------------------------&#xa;+ FullName : string&#xa;+ Username : string&#xa;+ Email : string&#xa;+ PasswordHash : string&#xa;+ Role : StaffRole&#xa;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="580" y="190" width="260" height="140" as="geometry"/>
-        </mxCell>
-
-        <!-- Table -->
-        <mxCell id="cls_table" value="Table&#xa;---------------------------------------&#xa;+ TableNumber : string&#xa;+ Capacity : int&#xa;+ Zone : TableZone&#xa;+ Status : TableStatus&#xa;+ PairingCode : string?&#xa;+ DeviceId : string?&#xa;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="580" y="430" width="260" height="160" as="geometry"/>
-        </mxCell>
-
-        <!-- Order -->
-        <mxCell id="cls_order" value="Order&#xa;---------------------------------------&#xa;+ TableId : Guid&#xa;+ ReservationId : Guid?&#xa;+ CreatedByStaffId : Guid&#xa;+ Status : OrderStatus&#xa;+ OpenedAt : DateTime&#xa;+ ClosedAt : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="580" y="760" width="260" height="150" as="geometry"/>
-        </mxCell>
-
-        <!-- Invoice -->
-        <mxCell id="cls_invoice" value="Invoice&#xa;---------------------------------------&#xa;+ OrderId : Guid&#xa;+ SettledByStaffId : Guid&#xa;+ Subtotal : decimal&#xa;+ ServiceCharge : decimal&#xa;+ VatAmount : decimal&#xa;+ DeductedDeposit : decimal&#xa;+ AmountPayable : decimal&#xa;+ PaymentMethod : PaymentMethod&#xa;+ IssuedAt : DateTime&#xa;+ IsPaid : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="580" y="1020" width="260" height="200" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== RIGHT CLUSTER: MENU &amp; KITCHEN ==================== -->
-        <!-- Category -->
-        <mxCell id="cls_category" value="Category&#xa;---------------------------------------&#xa;+ Name : string&#xa;+ Description : string&#xa;+ DisplayOrder : int&#xa;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="190" width="260" height="120" as="geometry"/>
-        </mxCell>
-
-        <!-- MenuItem -->
-        <mxCell id="cls_menu_item" value="MenuItem&#xa;---------------------------------------&#xa;+ CategoryId : Guid&#xa;+ Name : string&#xa;+ Description : string&#xa;+ Price : decimal&#xa;+ ImageUrl : string?&#xa;+ IsAvailable : bool&#xa;+ AllergyInfo : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="430" width="260" height="170" as="geometry"/>
-        </mxCell>
-
-        <!-- OrderItem -->
-        <mxCell id="cls_order_item" value="OrderItem&#xa;---------------------------------------&#xa;+ OrderId : Guid&#xa;+ MenuItemId : Guid&#xa;+ Quantity : int&#xa;+ UnitPrice : decimal&#xa;+ Note : string?&#xa;+ Status : OrderItemStatus&#xa;+ ServedByStaffId : Guid?&#xa;+ ServedAt : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="760" width="260" height="180" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== ENUMS PANEL ==================== -->
-        <mxCell id="panel_enums" value="Domain Enums &amp; Value Types" style="swimlane;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;rounded=1;" vertex="1" parent="1">
-          <mxGeometry x="1480" y="75" width="280" height="1145" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_role" value="«Enum» StaffRole&#xa;-----------------------------&#xa;• Waitstaff&#xa;• Expediter&#xa;• Manager&#xa;• Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="35" width="250" height="105" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_tbl_status" value="«Enum» TableStatus&#xa;-----------------------------&#xa;• Available&#xa;• LockedForPayment (BR-01)&#xa;• Reserved&#xa;• Occupied&#xa;• Cleaning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="155" width="250" height="115" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_tbl_zone" value="«Enum» TableZone&#xa;-----------------------------&#xa;• MainHall&#xa;• VIP&#xa;• Balcony" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="285" width="250" height="90" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_res_status" value="«Enum» ReservationStatus&#xa;-----------------------------&#xa;• AwaitingPayment&#xa;• Confirmed&#xa;• Completed&#xa;• Cancelled&#xa;• Expired" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="390" width="250" height="115" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_dep_status" value="«Enum» DepositStatus&#xa;-----------------------------&#xa;• Pending&#xa;• Paid&#xa;• Refunded (BR-05)&#xa;• Forfeited" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="520" width="250" height="105" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_order_status" value="«Enum» OrderStatus&#xa;-----------------------------&#xa;• Processing&#xa;• Completed&#xa;• Cancelled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="640" width="250" height="90" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_item_status" value="«Enum» OrderItemStatus&#xa;-----------------------------&#xa;• Preparing&#xa;• Ready&#xa;• Served (BR-04)&#xa;• Cancelled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="745" width="250" height="105" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="enum_payment_method" value="«Enum» PaymentMethod&#xa;-----------------------------&#xa;• Cash&#xa;• Card&#xa;• BankTransfer&#xa;• DepositCovered&#xa;• VNPAY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="865" width="250" height="115" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="note_inherit" value="📌 QUY ƯỚC KIẾN TRÚC:&#xa;Toàn bộ 11 Thực thể miền đều kế thừa BaseEntity&amp;lt;Guid&amp;gt;&#xa;cung cấp Id (PK), CreatedAtUtc, UpdatedAtUtc." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;spacingLeft=5;size=10;" vertex="1" parent="panel_enums">
-          <mxGeometry x="15" y="1000" width="250" height="75" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== RELATIONSHIPS ==================== -->
-        <!-- 1. Guest -> Reservation: Makes (1 to 0..*) -->
-        <mxCell id="rel_g_res" value="Makes (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="cls_guest" target="cls_reservation" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-35"/></mxGeometry>
-        </mxCell>
-
-        <!-- 2. Reservation *-> Deposit: Guaranteed by (1 to 1) -->
-        <mxCell id="rel_res_dep" value="Guaranteed by (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="cls_reservation" target="cls_deposit" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-35"/></mxGeometry>
-        </mxCell>
-
-        <!-- 3. Guest -> Feedback: Submits (1 to 0..*) -->
-        <mxCell id="rel_g_fb" value="Submits (0..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="cls_guest" target="cls_feedback" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="30" y="250"/>
-              <mxPoint x="30" y="1140"/>
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 4. Table -> Reservation: Hosted at (1 to 0..*) -->
-        <mxCell id="rel_tbl_res" value="Hosted at (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.25;entryX=1;entryY=0.25;" edge="1" source="cls_table" target="cls_reservation" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- 5. Table -> Order: Has active (1 to 0..*) -->
-        <mxCell id="rel_tbl_ord" value="Has active (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#82b366;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="cls_table" target="cls_order" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-65"/></mxGeometry>
-        </mxCell>
-
-        <!-- 6. Reservation -> Order: Inherits deposit (0..1 to 0..*) -->
-        <mxCell id="rel_res_ord" value="Inherits deposit (0..1)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.8;entryX=0;entryY=0.3;" edge="1" source="cls_reservation" target="cls_order" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="480" y="598"/>
-              <mxPoint x="480" y="805"/>
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 7. Order *-> OrderItem: Composes (1 to 1..*) -->
-        <mxCell id="rel_ord_item" value="Composes (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="cls_order" target="cls_order_item" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- 8. Category *-> MenuItem: Classifies (1 to 0..*) -->
-        <mxCell id="rel_cat_item" value="Classifies (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="cls_category" target="cls_menu_item" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-35"/></mxGeometry>
-        </mxCell>
-
-        <!-- 9. MenuItem <- OrderItem: Refers to (1 to 0..*) -->
-        <mxCell id="rel_item_ref" value="Refers to (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.75;exitY=0;entryX=0.75;entryY=1;" edge="1" source="cls_order_item" target="cls_menu_item" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-50"/></mxGeometry>
-        </mxCell>
-
-        <!-- 10. Order -> Invoice: Billed as (1 to 0..1) -->
-        <mxCell id="rel_ord_inv" value="Billed as (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="cls_order" target="cls_invoice" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-50"/></mxGeometry>
-        </mxCell>
-
-        <!-- 11. Staff -> Order: Waitstaff Creates (1 to 0..*) -->
-        <mxCell id="rel_stf_ord" value="Waitstaff Creates&#xa;(1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.85;entryX=1;entryY=0.2;" edge="1" source="cls_staff" target="cls_order" parent="1">
-          <mxGeometry x="-0.2" relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="900" y="309"/>
-              <mxPoint x="900" y="790"/>
-            </Array>
-            <mxPoint as="offset" y="-120"/>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 12. Staff -> OrderItem: Expediter Confirms (1 to 0..*) -->
-        <mxCell id="rel_stf_item" value="Expediter Confirms&#xa;(BR-04)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.2;" edge="1" source="cls_staff" target="cls_order_item" parent="1">
-          <mxGeometry x="0.3" relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1040" y="225"/>
-              <mxPoint x="1040" y="796"/>
-            </Array>
-            <mxPoint as="offset" y="-40"/>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 13. Staff -> Invoice: Waitstaff Settles (1 to 0..*) -->
-        <mxCell id="rel_stf_inv" value="Waitstaff Settles&#xa;(1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.55;entryX=1;entryY=0.5;" edge="1" source="cls_staff" target="cls_invoice" parent="1">
-          <mxGeometry x="0.3" relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="970" y="267"/>
-              <mxPoint x="970" y="1120"/>
-            </Array>
-            <mxPoint as="offset" y="-40"/>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 14. Staff -> Deposit: Manager Overrides (0..1 to 0..*) -->
-        <mxCell id="rel_stf_dep" value="Manager Overrides&#xa;(BR-05)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.8;entryX=1;entryY=0.5;" edge="1" source="cls_staff" target="cls_deposit" parent="1">
-          <mxGeometry x="0.3" relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="400" y="302"/>
-              <mxPoint x="400" y="860"/>
-            </Array>
-            <mxPoint as="offset" y="120"/>
-          </mxGeometry>
-        </mxCell>
-
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="65bd71144e">
+    <diagram name="Domain Class Diagram VinDining" id="domain_class_diagram_vindining">
+        <mxGraphModel dx="633" dy="947" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1440" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title_block" value="SƠ ĐỒ LỚP THỰC THỂ MIỀN (DOMAIN CLASS DIAGRAM - VINDINING FINE DINING SYSTEM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;fontColor=#333333;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="20" width="1700" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_base_entity" value="«Abstract»&#10;BaseEntity&amp;lt;TId&amp;gt;&#10;---------------------------------------&#10;+ Id : TId&#10;+ CreatedAtUtc : DateTime&#10;+ UpdatedAtUtc : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=50;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="75" width="260" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_guest" value="Guest&#10;---------------------------------------&#10;+ FullName : string&#10;+ PhoneNumber : string&#10;+ Email : string&#10;+ Address : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="190" width="250" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_reservation" value="Reservation&#10;---------------------------------------&#10;+ BookingCode : string&#10;+ GuestId : Guid&#10;+ TableId : Guid&#10;+ ReservationTime : DateTime&#10;+ DiningShift : string&#10;+ PartySize : int&#10;+ Status : ReservationStatus&#10;+ SpecialNotes : string?&#10;+ CancelledAt : DateTime?&#10;+ CancellationReason : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="430" width="250" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_deposit" value="Deposit&#10;---------------------------------------&#10;+ ReservationId : Guid&#10;+ Amount : decimal&#10;+ TransactionId : string&#10;+ PaymentMethod : PaymentMethod&#10;+ Status : DepositStatus&#10;+ PaidAt : DateTime?&#10;+ RefundAmount : decimal?&#10;+ RefundedAt : DateTime?&#10;+ RefundReason : string?&#10;+ ApprovedByStaffId : Guid?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="760" width="250" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_feedback" value="Feedback&#10;---------------------------------------&#10;+ GuestId : Guid&#10;+ ReservationId : Guid?&#10;+ Rating : int&#10;+ Comment : string?&#10;+ CreatedAtUtc : DateTime" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="1080" width="250" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_staff" value="Staff&#10;---------------------------------------&#10;+ FullName : string&#10;+ Username : string&#10;+ Email : string&#10;+ PasswordHash : string&#10;+ Role : StaffRole&#10;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="190" width="260" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_table" value="Table&#10;---------------------------------------&#10;+ TableNumber : string&#10;+ Capacity : int&#10;+ Zone : TableZone&#10;+ Status : TableStatus&#10;+ PairingCode : string?&#10;+ DeviceId : string?&#10;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="430" width="260" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_order" value="Order&#10;---------------------------------------&#10;+ TableId : Guid&#10;+ ReservationId : Guid?&#10;+ CreatedByStaffId : Guid&#10;+ Status : OrderStatus&#10;+ OpenedAt : DateTime&#10;+ ClosedAt : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="760" width="260" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_invoice" value="Invoice&#10;---------------------------------------&#10;+ OrderId : Guid&#10;+ SettledByStaffId : Guid&#10;+ Subtotal : decimal&#10;+ ServiceCharge : decimal&#10;+ VatAmount : decimal&#10;+ DeductedDeposit : decimal&#10;+ AmountPayable : decimal&#10;+ PaymentMethod : PaymentMethod&#10;+ IssuedAt : DateTime&#10;+ IsPaid : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="1020" width="260" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_category" value="Category&#10;---------------------------------------&#10;+ Name : string&#10;+ Description : string&#10;+ DisplayOrder : int&#10;+ IsActive : bool" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1120" y="190" width="260" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_menu_item" value="MenuItem&#10;---------------------------------------&#10;+ CategoryId : Guid&#10;+ Name : string&#10;+ Description : string&#10;+ Price : decimal&#10;+ ImageUrl : string?&#10;+ IsAvailable : bool&#10;+ AllergyInfo : string?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1120" y="430" width="260" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_order_item" value="OrderItem&#10;---------------------------------------&#10;+ OrderId : Guid&#10;+ MenuItemId : Guid&#10;+ Quantity : int&#10;+ UnitPrice : decimal&#10;+ Note : string?&#10;+ Status : OrderItemStatus&#10;+ ServedByStaffId : Guid?&#10;+ ServedAt : DateTime?" style="swimlane;fontStyle=1;align=center;startSize=28;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1120" y="760" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="panel_enums" value="Domain Enums &amp; Value Types" style="swimlane;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="1480" y="75" width="280" height="1145" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_role" value="«Enum» StaffRole&#10;-----------------------------&#10;• Waitstaff&#10;• Expediter&#10;• Manager&#10;• Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="35" width="250" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_tbl_status" value="«Enum» TableStatus&#10;-----------------------------&#10;• Available&#10;• LockedForPayment (BR-01)&#10;• Reserved&#10;• Occupied&#10;• Cleaning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="155" width="250" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_tbl_zone" value="«Enum» TableZone&#10;-----------------------------&#10;• MainHall&#10;• VIP&#10;• Balcony" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="285" width="250" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_res_status" value="«Enum» ReservationStatus&#10;-----------------------------&#10;• AwaitingPayment&#10;• Confirmed&#10;• Completed&#10;• Cancelled&#10;• Expired" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="390" width="250" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_dep_status" value="«Enum» DepositStatus&#10;-----------------------------&#10;• Pending&#10;• Paid&#10;• Refunded (BR-05)&#10;• Forfeited" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="520" width="250" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_order_status" value="«Enum» OrderStatus&#10;-----------------------------&#10;• Processing&#10;• Completed&#10;• Cancelled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="640" width="250" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_item_status" value="«Enum» OrderItemStatus&#10;-----------------------------&#10;• Preparing&#10;• Served (BR-04)&#10;• Cancelled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="745" width="250" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_payment_method" value="«Enum» PaymentMethod&#10;-----------------------------&#10;• Cash&#10;• Card&#10;• BankTransfer&#10;• DepositCovered&#10;• VNPAY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="865" width="250" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="note_inherit" value="📌 QUY ƯỚC KIẾN TRÚC:&#10;Toàn bộ 11 Thực thể miền đều kế thừa BaseEntity&amp;lt;Guid&amp;gt;&#10;cung cấp Id (PK), CreatedAtUtc, UpdatedAtUtc." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;spacingLeft=5;size=10;" parent="panel_enums" vertex="1">
+                    <mxGeometry x="15" y="1000" width="250" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel_g_res" value="Makes (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="cls_guest" target="cls_reservation" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-35" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_res_dep" value="Guaranteed by (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="cls_reservation" target="cls_deposit" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-35" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_g_fb" value="Submits (0..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="cls_guest" target="cls_feedback" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="30" y="250"/>
+                            <mxPoint x="30" y="1140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_tbl_res" value="Hosted at (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.25;entryX=1;entryY=0.25;" parent="1" source="cls_table" target="cls_reservation" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel_tbl_ord" value="Has active (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#82b366;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="cls_table" target="cls_order" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-65" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_res_ord" value="Inherits deposit (0..1)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.8;entryX=0;entryY=0.3;" parent="1" source="cls_reservation" target="cls_order" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="480" y="598"/>
+                            <mxPoint x="480" y="805"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_ord_item" value="Composes (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="cls_order" target="cls_order_item" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel_cat_item" value="Classifies (1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;startArrow=diamondThin;startFill=1;endArrow=none;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="cls_category" target="cls_menu_item" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-35" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_item_ref" value="Refers to (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.75;exitY=0;entryX=0.75;entryY=1;" parent="1" source="cls_order_item" target="cls_menu_item" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-50" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_ord_inv" value="Billed as (1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="cls_order" target="cls_invoice" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-50" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_stf_ord" value="Waitstaff Creates&#10;(1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.85;entryX=1;entryY=0.2;" parent="1" source="cls_staff" target="cls_order" edge="1">
+                    <mxGeometry x="-0.2" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="900" y="309"/>
+                            <mxPoint x="900" y="790"/>
+                        </Array>
+                        <mxPoint y="-120" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_stf_item" value="Expediter Confirms&#10;(BR-04)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.2;" parent="1" source="cls_staff" target="cls_order_item" edge="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1040" y="225"/>
+                            <mxPoint x="1040" y="796"/>
+                        </Array>
+                        <mxPoint y="-40" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_stf_inv" value="Waitstaff Settles&#10;(1..*)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=1;exitY=0.55;entryX=1;entryY=0.5;" parent="1" source="cls_staff" target="cls_invoice" edge="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="970" y="267"/>
+                            <mxPoint x="970" y="1120"/>
+                        </Array>
+                        <mxPoint y="-40" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="rel_stf_dep" value="Manager Overrides&#10;(BR-05)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=1.5;html=1;endArrow=open;endFill=1;labelBackgroundColor=#ffffff;fontSize=10;exitX=0;exitY=0.8;entryX=1;entryY=0.5;" parent="1" source="cls_staff" target="cls_deposit" edge="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="400" y="302"/>
+                            <mxPoint x="400" y="860"/>
+                        </Array>
+                        <mxPoint y="120" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
 </mxfile>

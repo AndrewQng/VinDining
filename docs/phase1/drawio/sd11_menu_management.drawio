@@ -1,92 +1,202 @@
-<mxfile>
+<mxfile host="Electron">
   <diagram id="seqlayout" name="SD-11: Quản trị Thực đơn món ăn &amp; Đồng bộ Realtime (UC-A1)">
-    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2020" dy="1201" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2250" pageHeight="1150" math="0" shadow="0">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        <mxCell id="mgr" value="Quản lý (Manager)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="40" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frame_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;width=60;height=30;boundedLbl=1;verticalAlign=top;align=left;spacingLeft=10;fillColor=none;strokeColor=light-dark(#000000,#000000);strokeWidth=1.5;fontColor=default;fontStyle=1;labelBackgroundColor=none;fontSize=17;" value="alt" vertex="1">
+          <mxGeometry height="670" width="1760" x="70" y="270" as="geometry" />
         </mxCell>
-        <mxCell id="fe" value="Manager Web Portal" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="290" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="mgr" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=none;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);" value="Quản lý (Manager)" vertex="1">
+          <mxGeometry height="920" width="100" x="80" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="api" value="Web API (MenuController)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="540" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="fe" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="Manager Web Portal" vertex="1">
+          <mxGeometry height="920" width="100" x="310" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="cqrs" value="MediatR (UpsertMenuCmd)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="790" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="act_fe" parent="fe" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="810" width="10" x="45" y="70" as="geometry" />
         </mxCell>
-        <mxCell id="val" value="FluentValidation" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="api" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="Web API (MenuController)" vertex="1">
+          <mxGeometry height="920" width="100" x="540" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="db" value="SQL Server (EF Core 9)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="1290" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="act_api" parent="api" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="730" width="10" x="45" y="110" as="geometry" />
         </mxCell>
-        <mxCell id="hub" value="SignalR Hub" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="1540" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="cqrs" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="MediatR (UpsertMenuCmd)" vertex="1">
+          <mxGeometry height="920" width="100" x="750" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="display" value="Digital Display tại bàn" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="1790" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="act_cqrs" parent="cqrs" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="630" width="10" x="45" y="170" as="geometry" />
         </mxCell>
-        <mxCell id="staff" value="Tablet Phục vụ" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;" vertex="1" parent="1">
-          <mxGeometry x="2040" y="40" width="100" height="780" as="geometry"/>
+        <mxCell id="val" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="FluentValidation" vertex="1">
+          <mxGeometry height="860" width="100" x="960" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act0" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="val">
-          <mxGeometry x="45" y="240" width="10" height="50" as="geometry"/>
+        <mxCell id="act_val" parent="val" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="80" width="10" x="45" y="190" as="geometry" />
         </mxCell>
-        <mxCell id="act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="db">
-          <mxGeometry x="45" y="340" width="10" height="50" as="geometry"/>
+        <mxCell id="act_val2" parent="val" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="50" width="10" x="45" y="680" as="geometry" />
         </mxCell>
-        <mxCell id="act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="hub">
-          <mxGeometry x="45" y="440" width="10" height="100" as="geometry"/>
+        <mxCell id="db" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="SQL Server (EF Core 9)" vertex="1">
+          <mxGeometry height="920" width="100" x="1140" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="cqrs">
-          <mxGeometry x="45" y="190" width="10" height="400" as="geometry"/>
+        <mxCell id="act_db" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="90" width="10" x="45" y="310" as="geometry" />
         </mxCell>
-        <mxCell id="act4" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="api">
-          <mxGeometry x="45" y="140" width="10" height="500" as="geometry"/>
+        <mxCell id="hub" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="SignalR Hub" vertex="1">
+          <mxGeometry height="920" width="100" x="1300" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="act5" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;" vertex="1" parent="fe">
-          <mxGeometry x="45" y="90" width="10" height="650" as="geometry"/>
+        <mxCell id="act_hub" parent="hub" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontColor=default;fontSize=17;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="120" width="10" x="45" y="390" as="geometry" />
         </mxCell>
-        <mxCell id="m0" value="1. Nhập Tên món, Phân loại Course, Giá bán, Cảnh báo dị ứng" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.1154;entryX=0;entryY=0.0;" edge="1" parent="1" source="mgr" target="act5">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="display" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="Digital Display tại bàn" vertex="1">
+          <mxGeometry height="950" width="150" x="1470" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="m1" value="2. POST /api/v1/menu/items" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0769;entryX=0;entryY=0.0;" edge="1" parent="1" source="act5" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="staff" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="Tablet Phục vụ" vertex="1">
+          <mxGeometry height="920" width="100" x="1670" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="m2" value="3. Send(CreateMenuItemCommand)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1;entryX=0;entryY=0.0;" edge="1" parent="1" source="act4" target="act3">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m0" edge="1" parent="1" source="mgr" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="act_fe" value="1. Nhập dữ liệu">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="110" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m3" value="4. Validate (Tên, Giá &gt; 0, CategoryId tồn tại)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.125;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act0">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m1" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="act_api" value="2. POST /api/v1/menu/items">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="150" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m4" value="5. Validation Passed" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.25;" edge="1" parent="1" source="act0" target="act3">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m2" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=light-dark(#FFFFFF,#FFFFFF);" value="3. Send(CreateMenuItemCommand)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="190" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m5" value="6. Insert MenuItem &amp; AllergenTags" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.375;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m3" edge="1" parent="1" source="cqrs" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="act_val" value="4. Validate (Tên, Giá &amp;gt; 0, CategoryId tồn tại)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="230" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m6" value="7. SaveChangesAsync()" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.5;" edge="1" parent="1" source="act1" target="act3">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="guard_success" parent="1" style="text;html=1;strokeColor=light-dark(#000000,#000000);fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=default;fontStyle=1;fontSize=17;labelBackgroundColor=none;" value="[Dữ liệu hợp lệ]" vertex="1">
+          <mxGeometry height="60" width="150" x="140" y="320" as="geometry" />
         </mxCell>
-        <mxCell id="m7" value="8. Broadcast MenuCatalogUpdated event" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.625;entryX=0;entryY=0.0;" edge="1" parent="1" source="act3" target="act2">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m4" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=light-dark(#FFFFFF,#FFFFFF);entryX=1;entryY=0.25;fontSize=17;" value="5a. Validation Passed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="310" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m8" value="9. Cập nhật danh mục món trên màn hình Digital Display" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;exitX=1;exitY=0.5;entryX=0.5;entryY=0.6282;" edge="1" parent="1" source="act2" target="display">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m5" edge="1" parent="1" source="act_cqrs" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="act_db" value="6a. Insert MenuItem &amp;amp; AllergenTags">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="350" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m9" value="10. Đồng bộ món &amp; cảnh báo dị ứng trên Tablet phục vụ" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;exitX=1;exitY=1.0;entryX=0.5;entryY=0.6923;" edge="1" parent="1" source="act2" target="staff">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m6" edge="1" parent="1" source="act_db" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" target="act_cqrs" value="7a. SaveChangesAsync()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="390" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m10" value="11. MenuItemDetailDto" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.9;" edge="1" parent="1" source="act3" target="act4">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m7" edge="1" parent="1" source="act_cqrs" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="act_hub" value="8a. Broadcast MenuCatalogUpdated (kèm xóa Cache)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1200" y="430" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m11" value="12. 201 Created" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.8462;" edge="1" parent="1" source="act4" target="act5">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m8" edge="1" parent="1" source="act_hub" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="10a. Cập nhật danh mục Digital Display">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1470" y="470" />
+            </Array>
+            <mxPoint x="1550" y="470" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="m12" value="13. Thông báo lưu món thành công trên Dashboard" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0;exitY=0.9231;entryX=0.5;entryY=0.8846;" edge="1" parent="1" source="act5" target="mgr">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="m9" edge="1" parent="1" source="act_hub" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" target="staff" value="10. Đồng bộ món &amp;amp; cảnh báo dị ứng trên Tablet phục vụ">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1650" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" value="11a. MenuItemDetailDto">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="510" />
+            </Array>
+            <mxPoint x="790" y="510" as="sourcePoint" />
+            <mxPoint x="595" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" value="12a. 201 Created&amp;nbsp;">
+          <mxGeometry relative="1" x="0.0043" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="580" y="530" as="sourcePoint" />
+            <mxPoint x="370" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;fontSize=17;fontColor=default;strokeColor=light-dark(#000000,#000000);labelBackgroundColor=none;" value="13a. Thông báo lưu món thành công">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220.19" y="560" />
+            </Array>
+            <mxPoint x="355.19" y="560" as="sourcePoint" />
+            <mxPoint x="129.92857142857144" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13_fail" edge="1" parent="1" source="act_val2" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" target="act_cqrs" value="5b. Validation Failed">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="950" y="730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14_fail" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" value="6b. Result.Failure(ValidationErrors)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="770" />
+            </Array>
+            <mxPoint x="795" y="770" as="sourcePoint" />
+            <mxPoint x="595" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15_fail" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" value="7b. 400 Bad Request (ValidationErrors)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="830" />
+            </Array>
+            <mxPoint x="585" y="830" as="sourcePoint" />
+            <mxPoint x="345" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16_fail" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;strokeColor=light-dark(#000000,#000000);fontColor=default;fontSize=17;labelBackgroundColor=none;" value="8b. Hiển thị cảnh báo lỗi nhập liệu">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="870" />
+            </Array>
+            <mxPoint x="355" y="870" as="sourcePoint" />
+            <mxPoint x="129.92857142857144" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TWgeJ350ze1UQIWJRUuW-4" parent="1" style="text;html=1;strokeColor=light-dark(#000000,#000000);fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=default;fontStyle=1;fontSize=17;labelBackgroundColor=none;" value="[else: lỗi validation]" vertex="1">
+          <mxGeometry height="60" width="165" x="140" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="TWgeJ350ze1UQIWJRUuW-9" edge="1" parent="1" source="frame_alt" style="endArrow=none;dashed=1;html=1;rounded=0;exitX=0.002;exitY=0.464;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.999;entryY=0.471;entryDx=0;entryDy=0;entryPerimeter=0;" target="frame_alt" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="830" y="540" as="sourcePoint" />
+            <mxPoint x="880" y="490" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

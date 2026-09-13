@@ -43,7 +43,7 @@
     {
       "from": "mgr",
       "to": "fe",
-      "label": "1. Nhập Tên món, Phân loại Course, Giá bán, Cảnh báo dị ứng"
+      "label": "1. Nhập Tên món, Phân loại Danh mục (Category), Giá bán, Cảnh báo dị ứng"
     },
     {
       "from": "fe",
@@ -61,59 +61,86 @@
       "label": "4. Validate (Tên, Giá > 0, CategoryId tồn tại)"
     },
     {
+      "note": "[alt: Dữ liệu hợp lệ (Tên, Giá > 0, CategoryId tồn tại)]",
+      "over": "val"
+    },
+    {
       "from": "val",
       "to": "cqrs",
-      "label": "5. Validation Passed",
+      "label": "5a. Validation Passed",
       "return": true
     },
     {
       "from": "cqrs",
       "to": "db",
-      "label": "6. Insert MenuItem & AllergenTags"
+      "label": "6a. Insert MenuItem & AllergenTags"
     },
     {
       "from": "db",
       "to": "cqrs",
-      "label": "7. SaveChangesAsync()",
+      "label": "7a. SaveChangesAsync()",
       "return": true
     },
     {
       "from": "cqrs",
       "to": "hub",
-      "label": "8. Broadcast MenuCatalogUpdated event"
+      "label": "8a. Broadcast MenuCatalogUpdated (kèm xóa Cache)"
     },
     {
       "from": "hub",
       "to": "display",
-      "label": "9. Cập nhật danh mục món trên màn hình Digital Display",
-      "async": true,
-      "activate": false
+      "label": "9a. Cập nhật danh mục món trên màn hình Digital Display",
+      "async": true
     },
     {
       "from": "hub",
       "to": "staff",
-      "label": "10. Đồng bộ món & cảnh báo dị ứng trên Tablet phục vụ",
-      "async": true,
-      "activate": false,
-      "deactivate": true
+      "label": "10a. Đồng bộ món & cảnh báo dị ứng trên Tablet phục vụ",
+      "async": true
     },
     {
       "from": "cqrs",
       "to": "api",
-      "label": "11. MenuItemDetailDto",
+      "label": "11a. MenuItemDetailDto",
       "return": true
     },
     {
       "from": "api",
       "to": "fe",
-      "label": "12. 201 Created",
+      "label": "12a. 201 Created (Chi tiết món mới)",
       "return": true
     },
     {
       "from": "fe",
       "to": "mgr",
-      "label": "13. Thông báo lưu món thành công trên Dashboard",
-      "activate": false
+      "label": "13a. Thông báo lưu món thành công trên Dashboard"
+    },
+    {
+      "note": "[else: Lỗi Validation (Tên rỗng hoặc Giá <= 0)]",
+      "over": "val"
+    },
+    {
+      "from": "val",
+      "to": "cqrs",
+      "label": "5b. Validation Failed (ValidationException)",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "6b. Result.Failure(ValidationErrors)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "7b. 400 Bad Request (ValidationErrors)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "mgr",
+      "label": "8b. Hiển thị cảnh báo lỗi nhập liệu để Quản lý chỉnh sửa"
     }
   ]
 }

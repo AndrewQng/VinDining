@@ -1,122 +1,121 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="Electron" agent="Mozilla/5.0" version="26.0.0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
   <diagram name="AD-05 Hủy bàn &amp; Hoàn phạt tiền cọc" id="ad05_cancellation_refund">
-    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="980" math="0" shadow="0">
+    <mxGraphModel dx="1940" dy="1116" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="980" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Swimlanes -->
-        <mxCell id="lane_actor" value="Khách hàng / Quản lý (Guest / Manager)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="40" width="340" height="900" as="geometry"/>
+        <mxCell id="lane_actor" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Khách hàng / Quản lý (Guest / Manager)" vertex="1">
+          <mxGeometry height="960" width="310" x="70" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="lane_system" value="Hệ thống VinDining (Web API &amp; Policy Engine)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
-          <mxGeometry x="380" y="40" width="360" height="900" as="geometry"/>
+        <mxCell id="start1" parent="lane_actor" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="lane_vnpay" value="Cổng thanh toán VNPAY (Refund API)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" vertex="1" parent="1">
-          <mxGeometry x="740" y="40" width="320" height="900" as="geometry"/>
+        <mxCell id="a_act1" parent="lane_actor" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Khách bấm &#39;Hủy đặt bàn&#39; trên Web&#xa;hoặc Quản lý bấm &#39;Manual Override&#39;" vertex="1">
+          <mxGeometry height="90" width="210" x="65" y="120" as="geometry" />
         </mxCell>
-
-        <!-- Lane 1 Nodes (Guest / Manager) -->
-        <mxCell id="start1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;" vertex="1" parent="lane_actor">
-          <mxGeometry x="155" y="60" width="30" height="30" as="geometry"/>
+        <mxCell id="a_act_refund" parent="lane_actor" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận Email/SMS xác nhận hoàn cọc 100%&#xa;&amp;amp; tiền hoàn về tài khoản ban đầu" vertex="1">
+          <mxGeometry height="110" width="210" x="65" y="755" as="geometry" />
         </mxCell>
-        <mxCell id="a_act1" value="Khách bấm 'Hủy đặt bàn' trên Web&#xa;hoặc Quản lý bấm 'Manual Override'" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_actor">
-          <mxGeometry x="65" y="120" width="210" height="55" as="geometry"/>
+        <mxCell id="end_succ1" parent="lane_actor" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#2e7d32;strokeWidth=2;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="155" y="900" as="geometry" />
         </mxCell>
-        <mxCell id="a_act_penalty" value="Nhận thông báo: Hủy bàn thành công,&#xa;phạt 100% tiền cọc (Hủy dưới 4 tiếng)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#757575;strokeColor=#424242;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_actor">
-          <mxGeometry x="65" y="380" width="210" height="55" as="geometry"/>
+        <mxCell id="end_succ1_dot" parent="lane_actor" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2e7d32;strokeColor=none;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="161" y="906" as="geometry" />
         </mxCell>
-        <mxCell id="end_fail1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#e53935;strokeWidth=2;" vertex="1" parent="lane_actor">
-          <mxGeometry x="155" y="470" width="30" height="30" as="geometry"/>
+        <mxCell id="e12" edge="1" parent="lane_actor" source="a_act_refund" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="end_succ1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="end_fail1_dot" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=none;" vertex="1" parent="lane_actor">
-          <mxGeometry x="161" y="476" width="18" height="18" as="geometry"/>
+        <mxCell id="lane_system" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Hệ thống VinDining (Web API &amp;amp; Policy Engine)" vertex="1">
+          <mxGeometry height="960" width="360" x="380" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="a_act_refund" value="Nhận Email/SMS xác nhận hoàn cọc 100%&#xa;&amp; tiền hoàn về tài khoản ban đầu" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_actor">
-          <mxGeometry x="65" y="740" width="210" height="55" as="geometry"/>
+        <mxCell id="s_act1" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kiểm tra thời gian hẹn &amp;amp; chính sách:&#xa;DeltaTime = BookingTime - Now" vertex="1">
+          <mxGeometry height="120" width="260" x="50" y="90" as="geometry" />
         </mxCell>
-        <mxCell id="end_succ1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#2e7d32;strokeWidth=2;" vertex="1" parent="lane_actor">
-          <mxGeometry x="155" y="830" width="30" height="30" as="geometry"/>
+        <mxCell id="s_dec1" parent="lane_system" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Hủy trước &amp;gt;= 4h (BR-05)&#xa;HOẶC Manager Override?" vertex="1">
+          <mxGeometry height="110" width="260" x="50" y="240" as="geometry" />
         </mxCell>
-        <mxCell id="end_succ1_dot" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2e7d32;strokeColor=none;" vertex="1" parent="lane_actor">
-          <mxGeometry x="161" y="836" width="18" height="18" as="geometry"/>
+        <mxCell id="a_act_penalty" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#757575;strokeColor=#424242;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo: Hủy bàn thành công,&#xa;phạt 100% tiền cọc (Hủy dưới 4 tiếng)" vertex="1">
+          <mxGeometry height="90" width="210" x="-280" y="445" as="geometry" />
         </mxCell>
-
-        <!-- Lane 2 Nodes (System) -->
-        <mxCell id="s_act1" value="Kiểm tra thời gian hẹn &amp; chính sách:&#xa;DeltaTime = BookingTime - Now" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_system">
-          <mxGeometry x="75" y="120" width="210" height="55" as="geometry"/>
+        <mxCell id="end_fail1" parent="lane_system" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#e53935;strokeWidth=2;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="-190" y="570" as="geometry" />
         </mxCell>
-        <mxCell id="s_dec1" value="Hủy trước &gt;= 4h (BR-05)&#xa;HOẶC Manager Override?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c2185b;fontColor=#880e4f;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane_system">
-          <mxGeometry x="90" y="220" width="180" height="70" as="geometry"/>
+        <mxCell id="end_fail1_dot" parent="lane_system" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=none;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-184" y="576" as="geometry" />
         </mxCell>
-        <mxCell id="s_act_forfeit" value="Cập nhật Reservation: Cancelled_Forfeited;&#xa;Giải phóng bàn về Available (Phạt 100% cọc)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_system">
-          <mxGeometry x="75" y="380" width="210" height="55" as="geometry"/>
+        <mxCell id="s_act_forfeit" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật Reservation: Cancelled_Forfeited;&#xa;Giải phóng bàn về Available (Phạt 100% cọc)" vertex="1">
+          <mxGeometry height="90" width="210" x="70" y="445" as="geometry" />
         </mxCell>
-        <mxCell id="s_act_req_ref" value="Gọi API RefundTransaction sang VNPAY&#xa;với mã giao dịch gốc &amp; số tiền cọc" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_system">
-          <mxGeometry x="75" y="520" width="210" height="55" as="geometry"/>
+        <mxCell id="s_act_req_ref" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Gọi API RefundTransaction sang VNPAY&#xa;với mã giao dịch gốc &amp;amp; số tiền cọc" vertex="1">
+          <mxGeometry height="100" width="210" x="70" y="620" as="geometry" />
         </mxCell>
-        <mxCell id="s_act_done_ref" value="Cập nhật Reservation: Cancelled_Refunded;&#xa;Giải phóng bàn về Available &amp; Gửi Email" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_system">
-          <mxGeometry x="75" y="740" width="210" height="55" as="geometry"/>
+        <mxCell id="s_act_done_ref" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật Reservation: Cancelled_Refunded;&#xa;Giải phóng bàn về Available &amp;amp; Gửi Email" vertex="1">
+          <mxGeometry height="90" width="210" x="70" y="765" as="geometry" />
         </mxCell>
-
-        <!-- Lane 3 Nodes (VNPAY) -->
-        <mxCell id="v_act1" value="Kiểm tra đối soát giao dịch gốc&#xa;&amp; thực hiện hoàn tiền cọc 100%" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_vnpay">
-          <mxGeometry x="55" y="520" width="210" height="55" as="geometry"/>
+        <mxCell id="v_act1" parent="lane_system" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kiểm tra đối soát giao dịch gốc&#xa;&amp;amp; thực hiện hoàn tiền cọc 100%" vertex="1">
+          <mxGeometry height="100" width="210" x="410" y="620" as="geometry" />
         </mxCell>
-        <mxCell id="v_act2" value="Trả về kết quả hoàn tiền thành công&#xa;(RspCode = '00', RefundId)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_vnpay">
-          <mxGeometry x="55" y="630" width="210" height="55" as="geometry"/>
+        <mxCell id="e5" edge="1" parent="lane_system" source="s_act_forfeit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="a_act_penalty">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Edges -->
-        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="start1" target="a_act1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e6" edge="1" parent="lane_system" source="a_act_penalty" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="end_fail1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="a_act1" target="s_act1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e8" edge="1" parent="lane_system" source="s_act_req_ref" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="v_act1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="s_act1" target="s_dec1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="lane_vnpay" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Cổng thanh toán VNPAY (Refund API)" vertex="1">
+          <mxGeometry height="960" width="290" x="740" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="e4" value="Không / Hủy &lt; 4h" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontColor=#c00000;labelBackgroundColor=#ffffff;" edge="1" source="s_dec1" target="s_act_forfeit" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="v_act2" parent="lane_vnpay" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Trả về kết quả hoàn tiền thành công&#xa;(RspCode = &#39;00&#39;, RefundId)" vertex="1">
+          <mxGeometry height="100" width="210" x="50" y="760" as="geometry" />
         </mxCell>
-        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="s_act_forfeit" target="a_act_penalty" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e1" edge="1" parent="1" source="start1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="a_act1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="a_act_penalty" target="end_fail1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="e7" value="Có (Trước &gt;= 4h&#xa;hoặc Override)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontColor=#2e7d32;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" edge="1" source="s_dec1" target="s_act_req_ref" parent="1">
+        <mxCell id="e2" edge="1" parent="1" source="a_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="s_act1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="730" y="295"/>
-              <mxPoint x="730" y="500"/>
-              <mxPoint x="560" y="500"/>
+              <mxPoint x="410" y="205" />
+              <mxPoint x="410" y="205" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="s_act_req_ref" target="v_act1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e3" edge="1" parent="1" source="s_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="s_dec1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="v_act1" target="v_act2" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="v_act2" target="s_act_done_ref" parent="1">
+        <mxCell id="e4" edge="1" parent="1" source="s_dec1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#b85450;strokeWidth=1.5;html=1;fontColor=#c00000;labelBackgroundColor=#ffffff;fontSize=16;" target="s_act_forfeit" value="Không / Hủy &amp;lt; 4h">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="900" y="730"/>
-              <mxPoint x="560" y="730"/>
+              <mxPoint x="560.03" y="480" />
+              <mxPoint x="560.03" y="480" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="s_act_done_ref" target="a_act_refund" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e7" edge="1" parent="1" source="s_dec1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#2e7d32;strokeWidth=1.5;html=1;fontColor=#2e7d32;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0.5;entryY=0;fontSize=16;" target="s_act_req_ref" value="Có (Trước &amp;gt;= 4h&#xa;hoặc Override)">
+          <mxGeometry relative="1" x="-0.46" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="710" y="335.03" />
+              <mxPoint x="710" y="640.06" />
+              <mxPoint x="555.03" y="640.06" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;" edge="1" source="a_act_refund" target="end_succ1" parent="1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e9" edge="1" parent="1" source="v_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="v_act2">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
+        <mxCell id="e10" edge="1" parent="1" source="v_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="s_act_done_ref">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="895" y="830" />
+              <mxPoint x="555" y="830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="s_act_done_ref" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;strokeWidth=1.5;html=1;fontSize=16;" target="a_act_refund">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

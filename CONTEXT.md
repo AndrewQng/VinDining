@@ -50,6 +50,7 @@ A specific instance of a MenuItem within an Order.
 **OrderItem State Lifecycle**:
 - `Preparing` (Sent to kitchen printer) $\rightarrow$ `Served` (Expediter marked at the pass)
 - Or `Cancelled` (Out of stock or manually voided).
+_Avoid_: `Ready` (Kitchen has no interactive terminal to trigger ready; items transition directly from `Preparing` to `Served` upon Expediter verification at the pass).
 
 **Invoice**:
 The final itemized financial settlement for an Order after dining, accounting for 5% service charge, 10% VAT, and deducting the pre-paid Deposit.
