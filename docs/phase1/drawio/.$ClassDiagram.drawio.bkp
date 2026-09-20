@@ -91,7 +91,7 @@
                 <mxCell id="enum_tbl_zone" value="«Enum» TableZone&#10;-----------------------------&#10;• MainHall&#10;• VIP&#10;• Balcony" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
                     <mxGeometry x="15" y="285" width="250" height="90" as="geometry"/>
                 </mxCell>
-                <mxCell id="enum_res_status" value="«Enum» ReservationStatus&#10;-----------------------------&#10;• AwaitingPayment&#10;• Confirmed&#10;• Completed&#10;• Cancelled&#10;• Expired&#10;• Paid_TableLost (BR-01)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
+                <mxCell id="enum_res_status" value="«Enum» ReservationStatus&#10;-----------------------------&#10;• AwaitingPayment&#10;• Confirmed&#10;• Completed&#10;• Cancelled&#10;• Expired&#10;• Expired_AutoRefunded (BR-01)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">
                     <mxGeometry x="15" y="390" width="250" height="130" as="geometry"/>
                 </mxCell>
                 <mxCell id="enum_dep_status" value="«Enum» DepositStatus&#10;-----------------------------&#10;• Pending&#10;• Paid&#10;• Refunded (BR-05)&#10;• Forfeited" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;" parent="panel_enums" vertex="1">

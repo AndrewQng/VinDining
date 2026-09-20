@@ -4,8 +4,8 @@ flowchart LR
         direction TB
         E1["<b>&lt;&lt;Enum&gt;&gt;<br>StaffRole</b><hr>Waitstaff<br>Expediter<br>Manager<br>Admin"]
         E2["<b>&lt;&lt;Enum&gt;&gt;<br>TableStatus</b><hr>Available<br>LockedForPayment<br>Reserved<br>Occupied<br>Cleaning"]
-        E3["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Completed<br>Cancelled<br>Expired<br>Paid_TableLost"]
-        E4["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Preparing<br>Served<br>Cancelled"]
+        E3["<b>&lt;&lt;Enum&gt;&gt;<br>ReservationStatus</b><hr>AwaitingPayment<br>Confirmed<br>Completed<br>Cancelled<br>Expired<br>Expired_AutoRefunded"]
+        E4["<b>&lt;&lt;Enum&gt;&gt;<br>OrderItemStatus</b><hr>Queued<br>Preparing<br>Served<br>Cancelled"]
         E5["<b>&lt;&lt;Enum&gt;&gt;<br>PaymentMethod</b><hr>Cash<br>Card<br>BankTransfer<br>DepositCovered<br>VNPAY"]
     end
 

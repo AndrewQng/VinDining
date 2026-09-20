@@ -25,7 +25,7 @@
         <mxCell id="uc_u1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=21;fontStyle=1;" value="UC-U1: Đặt bàn trực tuyến &amp;amp; Đặt cọc" vertex="1">
           <mxGeometry height="80" width="410" x="75" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="uc_u2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=21;fontStyle=1;" value="UC-U2: Xem E-Menu qua Digital Display" vertex="1">
+        <mxCell id="uc_u2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=21;fontStyle=1;" value="UC-U2: Xem EMenuTablet (100% chỉ xem) &amp;amp; Theo dõi TableDisplay" vertex="1">
           <mxGeometry height="91" width="400" x="75" y="360" as="geometry" />
         </mxCell>
         <mxCell id="uc_u3" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=21;fontStyle=1;" value="UC-U3: Hủy đặt bàn &amp;amp; Hoàn cọc tự động" vertex="1">
@@ -52,13 +52,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="act_printer" parent="sys_box" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=21;" value="Máy in nhiệt Bếp&#xa;(ESC/POS Thermal Printer)" vertex="1">
+        <mxCell id="act_printer" parent="sys_box" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=21;" value="Màn hình KDS Bếp&#xa;(Kitchen Display System)" vertex="1">
           <mxGeometry height="70" width="240" x="130" y="615" as="geometry" />
         </mxCell>
-        <mxCell id="e_e1_printer" edge="1" parent="sys_box" source="uc_e1" style="rounded=1;dashed=1;strokeColor=#ea580c;html=1;fontSize=21;exitX=0.5;exitY=0;entryX=0.5;entryY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" target="act_printer" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+        <mxCell id="e_e1_printer" edge="1" parent="sys_box" source="uc_e1" style="rounded=1;dashed=1;strokeColor=#ea580c;html=1;fontSize=21;exitX=0.5;exitY=0;entryX=0.5;entryY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" target="act_printer" value="&amp;lt;&amp;lt;dispatch&amp;gt;&amp;gt;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="uc_e2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=21;fontStyle=1;" value="UC-E2: Expediter xác nhận ra món tại Pass&amp;nbsp;" vertex="1">
+        <mxCell id="uc_e2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=21;fontStyle=1;" value="UC-E2: Quầy Pass &amp;amp; Phục vụ món (Served)" vertex="1">
           <mxGeometry height="91" width="470" x="62.5" y="920" as="geometry" />
         </mxCell>
         <mxCell id="uc_s1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7c3aed;fontSize=21;fontStyle=1;" value="UC-S1: Tự động quét &amp;amp; giải phóng bàn hết hạn cọc" vertex="1">
@@ -88,7 +88,7 @@
         <mxCell id="uc_e5" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=21;fontStyle=1;" value="UC-E5: Đăng nhập &amp;amp; Xác thực hệ thống" vertex="1">
           <mxGeometry height="105" width="530" x="80" y="1280" as="geometry" />
         </mxCell>
-        <mxCell id="uc_e1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=21;fontStyle=1;" value="UC-E1: Nhân viên tạo Order &amp;amp; Bắn in Bếp" vertex="1">
+        <mxCell id="uc_e1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=21;fontStyle=1;" value="UC-E1: Tạo Order &amp;amp; Điều phối KDS Bếp" vertex="1">
           <mxGeometry height="105" width="450" x="25" y="750" as="geometry" />
         </mxCell>
         <mxCell id="uc_e4" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=21;fontStyle=1;" value="UC-E4: Đổi bàn / Ghép bàn phục vụ" vertex="1">
@@ -106,7 +106,7 @@
         <mxCell id="ynfrfnjM2wIzAvA-RPpN-19" edge="1" parent="1" source="act_guest" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.033;entryY=0.321;entryDx=0;entryDy=0;entryPerimeter=0;" target="uc_u4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ynfrfnjM2wIzAvA-RPpN-91" edge="1" parent="1" source="act_expediter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="act_waitstaff">
+        <mxCell id="ynfrfnjM2wIzAvA-RPpN-91" edge="1" parent="1" source="act_waitstaff" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="uc_e2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="act_expediter" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f3e8ff;strokeColor=#9333ea;fontStyle=1;fontSize=21;" value="Điều phối viên&#xa;(Expediter)" vertex="1">

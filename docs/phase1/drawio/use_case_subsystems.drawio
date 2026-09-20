@@ -46,7 +46,7 @@
           <mxGeometry x="850" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
         <!-- Row 2: UC-U2 E-Menu Digital Display -->
-        <mxCell id="uc_u2_1" value="UC-U2.1: Xem màn hình Digital Display (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
+        <mxCell id="uc_u2_1" value="UC-U2.1: Xem EMenuTablet (100% chỉ xem) &amp; TableDisplay (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
           <mxGeometry x="40" y="115" width="280" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="uc_u2_2" value="UC-U2.2: Xem chi tiết món &amp; Cảnh báo dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
@@ -81,21 +81,21 @@
         <mxCell id="subsys2" value="2. Phân hệ Nhân viên Nội bộ (Employee Subsystem — UC-E1 đến UC-E5)" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="200" y="360" width="1180" height="420" as="geometry"/>
         </mxCell>
-        <!-- Row 1: UC-E1 Order & Kitchen Print (Waitstaff) -->
+        <!-- Row 1: UC-E1 Order & KDS Dispatch (Waitstaff) -->
         <mxCell id="uc_e1_1" value="UC-E1.1: Check-in khách vào bàn (Occupied)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="40" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="uc_e1_2" value="UC-E1.2: Tư vấn món &amp; Nhập ghi chú dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="440" y="45" width="300" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_e1_3" value="UC-E1.3: Tạo đơn kích hoạt in nhiệt Bếp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
+        <mxCell id="uc_e1_3" value="UC-E1.3: Tạo đơn &amp;amp; Điều phối KDS Bếp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="850" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
         <!-- Row 2: UC-E3 Invoice Settlement (Waitstaff) -->
         <mxCell id="uc_e3_1" value="UC-E3.1: Tính tổng tiền &amp; Phí (5% SVC, 10% VAT)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="40" y="115" width="280" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_e3_2" value="UC-E3.2: Tự động cấn trừ tiền cọc Deposit (BR-03)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
+        <mxCell id="uc_e3_2" value="UC-E3.2: Cấn trừ cọc (BR-03) &amp; Đẩy VietQR TableDisplay" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="440" y="115" width="300" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="uc_e3_3" value="UC-E3.3: In HĐ tài chính &amp; Đóng bàn Cleaning" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontSize=11;" vertex="1" parent="subsys2">
@@ -105,10 +105,10 @@
         <mxCell id="uc_e2_1" value="UC-E2.1: Kiểm tra đĩa món tại quầy Pass" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="40" y="185" width="280" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_e2_2" value="UC-E2.2: Bấm xác nhận hoàn thành món (BR-04)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=11;" vertex="1" parent="subsys2">
+        <mxCell id="uc_e2_2" value="UC-E2.2: Bấm Xác nhận ra món (Served) trên Tablet (BR-04)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="440" y="185" width="300" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_e2_3" value="UC-E2.3: Điều phối Waitstaff bưng ra bàn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=11;" vertex="1" parent="subsys2">
+        <mxCell id="uc_e2_3" value="UC-E2.3: Dọn món ra bàn 2 tay (Zero-touch tại bàn)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9333ea;fontSize=11;" vertex="1" parent="subsys2">
           <mxGeometry x="850" y="185" width="280" height="45" as="geometry"/>
         </mxCell>
         <!-- Row 4: UC-E4 and UC-E5 -->

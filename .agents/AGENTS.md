@@ -19,6 +19,7 @@
 * **Failure Modes**: Weigh edge cases, network disruptions, concurrency collisions, and error flows as heavily as the happy path.
 * **Bug Reproduction**: Always reproduce bugs and isolate root causes before proposing or applying fixes.
 * **Tool Priority**: Prioritize using native platform tools and standard libraries.
+* **No Bureaucratic Tagging**: Never inject artificial business rule codes or spec tags (e.g. `(BR-01)`, `(BR-02)`, `(BR-03)`, `(UC-xx)`) into user-facing responses, feature matrices, or summaries unless explicitly requested. Keep explanations concise, natural, and directly focused on domain logic.
 
 ### High-Performance Coding Standards
 * **Data Locality**: Store related data accessed together in close proximity in memory/storage.

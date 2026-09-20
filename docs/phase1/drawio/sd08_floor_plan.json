@@ -28,14 +28,14 @@
     },
     {
       "id": "waitstaff",
-      "label": "Ứng dụng Phục vụ (Waitstaff)"
+      "label": "Ứng dụng Phục vụ & TableDisplay"
     }
   ],
   "messages": [
     {
       "from": "mgr",
       "to": "fe",
-      "label": "1. Kéo thả định vị tọa độ bàn (X, Y) & Sức chứa"
+      "label": "1. Kéo thả định vị tọa độ bàn (X, Y) & Sức chứa (TableDisplay kết nối LAN/Wi-Fi)"
     },
     {
       "from": "mgr",
@@ -83,7 +83,7 @@
     {
       "from": "hub",
       "to": "waitstaff",
-      "label": "10. Broadcast SignalR tới Tablet phục vụ & Re-render",
+      "label": "10. Broadcast SignalR tới Tablet phục vụ & TableDisplay re-render",
       "async": true,
       "activate": false,
       "deactivate": true

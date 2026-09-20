@@ -68,7 +68,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c_print_dom" edge="1" parent="1" source="printer_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="domain_logic" value="Chia luồng in nhiệt&#xa;ESC/POS Bếp &amp;amp; Bar">
+        <mxCell id="c_print_dom" edge="1" parent="1" source="printer_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="domain_logic" value="Điều phối KDS Bếp&#xa;&amp;amp; TableDisplay qua SignalR">
           <mxGeometry relative="1" x="0.1697" y="-8" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -85,7 +85,7 @@
         <mxCell id="vnpay_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Cổng thanh toán VNPAY&#xa;Triển khai IPaymentGateway (IPN)" vertex="1">
           <mxGeometry height="70" width="190" x="580" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="printer_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Dịch vụ in nhiệt ESC/POS&#xa;Triển khai IKitchenPrinterService (LAN/Wi-Fi)" vertex="1">
+        <mxCell id="printer_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Dịch vụ điều phối KDS Bếp&#xa;Triển khai IKdsDispatchService (SignalR Hub)" vertex="1">
           <mxGeometry height="70" width="260" x="800" y="45" as="geometry" />
         </mxCell>
         <mxCell id="c_ef_sql" edge="1" parent="tier_infra" source="efcore" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="sqlserver" value="Đọc / Ghi&#xa;SQL ACID">

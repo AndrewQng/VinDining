@@ -18,22 +18,22 @@
 ## CHƯƠNG 1: TỔNG QUAN & BỐI CẢNH DỰ ÁN
 
 ### 1.1 Bài toán thực tế của nhà hàng Fine Dining
-Mô hình ẩm thực cao cấp (**Fine Dining**) là phân khúc nhà hàng đặc thù hướng tới sự sang trọng, đẳng cấp và tính cá nhân hóa tối đa cho thực khách. Thực đơn của nhà hàng Fine Dining thường được thiết kế theo dạng các set ăn cố định, công phu (**Tasting Menu**, phân chia theo các **Course**: Khai vị, Món chính, Tráng miệng) kết hợp với các dòng đồ uống/rượu vang tuyển chọn (**Wine Pairing**).
+Mô hình ẩm thực cao cấp (**Fine Dining**) là phân khúc nhà hàng đặc thù hướng tới sự sang trọng, đẳng cấp và tính cá nhân hóa tối đa cho thực khách. Thực đơn của nhà hàng Fine Dining được thiết kế theo hình thức gọi món lẻ cao cấp (**A La Carte**), phân chia theo các danh mục món ăn (**Category**: Khai vị, Món chính, Tráng miệng, Đồ uống/Rượu vang) với các tiêu chuẩn khắt khe về định lượng và cảnh báo dị ứng thực phẩm.
 
 Tuy nhiên, việc vận hành thủ công thông thường đang kìm hãm hiệu suất và làm suy giảm sự đẳng cấp mà phân khúc này hướng tới. Sự ngắt quãng thông tin giữa Khách hàng, Phục vụ, Nhà bếp và Quản lý tạo ra những rào cản nghiêm trọng trong hoạt động vận hành thời gian thực.
 
 ### 1.2 Các "Nỗi đau" vận hành cốt lõi (Core Pain Points)
-1. **Rủi ro bùng bàn (No-show)**: Khách hàng đặt trước các vị trí đẹp (bàn VIP, ban công) hoặc yêu cầu chuẩn bị các set Tasting Menu đắt tiền nhưng không xuất hiện, gây tổn thất lớn về chi phí chuẩn bị nguyên vật liệu cao cấp nhập khẩu của nhà hàng.
+1. **Rủi ro bùng bàn (No-show)**: Khách hàng đặt trước các vị trí đẹp (bàn VIP, ban công) hoặc yêu cầu chuẩn bị các nguyên liệu món ăn đắt tiền nhưng không xuất hiện, gây tổn thất lớn về chi phí chuẩn bị nguyên vật liệu cao cấp nhập khẩu của nhà hàng.
 2. **Sai sót thông tin đặc biệt & Cảnh báo dị ứng**: Các yêu cầu về dị ứng thực phẩm nhạy cảm (hải sản, đậu phộng, gluten) hoặc sở thích vị giác của thực khách dễ bị thất lạc hoặc chuyển đạt sai sót từ phục vụ xuống nhà bếp do quy trình ghi chép giấy tờ thủ công.
-3. **Trễ điều phối ra món giữa Phục vụ và Bếp**: Mỗi món ăn trong Course cần được bưng ra bàn ở nhiệt độ và trạng thái hoàn hảo nhất ngay khi bếp nấu xong. Quy trình thủ công làm chậm trễ truyền tin, dẫn đến đĩa ăn bị giảm chất lượng tại quầy ra món (Pass).
+3. **Trễ điều phối ra món giữa Phục vụ và Bếp**: Mỗi món ăn cần được bưng ra bàn ở nhiệt độ và trạng thái hoàn hảo nhất ngay khi bếp nấu xong. Quy trình thủ công làm chậm trễ truyền tin, dẫn đến đĩa ăn bị giảm chất lượng tại quầy ra món (Pass).
 4. **Cấn trừ tiền cọc (Deposit) phức tạp**: Việc quản lý, đối chiếu thủ công các khoản tiền đặt cọc đã thu trực tuyến khi xuất hóa đơn thanh toán cuối bữa ăn thường xuyên xảy ra nhầm lẫn, gây mất thời gian của bộ phận thu ngân và giảm sự hài lòng của khách.
 
 ### 1.3 Giải pháp hệ thống đề xuất
 Xây dựng **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)** dưới dạng một ứng dụng Web Responsive đa nền tảng kết hợp Backend RESTful Web API hiện đại, tập trung 100% vào mô hình **Phục vụ tại chỗ (In-House Dining)**:
-* **Khách hàng (Guest)**: Truy cập Web đặt bàn trực tuyến, đặt cọc giữ chỗ qua cổng VNPAY (khóa bàn tạm 17 phút theo `BR-01`); khi đến nhà hàng, xem thực đơn qua thiết bị Digital Display (màn hình hiển thị) tại bàn. Thực khách **hoàn toàn không cần đăng ký tài khoản**, chỉ lưu thông tin liên lạc nhận diện theo lượt đặt bàn.
-* **Nhân viên Phục vụ (Waitstaff)**: Sử dụng thiết bị di động/tablet cầm tay để check-in bàn, tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng và tạo đơn trực tiếp trên phần mềm (kích hoạt in phiếu bếp tự động), nhận món từ quầy Pass bưng ra bàn.
-* **Nhân viên Điều phối (Expediter / Checkfood)**: Túc trực cố định tại quầy Pass, đối chiếu chất lượng đĩa món và bấm "Xác nhận hoàn thành món" (`Served`) trên hệ thống theo quy tắc `BR-04`.
-* **Nhà bếp (Kitchen Operations)**: Tiếp nhận order thông qua hệ thống máy in nhiệt phân khu (Hot kitchen, Cold kitchen, Bar) tự động nhả phiếu ngay khi nhân viên gửi đơn, phiếu in làm nổi bật các lưu ý dị ứng và phân nhóm món rõ ràng.
+* **Khách hàng (Guest)**: Truy cập Web đặt bàn trực tuyến, đặt cọc giữ chỗ qua cổng VNPAY (khóa bàn tạm 17 phút theo `BR-01`); khi đến nhà hàng, tự do khám phá thực đơn qua Tablet E-Menu cầm tay (`EMenuTablet` - 100% chế độ chỉ xem, không nút tương tác) và quan sát tiến trình lên món, kiểm tra hóa đơn tạm tính kèm mã VietQR động trực tiếp trên màn hình `EMenuTablet` cố định tại bàn (`BR-02`). Mọi yêu cầu gọi món hay thanh toán đều được thực khách trao đổi trực tiếp với nhân viên phục vụ (Waitstaff). Thực khách **hoàn toàn không cần đăng ký tài khoản**, chỉ lưu thông tin liên lạc nhận diện theo lượt đặt bàn.
+* **Nhân viên Phục vụ (Waitstaff)**: Sử dụng thiết bị di động/tablet cầm tay để check-in bàn, tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng, ghi nhận ghi chú món ăn (`SpecialNotes`) và tạo đơn trực tiếp trên phần mềm (kích hoạt điều phối KDS Bếp tự động qua SignalR), nhận đĩa món từ quầy Pass và bưng ra bàn phục vụ khách bằng hai tay rảnh tay (Zero-touch tại bàn, không cần thao tác tablet).
+* **Nhân viên Điều phối (Expediter / Checkfood)**: Túc trực cố định tại quầy Pass, đối chiếu chất lượng đĩa món (nhiệt độ, thẩm mỹ, cảnh báo dị ứng / ghi chú món ăn `SpecialNotes`) và bấm "Xác nhận ra món" (`Served`) trực tiếp trên Pass Tablet kích hoạt thông báo tức thời / rung chuông tới Smartphone cá nhân của Waitstaff theo quy tắc `BR-04`.
+* **Nhà bếp (Kitchen Operations)**: Tiếp nhận order điều phối điện tử qua màn hình **KDS Bếp** rảnh tay (Hands-free / View-only) tại các trạm phân khu (Bếp nóng, Bếp lạnh, Bar) tự động nhận vé ngay khi nhân viên gửi đơn, hiển thị bộ đếm thời gian SLA chế biến và làm nổi bật cảnh báo dị ứng / ghi chú món ăn (`SpecialNotes`) trên từng món, hoàn toàn không dùng phiếu in nhiệt hay chạm màn hình trong môi trường dầu mỡ.
 * **Quản lý & Admin (Manager & Admin)**: Sử dụng máy tính quản trị toàn diện danh mục thực đơn, cấu hình sơ đồ bàn ăn trực quan (`BR-02`), gán quyền nhân sự RBAC, theo dõi doanh thu thời gian thực và xử lý duyệt hoàn cọc ngoại lệ (`BR-05`).
 
 ---
@@ -45,26 +45,19 @@ Xây dựng **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (Vi
 | Phân loại | Mục tiêu & Chỉ số (KPIs) | Phương pháp kiểm chứng & Đo lường |
 | :--- | :--- | :--- |
 | **Mục tiêu định lượng** | **Giảm tỷ lệ bùng bàn (No-show)** | Dưới **2%** trong vòng 3 tháng áp dụng hệ thống nhờ cơ chế bắt buộc đặt cọc giữ chỗ (Deposit) qua cổng VNPAY. |
-| **Mục tiêu định lượng** | **Thời gian truyền tải & in phiếu order** | Dưới **30 giây** kể từ khi nhân viên phục vụ bấm duyệt đơn trên tablet đến khi máy in bếp nhả phiếu order tự động qua kết nối thời gian thực. |
+| **Mục tiêu định lượng** | **Thời gian truyền tải & hiển thị KDS Bếp** | Dưới **3 giây** kể từ khi nhân viên phục vụ bấm tạo đơn đến khi màn hình KDS các trạm Bếp/Bar hiển thị vé điện tử qua kết nối thời gian thực SignalR. |
 | **Mục tiêu định lượng** | **Nâng cao hiệu suất xoay vòng bàn** | Tăng từ **15% đến 20%** vào các khung giờ cao điểm nhờ quy trình ra món nhịp nhàng và thông báo trạng thái bàn dọn dẹp tức thời. |
-| **Mục tiêu định tính** | **Đạt tỷ lệ an toàn sai sót phục vụ** | Đạt tỷ lệ tuyệt đối **0%** sai sót liên quan đến dị ứng nguyên liệu của khách nhờ cơ chế hiển thị và in đậm cảnh báo dị ứng trên phiếu bếp. |
-| **Mục tiêu định tính** | **Chuẩn hóa trải nghiệm dịch vụ cao cấp** | Số hóa quy trình xem thực đơn qua Digital Display, chuyên nghiệp hóa tương tác phục vụ và minh bạch 100% dòng tiền cấn trừ cọc trên hóa đơn. |
+| **Mục tiêu định tính** | **Đạt tỷ lệ an toàn sai sót phục vụ** | Đạt tỷ lệ tuyệt đối **0%** sai sót liên quan đến dị ứng nguyên liệu của khách nhờ cơ chế hiển thị và bôi đậm cảnh báo dị ứng / ghi chú đặc biệt (`SpecialNotes`) trên từng món ăn qua màn hình KDS Bếp và Pass Tablet. |
+| **Mục tiêu định tính** | **Chuẩn hóa trải nghiệm dịch vụ cao cấp** | Số hóa quy trình xem thực đơn qua EMenuTablet cầm tay, chuyên nghiệp hóa tương tác phục vụ và minh bạch 100% dòng tiền cấn trừ cọc trên hóa đơn kẹp sổ da. |
 
 ### 2.2 Phân loại mức độ ưu tiên yêu cầu (MoSCoW Prioritization)
 
-```mermaid
-pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
-    "Must Have (Bắt buộc)" : 5
-    "Should Have (Quan trọng)" : 3
-    "Could Have (Mở rộng)" : 2
-    "Won't Have (Ngoài phạm vi)" : 2
-```
 
 #### M - Must Have (Bắt buộc phải có trong phiên bản hiện tại):
 * **REQ-01**: Đặt bàn trực tuyến, lựa chọn ngày/ca/vị trí bàn và thực hiện thanh toán đặt cọc giữ chỗ (Deposit) qua cổng VNPAY (khóa giữ chỗ tạm 17 phút theo `BR-01`).
-* **REQ-02**: Quản lý sơ đồ bàn trực quan, quản lý vòng đời trạng thái bàn (`Available` $\rightarrow$ `LockedForPayment` $\rightarrow$ `Reserved` $\rightarrow$ `Occupied` $\rightarrow$ `Cleaning`) và ghép nối thiết bị Digital Display theo từng bàn (`BR-02`).
-* **REQ-03**: Khách xem thực đơn qua màn hình Digital Display tại bàn (chỉ xem E-Menu, nhân viên phục vụ nhận order trực tiếp).
-* **REQ-04**: Nhân viên phục vụ tiếp nhận yêu cầu, tạo đơn trực tiếp trên thiết bị di động và kích hoạt in Bếp; Nhân viên Checkfood tại quầy Pass đối chiếu món và xác nhận hoàn thành (`BR-04`).
+* **REQ-02**: Quản lý sơ đồ bàn trực quan, quản lý vòng đời trạng thái bàn (`Available` $\rightarrow$ `LockedForPayment` $\rightarrow$ `Reserved` $\rightarrow$ `Occupied` $\rightarrow$ `Cleaning`) theo từng khu vực (`BR-02`).
+* **REQ-03**: Khách xem thực đơn qua Tablet E-Menu cầm tay (`EMenuTablet` - chỉ xem) do nhân viên cung cấp tại bàn.
+* **REQ-04**: Nhân viên phục vụ tiếp nhận yêu cầu, tạo đơn trực tiếp trên thiết bị di động và kích hoạt điều phối KDS Bếp qua SignalR; Expediter tại quầy Pass đối chiếu món và xác nhận `Served` trực tiếp trên Pass Tablet, Waitstaff bưng đĩa món ra bàn bằng hai tay rảnh tay không cần chạm tablet (`BR-04`).
 * **REQ-05**: Lập hóa đơn thanh toán tự động cấn trừ tiền cọc đặt trước, tính phí dịch vụ 5%, VAT 10% theo công thức `BR-03` và đóng bàn chuyển sang `Cleaning`.
 
 #### S - Should Have (Quan trọng cần có để tối ưu vận hành):
@@ -85,7 +78,7 @@ pie title Phân bổ mức độ ưu tiên yêu cầu (MoSCoW)
 | Mã quy tắc | Tên quy tắc nghiệp vụ | Công thức & Nội dung áp dụng chi tiết |
 | :---: | :--- | :--- |
 | **BR-01** | **Khóa bàn giữ chỗ tạm (17 Phút)** | Khi khách bấm chuyển hướng sang VNPAY, bàn chuyển sang `LockedForPayment` trong 17 phút. Quá 17 phút chưa thanh toán thành công, Worker tự động giải phóng về `Available`. |
-| **BR-02** | **Màn hình hiển thị thực đơn tĩnh (Passive Digital Display)** | Mỗi bàn ăn vật lý được trang bị một màn hình hiển thị thụ động (View-only E-Menu) để khách ngắm thực đơn và cảnh báo dị ứng. Toàn bộ thao tác cấu hình sơ đồ bàn do Quản trị viên quản lý trực tuyến. |
+| **BR-02** | **Thực đơn Điện tử EMenuTablet (100% Chỉ xem) & Bàn ăn sạch bóng thiết bị cố định** | 1. **Bàn ăn chuẩn mực Fine Dining**: Bàn ăn hoàn toàn sạch bóng thiết bị điện tử cố định, giữ trọn không gian sang trọng và riêng tư.<br>2. **Tablet E-Menu cầm tay (EMenuTablet)**: 100% thụ động chỉ xem (Passive View-only), tuyệt đối KHÔNG có nút bấm tương tác (không nút 'Gọi phục vụ', không nút 'Yêu cầu tính tiền', không giỏ hàng, không tự đặt món). Quản lý theo dạng Pool thiết bị dùng chung tại Service Station; phục vụ mang ra khi khách có nhu cầu. Mọi yêu cầu gọi món đều trao đổi trực tiếp với Waitstaff. |
 | **BR-03** | **Tính toán Hóa đơn & Cấn trừ cọc** | $\text{Tổng hóa đơn} = \text{Tiền món} + (\text{Tiền món} \times 5\% \text{ Service Charge}) + (\text{Tiền món} \times 10\% \text{ VAT}) - \text{Tiền cọc}$. |
 | **BR-04** | **Quyền xác nhận món ra bàn (Quầy Pass)** | Chỉ duy nhất Nhân viên Điều phối (Expediter / Checkfood) tại quầy Pass mới có quyền bấm xác nhận "Đã phục vụ" (`Served`) trên hệ thống sau khi đối chiếu chất lượng đĩa món. |
 | **BR-05** | **Chính sách hủy bàn & Hoàn cọc** | Hủy trước giờ hẹn $\ge$ 4 tiếng: Tự động hoàn 100% tiền cọc qua cổng VNPAY. Hủy dưới 4 tiếng hoặc No-show: Mất 100% cọc. Quản lý có quyền duyệt hoàn ngoại lệ (Manual Refund Override). |
@@ -101,51 +94,6 @@ Hệ thống được thiết kế theo mô hình **Client-Server phân tách ho
 
 ![Sơ đồ Kiến trúc Tổng thể Hệ thống Clean Architecture & 3-Layer](./drawio/architecture_clean_arch.png)
 
-```mermaid
-graph TD
-    subgraph Presentation Layer [Tầng Trình Diễn / Client]
-        FE_Guest["Khách hàng (Mobile Web E-Menu & Booking)"]
-        FE_Staff["Nhân viên Phục vụ & Điều phối (Tablet Web)"]
-        FE_Admin["Quản lý & Admin (Desktop Portal)"]
-    end
-
-    subgraph API Layer [API & Gateway Layer]
-        API_Controller["ASP.NET Core Web API 9 Controllers"]
-        SignalR_Hub["SignalR Real-time Hubs (Floor Plan & Order Hub)"]
-        Middleware["JWT Auth & Global Exception Middleware"]
-    end
-
-    subgraph Application Layer [Application Business Logic - CQRS]
-        MediatR_Cmd["Commands & Handlers (Ghi/Xử lý dữ liệu)"]
-        MediatR_Query["Queries & Handlers (Đọc dữ liệu)"]
-        FluentVal["FluentValidation Pipeline Behaviors"]
-    end
-
-    subgraph Domain Layer [Core Domain Layer]
-        Entities["Domain Entities (Guest, Staff, Table, Reservation, Deposit, Category, MenuItem, Order, OrderItem, Invoice, Feedback)"]
-        Enums["Enums (StaffRole, TableStatus, ReservationStatus, OrderStatus, OrderItemStatus, PaymentMethod)"]
-        BusinessRules["Domain Rules & Financial Calculations (BR-01..BR-05)"]
-    end
-
-    subgraph Infrastructure Layer [Infrastructure & Persistence Layer]
-        EFCore["Entity Framework Core 9 (IApplicationDbContext)"]
-        SQLServer[("Microsoft SQL Server")]
-        VNPAY["VNPAY Payment Gateway Service"]
-        PrinterService["ESC/POS Thermal Printing Service"]
-    end
-
-    FE_Guest -->|HTTPS / REST API| API_Controller
-    FE_Staff -->|HTTPS & WebSocket| API_Controller
-    FE_Staff -->|WebSocket SignalR| SignalR_Hub
-    FE_Admin -->|HTTPS / REST API| API_Controller
-
-    API_Controller --> Middleware --> MediatR_Cmd & MediatR_Query
-    MediatR_Cmd & MediatR_Query --> FluentVal
-    MediatR_Cmd & MediatR_Query --> Entities
-    MediatR_Cmd & MediatR_Query --> EFCore
-    EFCore --> SQLServer
-    MediatR_Cmd --> VNPAY & PrinterService
-```
 
 ### 3.2 Bảng công nghệ sử dụng (Technology Stack)
 
@@ -157,9 +105,9 @@ graph TD
 | **Backend Framework** | **ASP.NET Core (.NET 9) Web API** | Hiệu năng xử lý cao, kiến trúc chuẩn Enterprise, hỗ trợ DI và async/await mạnh mẽ. |
 | **Architectural Pattern** | **Clean Architecture + CQRS (MediatR)** | Tách biệt nghiệp vụ đọc/ghi, tuân thủ nguyên tắc SOLID, dễ mở rộng và bảo trì. |
 | **Database & ORM** | **Microsoft SQL Server + EF Core 9** | Hệ CSDL quan hệ vững chắc, hỗ trợ Transaction ACID, Code-First Migrations chuẩn hóa. |
-| **Real-time Protocol** | **ASP.NET Core SignalR Client/Server** | Truyền phát thông báo đơn mới, đồng bộ trạng thái sơ đồ bàn tức thời với độ trễ < 100ms. |
+| **Real-time Protocol** | **ASP.NET Core SignalR Client/Server** | Truyền phát lệnh điều phối KDS Bếp, thông báo EMenuTablet, đồng bộ sơ đồ bàn tức thời với độ trễ < 100ms. |
 | **Thanh toán trực tuyến** | **Cổng thanh toán VNPAY (Sandbox API)** | Xử lý thanh toán cọc trực tuyến an toàn với cơ chế IPN xác thực giao dịch thời gian thực. |
-| **In ấn hóa đơn & Bếp** | **ESC/POS Web Printing / LAN Printer** | Gửi lệnh in trực tiếp ra máy in nhiệt tại các phân khu bếp và quầy thu ngân. |
+| **Thiết bị Bếp & In hóa đơn** | **KDS Bếp & Máy in nhiệt Quầy Thu ngân (80mm)** | Điều phối điện tử rảnh tay tới các trạm Bếp; cập nhật tiến độ dọn món trực tiếp tới bàn ăn qua SignalR WebSocket. |
 
 ---
 
@@ -173,15 +121,15 @@ Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năn
 
 1. **Phân hệ 1: Khách hàng (Guest / Public Subsystem — `UC-U1` $\rightarrow$ `UC-U4`)**:
    - Đặt bàn trực tuyến, chọn khu vực bàn, ca hẹn và thanh toán tiền cọc giữ chỗ cố định qua cổng VNPAY (khóa bàn tạm 17 phút theo `BR-01`). Khách không cần tài khoản.
-   - Xem danh mục thực đơn A La Carte và cảnh báo dị ứng trên thiết bị Digital Display tại bàn (`BR-02`).
+   - Khám phá thực đơn qua Tablet E-Menu cầm tay (`EMenuTablet` - 100% chế độ chỉ xem, tuyệt đối không có nút tương tác) đối chiếu bảng kê hóa đơn cấn trừ cọc kèm mã VietQR động trên phiếu in kẹp sổ da sang trọng (`BR-02`, `BR-03`).
    - Tự động hoàn cọc 100% khi khách hủy bàn trước giờ hẹn $\ge$ 4 tiếng (`BR-05`).
    - Gửi đánh giá sao và phản hồi chất lượng dịch vụ sau khi dùng bữa.
 
 2. **Phân hệ 2: Nghiệp vụ Nhân viên Nội bộ (Employee Subsystem — `UC-E1` $\rightarrow$ `UC-E5`)**:
    - Đăng nhập an toàn bằng tài khoản nhân sự với JWT Bearer Token (`UC-E5`).
-   - Nhân viên phục vụ (Waitstaff) theo dõi sơ đồ bàn real-time, check-in khách vào bàn (`Occupied`), tạo đơn gọi món trực tiếp tại bàn và tự động kích hoạt in phiếu Bếp (`UC-E1`).
-   - Nhân viên Điều phối (Expediter) tại quầy Pass kiểm tra món và bấm xác nhận "Đã phục vụ" (`Served`) theo quy tắc `BR-04` (`UC-E2`).
-   - Tự động tính toán hóa đơn cấn trừ tiền cọc (`BR-03`), đóng bàn và chuyển trạng thái sang `Cleaning` (`UC-E3`).
+   - Nhân viên phục vụ (Waitstaff) theo dõi sơ đồ bàn real-time, check-in khách vào bàn (`Occupied`), tạo đơn gọi món trực tiếp tại bàn và tự động điều phối vé điện tử lên KDS Bếp qua SignalR (`UC-E1`).
+   - Nhân viên Điều phối (Expediter) tại quầy Pass kiểm tra món và bấm xác nhận "Xác nhận ra món" (`Served`) trực tiếp trên Pass Tablet; Waitstaff bưng đĩa món ra bàn phục vụ cho khách bằng hai tay rảnh tay không cần chạm tablet (`UC-E2`, `BR-04`).
+   - Tiếp nhận yêu cầu thanh toán trực tiếp từ khách (lời nói / cử chỉ), xuất hóa đơn tạm tính tự động cấn trừ tiền cọc theo `BR-03`, xuất lệnh in phiếu tạm tính kèm mã VietQR động ra máy in nhiệt quầy Thu ngân (80mm), kẹp sổ da mang ra bàn cho khách, xác nhận hoàn tất thanh toán trên điện thoại cá nhân và chuyển trạng thái bàn sang `Cleaning` (`UC-E3`).
    - Hỗ trợ đổi bàn hoặc ghép nhiều bàn ăn theo yêu cầu thực tế của khách (`UC-E4`).
 
 3. **Phân hệ 3: Quản lý & Quản trị (Admin & Manager Subsystem — `UC-A1` $\rightarrow$ `UC-A5`)**:
@@ -192,41 +140,21 @@ Hệ thống được tổ chức nhất quán thành **4 Phân hệ chức năn
    - Báo cáo thống kê trực quan doanh thu, tỷ lệ lấp đầy bàn và món ăn bán chạy (`UC-A5`).
 
 4. **Phân hệ 4: Tự động Hệ thống (System Background Subsystem — `UC-S1`)**:
-   - Tác vụ nền ngầm (Background Worker) định kỳ mỗi 60 giây quét và tự động giải phóng các vị trí bàn giữ cọc quá 17 phút (`BR-01`) mà chưa nhận được xác nhận IPN thanh toán, đưa bàn về trạng thái `Available` và bắn thông báo SignalR Hub.
+   - Tác vụ nền ngầm (Background Worker) định kỳ mỗi 60 giây quét và tự động giải phóng các vị trí bàn giữ cọc quá 17 phút (`BR-01`) mà chưa nhận được xác nhận IPN thanh toán, đưa bàn về trạng thái `Available` và bắn thông báo SignalR Hub. Xử lý kịch bản Late IPN (> 17 phút) bằng cơ chế tự động hoàn cọc 100% qua API VNPAY sang trạng thái `Expired_AutoRefunded`.
 
 ---
 
 ## CHƯƠNG 5: KẾ HOẠCH PHÁT TRIỂN & PHÂN CÔNG 10 TUẦN
 
-```mermaid
-gantt
-    title Lộ trình 10 Tuần Phát triển Dự án VinDining
-    dateFormat  YYYY-MM-DD
-    section Phase 1: Proposal & Analysis
-    Khảo sát & Đề xuất dự án (Tuần 1)    :a1, 2026-08-25, 7d
-    Phân tích BRS, Use Case, Activity (Tuần 2) :a2, after a1, 7d
-    section Phase 2: Design & Architecture
-    Thiết kế Kiến trúc, SDD, ADRs (Tuần 3) :b1, after a2, 7d
-    Thiết kế Database ERD, OpenAPI (Tuần 4) :b2, after b1, 7d
-    section Phase 3: Setup & Boilerplate
-    Khởi tạo Backend Clean Arch, EF Core (Tuần 5) :c1, after b2, 7d
-    Khởi tạo Frontend Vite, Tailwind, SignalR (Tuần 6) :c2, after c1, 7d
-    section Phase 4: Feature Implementation
-    Phát triển Đặt bàn, VNPAY, Sơ đồ bàn (Tuần 7) :d1, after c2, 7d
-    Phát triển Quét QR, In Bếp, Hóa đơn (Tuần 8) :d2, after d1, 7d
-    section Phase 5: Verification & Delivery
-    Kiểm thử Tích hợp, Tối ưu Index SQL (Tuần 9) :e1, after d2, 7d
-    Viết báo cáo tổng kết & Chuẩn bị Demo (Tuần 10) :e2, after e1, 7d
-```
 
 ### Bảng phân công nhiệm vụ chi tiết:
 
 | Tuần          | Giai đoạn                       | Công việc trọng tâm                                                                                                    | Deliverables chính                                                                | Phân công phụ trách                                                                                                                                           |
 | :-------------:| :--------------------------------| :-----------------------------------------------------------------------------------------------------------------------| :----------------------------------------------------------------------------------| :--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Tuần 1–2**  | **Proposal + Analysis**         | Khảo sát hiện trạng, phân tích bài toán Fine Dining, xây dựng Use Case, Activity & Sequence Diagrams                   | `01_PROJECT_PROPOSAL.md`<br>`02_BAO_CAO_KHAO_SAT.md`<br>`03_BAO_CAO_PHAN_TICH.md` | **Nguyễn Mạnh Quyền**: Quản lý tiến độ, BRS<br>**Đặng Quốc Khánh**: Khảo sát & Flowchart<br>**Nguyễn Hoàng Đạt**: Use Case & Activity Diagrams                |
-| **Tuần 3–4**  | **System Design**               | Thiết kế Clean Architecture, Database ERD (SQL Server), OpenAPI contracts, UI/UX Wireframes                            | Sơ đồ ERD, Báo cáo Thiết kế Kiến trúc (SDD), OpenAPI Specs                        | **Nguyễn Mạnh Quyền**: Database ERD & Clean Arch<br>**Đặng Quốc Khánh**: UI/UX Digital Display & Tablet<br>**Nguyễn Hoàng Đạt**: SDD & API Contracts          |
+| **Tuần 3–4**  | **System Design**               | Thiết kế Clean Architecture, Database ERD (SQL Server), OpenAPI contracts, UI/UX Wireframes                            | Sơ đồ ERD, Báo cáo Thiết kế Kiến trúc (SDD), OpenAPI Specs                        | **Nguyễn Mạnh Quyền**: Database ERD & Clean Arch<br>**Đặng Quốc Khánh**: UI/UX EMenuTablet & Tablet<br>**Nguyễn Hoàng Đạt**: SDD & API Contracts          |
 | **Tuần 5–6**  | **Setup & Infrastructure**      | Thiết lập Backend .NET 9 Clean Arch, EF Core Migrations, Identity JWT, SignalR Hub; Setup Frontend React Vite Tailwind | Solution Backend & Frontend chạy được Skeleton, kết nối CSDL                      | **Nguyễn Mạnh Quyền**: Backend Solution & DbContext<br>**Đặng Quốc Khánh**: Frontend Scaffold & Zustand<br>**Nguyễn Hoàng Đạt**: Auth JWT & SignalR Hub setup |
-| **Tuần 7–8**  | **Core Coding**                 | Lập trình module Đặt bàn + cọc VNPAY, Hiển thị Digital Menu, Order trực tiếp, In Bếp, Thanh toán cấn trừ cọc           | Hệ thống chạy thông luồng End-to-End từ đặt bàn đến thanh toán                    | **Nguyễn Mạnh Quyền**: Đặt bàn & VNPAY API<br>**Đặng Quốc Khánh**: Digital E-Menu & Order Flow<br>**Nguyễn Hoàng Đạt**: In phiếu Bếp & Hóa đơn cấn cọc        |
+| **Tuần 7–8**  | **Core Coding**                 | Lập trình module Đặt bàn + cọc VNPAY, EMenuTablet, Order trực tiếp, KDS Bếp & Quầy Pass, Thanh toán HĐ   | Hệ thống chạy thông luồng End-to-End từ đặt bàn đến thanh toán                    | **Nguyễn Mạnh Quyền**: Đặt bàn & VNPAY API<br>**Đặng Quốc Khánh**: E-Menu & EMenuTablet<br>**Nguyễn Hoàng Đạt**: Điều phối KDS Bếp & Hóa đơn cấn cọc         |
 | **Tuần 9–10** | **Verification & Final Report** | Kiểm thử End-to-End, tối ưu Index CSDL, đóng gói báo cáo đồ án hoàn chỉnh, chuẩn bị Slide và kịch bản Demo             | Báo cáo Đồ án Tốt nghiệp hoàn chỉnh, Video/Slide Demo, Code Repository            | **Cả nhóm**: Kiểm thử hệ thống, hoàn thiện cuốn Báo cáo và bảo vệ đồ án trước Hội đồng                                                                        |
 
 ---

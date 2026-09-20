@@ -36,20 +36,20 @@
           <mxGeometry x="20" y="650" width="240" height="110" as="geometry" />
         </mxCell>
 
-        <!-- Boundary 2: Restaurant LAN & Printers -->
-        <mxCell id="box_lan" value="2. MẠNG NỘI BỘ NHÀ HÀNG &amp; MÁY IN BẾP" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
+        <!-- Boundary 2: Restaurant LAN & KDS Tablets -->
+        <mxCell id="box_lan" value="2. MẠNG NỘI BỘ NHÀ HÀNG &amp; THIẾT BỊ KDS BẾP" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="350" y="70" width="280" height="970" as="geometry" />
         </mxCell>
-        <mxCell id="net_router" value="«network node»&#xa;Restaurant Wi-Fi / LAN Router&#xa;──────────────────&#xa;VLAN 1: Guest Wi-Fi (Cách ly)&#xa;VLAN 2: Staff &amp; Device Wi-Fi&#xa;VLAN 3: LAN Máy in cố định" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+        <mxCell id="net_router" value="«network node»&#xa;Restaurant Wi-Fi / LAN Router&#xa;──────────────────&#xa;VLAN 1: Guest Wi-Fi (Cách ly)&#xa;VLAN 2: Staff &amp; TableDisplay Wi-Fi&#xa;VLAN 3: Kitchen KDS Network" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
           <mxGeometry x="20" y="50" width="240" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="prn_hot" value="«device: ESC/POS Printer»&#xa;Máy in Bếp Nóng (Hot Kitchen)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+        <mxCell id="prn_hot" value="«device: KDS Tablet»&#xa;Màn hình KDS Bếp Nóng (Hot Kitchen)&#xa;──────────────────&#xa;Type: Hands-free Tablet / Wall-mount&#xa;Protocol: SignalR WebSocket Client" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
           <mxGeometry x="20" y="260" width="240" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="prn_cold" value="«device: ESC/POS Printer»&#xa;Máy in Bếp Lạnh (Cold Kitchen)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+        <mxCell id="prn_cold" value="«device: KDS Tablet»&#xa;Màn hình KDS Bếp Lạnh (Cold Kitchen)&#xa;──────────────────&#xa;Type: Hands-free Tablet / Wall-mount&#xa;Protocol: SignalR WebSocket Client" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
           <mxGeometry x="20" y="410" width="240" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="prn_bar" value="«device: ESC/POS Printer»&#xa;Máy in Quầy Bar (Beverage/Wine)&#xa;──────────────────&#xa;Model: Epson / Xprinter K80&#xa;Connection: LAN Ethernet / Static IP" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
+        <mxCell id="prn_bar" value="«device: KDS Tablet»&#xa;Màn hình KDS Quầy Bar (Beverage/Wine)&#xa;──────────────────&#xa;Type: Hands-free Tablet / Wall-mount&#xa;Protocol: SignalR WebSocket Client" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#ea580c;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_lan">
           <mxGeometry x="20" y="560" width="240" height="95" as="geometry" />
         </mxCell>
 
@@ -127,8 +127,8 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- 6. API to Printers (ESC/POS Socket 9100) -->
-        <mxCell id="c_api_prn" value="ESC/POS&#xa;Port 9100" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4;entryX=1;entryY=0.5;" edge="1" source="srv_api" target="prn_hot" parent="1">
+        <!-- 6. API to KDS Stations (SignalR WebSockets) -->
+        <mxCell id="c_api_prn" value="SignalR WSS&#xa;Port 5001" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4;entryX=1;entryY=0.5;" edge="1" source="srv_api" target="prn_hot" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 

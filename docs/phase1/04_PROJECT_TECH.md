@@ -13,22 +13,57 @@ Tài liệu này trình bày chi tiết về các công nghệ, design pattern, 
     * *Nhược điểm:* Khó chia tách công việc giữa team Frontend và Backend. View bị dính chặt với Backend, không thể tái sử dụng API cho các nền tảng khác (Mobile App, iPad POS). Trải nghiệm người dùng (UX) thường chậm hơn do phải tải lại trang mỗi khi click (Full page reload).
 * **Mô hình Clean Architecture + SPA (Lựa chọn hiện tại):** Backend (Clean Architecture) hoàn toàn không biết gì về giao diện, chỉ trả về dữ liệu chuẩn JSON. Frontend (React) là một ứng dụng độc lập (Single Page Application).
     * *Ưu điểm:* 
-        1. **Tái sử dụng:** Backend API hiện tại có thể được dùng cho cả web quản lý, web khách hàng, và ứng dụng iPad của nhân viên (POS/KDS) mà không cần viết lại.
+        1. **Tái sử dụng:** Backend API hiện tại có thể được dùng cho cả web quản lý, web đặt bàn của khách, ứng dụng tablet của bồi bàn (Waitstaff POS) và màn hình quầy điều phối (Expediter Pass) mà không cần viết lại.
         2. **Bảo vệ Core Logic:** Clean Architecture tách biệt hoàn toàn Logic nghiệp vụ (Domain/Application) khỏi các yếu tố bên ngoài (Database, Framework UI). Trong MVC, Controller thường bị "nhồi nhét" quá nhiều logic (Fat Controller) và phụ thuộc trực tiếp vào Entity Framework.
 
 ---
 
 ## 2. Design Pattern: CQRS & MediatR, DI Lifetimes (Singleton, Scoped, Transient)
 
-**Pattern 1: Command Query Responsibility Segregation (CQRS) + MediatR**
-* **So sánh với CRUD Service:** CRUD truyền thống dùng chung một Model cho việc đọc và ghi dữ liệu. Với KDS (màn hình bếp), dữ liệu hiển thị cần Join từ nhiều bảng (rất nặng). CQRS tách luồng Ghi (Command) yêu cầu transaction khắt khe, và luồng Đọc (Query) cho phép truy vấn nhanh (như dùng Dapper). MediatR giúp API Controller trở nên "siêu mỏng", không chứa logic.
+### 2.1. Thư viện MediatR & Pattern CQRS (Command Query Responsibility Segregation)
 
-**Pattern 2: Dependency Injection (DI) & Vòng đời Service (Singleton vs Scoped vs Transient)**
+#### A. MediatR là gì?
+**MediatR** là một thư viện mã nguồn mở phổ biến trong hệ sinh thái .NET, hiện thực hóa **Mediator Pattern** (Mô hình điều phối trung gian) theo cơ chế **In-process Messaging** (truyền thông điệp nội bộ bên trong cùng một tiến trình ứng dụng). 
+
+Thay vì các thành phần trong hệ thống (như Controller, Services, Repositories) gọi trực tiếp lẫn nhau tạo thành một mạng lưới phụ thuộc chằng chịt (tight coupling), MediatR đóng vai trò làm "trạm trung chuyển trung tâm". Các bên giao tiếp với nhau gián tiếp thông qua việc gửi các đối tượng thông điệp (Request / Notification) đến MediatR, và MediatR sẽ tự động tìm đúng Handler chịu trách nhiệm xử lý.
+
+#### B. Cơ chế hoạt động của MediatR
+MediatR hoạt động dựa trên 3 cơ chế chính:
+1. **Request / Response (1-to-1 Dispatcher):**
+   * Được dùng cho cả **Command** (thao tác ghi dữ liệu) và **Query** (thao tác đọc dữ liệu).
+   * Một Request kế thừa từ `IRequest<TResponse>`. Khi Controller gọi `_mediator.Send(request)`, MediatR sử dụng Dependency Injection container để định vị và kích hoạt đúng duy nhất một `IRequestHandler<TRequest, TResponse>` tương ứng để xử lý và trả về kết quả.
+2. **Notifications / In-memory Events (1-to-many Publisher):**
+   * Được dùng cho các sự kiện miền nội bộ (Domain Events).
+   * Kế thừa từ `INotification`. Khi gọi `_mediator.Publish(notification)`, MediatR sẽ phát thông điệp này tới nhiều `INotificationHandler<TNotification>` cùng lúc mà đối tượng gửi không cần biết có bao nhiêu bên đang lắng nghe.
+3. **Pipeline Behaviors (AOP - Aspect-Oriented Programming):**
+   * Hoạt động tương tự như Middleware của ASP.NET Core nhưng nằm ở tầng **Application**.
+   * Cho phép chèn các xử lý xuyên suốt (Cross-cutting concerns) như: Tự động Validate dữ liệu đầu vào (FluentValidation), Logging thời gian thực thi, Xử lý Transaction (Unit of Work), Bắt ngoại lệ trước và sau khi Request chạm tới Handler thực sự.
+
+#### C. Tác dụng & Lợi ích vượt trội so với Service thông thường (CRUD Service)
+* **Triệt tiêu "Fat Controller" & giải quyết triệt để Constructor Over-injection:** Trong kiến trúc truyền thống, một Controller quản lý nghiệp vụ thường phải inject 5 - 10 Service/Repository khác nhau (`IOrderService`, `ITableService`, `IBillService`, `ILogger`, `IMapper`...). Với MediatR, Controller chỉ cần inject **duy nhất một abstraction** là `ISender` (hoặc `IMediator`). Controller trở nên siêu mỏng (Thin Controller), chỉ làm nhiệm vụ nhận HTTP Request, đóng gói thành Command/Query rồi bàn giao cho MediatR.
+* **Tuân thủ triệt để nguyên lý Single Responsibility Principle (SRP):** Thay vì tạo các class Service khổng lồ (God Service) chứa hàng chục hàm xử lý đan xen, mỗi Use Case trong hệ thống được đóng gói thành một cặp độc lập gồm: **Request (Command/Query)** và **Handler**. Mỗi class chỉ có một trách nhiệm duy nhất, sửa đổi nghiệp vụ này hoàn toàn không thể làm hỏng nghiệp vụ khác.
+* **Tách bạch tối ưu luồng Đọc và Ghi (CQRS):**
+   * *Luồng Ghi (Command):* Đòi hỏi kiểm tra ràng buộc nghiệp vụ khắt khe, tính toán trạng thái, đảm bảo tính toàn vẹn dữ liệu (Transaction) qua Entity Framework Core.
+   * *Luồng Đọc (Query):* Không cần nạp thực thể đầy đủ hay kiểm tra logic phức tạp. MediatR định tuyến trực tiếp truy vấn ra DTO (có thể tối ưu bằng Dapper hoặc EF Core `AsNoTracking()`), giúp màn hình sơ đồ bàn và quầy điều phối Expediter phản hồi dữ liệu cực nhanh mà không gây quá tải database.
+* **Dễ dàng viết Unit Test:** Mỗi Handler là một đơn vị độc lập, không phụ thuộc vào `HttpContext`, Router, hay Controller. Tester có thể dễ dàng test riêng từng luồng nghiệp vụ bằng cách cung cấp dữ liệu giả lập (Mock).
+
+#### D. Vai trò của MediatR trong hệ thống VinDining
+Trong kiến trúc Clean Architecture của VinDining, MediatR giữ vị trí "xương sống" điều phối luồng thực thi:
+1. **Cầu nối ranh giới giữa Presentation (Web API) và Application:** Giữ cho tầng API hoàn toàn tách biệt với logic nghiệp vụ. Khi chuyển đổi từ Web API sang Worker Service hoặc gRPC, tầng Application giữ nguyên 100%.
+2. **Thực thi Pipeline Validation tự động:** Kết hợp với `FluentValidation`, MediatR tự động kiểm tra tính hợp lệ của mọi yêu cầu (ví dụ: số lượng khách đặt bàn phải > 0, giờ đặt phải trong khung giờ hoạt động, tiền cọc phải khớp với quy định) trước khi use case được kích hoạt. Handler chỉ tập trung xử lý nghiệp vụ thuần túy mà không cần viết lặp lại các lệnh `if (request.Guests <= 0)`.
+3. **Điều phối Sự kiện đa kênh (KDS Bếp, Quầy Pass, Smartphone Waitstaff qua SignalR):**
+   * Khi `CreateOrderCommandHandler` tạo đơn hàng thành công, nó gửi một `OrderCreatedNotification` qua `Publish()`.
+   * MediatR kích hoạt song song các Handler: 
+     - Một Handler phát sự kiện SignalR (`OrderDispatchedToKds`) đẩy vé điện tử tới **Màn hình KDS Bếp** tại các trạm chế biến (Bếp nóng, Bếp lạnh, Bar) rảnh tay (Hands-free) kèm đồng hồ đếm ngược SLA và nhãn cảnh báo dị ứng / ghi chú đặc biệt (`SpecialNotes`) bôi đậm theo từng món ăn.
+     - Một Handler phát tín hiệu qua **SignalR** tới quầy điều phối Pass (Expediter) để theo dõi tiến độ chuẩn bị món và tới **Smartphone cá nhân của Waitstaff** hiển thị thông báo rung khi món ăn hoàn tất tại quầy Pass (`BR-04`).
+     - Toàn bộ logic tạo đơn hàng hoàn toàn độc lập, tuân thủ Clean Architecture, không bị ràng buộc cứng với giao diện hay kết nối socket.
+
+### 2.2. Dependency Injection (DI) & Vòng đời Service (Singleton vs Scoped vs Transient)
 Kiến trúc của dự án áp dụng triệt để Dependency Injection (DI) của .NET. Pattern DI quản lý việc khởi tạo các class thông qua 3 vòng đời (lifetimes). Sự khác biệt và lý do sử dụng của chúng như sau:
 
 1. **Singleton (Tồn tại duy nhất 1 bản sao trong toàn ứng dụng):**
     * *Cách hoạt động:* Khởi tạo 1 lần duy nhất khi ứng dụng chạy và dùng chung cho tất cả các request.
-    * *Khi nào dùng / Tại sao dùng:* Dùng cho các service có trạng thái cần chia sẻ toàn cục, chi phí khởi tạo lớn, và không liên quan đến database context. Ví dụ: `MemoryCache`, `SignalR HubContext`, `Logger`. Trong Frontend (React), store của `Zustand` cũng là một dạng Singleton để giữ state chung (giỏ hàng, user profile).
+    * *Khi nào dùng / Tại sao dùng:* Dùng cho các service có trạng thái cần chia sẻ toàn cục, chi phí khởi tạo lớn, và không liên quan đến database context. Ví dụ: `MemoryCache`, `SignalR HubContext`, `Logger`. Trong Frontend (React), store của `Zustand` cũng là một dạng Singleton để giữ state chung (đơn món Order, user profile).
 
 2. **Scoped (Tạo mới ở mỗi HTTP Request):**
     * *Cách hoạt động:* Mỗi khi có một user gọi API (1 Request), hệ thống tạo ra 1 instance. Instance này được dùng chung trong suốt quá trình xử lý request đó (đi qua nhiều class khác nhau), nhưng độc lập hoàn toàn với các Request của user khác. Khi Request kết thúc, nó bị huỷ đi.
@@ -66,13 +101,19 @@ Kiến trúc của dự án áp dụng triệt để Dependency Injection (DI) c
     * *Nhược điểm:* Khi Waiter cần gửi tín hiệu "Đã nhận món" ngược lại Server thì SSE không hỗ trợ (phải gọi API HTTP riêng, làm đứt đoạn flow real-time).
 * **WebSockets (SignalR):**
     * *Cơ chế:* Tạo một "đường ống" (persistent connection) kết nối hai chiều liên tục giữa Server và Client.
-    * *Tại sao chọn SignalR:* Nó là bộ thư viện bao bọc WebSockets hoàn hảo của .NET. Rất thiết yếu cho các chức năng: **Màn hình Nhà Bếp (KDS)** (Bếp nấu xong bấm nút -> màn hình iPad của bồi bàn lập tức nổ thông báo) và **Sơ đồ bàn (Floor Plan)** (Khách đặt bàn -> Icon bàn lập tức chuyển sang màu đỏ "Đã đặt" trên tất cả thiết bị của nhân viên mà không cần F5). SignalR còn hỗ trợ tự động Fallback (nếu máy cũ không có WebSockets, nó tự lùi về Long-Polling).
+    * *Tại sao chọn SignalR:* Nó là bộ thư viện bao bọc WebSockets hoàn hảo của .NET. Rất thiết yếu cho các chức năng: 
+      1. **Sơ đồ bàn (Floor Plan):** Khách đặt bàn hoặc nhân viên đổi trạng thái -> Icon bàn lập tức chuyển sang màu đỏ "Đã đặt" hoặc vàng "Đang dùng" trên tất cả thiết bị của Hostess, Quản lý, Thu ngân mà không cần F5.
+      2. **Điều phối KDS Bếp (Kitchen Display System):** Ngay khi Waitstaff tạo Order, các trạm Bếp nóng, Bếp lạnh, Bar nhận lệnh chế biến tức thời trên màn hình KDS rảnh tay (Hands-free) với bộ đếm ngược thời gian SLA chuẩn xác và cảnh báo dị ứng / ghi chú đặc biệt (`SpecialNotes`) bôi đậm theo từng món ăn.
+      3. **Điều phối quầy Pass & Thông báo Rung Smartphone Phục vụ (Pass QC & Smartphone Alert):** Khi đĩa món hoàn tất tại Pass, Expediter kiểm tra QC và bấm "Served" (`Xác nhận ra món / Phục vụ`) trực tiếp trên Pass Tablet -> SignalR gửi thông báo đẩy / rung chuông tức thời tới Smartphone cá nhân của Waitstaff phụ trách (*"Bàn [Số bàn]: Món [Tên món] đã sẵn sàng tại quầy Pass!"*), đồng thời hiển thị tiến độ bàn và gợi ý kích hoạt Course tiếp theo khi món cuối của Course hoàn tất (Course Pacing & Delayed SLA warning - `BR-06`). Waitstaff đón nhận đĩa món từ Pass và bưng ra bàn phục vụ khách bằng hai tay rảnh tay (Zero-touch tại bàn, không cần thao tác màn hình tại bàn).
+      4. **In Hóa đơn tạm tính cấn trừ cọc & Mã VietQR động (Cashier Receipt Printing & VietQR):** Khi khách yêu cầu thanh toán trực tiếp với Waitstaff (giao tiếp trực tiếp truyền thống, Tablet EMenuTablet 100% view-only không có nút yêu cầu tính tiền), Waitstaff mở Web App trên smartphone cá nhân bấm "Xuất phiếu tạm tính" cấn trừ tiền cọc theo `BR-03`. Thao tác này kích hoạt Web API gửi lệnh in mạng (ESC/POS) ra máy in nhiệt khổ 80mm tại Quầy Thu ngân nhả phiếu tạm tính chi tiết kèm mã VietQR động ở chân phiếu. Waitstaff kẹp phiếu vào sổ da sang trọng (Leather Bill Folder) mang ra bàn cho khách kiểm tra minh bạch và thanh toán (quét VietQR trên giấy hoặc thanh toán tiền mặt / thẻ POS với Waitstaff). Khi Waitstaff xác nhận thanh toán trên điện thoại cá nhân, bàn chuyển sang `Cleaning`.
+      5. **Tự động Fallback:** Nếu thiết bị cũ hoặc mạng không hỗ trợ WebSockets, SignalR tự động lùi về Server-Sent Events hoặc Long-Polling.
 
 ---
 
 ## 5. Frontend Stack: React (Vite), Tailwind CSS, TanStack Query, Zustand
 
 **Công nghệ sử dụng:** React 18/19 (TypeScript), Vite, Tailwind CSS, TanStack Query, Zustand.
+* **EMenuTablet Component (100% Passive View-Only):** Thiết kế giao diện trình diễn thị giác sang trọng, chuyên biệt cho khách chiêm ngưỡng hình ảnh độ phân giải cao, câu chuyện món ăn, thành phần nguyên liệu và gợi ý rượu vang. Hệ thống thiết lập chế độ thụ động 100% (Strictly Read-Only), tuyệt đối KHÔNG có nút bấm tương tác (không nút 'Gọi phục vụ', không nút 'Yêu cầu tính tiền', không giỏ hàng, không nút tự đặt món) nhằm bảo tồn trọn vẹn văn hóa phục vụ ân cần chuẩn Fine Dining. Mọi tương tác của khách đều do Waitstaff trực tiếp tiếp nhận.
 
 **So sánh với các stack khác:**
 * **Angular:** Quá cồng kềnh cho quy mô SPA này, learning curve cao.

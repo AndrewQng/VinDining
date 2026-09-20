@@ -56,8 +56,8 @@
           <mxGeometry x="170" y="440" width="250" height="100" as="geometry" />
         </mxCell>
 
-        <!-- State: Paid_TableLost -->
-        <mxCell id="st_lost" value="Paid_TableLost (Sự cố Late IPN)&#xa;──────────────────────────────&#xa;entry / VNPAY báo thành công nhưng gửi trễ &gt; 17p &amp; bàn đã mất&#xa;do / Báo động đỏ Quản lý gọi khách đổi bàn / hoàn cọc&#xa;exit / Giải quyết thủ công ngoại lệ [UC-A3]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c2410c;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <!-- State: Expired_AutoRefunded -->
+        <mxCell id="st_lost" value="Expired_AutoRefunded (Late IPN &amp; Tự động hoàn cọc)&#xa;──────────────────────────────&#xa;entry / VNPAY báo thành công nhưng gửi trễ &gt; 17p &amp; bàn đã mất&#xa;do / Tự động gọi API VNPAY hoàn 100% cọc &amp; gửi SMS/Email&#xa;exit / Hoàn tất hoàn cọc tự động" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c2410c;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="490" y="65" width="320" height="90" as="geometry" />
         </mxCell>
 

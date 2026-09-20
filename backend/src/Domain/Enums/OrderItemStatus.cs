@@ -2,7 +2,8 @@ namespace Domain.Enums;
 
 public enum OrderItemStatus
 {
-    Preparing = 0,
-    Served = 1,
-    Cancelled = 2
+    Queued = 0,
+    Preparing = 1,
+    Served = 2,
+    Cancelled = 3
 }

@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net">
+<mxfile host="Electron">
   <diagram id="seqlayout" name="SD-01: Đặt bàn trực tuyến &amp; Thanh toán cọc VNPAY">
-    <mxGraphModel dx="13580" dy="7810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2357" dy="1402" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -35,10 +35,7 @@
           <mxGeometry height="50" width="10" x="45" y="190" as="geometry" />
         </mxCell>
         <mxCell id="act4" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=18;" value="" vertex="1">
-          <mxGeometry height="690" width="10" x="45" y="440" as="geometry" />
-        </mxCell>
-        <mxCell id="act9" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=18;" value="" vertex="1">
-          <mxGeometry height="210" width="10" x="45" y="1180" as="geometry" />
+          <mxGeometry height="850" width="10" x="45" y="440" as="geometry" />
         </mxCell>
         <mxCell id="vn" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=18;" value="Cổng VNPAY" vertex="1">
           <mxGeometry height="1490" width="100" x="1060" y="40" as="geometry" />
@@ -70,7 +67,7 @@
         <mxCell id="m6" edge="1" parent="1" source="act6" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2308;entryX=0;entryY=0.0;fontSize=18;" target="act3" value="7. POST /api/reservations/hold">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m7" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;fontSize=18;" target="act4" value="8. Khóa giữ bàn 17 phút (Expire: 17p - BR-01)">
+        <mxCell id="m7" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.0;fontSize=18;" target="act4" value="8. Khóa giữ bàn 17 phút&amp;nbsp;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m8" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.0;fontSize=18;" target="act2" value="9. CreatePaymentUrl(DepositAmount)">
@@ -88,7 +85,7 @@
         <mxCell id="m12" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.4825;fontSize=18;" target="vn" value="13. Quét mã QR thanh toán tiền cọc">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m13" edge="1" parent="1" source="act7" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=1;entryY=0.0;fontSize=18;" target="act5" value="14. POST /api/payments/vnpay-ipn (Server-to-Server)">
+        <mxCell id="m13" edge="1" parent="1" source="act7" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=1;entryY=0.0;fontSize=18;" target="act5" value="14. POST /api/payments/vnpay-ipn">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1100" y="780" as="sourcePoint" />
           </mxGeometry>
@@ -109,84 +106,59 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m19" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5667;entryX=0;entryY=0.9275;fontSize=18;" target="act4" value="16b. Quét tìm bàn trống tương đương (Auto-Reallocate)">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="m20" edge="1" parent="1" source="act4" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=1.0;entryX=1;entryY=0.65;fontSize=18;" target="act5" value="17b. Trả kết quả tìm bàn tương đương">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="m22" edge="1" parent="1" style="html=1;verticalAlign=top;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.8333;fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;align=left;labelBackgroundColor=none;" value="18c. Lưu Paid_TableLost">
-          <mxGeometry relative="1" x="-0.8077" y="30" as="geometry">
-            <mxPoint as="offset" />
-            <mxPoint x="615.0000000000002" y="1320.0000000000007" as="sourcePoint" />
-            <mxPoint x="875.0000000000002" y="1320.0000000000007" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="m23" edge="1" parent="1" style="html=1;verticalAlign=top;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;align=left;labelBackgroundColor=none;" value="20c. Gửi Email &amp;amp; SMS xin lỗi, thông báo Quản lý sẽ liên hệ">
-          <mxGeometry relative="1" x="0.902" y="-30" as="geometry">
-            <mxPoint as="offset" />
-            <mxPoint x="605.0000000000002" y="1420" as="sourcePoint" />
-            <mxPoint x="95" y="1420" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="m24" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;fontSize=18;" value="21. RspCode: 00 (Confirm Success)">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="615" y="1490.0000000000002" as="sourcePoint" />
-            <mxPoint x="1100" y="1490" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="PfcmL7W0BvxEjLrqBu2t-5" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=70;height=30;" value="&lt;span style=&quot;font-size: 16px;&quot;&gt;alt&lt;/span&gt;" vertex="1">
-          <mxGeometry height="550" width="1110" x="50" y="890" as="geometry" />
+          <mxGeometry height="490" width="1110" x="50" y="890" as="geometry" />
         </mxCell>
         <mxCell id="PfcmL7W0BvxEjLrqBu2t-7" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=light-dark(#000000,#FFFFFF);fontSize=18;" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;[ if IPN đúng hạn (&amp;lt; 17 phút)]&lt;/span&gt;" vertex="1">
           <mxGeometry height="70" width="170" x="130" y="910" as="geometry" />
         </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-9" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;exitX=0;exitY=0.282;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.002;entryY=0.278;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=30;strokeWidth=1;startSize=2;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="40" y="1043.1599999999999" as="sourcePoint" />
-            <mxPoint x="1152.2199999999998" y="1040" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="m16" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3;entryX=0;entryY=0.6957;fontSize=18;" target="act4" value="16a. Cập nhật Reservation -&amp;gt; Reserved, Table -&amp;gt; Reserved">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-11" edge="1" parent="1" source="PfcmL7W0BvxEjLrqBu2t-5" style="endArrow=none;dashed=1;html=1;rounded=0;fontSize=30;strokeWidth=1;startSize=2;exitX=0.001;exitY=0.715;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.002;entryY=0.715;entryDx=0;entryDy=0;entryPerimeter=0;" target="PfcmL7W0BvxEjLrqBu2t-5" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <Array as="points" />
-            <mxPoint x="99.99999999999983" y="1284.41" as="sourcePoint" />
-            <mxPoint x="1208.8899999999999" y="1284.41" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-13" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;fontSize=18;fontFamily=Helvetica;fontColor=default;fontStyle=0;align=center;labelBackgroundColor=default;" target="act9" value="">
+        <mxCell id="m17" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;exitX=0;exitY=0.3833;entryX=1;entryY=0.0;fontSize=18;" target="act8" value="17a. Gửi Email &amp;amp; SMS xác nhận kèm BookingCode">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="790" y="1220" as="sourcePoint" />
-            <mxPoint x="1050" y="1220" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-15" connectable="0" parent="PfcmL7W0BvxEjLrqBu2t-13" style="edgeLabel;html=1;align=left;verticalAlign=top;resizable=0;points=[];fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;labelBackgroundColor=none;" value="&lt;font&gt;18b. Gán bàn mới&lt;/font&gt;" vertex="1">
-          <mxGeometry relative="1" x="-0.0231" as="geometry">
-            <mxPoint x="-72" y="-40" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-16" edge="1" parent="1" style="html=1;verticalAlign=top;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;align=left;labelBackgroundColor=none;" value="19b. Gửi Email &amp;amp; SMS&amp;nbsp;thông báo chuyển sang bàn tương đương">
-          <mxGeometry relative="1" x="0.9804" y="-30" as="geometry">
             <mxPoint as="offset" />
-            <mxPoint x="605.0000000000002" y="1260" as="sourcePoint" />
-            <mxPoint x="95" y="1260" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-18" parent="1" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;fontSize=18;" value="" vertex="1">
-          <mxGeometry height="150" width="10" x="605" y="1380" as="geometry" />
+        <mxCell id="PfcmL7W0BvxEjLrqBu2t-9" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;exitX=0;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.002;entryY=0.32;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=30;strokeWidth=1;startSize=2;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="50" y="1050" as="sourcePoint" />
+            <mxPoint x="1160" y="1050" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-19" edge="1" parent="1" style="html=1;verticalAlign=top;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;align=left;labelBackgroundColor=none;" value="19c. SignalR Push Notification cảnh báo cho Manager">
-          <mxGeometry relative="1" x="0.8235" y="-30" as="geometry">
+        <mxCell id="PfcmL7W0BvxEjLrqBu2t-23" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=light-dark(#000000,#FFFFFF);fontSize=18;" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;[else: IPN trễ (&amp;gt; 17 phút) &amp;amp; bàn cũ đã giải phóng / mất lượt]&lt;/span&gt;" vertex="1">
+          <mxGeometry height="50" width="380" x="120" y="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="m16b" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.55;entryX=0;entryY=0.53;fontSize=18;" target="act7" value="16b. POST /refund (Gọi VNPAY Refund API hoàn 100% cọc tự động)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="1110" as="sourcePoint" />
+            <mxPoint x="1100" y="1110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m17b" edge="1" parent="1" source="act7" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;exitX=0;exitY=0.61;entryX=1;entryY=0.64;fontSize=18;" target="act5" value="17b. Refund Success (Mã giao dịch hoàn tiền thành công)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1100" y="1170" as="sourcePoint" />
+            <mxPoint x="615" y="1170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18b" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.74;entryX=0;entryY=0.91;fontSize=18;" target="act4" value="18b. Cập nhật Reservation = Expired_AutoRefunded &amp;amp; Deposit = Refunded">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="1230" as="sourcePoint" />
+            <mxPoint x="875" y="1230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m19b" edge="1" parent="1" source="act5" style="html=1;verticalAlign=top;endArrow=open;dashed=1;curved=0;rounded=0;fontSize=18;fontFamily=Helvetica;fontColor=light-dark(#000000,#FFFFFF);fontStyle=0;align=left;labelBackgroundColor=none;exitX=0;exitY=0.83;entryX=1;entryY=0.65;" target="act8" value="19b. Gửi Email &amp;amp; SMS xin lỗi quá hạn &amp;amp; xác nhận hoàn cọc 100%">
+          <mxGeometry relative="1" x="0.902" y="-30" as="geometry">
             <mxPoint as="offset" />
-            <mxPoint x="875.0000000000002" y="1370" as="sourcePoint" />
-            <mxPoint x="365" y="1370" as="targetPoint" />
+            <mxPoint x="605" y="1290" as="sourcePoint" />
+            <mxPoint x="95" y="1290" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-23" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=light-dark(#000000,#FFFFFF);fontSize=18;" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;[else: IPN trễ (&amp;gt; 17 phút) &amp;amp; mất bàn &amp;amp;còn bàn tương đương]&lt;/span&gt;" vertex="1">
-          <mxGeometry height="70" width="200" x="120" y="1060" as="geometry" />
-        </mxCell>
-        <mxCell id="PfcmL7W0BvxEjLrqBu2t-24" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=light-dark(#000000,#FFFFFF);fontSize=18;" value="&lt;span style=&quot;font-family: Helvetica; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;[else: IPN trễ (&amp;gt; 17 phút) &amp;amp; Hết Bàn]&lt;/span&gt;" vertex="1">
-          <mxGeometry height="70" width="170" x="130" y="1300" as="geometry" />
+        <mxCell id="m20" edge="1" parent="1" source="act5" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#999999;fontColor=#999999;fontSize=18;exitX=1;exitY=0.93;entryX=0;entryY=0.82;" target="act7" value="20. RspCode: 00 (Ghi nhận IPN hoàn tất)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="1350" as="sourcePoint" />
+            <mxPoint x="1100" y="1350" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

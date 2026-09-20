@@ -119,33 +119,29 @@
       "async": true
     },
     {
-      "note": "[else: IPN trễ (> 17 phút) & Bàn đã mất]",
+      "note": "[else: IPN trễ (> 17 phút) & Bàn cũ đã giải phóng / mất lượt]",
       "over": "api"
     },
     {
       "from": "api",
-      "to": "db",
-      "label": "16b. Quét tìm bàn trống tương đương (Auto-Reallocate)"
+      "to": "vn",
+      "label": "16b. POST /refund (Gọi VNPAY Refund API hoàn 100% cọc tự động)"
     },
     {
-      "from": "db",
+      "from": "vn",
       "to": "api",
-      "label": "17b. Trả kết quả tìm bàn tương đương",
+      "label": "17b. Refund Success (Mã giao dịch hoàn tiền)",
       "return": true
     },
     {
-      "note": "[Còn bàn: Gán bàn mới | Hết bàn: Paid_TableLost + Báo CSKH]",
-      "over": "api"
-    },
-    {
       "from": "api",
       "to": "db",
-      "label": "18b. Gán bàn mới (Reserved) HOẶC Lưu Paid_TableLost"
+      "label": "18b. Cập nhật Reservation = Expired_AutoRefunded & Deposit = Refunded"
     },
     {
       "from": "api",
-      "to": "fe",
-      "label": "19b. SignalR Push Notification cho CSKH (nếu TableLost)",
+      "to": "g",
+      "label": "19b. Gửi Email & SMS xin lỗi quá hạn & xác nhận hoàn cọc 100%",
       "async": true
     },
     {

@@ -1,9 +1,9 @@
 {
-  "title": "SD-10: Quét giải phóng bàn quá 17p & Xử lý Late IPN (UC-S1 / BR-01)",
+  "title": "SD-10: Quét giải phóng bàn quá 17p & Tự động hoàn cọc Late IPN (UC-S1 / BR-01)",
   "participants": [
     {
       "id": "vn",
-      "label": "Cổng VNPAY (Late IPN)"
+      "label": "Cổng VNPAY (Late IPN / Refund)"
     },
     {
       "id": "api",
@@ -26,8 +26,8 @@
       "label": "Nhân viên & Sơ đồ bàn"
     },
     {
-      "id": "mgr",
-      "label": "Quản lý / CSKH",
+      "id": "guest",
+      "label": "Khách hàng (Guest)",
       "actor": true
     }
   ],
@@ -80,45 +80,40 @@
     {
       "from": "api",
       "to": "db",
-      "label": "9. Kiểm tra Bàn cũ: Đã giải phóng hoặc khách khác đặt?"
+      "label": "9. Kiểm tra: Đơn đã Expired & Bàn cũ đã giải phóng / có khách đặt?"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "10. Bàn cũ đã bị khách khác đặt trước",
+      "label": "10. Xác nhận: Bàn cũ đã giải phóng / đã đặt lại (Hết chỗ)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "vn",
+      "label": "11. POST /refund (Gọi VNPAY Refund API hoàn 100% cọc tự động)"
+    },
+    {
+      "from": "vn",
+      "to": "api",
+      "label": "12. Refund Success (Mã giao dịch hoàn tiền thành công)",
       "return": true
     },
     {
       "from": "api",
       "to": "db",
-      "label": "11. Tìm kiếm Bàn trống tương đương (Khu vực, Sức chứa)"
+      "label": "13. Update Reservation = Expired_AutoRefunded & Deposit = Refunded"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "12. Hết sạch bàn tương đương trống!",
+      "label": "14. SaveChangesAsync() thành công",
       "return": true
     },
     {
       "from": "api",
-      "to": "db",
-      "label": "13. Đánh dấu trạng thái Reservation = Paid_TableLost"
-    },
-    {
-      "from": "db",
-      "to": "api",
-      "label": "14. Lưu trạng thái sự cố",
-      "return": true
-    },
-    {
-      "from": "api",
-      "to": "hub",
-      "label": "15. Bắn cảnh báo Đỏ khẩn cấp tới Dashboard Quản lý"
-    },
-    {
-      "from": "hub",
-      "to": "mgr",
-      "label": "16. Popup Alert: 'Late IPN - Gọi khách đổi bàn/hoàn cọc'",
+      "to": "guest",
+      "label": "15. Tự động gửi SMS/Email xin lỗi quá hạn & xác nhận hoàn cọc 100%",
       "async": true,
       "activate": false,
       "deactivate": true
@@ -126,7 +121,7 @@
     {
       "from": "api",
       "to": "vn",
-      "label": "17. Trả về RspCode: 00 (Ghi nhận IPN)",
+      "label": "16. Trả về RspCode: 00 (Ghi nhận IPN hoàn tất)",
       "return": true
     }
   ]

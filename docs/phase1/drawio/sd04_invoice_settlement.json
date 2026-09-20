@@ -1,5 +1,5 @@
 {
-  "title": "SD-04: Thanh toán hóa đơn & Cấn trừ cọc",
+  "title": "SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn",
   "participants": [
     {
       "id": "g",
@@ -13,7 +13,7 @@
     },
     {
       "id": "tab",
-      "label": "Tablet Phục vụ"
+      "label": "Tablet POS Phục vụ"
     },
     {
       "id": "api",
@@ -24,6 +24,14 @@
       "label": "SQL Server"
     },
     {
+      "id": "hub",
+      "label": "SignalR Hub"
+    },
+    {
+      "id": "disp",
+      "label": "Màn hình TableDisplay tại bàn"
+    },
+    {
       "id": "prn",
       "label": "Máy in Hóa đơn"
     }
@@ -32,12 +40,12 @@
     {
       "from": "g",
       "to": "w",
-      "label": "1. Yêu cầu tính tiền"
+      "label": "1. Yêu cầu tính tiền trực tiếp (lời nói / cử chỉ)"
     },
     {
       "from": "w",
       "to": "tab",
-      "label": "2. Chọn 'Thanh toán bàn'"
+      "label": "2. Chọn 'Thanh toán bàn' trên Tablet POS"
     },
     {
       "from": "tab",
@@ -52,60 +60,80 @@
     {
       "from": "db",
       "to": "api",
-      "label": "5. Trả về dữ liệu",
+      "label": "5. Trả về dữ liệu chi tiết",
       "return": true
     },
     {
       "from": "api",
       "to": "api",
-      "label": "6. Áp công thức BR-03 (max(0, Subtotal + 5% SVC + 10% VAT - Deposit))"
+      "label": "6. Áp công thức BR-03 (Subtotal + 5% SVC + 10% VAT - Deposit)"
+    },
+    {
+      "from": "api",
+      "to": "hub",
+      "label": "7. Broadcast BillPreview (Chi tiết hóa đơn & Dynamic VietQR)"
+    },
+    {
+      "from": "hub",
+      "to": "disp",
+      "label": "8. TableDisplay hiển thị bảng kê hóa đơn & mã VietQR động"
     },
     {
       "from": "api",
       "to": "tab",
-      "label": "7. 200 OK (Chi tiết hóa đơn tạm tính)",
+      "label": "9. 200 OK (Chi tiết hóa đơn tạm tính)",
       "return": true
     },
     {
-      "from": "w",
-      "to": "prn",
-      "label": "8. In phiếu tạm tính đem cho khách kiểm tra"
+      "from": "g",
+      "to": "disp",
+      "label": "10. Khách kiểm tra hóa đơn trên TableDisplay (hoặc phiếu tạm tính)"
     },
     {
       "from": "g",
       "to": "w",
-      "label": "9. Thanh toán số tiền còn thiếu (Tiền mặt / Thẻ POS / Chuyển khoản)"
+      "label": "11. Thanh toán số dư còn thiếu (Quét VietQR TableDisplay / Thẻ POS / Tiền mặt)"
     },
     {
       "from": "w",
       "to": "tab",
-      "label": "10. Chọn phương thức thanh toán & Bấm 'Hoàn tất thanh toán'"
+      "label": "12. Chọn phương thức & Bấm 'Hoàn tất thanh toán'"
     },
     {
       "from": "tab",
       "to": "api",
-      "label": "11. POST /api/invoices/settle { tableId, paymentMethod }"
+      "label": "13. POST /api/invoices/settle { tableId, paymentMethod }"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "12. Cập nhật Invoice -> Paid (lưu PaymentMethod), Table -> Cleaning"
+      "label": "14. Cập nhật Invoice -> Paid, Table -> Cleaning"
+    },
+    {
+      "from": "api",
+      "to": "hub",
+      "label": "15. Broadcast PaymentSettled (tableId)"
+    },
+    {
+      "from": "hub",
+      "to": "disp",
+      "label": "16. TableDisplay hiển thị thông điệp cảm ơn thực khách"
     },
     {
       "from": "api",
       "to": "prn",
-      "label": "13. In hóa đơn tài chính cuối cùng (kèm PaymentMethod)"
+      "label": "17. In hóa đơn tài chính cuối cùng (kèm PaymentMethod)"
     },
     {
       "from": "api",
       "to": "tab",
-      "label": "14. 200 OK (Hóa đơn đã thanh toán thành công)",
+      "label": "18. 200 OK (Thanh toán hoàn tất thành công)",
       "return": true
     },
     {
       "from": "api",
-      "to": "tab",
-      "label": "15. [SignalR] Broadcast TableStatusChanged(tableId, 'Cleaning')"
+      "to": "hub",
+      "label": "19. Broadcast TableStatusChanged(tableId, 'Cleaning')"
     }
   ]
 }

@@ -61,8 +61,8 @@
 
         <!-- Column 4: DigitalDisplays, Categories, MenuItems -->
         <!-- Table: DigitalDisplays -->
-        <mxCell id="tb_displays" value="«table» DigitalDisplays&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;    DeviceCode : varchar(50)&#xa;    PairingCode : varchar(10) NULL&#xa;    PairingExpiresAt : datetime2 NULL&#xa;    IsActive : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="1110" y="90" width="270" height="160" as="geometry" />
+        <mxCell id="tb_displays" value="«table» DigitalDisplays&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;    DeviceCode : varchar(50)&#xa;    IsActive : bit" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="90" width="270" height="130" as="geometry" />
         </mxCell>
 
         <!-- Table: Categories -->

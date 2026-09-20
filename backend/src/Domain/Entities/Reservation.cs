@@ -14,7 +14,12 @@ public class Reservation : BaseEntity
     public DateTime ReservationTime { get; set; }
     public int PartySize { get; set; }
     public ReservationStatus Status { get; set; } = ReservationStatus.AwaitingPayment;
-    public string? Note { get; set; }
+    public string? SpecialNotes { get; set; }
+    public string? Note 
+    { 
+        get => SpecialNotes; 
+        set => SpecialNotes = value; 
+    }
 
     public Deposit? Deposit { get; set; }
     public ICollection<Order> Orders { get; set; } = new List<Order>();

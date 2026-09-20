@@ -20,7 +20,7 @@ We will use **Multiple Segregated SignalR Hubs** (`TableHub`, `KitchenHub`, etc.
 
 1. **Traffic Isolation**: Table state changes are frequent and broadcasted to multiple tablets in the dining room. Kitchen updates (dish completions, new tickets) only matter to the Expediter and specific Waitstaff. A single hub would require complex Group management to avoid flooding the Expediter's tablet with irrelevant table updates.
 2. **Security & Authorization**: Different hubs allow for clean, class-level `[Authorize(Roles="Waitstaff,Manager")]` vs `[Authorize(Roles="Expediter,Manager")]` attributes, reducing the risk of unauthorized role invocation.
-3. **Frontend Modularity**: The React frontend (using Zustand/React Query) can initialize distinct connection singletons specifically for the components that need them (e.g., the `FloorMap` component connects to `TableHub`, the `KDS` component connects to `KitchenHub`), leading to better decoupling.
+3. **Frontend Modularity**: The React frontend (using Zustand/React Query) can initialize distinct connection singletons specifically for the components that need them (e.g., the `FloorMap` component connects to `TableHub`, the `ExpediterStation` component connects to `KitchenHub`), leading to better decoupling.
 
 ## Consequences
 

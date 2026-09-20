@@ -15,8 +15,8 @@
                 <mxCell id="m_act1" value="Truy cập mục 'Cấu hình Sơ đồ bàn'&#xa;trên Desktop Web Portal" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane1" vertex="1">
                     <mxGeometry x="65" y="120" width="210" height="55" as="geometry"/>
                 </mxCell>
-                <mxCell id="m_act2" value="Chọn Khu vực (Sảnh, VIP, Ban công)&#xa;&amp; Định vị tọa độ bàn (X, Y, Sức chứa)" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane1" vertex="1">
-                    <mxGeometry x="65" y="210" width="210" height="55" as="geometry"/>
+                <mxCell id="m_act2" value="Chọn Khu vực (Sảnh, VIP, Ban công)&#xa;&amp; Định vị tọa độ bàn (X, Y, Sức chứa)&#xa;TableDisplay kết nối trực tiếp URL số bàn" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" parent="lane1" vertex="1">
+                    <mxGeometry x="55" y="210" width="230" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="m_act3" value="Bấm 'Lưu thay đổi Sơ đồ bàn'" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane1" vertex="1">
                     <mxGeometry x="65" y="300" width="210" height="55" as="geometry"/>
@@ -48,14 +48,14 @@
                     <mxGeometry x="65" y="660" width="210" height="55" as="geometry"/>
                 </mxCell>
 
-                <!-- Lane 3: Ứng dụng Phục vụ (Waitstaff Client) -->
-                <mxCell id="lane3" value="Ứng dụng Phục vụ (Waitstaff Client)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" parent="1" vertex="1">
+                <!-- Lane 3: Ứng dụng Phục vụ & TableDisplay (Waitstaff & TableDisplay) -->
+                <mxCell id="lane3" value="Ứng dụng Phục vụ &amp; TableDisplay (Waitstaff &amp; TableDisplay)" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" parent="1" vertex="1">
                     <mxGeometry x="720" y="40" width="340" height="880" as="geometry"/>
                 </mxCell>
                 <mxCell id="w_act1" value="Nhận sự kiện SignalR&#xa;FloorPlanConfigUpdated" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane3" vertex="1">
                     <mxGeometry x="65" y="660" width="210" height="55" as="geometry"/>
                 </mxCell>
-                <mxCell id="w_act2" value="Tự động đồng bộ &amp; Re-render sơ đồ mới,&#xa;sẵn sàng chọn bàn &amp; tạo Order" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane3" vertex="1">
+                <mxCell id="w_act2" value="Tự động đồng bộ &amp; Re-render sơ đồ mới&#xa;trên Tablet Phục vụ &amp; TableDisplay bàn" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" parent="lane3" vertex="1">
                     <mxGeometry x="65" y="750" width="210" height="55" as="geometry"/>
                 </mxCell>
                 <mxCell id="end_w" value="" style="ellipse;html=1;shape=endState;fillColor=#2e7d32;strokeColor=#1b5e20;" parent="lane3" vertex="1">

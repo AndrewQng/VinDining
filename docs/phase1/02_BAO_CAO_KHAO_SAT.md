@@ -1,212 +1,164 @@
-# BÁO CÁO KHẢO SÁT HỆ THỐNG & ĐÁNH GIÁ TÍNH KHẢ THI
-## Dự án: Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)
+BÁO CÁO KHẢO SÁT HIỆN TRẠNG HỆ THỐNG
+VÀ ĐÁNH GIÁ TÍNH KHẢ THI
+ĐỀ TÀI DỰ ÁN:
+VINDINING — HỆ THỐNG QUẢN LÝ VÀ ĐẶT BÀN
+NHÀ HÀNG FINE DINING CAO CẤP
+Giảng viên hướng dẫn:	ThS. Phạm Hữu Tùng
+Sinh viên thực hiện 1:	Nguyễn Mạnh Quyền 
+Sinh viên thực hiện 2:	Đặng Quốc Khánh 
+Sinh viên thực hiện 3:	Nguyễn Hoàng Đạt 
+Giai đoạn đồ án:	Phase 1: Khảo sát Hiện trạng & Đánh giá Khả thi
 
----
 
-### THÔNG TIN TÀI LIỆU
-* **Tên tài liệu**: Báo cáo Khảo sát Hiện trạng & Đánh giá Tính khả thi (System Survey & Feasibility Study Report)
-* **Dự án**: VinDining — Fine Dining Restaurant Management & Reservation System
-* **Giai đoạn**: Phase 1 (Tuần 1–2) — Proposal & Requirement Analysis
-* **Nhóm thực hiện**: Nguyễn Mạnh Quyền, Đặng Quốc Khánh, Nguyễn Hoàng Đạt
-* **Giảng viên hướng dẫn**: ThS. Phạm Hữu Tùng
+ 
+ 
+MỤC LỤC BÁO CÁO KHẢO SÁT
+CHƯƠNG 1: KHẢO SÁT HIỆN TRẠNG QUY TRINH VẬN HÀNH FINE DINING TẠI VIỆT NAM	3
+1.1 Đặc thù phân khúc Fine Dining so với Nhà hàng đại chúng	3
+1.2 Khảo sát quy trình Đặt bàn & Thu tiền cọc thủ công	3
+1.3 Khảo sát quy trình Gọi món & Điều phối phục vụ theo Course	5
+1.4 Khảo sát quy trình Quầy Pass & Kiểm soát chất lượng món ăn	5
+1.5 Khảo sát quy trình Thanh toán & Cấn trừ tiền cọc cuối bữa	5
+1.6 Ma trận phân tích điểm nghẽn & Tổn thất vận hành	6
+CHƯƠNG 2: KHẢO SÁT CHI TIẾT THỰC TẾ CÁC PHẦN MỀM THỊ TRƯỜNG	7
+2.1 Bối cảnh số hóa ngành F&B tại Việt Nam	7
+2.2 Khảo sát thực tế giải pháp iPOS.vn	7
+2.3 Khảo sát thực tế giải pháp MISA CukCuk	7
+2.4 Khảo sát thực tế giải pháp KiotViet F&B	8
+2.5 Khảo sát các giải pháp quốc tế (OpenTable, SevenRooms, Toast POS)	8
+CHƯƠNG 3: PHÂN TÍCH KHOẢNG TRỐNG VẬN HÀNH VÀ MA TRẬN SO SÁNH TÍNH NĂNG	10
+3.1 Phân tích các khoảng trống vận hành cốt lõi	10
+3.2 Bảng ma trận so sánh tính năng thực tế 100% giữa 4 hệ thống	10
+CHƯƠNG 4: BÁO CÁO ĐÁNH GIÁ TÍNH KHẢ THI	12
+4.1 Khảo sát nhu cầu các bên liên quan (Stakeholder Needs Assessment)	12
+4.2 Đánh giá Tính khả thi Kỹ thuật, Vận hành & Kinh tế	12
 
----
 
-## CHƯƠNG 1: KHẢO SÁT HIỆN TRẠNG QUY TRÌNH VẬN HÀNH FINE DINING THỰC TẾ
+ 
+Tổng quan điều hành
+Tài liệu này trình bày kết quả nghiên cứu thực địa và khảo sát chuyên sâu về chu trình vận hành tại các nhà hàng ẩm thực cao cấp (Fine Dining) tại Việt Nam, đối chiếu toàn diện với năng lực hiện hữu của 3 phần mềm thị trường phổ biến (iPOS.vn, MISA CukCuk, KiotViet F&B) cùng các giải pháp quốc tế. Báo cáo lượng hóa các tổn thất vận hành đặc thù (bùng bàn gây thất thu 12-18% doanh thu ngày, nguy cơ sốc phản vệ do sót dị ứng, suy giảm nhiệt độ món ăn và sai lệch đối soát cọc), từ đó xác lập các khoảng trống công nghệ cốt lõi và xây dựng luận cứ chứng minh tính khả thi toàn diện của dự án VinDining.
 
-### 1.1 Khảo sát quy trình Đặt bàn & Thu cọc thủ công
-Trong các nhà hàng Fine Dining truyền thống hiện nay tại Việt Nam, quy trình đặt bàn chủ yếu diễn ra qua điện thoại (Hotline), Fanpage Facebook/Instagram hoặc ứng dụng nhắn tin (Zalo):
+ 
+CHƯƠNG 1: KHẢO SÁT HIỆN TRẠNG QUY TRINH VẬN HÀNH FINE DINING TẠI VIỆT NAM
+1.1 Đặc thù phân khúc Fine Dining so với Nhà hàng đại chúng
+Khác biệt căn bản giữa Nhà hàng đại chúng (Mass Casual Dining) và Fine Dining nằm ở triết lý phục vụ: Ẩm thực đại chúng tối ưu hóa số lượng (volume) và tốc độ quay vòng bàn (turnover), trong khi Fine Dining tập trung vào trải nghiệm đa giác quan kéo dài từ 2 đến 3 giờ đồng hồ với các thực đơn nếm thử (Tasting Menu) gồm 6 đến 10 món ăn chuẩn mực.
+Mô hình này đặt ra những thách thức khắt khe: Chi phí nguyên liệu nhập khẩu đắt đỏ (bò Wagyu A5, nấm Truffle đen, gan ngỗng Foie Gras, trứng cá tầm Caviar) chiếm 35% - 45% giá thành; yêu cầu giữ nhiệt độ đĩa ăn chính xác khi hạ xuống bàn; và đặc biệt là quản lý tuyệt đối thông tin dị ứng thực phẩm và ghi chú đặc biệt cho từng món ăn.
+1.2 Khảo sát quy trình Đặt bàn & Thu tiền cọc thủ công
+Khảo sát tại các nhà hàng Fine Dining cho thấy quy trình đặt chỗ hiện nay vẫn chủ yếu là bán thủ công qua Hotline, Fanpage hoặc Zalo tiếp tân:
+ 
+Hình 1.1: Sơ đồ hiện trạng Quy trình Đặt bàn và Thu tiền cọc truyền thống
 
-```mermaid
-flowchart LR
-    A[Khách gọi Hotline / Nhắn tin Fanpage] --> B[Lễ tân tra cứu sổ bàn giấy / Excel]
-    B --> C{Còn bàn trống?}
-    C -->|Không| D[Báo hết bàn / Gợi ý giờ khác]
-    C -->|Có| E[Gửi STK ngân hàng yêu cầu chuyển khoản cọc]
-    E --> F[Khách chuyển khoản & chụp màn hình]
-    F --> G[Kế toán / Quản lý check sao kê tài khoản thủ công]
-    G --> H[Ghi nhận vào sổ bàn: Đã cọc]
-```
+Trình tự diễn ra: Khách liên hệ, nhân viên tiếp tân tra cứu sổ bàn giấy hoặc Google Sheets. Nếu còn bàn, tiếp tân gửi số tài khoản ngân hàng yêu cầu khách chuyển cọc từ 500.000 đến 1.000.000 VNĐ/khách trong vòng 2-4 giờ. Khách chuyển khoản rồi chụp màn hình gửi lại; nhân viên hoặc kế toán kiểm tra biến động số dư ngân hàng thủ công rồi mới đánh dấu 'Đã cọc'.
+-	Độ trễ đối soát cao: Thời gian đối soát kéo dài từ 15 đến 30 phút trong giờ làm việc, gây đình trệ vào ban đêm hoặc ngày nghỉ lễ.
+-	Rủi ro xung đột dữ liệu: Sổ bàn giấy hoặc file Excel dễ bị ghi đè, dẫn đến tình trạng hai nhân viên cùng nhận một bàn VIP (Overbooking).
+-	Thất lạc dữ liệu cá nhân hóa: Yêu cầu dị ứng hoặc vị trí bàn yên tĩnh chỉ ghi chú viết tay rời rạc, rất dễ thất lạc khi bàn giao ca trực.
+1.3 Khảo sát quy trình Gọi món & Điều phối phục vụ theo Course
+Trong Fine Dining, món ăn được dọn theo trình tự Course Sequence: Khai vị chào bếp (Amuse-bouche) → Khai vị lạnh → Khai vị nóng → Súp → Món chính hải sản → Món chính thịt đỏ → Món giải vị (Sorbet) → Tráng miệng chính → Bánh ngọt kết thúc (Petit Fours).
+Thực tế hiện nay: Hệ thống in phiếu từ giấy in bằng nhiệt và bếp trưởng hoặc nhân viên tiếp nhận. Bếp trưởng nhìn thanh ray điều phối thứ tự bằng trí nhớ và hô gọi phụ bếp nấu qua tiếng hô lớn.
+-	Phiếu tay dễ nhòe nước sốt, đồng thời in nhiệt có thể gây bệnh, việc bỏ sót ghi chú dị ứng (đậu phộng, hải sản thân mềm) gây nguy cơ sốc phản vệ đe dọa tính mạng thực khách.
+-	Thiếu đồng hồ SLA chuẩn bị tự động, món kế tiếp thường bị nấu quá sớm (nằm chờ nguội lạnh, hỏng sốt) hoặc quá trễ (>25 phút gây gãy mạch tiệc).
+1.4 Khảo sát quy trình Quầy Pass & Kiểm soát chất lượng món ăn
+Quầy Pass là ranh giới ngăn cách giữa hậu cần chế biến (BOH) và sảnh phục vụ (FOH), trang bị đèn sưởi giữ nhiệt để kiểm tra chất lượng lần cuối. Tại các nhà hàng khảo sát, trạm Pass vận hành hoàn toàn bằng mắt thường và trí nhớ của nhân viên điều phối (Expediter). Khi món xong, bếp đưa ra và nhân viên điều phối sẽ kiểm tra và điều đi đúng số bàn. Giờ cao điểm, hàng chục đĩa dồn ứ trên quầy Pass phát nhiệt, Không có hệ thống chính xác về món ăn sẽ dẫn đến bưng nhầm đĩa giữa các bàn và mất đi sự chính xác khi đối chiếu các yêu cầu dị ứng, ghi chú đặc biệt cho từng món ăn.
+1.5 Khảo sát quy trình Thanh toán & Cấn trừ tiền cọc cuối bữa
+Trong vận hành nhà hàng hiện nay, dù các phần mềm POS (iPOS, CukCuk, KiotViet) đều đã hỗ trợ tính thuế phí tự động và có ô cấn trừ tiền trả trước, quy trình xử lý đặt cọc tại phân khúc cao cấp vẫn tồn tại các rào cản thực tế:
+Tiền cọc chuyển khoản qua ngân hàng vẫn đòi hỏi nhân viên phải kiểm tra giao dịch và tự gõ số tiền cọc vào phần mềm POS. Khi nhà hàng đông khách hoặc chuyển giao ca làm việc, việc quên tạo phiếu thu cọc trên hệ thống dẫn đến tình trạng hóa đơn xuất ra không hiển thị khoản cọc của khách, gây mất thời gian đối soát lại sao kê.
+Thiếu cơ chế Hạn mức chi tiêu tối thiểu, Các phần mềm POS phổ thông chỉ xem tiền cọc là khoản trả trước đơn thuần (Pre-payment). Trong khi đó, Fine Dining áp dụng cọc như một hạn mức chi tiêu tối thiểu không hoàn lại cho bàn VIP. Nếu khách tiêu thụ thấp hơn mức cọc, phần mềm đại trà sẽ báo "trả lại tiền thừa cho khách", buộc thu ngân phải thực hiện các thao tác điều chỉnh doanh thu thủ công phức tạp.
+-	Quy trình hoàn cọc chưa được tự động hóa khi khách hủy bàn đúng hạn quy định, kế toán vẫn phải xin lại thông tin tài khoản và chuyển khoản hoàn tiền thủ công qua ngân hàng, thiếu cơ chế tự động kích hoạt hoàn tiền qua cổng thanh toán (Refund API) theo mốc thời gian thực tế.
+1.6 Ma trận phân tích điểm nghẽn & Tổn thất vận hành 
+Tổng hợp từ dữ liệu đối soát thực tế tại các nhà hàng cao cấp, nhóm nghiên cứu xây dựng Ma trận Tổn thất Vận hành định lượng:
+Nhóm Điểm Nghẽn	Biểu Hiện Thực Tế Vận Hành	Tác Động Định Lượng & Rủi Ro	Mức Nghiêm Trọng
+Bùng bàn đặt trước	Khách đặt bàn đẹp giờ cao điểm cuối tuần nhưng không đến và không báo hủy trước.	Lãng phí nguyên liệu tươi nhập khẩu đã sơ chế; thất thu 12% - 18% doanh thu ngày.	Rất cao
 
-#### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
-* **Tốn kém thời gian đối soát**: Mất từ 15–30 phút để xác minh biên lai chuyển khoản ngân hàng; vào các khung giờ ngoài giờ hành chính, việc kiểm tra sao kê thường bị gián đoạn.
-* **Nguy cơ nhầm lẫn thông tin**: Sổ bàn bằng giấy hoặc file Excel dùng chung giữa các nhân viên dễ bị ghi đè, trùng lặp khung giờ hoặc thất lạc ghi chú yêu cầu bàn tiệc (kỷ niệm ngày cưới, tiếp đối tác VIP).
+Bỏ sót cảnh báo
+Dị ứng thực phẩm	Phiếu ghi tay nhòe sốt, đầu bếp không chú ý ghi chú dị ứng và chế biến đặc biệt của món ăn.	Gây sốc phản vệ cho khách hàng, đối mặt khiếu kiện pháp lý và tổn thất vĩnh viễn uy tín thương hiệu.	Nguy cấp
 
----
+Gãy nhịp phục vụ
+(Course Pacing)	Món ra quá nhanh dồn đĩa hoặc trễ quá lâu (>25 phút); đĩa chín nằm chờ trên Pass nguội lạnh.	Nhiệt độ đĩa giảm 8-15°C, nước sốt bị đông, phá hủy cấu trúc hương vị món ăn.	Cao
 
-### 1.2 Khảo sát quy trình Gọi món & Điều phối Bếp truyền thống
-Đặc thù của ẩm thực Fine Dining là các set ăn công phu (**Tasting Menu**) phân chia theo các nhóm món (**Course**: Khai vị $\rightarrow$ Món chính $\rightarrow$ Tráng miệng) và kết hợp đồ uống/rượu vang (**Wine Pairing**):
+Sai sót đối soát
+Cấn trừ tiền cọc	Thu ngân quên cấn trừ tiền cọc hoặc tính nhầm số tiền cọc giữa các ca trực khác nhau.	Gây tranh cãi với khách hàng tại bàn; kéo dài thời gian chờ đợi thanh toán thêm 8-12 phút/bàn.
+	Đáng kể
 
-```mermaid
-flowchart TD
-    K1[Khách xem Menu giấy bìa da] --> K2[Phục vụ ghi chép món & ghi chú dị ứng vào Order Pad giấy]
-    K2 --> K3[Phục vụ di chuyển xuống quầy Bếp đưa phiếu order]
-    K3 --> K4[Bếp trưởng xem phiếu giấy & điều phối nấu món]
-    K4 --> K5[Bếp nấu xong đặt món ra quầy Pass & gọi miệng Phục vụ]
-    K5 --> K6[Phục vụ bưng món ra bàn cho khách]
-```
+ 
+CHƯƠNG 2: KHẢO SÁT CHI TIẾT THỰC TẾ CÁC PHẦN MỀM THỊ TRƯỜNG
+2.1 Bối cảnh số hóa ngành F&B tại Việt Nam
+Thị trường công nghệ F&B Việt Nam hiện bị chi phối bởi các nền tảng đại chúng như iPOS.vn, MISA CukCuk và KiotViet. Các giải pháp này được tối ưu hóa rất tốt cho chuỗi cà phê, trà sữa, lẩu nướng và thức ăn nhanh — nơi bài toán cốt lõi là giải tỏa nhanh hàng đợi, gom đơn số lượng lớn và thanh toán nhanh. Khi đưa vào Fine Dining, các hệ thống này lập tức bộc lộ sự không tương thích về mặt nghiệp vụ.
+2.2 Khảo sát thực tế giải pháp iPOS.vn
+iPOS.vn hiện là hệ sinh thái chiếm thị phần lớn nhất với 2 cấu phần điều phối bếp:
+-	KDS Maker: Lắp đặt tại trạm bar/bếp, hiển thị món cần làm được đẩy từ POS hoặc thiết bị cầm tay. Nhân viên bếp chạm màn hình để đổi trạng thái 'Chờ' → 'Đang làm' → 'Đã xong'.
+-	KDS Control: Màn hình trung tâm tổng hợp toàn bộ món đang chờ trên các bàn. Tính năng nổi bật nhất là Gom đơn (Batching): Tổng hợp các món giống nhau (ví dụ 8 bàn cùng gọi Mì Ý, tổng 12 đĩa) để đầu bếp nấu chung một mẻ lớn nhằm tăng năng suất.
+-	Đặt bàn & In ấn: Ứng dụng iPOS Booking ghi chép lịch hẹn tại quầy và in nhiệt phiếu chế biến K80 phân luồng theo trạm bếp.
+Hạn chế đối với Fine Dining:
+-	Xung đột triết lý chế biến do trong Fine Dining, mỗi đĩa ăn của từng bàn là một tác phẩm độc bản với thời gian chín, nhiệt độ thịt và độ đậm sốt điều chỉnh riêng cho từng khách. Việc gom mẻ nấu chung là điều tối kỵ.
+-	iPOS không có khái niệm Pacing theo Course. Toàn bộ món của bàn (từ khai vị đến tráng miệng) khi gửi vào bếp sẽ đồng loạt hiển thị trên KDS, khiến đầu bếp không biết món nào cần giữ lại (Hold) và món nào cần kích hoạt nấu (Fire).
+-	iPOS Booking chỉ dừng lại ở ghi chép lịch hẹn hoặc cọc cố định tại quầy, chưa hỗ trợ cổng thanh toán trực tuyến tự động giải phóng bàn sau 17 phút và tự động cấn trừ cọc trên hóa đơn thanh toán.
+2.3 Khảo sát thực tế giải pháp MISA CukCuk
+MISA CukCuk là giải pháp quản trị nhà hàng đa chuỗi mạnh về kế toán kho:
+-	App Bếp/Bar: Chạy trên máy tính bảng hoặc điện thoại, cho phép bếp xem món cần chế biến theo bàn hoặc theo thời gian gọi.
+-	Tính năng 'Lượt phục vụ': Cho phép nhân viên phục vụ phân nhóm món ăn thành từng đợt trả món (Đợt 1: Khai vị, Đợt 2: Món chính, Đợt 3: Tráng miệng).
+-	Kế toán & Kho: Quản lý định lượng kho nguyên vật liệu chính xác, kết nối xuất hóa đơn điện tử Meinvoice hợp chuẩn cơ quan thuế.
+Hạn chế đối với Fine Dining:
+-	Tính năng 'Lượt phục vụ' của CukCuk hoàn toàn tĩnh và thủ công. Phục vụ phải tự nhớ thời gian khách dùng xong để bấm nút chuyển đợt tiếp theo. Hệ thống không có đồng hồ đếm ngược thời gian chuẩn bị (Prep SLA) động, không thể tự động kích hoạt 'Fire' đón đầu thời điểm hoàn tất của món trước.
+-	Hoàn toàn thiếu vắng cơ chế điều phối rượu vang đồng bộ (Wine Pairing) đón đầu cho chuyên gia.
+2.4 Khảo sát thực tế giải pháp KiotViet F&B
+KiotViet F&B là nền tảng quản lý bán hàng phổ biến nhờ giao diện thân thiện và chi phí hợp lý:
+-	Màn hình Nhà bếp 2 cột: Chia thành hai cột trực quan: Cột trái liệt kê món đang chờ chế biến; Cột phải hiển thị món đã nấu xong chờ nhân viên mang ra.
+-	Tính năng 'Đặt ưu tiên': Cho phép gắn cờ ưu tiên (dấu sao) cho món cụ thể để đẩy lên đầu hàng đợi bếp khi khách đang vội.
+Hạn chế đối với Fine Dining:
+-	Cơ chế danh sách phẳng (Flat List) 2 cột làm vỡ vụn trải nghiệm của bữa tiệc Fine Dining; không hiển thị được mối tương quan tổng thể giữa các giai đoạn của thực đơn nếm thử.
+-	Tính năng 'Đặt ưu tiên' chỉ là giải pháp tình thế cục bộ, không thể điều phối nhịp nhàng liên trạm (Bếp lạnh, Bếp nóng, Bếp bánh) để các món trong cùng một Course mạ đĩa đồng thời.
+2.5 Khảo sát các giải pháp quốc tế (OpenTable, SevenRooms, Toast POS)
+Trên thị trường quốc tế, OpenTable và SevenRooms là tiêu chuẩn vàng cho nhà hàng Michelin nhờ hồ sơ khách hàng (Guest CRM) chi tiết và cọc qua thẻ quốc tế (Stripe). Toast POS cung cấp phần cứng chuyên biệt cho ngành F&B. Tuy nhiên, việc áp dụng tại Việt Nam gặp phải các rào cản bất khả thi:
+-	Phí bản quyền từ 249 đến 700 USD/tháng, cộng phí hoa hồng 1 - 2.5 USD/khách đặt chỗ thành công — gánh nặng chi phí định kỳ quá lớn.
+-	Không hỗ trợ các phương thức thanh toán nội địa phổ biến (VNPAY, VietQR, MoMo); chỉ chấp nhận thẻ tín dụng quốc tế qua Stripe.
+-	Bất đồng ngôn ngữ & độ trễ mạng. Máy chủ đặt ở nước ngoài gây độ trễ mạng và toàn bộ giao diện tiếng Anh gây trở ngại lớn cho nhân sự phổ thông tại Việt Nam.
+ 
+CHƯƠNG 3: PHÂN TÍCH KHOẢNG TRỐNG VẬN HÀNH VÀ MA TRẬN SO SÁNH TÍNH NĂNG
+3.1 Phân tích các khoảng trống vận hành cốt lõi 
+Từ kết quả khảo sát thực tế, nhóm nghiên cứu xác lập 4 khoảng trống vận hành cốt lõi mà một hệ thống chuyên biệt cho Fine Dining tại Việt Nam bắt buộc phải giải quyết:
+Khoảng trống 1: Cơ chế Hold & Fire tự động. Trong Fine Dining, món Khai vị được phục vụ ngay, nhưng Món chính mất 20-25 phút chế biến chuẩn nhiệt kế lõi và chỉ được kích hoạt khi khách sắp hoàn thành món trước. Khoảng trống công nghệ là hệ thống cần tự động tính toán thời gian chuẩn bị (Prep SLA) để phát lệnh 'Auto-Fire' đón đầu cho bếp mà không cần phục vụ phải nhớ canh giờ bấm tay.
+Khoảng trống 2: Quản lý cảnh báo dị ứng và ghi chú chế biến chi tiết theo từng món ăn (Item-level Special Notes). Các phần mềm hiện hành chỉ ghi chú chung chung cho cả đơn/bàn hoặc dễ trôi thông tin. Trong Fine Dining, mỗi món ăn cần gắn kèm ghi chú dị ứng và sở thích chế biến cụ thể (`SpecialNotes` trên từng `OrderItem`: ví dụ bỏ tiêu, sốt riêng, kiêng giáp xác, không gluten), hiển thị bôi đậm cảnh báo nổi bật trên màn hình KDS Bếp và Pass Tablet để ngăn ngừa tuyệt đối sốc phản vệ thực phẩm.
+Khoảng trống 3: Trải nghiệm Thực đơn Điện tử Thụ động (Passive EMenuTablet) & Bàn tiệc sạch bóng thiết bị cố định. Các E-Menu thông thường ép khách tự bấm chọn món hoặc có các nút bấm gọi phục vụ / yêu cầu thanh toán gây gián đoạn không gian tiệc, phá vỡ phong thái sang trọng của Fine Dining. Khoảng trống cần lấp đầy là: (1) Tablet E-Menu cầm tay (EMenuTablet) chế độ thụ động 100% chỉ xem (Passive View-only, tuyệt đối KHÔNG có nút bấm tương tác: không nút "Gọi phục vụ", không nút "Yêu cầu tính tiền", không giỏ hàng, không tự đặt món) để khách chiêm ngưỡng hình ảnh và câu chuyện ẩm thực; và (2) Giữ không gian bàn tiệc thanh lịch, sạch bóng thiết bị cố định, thanh toán minh bạch qua phiếu tạm tính cấn trừ cọc kèm mã VietQR động in nhiệt từ quầy thu ngân và kẹp sổ da sang trọng mang ra bàn.
+Khoảng trống 4: Tự động cấn trừ 100% tiền cọc qua cổng VNPAY trên hóa đơn. Để triệt tiêu tổn thất bùng bàn (No-show), việc thu cọc trực tuyến và cấn trừ tự động là then chốt. Khoảng trống là cơ chế khóa giữ bàn tạm thời (15+2 phút) liên kết trực tiếp qua Webhook IPN của VNPAY, đồng thời tự động nhận diện và cấn trừ 100% khoản cọc vào hóa đơn thanh toán cuối bữa mà không cho phép thu ngân chỉnh sửa tay.
+ 
+3.2 Bảng ma trận so sánh tính năng thực tế 100% giữa 4 hệ thống
+Bảng ma trận so sánh toàn diện 16 tiêu chí chức năng dựa trên điều tra thực tế độc lập giữa iPOS.vn, MISA CukCuk, KiotViet F&B và Hệ thống VinDining đề xuất:
+| Tiêu Chí Khảo Sát & So Sánh | iPOS.vn | MISA CukCuk | KiotViet F&B | VinDining (Đề xuất) |
+| :--- | :--- | :--- | :--- | :--- |
+| 1. Đặt bàn trực tuyến cổng VNPAY | Không (Chỉ ghi nhận) | Không có | Không có | Có (Tích hợp VNPAY IPN) |
+| 2. Khóa giữ bàn tạm thời (Locking) | Không hỗ trợ | Không hỗ trợ | Không hỗ trợ | Tự động khóa 17 phút |
+| 3. Tự động cấn trừ 100% cọc trên Hóa đơn | Thủ công (Nhập tay) | Thủ công (Nhập tay) | Thủ công (Nhập tay) | Tự động 100% hệ thống |
+| 4. Màn hình Bếp KDS chuyên biệt | Có (KDS Maker/Control) | Có (App Bếp/Bar) | Có (Màn hình 2 cột) | Có (KDS hiển thị trạm) |
+| 5. Cơ chế Pacing theo Course tuần tự | Không (Đẩy đồng loạt) | Thủ công (Lượt phục vụ) | Không hỗ trợ | Tự động (Hold & Fire SLA) |
+| 6. Tương tác KDS Bếp chống bám bẩn | Chạm màn hình cảm ứng | Chạm màn hình cảm ứng | Chạm màn hình cảm ứng | Rảnh tay (Hands-free view) |
+| 7. Đồng hồ đếm ngược Prep SLA món | Đếm tăng đơn thuần | Đếm tăng đơn thuần | Không có | Đếm ngược linh hoạt theo món |
+| 8. Trạm Pass QC & Xác nhận ra món (Served) | Không (Bếp trả chung) | Không (Bếp trả chung) | Không (Bếp trả chung) | Có (Expediter QC & xác nhận Served) |
+| 9. Tín hiệu đồng bộ Wine Pairing đón đầu | Không có | Không có | Không có | Có (Bắn tín hiệu Sommelier) |
+| 10. Quản lý dị ứng & ghi chú món ăn | Ghi chú chung cả bàn | Ghi chú chung cả bàn | Ghi chú chung cả bàn | Chi tiết từng món (SpecialNotes) |
+| 11. Bàn tiệc sạch bóng thiết bị cố định & Sổ da | Không có | Không có | Không có | Có (Chuẩn Fine Dining sang trọng) |
+| 12. Thông báo món sắp ra bàn thời gian thực | Gọi miệng / Rung chuông | Rung chuông / Gọi miệng | Gọi miệng / Nhìn cột | Rung chuông Smartphone Waitstaff |
+| 13. Cơ chế giao tiếp thời gian thực | HTTP Polling (Độ trễ cao) | HTTP Polling (Độ trễ cao) | HTTP Polling (Độ trễ cao) | SignalR WebSockets (<100ms) |
+| 14. Tương thích thiết bị phần cứng | Máy POS chuyên dụng | Tablet / Điện thoại | Tablet / Điện thoại | Đa nền tảng Web Responsive |
+| 15. Kiến trúc mở & Tự chủ mã nguồn | Đóng (Phần mềm đóng) | Đóng (Phần mềm đóng) | Đóng (Phần mềm đóng) | Mở (.NET 9 Clean Arch) |
+| 16. Chi phí bản quyền định kỳ | Thuê bao tháng/năm | Thuê bao tháng/năm | Thuê bao tháng/năm | Miễn phí bản quyền phần mềm |
 
-#### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
-* **Thất lạc hoặc ghi sai cảnh báo dị ứng thực phẩm**: Đây là rủi ro y tế và uy tín nghiêm trọng nhất. Chữ viết tay vội vã của nhân viên trên phiếu order giấy dễ khiến đầu bếp bỏ sót ghi chú dị ứng nghiêm trọng (dị ứng hải sản, hạt, bơ sữa, gluten).
-* **Nguội lạnh món ăn do trễ truyền tin**: Khi bếp nấu xong và đặt ra quầy Pass, nếu nhân viên phục vụ đang bận ở khu vực khác mà không nghe thấy tiếng chuông/tiếng gọi miệng, đĩa ăn sẽ bị giảm nhiệt độ và hương vị chuẩn mực của ẩm thực cao cấp.
+ 
+CHƯƠNG 4: BÁO CÁO ĐÁNH GIÁ TÍNH KHẢ THI 
+Nhóm nghiên cứu đã thẩm định tính khả thi toàn diện trên 4 phương diện: Kỹ thuật công nghệ, Quy trình vận hành, Hiệu quả kinh tế (ROI) và Khả năng kiểm soát tiến độ thời gian.
+4.1 Khảo sát nhu cầu các bên liên quan (Stakeholder Needs Assessment)
+Hệ thống đáp ứng kỳ vọng của 5 nhóm tác nhân chính tham gia vào chu trình vận hành nhà hàng:
+Tác Nhân (Stakeholder)	Kênh Tương Tác	Kỳ Vọng & Yêu Cầu Cốt Lõi Hệ Thống
+1. Thực khách (Guest)	Smartphone cá nhân, Tablet E-Menu (EMenuTablet) dùng chung	Đặt bàn và thanh toán cọc an toàn qua VNPAY không cần tạo tài khoản; xem thực đơn hình ảnh câu chuyện qua EMenuTablet 100% chỉ xem (view-only, không nút tương tác); đối chiếu bảng kê hóa đơn cấn trừ cọc kèm mã VietQR động trên phiếu in kẹp sổ da sang trọng; thanh toán trực tiếp với Waitstaff; hóa đơn cấn trừ cọc đầy đủ.
+2. Nhân viên Phục vụ (Waitstaff)	Tablet di động cầm tay
+(Sảnh phục vụ)	Nắm bắt sơ đồ bàn thời gian thực; check-in đón khách nhanh; tạo đơn gọi món chi tiết; tiếp nhận đĩa món từ quầy Pass và bưng ra bàn bằng 2 tay (Zero-touch tại bàn, không chạm tablet); nhận prompt kích hoạt Course kế tiếp khi Course hoàn tất.
+3. Nhân viên Điều phối (Expediter)	Tablet cảm ứng cố định
+tại quầy Pass	Kiểm soát chất lượng (QC nhiệt độ, thẩm mỹ, ghi chú món & dị ứng); bấm "Xác nhận ra món" (Served) trực tiếp trên Pass Tablet kích hoạt thông báo tức thời / rung chuông tới Smartphone Waitstaff.
+4. Đội ngũ Nhà bếp (Kitchen)	Màn hình KDS gắn tường
+tại trạm chế biến	Quan sát rảnh tay (không chạm màn hình); nắm bắt thứ tự chuẩn bị theo nhịp Course; đồng hồ đếm ngược SLA rõ ràng.
+5. Quản lý & Chủ nhà hàng (Manager)	Cổng thông tin Web Admin
+(Máy tính / Laptop)	Giám sát tỷ lệ lấp đầy bàn ăn; giảm thiếu hoàn toàn rủi ro bùng bàn; xem báo cáo doanh thu theo ca; kiểm soát phân quyền chặt chẽ và duyệt ngoại lệ hoàn tiền cọc an toàn.
+4.2 Đánh giá Tính khả thi Kỹ thuật, Vận hành & Kinh tế
+-	Khả thi Kỹ thuật: Kiến trúc .NET 9 Web API Clean Architecture 4 tầng, CQRS MediatR, SignalR Hubs WebSockets, React 19 SPA Vite Tailwind và VNPAY IPN bảo mật HMAC-SHA512. Khả thi 100%.
+-	Khả thi Vận hành: Bảo tồn phong thái Fine Dining qua không gian bàn tiệc sang trọng sạch bóng thiết bị cố định, thanh toán sổ da cao cấp, KDS bếp quan sát rảnh tay (Hands-free) chống nhiễm khuẩn và thao tác Một chạm (One-touch) rút ngắn đào tạo dưới 30 phút.
+-	Khả thi Kinh tế: Cắt giảm 95% tổn thất No-show (tiết kiệm 30-60 triệu VNĐ nguyên liệu nhập khẩu/tháng), loại bỏ 100% sai sót hóa đơn cấn cọc, tăng 15-20% công suất đón khách. Hoàn vốn đầu tư (ROI) chỉ từ 3-5 tháng.
 
----
-
-### 1.3 Khảo sát quy trình Thanh toán & Cấn trừ cọc cuối bữa
-Khi khách kết thúc bữa ăn, quy trình thanh toán diễn ra như sau:
-
-```mermaid
-flowchart TD
-    T1[Khách yêu cầu thanh toán] --> T2[Phục vụ báo Thu ngân in phiếu tạm tính]
-    T2 --> T3[Thu ngân tra cứu sổ cọc / tin nhắn tìm số tiền khách đã cọc trước đó]
-    T3 --> T4[Thu ngân tự trừ tiền cọc bằng máy tính bấm tay]
-    T4 --> T5[In hóa đơn đem ra bàn cho khách kiểm tra & thanh toán số còn thiếu]
-```
-
-#### Các hạn chế và điểm nghẽn phát hiện qua khảo sát:
-* **Thất thoát hoặc quên cấn trừ tiền cọc**: Thu ngân ca tối có thể không nắm được khoản tiền cọc khách đã chuyển khoản cho ca sáng, dẫn đến tính thừa tiền của khách hoặc phải mất thời gian tra soát lại lịch sử giao dịch.
-* **Thời gian chờ đợi kéo dài**: Thời gian trung bình để xuất một hóa đơn cấn cọc thủ công mất từ 5–10 phút, gây cảm giác khó chịu cho khách hàng ở phân khúc cao cấp.
-
----
-
-### 1.4 Ma trận phân tích điểm nghẽn & Tổn thất vận hành (Pain Points Matrix)
-
-| Nhóm điểm nghẽn | Biểu hiện thực tế | Tác động định lượng & Rủi ro | Mức độ nghiêm trọng |
-| :--- | :--- | :--- | :---: |
-| **No-show (Bùng bàn)** | Khách đặt bàn đẹp nhưng không đến và không báo trước. | Chi phí hủy nguyên liệu cao cấp nhập khẩu (bò Wagyu, gan ngỗng, nấm Truffle) ước tính tổn thất **10–15% doanh thu ngày**. | **Rất cao (Critical)** |
-| **Sai sót dị ứng** | Bếp nấu lẫn nguyên liệu khách bị dị ứng do phiếu ghi tay bị nhòe/sót. | Nguy cơ sốc phản vệ cho khách hàng, tổn hại nghiêm trọng uy tín thương hiệu nhà hàng. | **Nguy cấp (Fatal)** |
-| **Trễ nhiệt độ món ăn** | Món chín nằm tại quầy Pass quá 3–5 phút trước khi được bưng ra bàn. | Giảm chất lượng món ăn cao cấp, trải nghiệm ẩm thực không xứng đáng với mức giá. | **Cao (Major)** |
-| **Sai sót cấn trừ cọc** | Thu ngân tính nhầm hoặc quên trừ khoản cọc ban đầu của khách. | Gây tranh cãi với khách hàng tại quầy, mất trung bình **7–10 phút/bàn** để đối soát. | **Trung bình (Moderate)** |
-
----
-
-## CHƯƠNG 2: KHẢO SÁT & ĐÁNH GIÁ CÁC GIẢI PHÁP PHẦN MỀM HIỆN CÓ
-
-### 2.1 Khảo sát các giải pháp phần mềm tại thị trường Việt Nam
-
-#### 1. iPOS.vn (iPOS POS & iPOS Booking):
-* **Ưu điểm**: Phổ biến rộng rãi tại thị trường F&B Việt Nam, hỗ trợ in hóa đơn, in bếp và quản lý kho nguyên vật liệu mạnh mẽ.
-* **Nhược điểm đối với Fine Dining**:
-  - Giao diện đặt bàn và menu QR thiên về mô hình quán ăn nhanh / cà phê / buffet bình dân; thiếu tính thẩm mỹ sang trọng của Fine Dining.
-  - Tính năng đặt cọc giữ bàn trực tuyến qua cổng thanh toán chưa được tối ưu mượt mà và thiếu cơ chế tự động cấn trừ đa điều kiện trên hóa đơn.
-
-#### 2. CukCuk (MISA):
-* **Ưu điểm**: Quản trị chuỗi nhà hàng tốt, báo cáo tài chính kế toán chuyên sâu.
-* **Nhược điểm đối với Fine Dining**:
-  - Giao diện người dùng trên thiết bị di động phức tạp, nhiều thao tác dư thừa đối với khách hàng quét mã QR.
-  - Chưa hỗ trợ chuyên biệt quy trình phân loại Course Tasting Menu và cảnh báo dị ứng trực quan thời gian thực.
-
----
-
-### 2.2 Khảo sát các giải pháp phần mềm quốc tế
-
-#### 1. OpenTable / SevenRooms:
-* **Ưu điểm**: Tiêu chuẩn vàng toàn cầu cho nhà hàng cao cấp (Fine Dining); quản lý đặt bàn trực tuyến, thu cọc bằng thẻ tín dụng (Stripe) và lưu trữ hồ sơ sở thích khách hàng (Guest Profile) rất chi tiết.
-* **Nhược điểm**:
-  - Chi phí bản quyền và phí duy trì hàng tháng cực kỳ đắt đỏ (\$249 – \$700+/tháng kèm phí commission trên mỗi lượt đặt chỗ).
-  - Chưa tích hợp nội địa hóa các cổng thanh toán Việt Nam (như VNPAY, MoMo, VietQR) và ngôn ngữ tiếng Việt còn hạn chế.
-
-#### 2. Toast POS:
-* **Ưu điểm**: Tích hợp phần cứng POS, máy in nhiệt và phần mềm đám mây rất mượt mà.
-* **Nhược điểm**: Chỉ triển khai tại thị trường Bắc Mỹ, bắt buộc sử dụng phần cứng độc quyền của hãng, không khả thi áp dụng tại Việt Nam.
-
----
-
-### 2.3 Bảng so sánh ma trận tính năng (Feature Comparison Matrix)
-
-| Tiêu chí so sánh | iPOS.vn | CukCuk | OpenTable | SevenRooms | **VinDining (Đề xuất)** |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Phù hợp phân khúc Fine Dining** | Trung bình | Thấp | Rất cao | Rất cao | **Rất cao (Chuyên biệt)** |
-| **Đặt cọc trực tuyến cổng VN (VNPAY)** | Hạn chế | Không | Không (Chỉ Stripe) | Không (Chỉ Stripe) | **Có (VNPAY IPN tự động)** |
-| **Tự động cấn trừ cọc trên Hóa đơn** | Thủ công | Thủ công | Tự động | Tự động | **Tự động 100% (BR-03)** |
-| **E-Menu Digital Display gắn theo Bàn** | Hạn chế | Không | Không | Hạn chế | **Có (Màn hình Tablet hiển thị tại bàn - BR-02)** |
-| **In Bếp tự động & Nổi bật cảnh báo dị ứng** | Có | Có | Hạn chế | Hạn chế | **Có (In nhiệt ESC/POS)** |
-| **Đồng bộ thời gian thực (SignalR / WebSocket)** | Polling | Polling | WebSocket | WebSocket | **SignalR (Độ trễ < 100ms)** |
-| **Chi phí triển khai & Tự chủ công nghệ** | Thuê bao tháng | Thuê bao tháng | Rất đắt | Rất đắt | **Mã nguồn mở / Tự chủ 100%** |
-
----
-
-### 2.4 Gap Analysis & Động lực xây dựng hệ thống VinDining
-Từ kết quả khảo sát trên, nhóm nhận thấy một khoảng trống thị trường rõ rệt: **Thị trường Việt Nam đang thiếu một giải pháp chuyên biệt cho nhà hàng Fine Dining vừa đáp ứng tiêu chuẩn trải nghiệm dịch vụ cao cấp, vừa tích hợp liền mạch cổng thanh toán nội địa VNPAY để giải quyết triệt để bài toán No-show và Cấn trừ cọc tự động.**
-
-Do đó, việc phát triển **Hệ thống VinDining** là hoàn toàn cấp thiết, mang tính ứng dụng thực tiễn cao và lấp đầy khoảng trống của các phần mềm hiện hành.
-
----
-
-## CHƯƠNG 3: KHẢO SÁT NHU CẦU NGƯỜI DÙNG (STAKEHOLDER NEEDS ASSESSMENT)
-
-Nhóm đã tiến hành khảo sát và tổng hợp yêu cầu từ 5 nhóm tác nhân chính trong chu trình vận hành:
-
-```mermaid
-graph TD
-    subgraph "Nhu cầu của các Bên liên quan (Stakeholders)"
-        G["1. Thực khách (Guest)<br/>- Đặt bàn giữ chỗ minh bạch cọc VNPAY 17p (BR-01)<br/>- Xem E-Menu qua Digital Display (BR-02)<br/>- Đánh giá chất lượng dịch vụ (UC-U4)<br/>- Không cần tạo tài khoản đăng nhập"]
-        W["2. Phục vụ (Waitstaff)<br/>- Sơ đồ bàn trực quan real-time, check-in bàn<br/>- Tạo order trực tiếp tại bàn và kích hoạt in Bếp<br/>- Xuất hóa đơn cấn trừ cọc tự động (BR-03)"]
-        E["3. Điều phối (Expediter / Checkfood)<br/>- Nhận món từ Bếp tại quầy Pass<br/>- Bấm xác nhận hoàn thành món (BR-04)<br/>- Đảm bảo độ nóng và tính chuẩn xác của món"]
-        K["4. Nhà bếp (Kitchen Operations)<br/>- Phiếu in order rõ ràng phân khu Bếp/Bar<br/>- Cảnh báo in đậm dị ứng thực phẩm<br/>- Vận hành qua phiếu in, không bám bẩn màn hình"]
-        M["5. Quản lý & Admin (Manager & Admin)<br/>- Triệt tiêu rủi ro bùng bàn No-show<br/>- Cấu hình ghép nối Tablet Digital Display (BR-02)<br/>- Duyệt hoàn cọc ngoại lệ & Quản trị RBAC"]
-    end
-```
-
-### Bảng tổng hợp nhu cầu & Kỳ vọng chi tiết:
-
-| Nhóm đối tượng | Kênh tương tác | Nhu cầu & Kỳ vọng cốt lõi | Yêu cầu hệ thống đáp ứng |
-| :--- | :--- | :--- | :--- |
-| **Thực khách (Guest)** | Smartphone cá nhân & Digital Display tại bàn | Đặt bàn nhanh chóng; thanh toán cọc an toàn; xem thực đơn hình ảnh bắt mắt tại bàn; ghi chú dị ứng chuẩn xác; hóa đơn minh bạch. Khách không cần tạo tài khoản. | Web Responsive mượt mà, tích hợp VNPAY, ứng dụng Digital Display tại bàn chỉ xem (`BR-02`). |
-| **Nhân viên Phục vụ (Waitstaff)** | Tablet / Điện thoại cầm tay | Nắm bắt sơ đồ bàn trực quan; check-in khách; tạo order trực tiếp tại bàn kích hoạt in Bếp; bưng món; xuất hóa đơn cấn trừ cọc tức thời. | SignalR Hub truyền nhận tín hiệu < 100ms, giao diện một chạm (One-touch action) tối ưu trên tablet. |
-| **Nhân viên Điều phối (Expediter)** | Tablet cố định tại quầy Pass | Kiểm tra món ăn từ Bếp ra, đối chiếu phiếu in, bấm xác nhận hoàn thành món (`BR-04`) và điều phối Waitstaff bưng ra bàn. | Giao diện điều phối trực quan tại Pass, nút xác nhận `Served` thời gian thực. |
-| **Nhà bếp (Kitchen Operations)** | Máy in nhiệt phân khu (Bếp nóng, Bếp lạnh, Bar) | Nhận phiếu order in rõ ràng số bàn, tên món, Course và in đậm ghi chú dị ứng nguy hiểm; không phải thao tác màn hình cảm ứng trong môi trường dầu mỡ. | Lệnh in ESC/POS tự động phân loại trạm in (Station split printing) ngay khi phục vụ gửi order. |
-| **Quản lý & Admin (Manager/Admin)** | Máy tính cá nhân (Desktop Web) | Giám sát tỷ lệ lấp đầy bàn ăn; theo dõi doanh thu theo ca/ngày; quản trị danh mục thực đơn; ghép nối thiết bị Digital Display; phân quyền RBAC và duyệt hoàn cọc ngoại lệ. | Web Portal trang bị biểu đồ thống kê, phân quyền RBAC chặt chẽ và tính năng Manual Refund Override (`BR-05`). |
-
----
-
-## CHƯƠNG 4: BÁO CÁO NGHIÊN CỨU TÍNH KHẢ THI (FEASIBILITY STUDY)
-
-```mermaid
-quadrantChart
-    title Đánh giá Tính khả thi Dự án VinDining
-    x-axis "Độ phức tạp kỹ thuật: Thấp" --> "Độ phức tạp kỹ thuật: Cao"
-    y-axis "Giá trị thực tiễn: Thấp" --> "Giá trị thực tiễn: Cao"
-    quadrant-1 "Ưu tiên thực hiện (High Value / High Feasibility)"
-    quadrant-2 "Dự án Tiềm năng cao"
-    quadrant-3 "Không khuyến khích"
-    quadrant-4 "Thách thức kỹ thuật"
-    "Cọc VNPAY & Giảm No-show": [0.35, 0.90]
-    "QR E-Menu & Bếp in tự động": [0.45, 0.88]
-    "Sơ đồ bàn Real-time SignalR": [0.50, 0.85]
-    "Hóa đơn cấn trừ cọc BR-03": [0.30, 0.92]
-    "Clean Architecture .NET 9": [0.40, 0.80]
-```
-
-### 4.1 Tính khả thi về mặt Kỹ thuật (Technical Feasibility)
-* **Backend (.NET 9 + ASP.NET Core Web API)**: Cung cấp nền tảng xử lý đa luồng mạnh mẽ, hỗ trợ Dependency Injection, Entity Framework Core 9 tối ưu truy vấn SQL Server, và SignalR Hub tích hợp sẵn cho giao tiếp WebSocket hai chiều.
-* **Frontend (React + Vite + Tailwind CSS)**: Đảm bảo thời gian tải trang ban đầu dưới 1.5 giây, tương thích hoàn hảo với mọi trình duyệt di động (iOS Safari, Android Chrome) mà không gặp rào cản phân mảnh hệ điều hành.
-* **Tích hợp bên ngoài (VNPAY Sandbox & Web Printing)**:
-  - Cổng VNPAY cung cấp tài liệu API chuẩn và môi trường Sandbox kiểm thử giao dịch thanh toán IPN đầy đủ.
-  - Giao thức in ấn qua mạng LAN/Wi-Fi sử dụng chuẩn ESC/POS thông dụng, dễ dàng kiểm thử và triển khai trên các thiết bị máy in nhiệt K80/K57 tiêu chuẩn.
-* $\rightarrow$ **Kết luận kỹ thuật**: **Khả thi 100%**.
-
-### 4.2 Tính khả thi về mặt Vận hành (Operational Feasibility)
-* Hệ thống được thiết kế theo tư duy tối giản thao tác:
-  - Khách hàng hoàn toàn không cần đăng ký tài khoản; xem thực đơn trực quan qua Digital Display tại bàn và được nhân viên phục vụ tận tình theo chuẩn Fine Dining.
-  - Nhân viên phục vụ thao tác trên màn hình cảm ứng với các nút bấm trực quan, giảm thiểu thời gian đào tạo nhân sự mới xuống dưới 30 phút.
-  - Nhà bếp giữ nguyên thói quen nhìn phiếu in truyền thống nhưng phiếu in giờ đây chuẩn xác, rõ ràng và không thể thất lạc.
-* $\rightarrow$ **Kết luận vận hành**: **Rất thuận tiện và dễ tiếp nhận**.
-
-### 4.3 Tính khả thi về mặt Kinh tế (Economic Feasibility)
-* **Cắt giảm tổn thất No-show**: Bắt buộc đặt cọc giữ bàn giúp giảm tỷ lệ bùng bàn từ 15% xuống dưới 2%, bảo vệ doanh thu nguyên liệu đắt đỏ cho nhà hàng.
-* **Tăng hiệu suất xoay vòng bàn**: Giảm thời gian trễ trong khâu gọi món, in bếp và thanh toán từ 25 phút/bàn xuống dưới 5 phút/bàn, giúp nhà hàng phục vụ thêm từ 15% – 20% lượt khách trong giờ cao điểm.
-* $\rightarrow$ **Kết luận kinh tế**: **Hiệu quả đầu tư (ROI) rất cao**.
-
-### 4.4 Tính khả thi về mặt Thời gian & Lộ trình (Schedule Feasibility)
-* Dự án được phân rã thành 5 giai đoạn rõ ràng trong 10 tuần, với sự tham gia của 3 thành viên kỹ thuật.
-* Các công nghệ cốt lõi đều nằm trong phạm vi kiến thức chuyên ngành và được hỗ trợ bởi các thư viện tiêu chuẩn của hệ sinh thái Microsoft & React.
-* $\rightarrow$ **Kết luận thời gian**: **Khả thi hoàn thành đúng hạn 10 tuần**.
-
----
-
-## CHƯƠNG 5: KẾT LUẬN & ĐỀ XUẤT HƯỚNG TRIỂN KHAI
-
-Báo cáo khảo sát đã chứng minh rõ ràng tính cấp thiết, tính mới và tính khả thi toàn diện của Dự án **Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)**.
-
-Nhóm đề xuất chuyển ngay sang **Báo cáo Phân tích Hệ thống (System Analysis Report)** để chi tiết hóa các mô hình Use Case, sơ đồ Activity, sơ đồ Sequence và ma trận quy tắc nghiệp vụ làm cơ sở vững chắc cho giai đoạn Thiết kế Kiến trúc (Design) ở Tuần 3–4.

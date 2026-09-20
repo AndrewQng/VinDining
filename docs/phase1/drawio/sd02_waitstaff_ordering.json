@@ -1,5 +1,5 @@
 {
-  "title": "SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp",
+  "title": "SD-02: Nhân viên tạo Order & Điều phối KDS Bếp qua SignalR",
   "participants": [
     {
       "id": "g",
@@ -12,42 +12,50 @@
       "actor": true
     },
     {
-      "id": "disp",
-      "label": "Màn hình Digital Display"
+      "id": "emenu",
+      "label": "Tablet E-Menu (EMenuTablet)"
     },
     {
       "id": "tab",
-      "label": "Tablet Phục vụ"
+      "label": "Tablet Phục vụ (POS)"
     },
     {
       "id": "api",
       "label": "Web API (.NET 9)"
     },
     {
-      "id": "prn",
-      "label": "Máy in Bếp nhiệt"
+      "id": "hub",
+      "label": "SignalR Hub"
+    },
+    {
+      "id": "kds",
+      "label": "Màn hình KDS Bếp (Hands-free)"
+    },
+    {
+      "id": "disp",
+      "label": "Màn hình TableDisplay tại bàn"
     }
   ],
   "messages": [
     {
       "from": "g",
-      "to": "disp",
-      "label": "1. Xem danh mục món ăn (A La Carte)"
+      "to": "emenu",
+      "label": "1. Xem ảnh, câu chuyện & cấu trúc Course (View-only)"
     },
     {
       "from": "g",
       "to": "w",
-      "label": "2. Gọi nhân viên để đặt món"
+      "label": "2. Gọi nhân viên để đặt món & báo dị ứng"
     },
     {
       "from": "w",
       "to": "tab",
-      "label": "3. Chọn bàn & Thêm các món ăn vào giỏ hàng"
+      "label": "3. Chọn bàn & Thêm các món ăn/SetMenu vào đơn"
     },
     {
       "from": "w",
       "to": "tab",
-      "label": "4. Điền ghi chú dị ứng (Nếu có)"
+      "label": "4. Nhập ghi chú món ăn & dị ứng (SpecialNotes)"
     },
     {
       "from": "w",
@@ -62,22 +70,32 @@
     {
       "from": "api",
       "to": "api",
-      "label": "7. Lưu Order (Status: Processing)"
+      "label": "7. Lưu Order (Processing), Course 1 -> Preparing (SLA Timer), Course 2..N -> Queued"
     },
     {
       "from": "api",
-      "to": "prn",
-      "label": "8. Gửi lệnh in ESC/POS (Phân trạm Bếp/Bar, In đậm Dị ứng)"
+      "to": "hub",
+      "label": "8. Broadcast sự kiện OrderDispatchedToKds"
     },
     {
-      "from": "prn",
-      "to": "prn",
-      "label": "9. Nhả phiếu order Bếp vật lý"
+      "from": "hub",
+      "to": "kds",
+      "label": "9. Đẩy vé điện tử lên KDS Bếp (Hiển thị SLA & bôi đậm Dị ứng theo món)"
+    },
+    {
+      "from": "api",
+      "to": "hub",
+      "label": "10. Broadcast sự kiện TableStatusUpdated"
+    },
+    {
+      "from": "hub",
+      "to": "disp",
+      "label": "11. Cập nhật TableDisplay: 'Bếp đang chuẩn bị [Tên món]'"
     },
     {
       "from": "api",
       "to": "tab",
-      "label": "10. 200 OK (Đã gửi Bếp thành công)",
+      "label": "12. 200 OK (Đã điều phối KDS Bếp thành công)",
       "return": true
     }
   ]

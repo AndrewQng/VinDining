@@ -7,10 +7,11 @@
 
 | Đối tượng (Actor) | Thiết bị / Nền tảng sử dụng | Mô tả vai trò | Mục tiêu trong hệ thống |
 | :--- | :--- | :--- | :--- |
-| **Khách hàng (Customer / Guest)** | **Mobile Web (Smartphone)** *(Trình duyệt Safari/Chrome, không cần cài app)* | Khách hàng tìm hiểu nhà hàng, đặt bàn trước trực tuyến hoặc **quét mã QR tại bàn ăn** để tự gọi món. | Xem trải nghiệm ẩm thực (Tasting Menu, Wine Pairing); đặt bàn trước theo khung giờ/khu vực; **quét mã QR tại bàn để xem E-Menu và tự đặt món (Self-ordering)**; thanh toán cọc (Deposit) nhanh chóng; theo dõi lịch sử đơn và hóa đơn. |
-| **Nhân viên Phục vụ (Waitstaff / Server)** | **Mobile / Tablet Web** *(Điện thoại hoặc Tablet cầm tay)* | Nhân viên hỗ trợ khách tại bàn, tiếp nhận Order từ mã QR của khách, nhận món từ Bếp, bưng ra bàn và **xác nhận hoàn thành món trên hệ thống**. | Theo dõi tình trạng bàn trống/đang phục vụ trên sơ đồ bàn; nhận thông báo khi có đơn QR mới; bắn lệnh lên món (**Course Firing**) cho Bếp; nhận món từ quầy ra món, bưng phục vụ tại bàn và **bấm xác nhận "Đã hoàn thành / Đã phục vụ" trên thiết bị**; hỗ trợ xuất hóa đơn. |
-| **Đầu bếp / Bếp trưởng (Chef / Kitchen)** | **Tablet Web / Màn hình KDS / Máy in Bếp** *(Thiết bị tại khu vực Bếp)* | Bếp trưởng và phụ bếp tiếp nhận yêu cầu chế biến món ăn từ đơn đặt/phiếu in và thực hiện nấu nướng theo thứ tự. | Nhận thông báo đơn món tức thời (Real-time qua SignalR); nhận phiếu in order (số bàn, tên món, ghi chú dị ứng); chuẩn bị nguyên liệu, chế biến món ăn và đặt món ra quầy chuyển món (Pass) để nhân viên phục vụ tiếp nhận. |
-| **Quản lý Nhà hàng (Manager)** | **Desktop / Laptop Web** *(Màn hình lớn)* | Người giám sát và điều hành toàn bộ hoạt động vận hành, phục vụ và kinh doanh của nhà hàng. | Theo dõi tình hình kinh doanh, doanh thu theo ca/ngày/tháng; quản lý danh mục thực đơn, giá bán; **tạo và in mã QR cho từng bàn ăn**; giám sát tỷ lệ lấp đầy bàn và chất lượng phục vụ thực tế. |
+| **Khách hàng (Customer / Guest)** | **Mobile Web & Tablet EMenuTablet dùng chung** *(Không cần cài app, không cần tài khoản)* | Khách hàng tìm hiểu nhà hàng, đặt bàn trước trực tuyến kèm cọc VNPAY; khi đến nhà hàng, chiêm ngưỡng thực đơn qua EMenuTablet (100% chỉ xem) và đối chiếu hóa đơn cấn trừ cọc kẹp sổ da sang trọng. | Xem trải nghiệm ẩm thực (Tasting Menu, Wine Pairing); đặt bàn trước theo khung giờ/khu vực; khám phá thực đơn qua EMenuTablet 100% view-only (không nút tương tác); đối chiếu bảng kê hóa đơn kèm mã VietQR in trên phiếu kẹp sổ da; trao đổi trực tiếp với Waitstaff. |
+| **Nhân viên Phục vụ (Waitstaff / Server)** | **Mobile / Tablet Web (Tablet POS)** *(Tablet cầm tay)* | Nhân viên phục vụ trực tiếp tại bàn: tư vấn ẩm thực, tạo Order điều phối KDS Bếp, nhận món từ quầy Pass và bưng phục vụ tại bàn bằng 2 tay (Zero-touch tại bàn), xuất hóa đơn cấn trừ cọc (BR-03). | Theo dõi tình trạng bàn trống/đang phục vụ trên sơ đồ bàn; tư vấn món và ghi chú dị ứng (SpecialNotes); kích hoạt lệnh lên món (**Course Firing**) cho Bếp; nhận món từ Pass, bưng phục vụ tại bàn; xuất lệnh in phiếu tạm tính cấn trừ cọc ra máy in quầy thu ngân (80mm), kẹp sổ da mang ra bàn và đóng bàn. |
+| **Nhân viên Điều phối (Expediter / Checkfood)** | **Tablet cố định tại quầy Pass** | Nhân viên kiểm soát chất lượng (QC) đĩa món tại quầy Pass trước khi bàn giao cho phục vụ bưng ra bàn. | Đối chiếu chất lượng đĩa món theo tiêu chuẩn, kiểm tra ghi chú dị ứng; bấm "Xác nhận ra món" (Served) theo quy tắc BR-04 kích hoạt thông báo tức thời / rung chuông tới Smartphone cá nhân của Waitstaff phụ trách bàn. |
+| **Đầu bếp / Bếp trưởng (Chef / Kitchen)** | **Màn hình KDS Bếp (Hands-free)** *(Gắn tường tại các trạm Bếp/Bar)* | Bếp trưởng và phụ bếp tiếp nhận vé điện tử điều phối qua SignalR, quan sát rảnh tay (chống nhiễm bẩn dầu mỡ) và thực hiện nấu nướng theo nhịp Course. | Nhận vé điện tử điều phối tức thời (Real-time qua SignalR); theo dõi đồng hồ đếm ngược SLA chuẩn bị; ghi nhận cảnh báo dị ứng bôi đậm theo từng món; chế biến món ăn và đặt món ra quầy chuyển món (Pass). |
+| **Quản lý Nhà hàng (Manager)** | **Desktop / Laptop Web** *(Màn hình lớn)* | Người giám sát và điều hành toàn bộ hoạt động vận hành, phục vụ và kinh doanh của nhà hàng. | Theo dõi tình hình kinh doanh, doanh thu theo ca/ngày/tháng; quản lý danh mục thực đơn, giá bán; cấu hình sơ đồ bàn ăn; duyệt hoàn tiền cọc thủ công ngoại lệ (BR-05); giám sát tỷ lệ lấp đầy bàn và chất lượng phục vụ thực tế. |
 | **Quản trị hệ thống (Admin)** | **Desktop / Laptop Web** | Người phụ trách mặt kỹ thuật, quản lý tài khoản, phân quyền và cấu hình toàn bộ hệ thống website. | Đảm bảo hệ thống hoạt động ổn định, bảo mật dữ liệu người dùng, phân quyền truy cập chính xác (Role-Based Access Control) và cấu hình các danh mục hệ thống. |
 
 ---
@@ -21,19 +22,22 @@
 * **Xây dựng dưới dạng**: **Responsive Web Application & RESTful Web API**
   * Mô hình Client-Server hiện đại: Giao diện web đơn trang (**React + TypeScript + Tailwind CSS**) giao tiếp với **Backend Web API (.NET 9)**.
   * **Khả năng tương thích đa thiết bị (Cross-platform Web)**: Tự động tối ưu giao diện theo kích thước màn hình mà không cần cài đặt App native:
-    * *Giao diện Mobile*: Dành cho Khách hàng quét mã QR đặt món và Nhân viên phục vụ cầm tay thao tác đi đơn.
-    * *Giao diện Tablet (KDS) / Máy in*: Dành cho Bếp trưởng theo dõi danh sách món cần làm tại quầy Bếp.
+    * *Giao diện Mobile Web*: Dành cho Khách hàng đặt bàn trực tuyến & đặt cọc VNPAY từ xa.
+    * *Giao diện Tablet E-Menu (EMenuTablet)*: Dành cho khách tại bàn thưởng lãm hình ảnh thực đơn (100% thụ động chỉ xem, không nút bấm tương tác).
+    * *Mô hình Bàn ăn chuẩn Fine Dining*: Bàn ăn hoàn toàn sạch bóng thiết bị cố định; phiếu thanh toán tạm tính cấn trừ cọc kèm mã VietQR động được in nhiệt từ quầy thu ngân và kẹp sổ da mang ra bàn.
+    * *Giao diện Tablet POS Waitstaff*: Dành cho Nhân viên phục vụ tạo đơn gọi món tại bàn và xuất hóa đơn.
+    * *Giao diện Pass Tablet*: Dành cho Nhân viên Điều phối kiểm tra QC và xác nhận Served.
+    * *Giao diện KDS Bếp (Hands-free)*: Dành cho Bếp trưởng theo dõi vé điều phối rảnh tay tại quầy Bếp.
     * *Giao diện Desktop*: Dành cho Quản lý và Admin quản trị dữ liệu.
 
 * **Quy trình vận hành Đặt món & Đi đơn phục vụ (Order & Serving Workflow)**:
-  1. **Khách quét mã QR**: Khách dùng camera điện thoại quét mã QR dán tại bàn ăn -> Trình duyệt mở ngay E-Menu kèm mã bàn tương ứng (`TableId`).
-  2. **Khách gửi Order**: Khách chọn Tasting Menu, các Course món ăn và đồ uống -> Nhấn "Gửi Order".
-  3. **Hệ thống nhận đơn & In phiếu Bếp (Real-time qua SignalR)**:
-     * Hệ thống tự động in phiếu Bếp (phiếu order ghi rõ: Số bàn, Tên món, Giờ đặt, Ghi chú dị ứng) và hiển thị lên màn hình KDS của Bếp.
-     * Điện thoại/Tablet của Nhân viên phục vụ nhận thông báo có đơn gọi món mới tại bàn.
-  4. **Bếp chế biến & Chuyển món ra quầy**: Bếp trưởng xem phiếu in order/màn hình để điều phối nấu món. Khi món chín, Bếp đặt món ra quầy ra món (Pass).
-  5. **Nhân viên nhận món & Xác nhận hoàn thành trên hệ thống**: Nhân viên phục vụ lấy món từ quầy Bếp mang ra bàn cho khách, sau đó **thao tác bấm "Xác nhận món đã hoàn thành / Đã phục vụ" trên điện thoại/tablet** để hệ thống cập nhật tiến độ bàn ăn.
-  6. **Thanh toán & Đóng bàn**: Khách dùng bữa xong -> Nhân viên xuất hóa đơn điện tử (tự động cấn trừ tiền cọc trước đó nếu có) -> Khách thanh toán tiền mặt/chuyển khoản/VNPAY -> Bàn chuyển trạng thái chờ dọn dẹp.
+  1. **Khách chiêm ngưỡng thực đơn**: Khách dùng Tablet E-Menu (`EMenuTablet` - 100% chỉ xem, không nút tương tác) tại bàn để xem hình ảnh chất lượng cao và câu chuyện món ăn.
+  2. **Waitstaff tư vấn & Tạo Order**: Khách trao đổi trực tiếp với Waitstaff; Waitstaff tư vấn khẩu vị, ghi nhận dị ứng (`SpecialNotes`) và nhập đơn trên Tablet POS -> Bấm "Tạo đơn & Gửi Bếp".
+  3. **Hệ thống điều phối KDS Bếp (Real-time qua SignalR)**:
+     * Hệ thống đẩy vé điện tử lên màn hình KDS của Bếp (rảnh tay, đếm ngược SLA, bôi đậm dị ứng).
+       4. **Bếp chế biến & Chuyển món ra quầy Pass**: Đầu bếp xem màn hình KDS để nấu món. Khi món hoàn tất, chuyển đĩa ăn ra quầy ra món (Pass).
+  5. **Expediter kiểm tra QC & Xác nhận Served**: Expediter tại quầy Pass kiểm tra độ chuẩn xác và bấm "Xác nhận ra món" (`Served`) trên Pass Tablet (`BR-04`). SignalR gửi thông báo đẩy / rung chuông tới Smartphone Waitstaff (*"Bàn [Số bàn]: Món [Tên món] đã sẵn sàng tại quầy Pass!"*); Waitstaff nhận món tại Pass và bưng ra bàn phục vụ khách bằng hai tay rảnh tay, trực tiếp giới thiệu món ăn bằng lời.
+  6. **Thanh toán & Đóng bàn (UC-E3)**: Khách yêu cầu thanh toán trực tiếp với Waitstaff (lời nói / cử chỉ) -> Waitstaff mở Mobile Web trên smartphone cá nhân bấm "Xuất phiếu tạm tính" cấn trừ tiền cọc theo `BR-03` -> Máy in nhiệt quầy Thu ngân (80mm) nhả phiếu chi tiết kèm mã VietQR động -> Waitstaff kẹp phiếu vào sổ da mang ra bàn -> Khách kiểm tra và thanh toán (quét VietQR trên giấy / thẻ POS / tiền mặt) -> Waitstaff xác nhận trên smartphone -> Bàn chuyển sang trạng thái `Cleaning`.
 
 ---
 
@@ -86,20 +90,21 @@
 
 3. **Quản lý Đặt bàn & Sơ đồ bàn Thời gian thực (Reservation & Floor Plan Management)**:
    * **Đặt bàn trực tuyến**: Khách hàng chọn ngày, ca phục vụ (Shift), số lượng khách, khu vực bàn (Sảnh chính, VIP, Ban công) và ghi chú đặc biệt.
-   * **Đặt cọc giữ bàn (Deposit)**: Tính toán và yêu cầu đặt cọc trực tuyến để xác nhận giữ chỗ cho các bàn tiệc cao cấp.
+   * **Đặt cọc giữ bàn (Deposit)**: Tính toán và yêu cầu đặt cọc trực tuyến qua VNPAY để xác nhận giữ chỗ, tự động khóa giữ bàn 17 phút (`BR-01`).
    * **Sơ đồ bàn trực quan Real-time**: Hiển thị trạng thái bàn tức thời (Trống - *Available*, Đã đặt - *Reserved*, Đang dùng bữa - *Occupied*, Chờ dọn - *Cleaning*) qua SignalR.
-   * **Quản lý mã QR bàn ăn (Table QR Management)**: Hệ thống sinh mã QR tự động cho từng bàn ăn để in và dán tại bàn thực tế.
-   * **Check-in / Gán bàn**: Tiếp nhận khách đến, chuyển trạng thái bàn sang Đang dùng bữa.
+   * **Kiến trúc thiết bị kép tại bàn (Dual Display)**: Tablet EMenuTablet 100% chỉ xem và Màn hình EMenuTablet gắn cố định tại bàn (`BR-02`).
+   * **Check-in bàn**: Waitstaff check-in khách đến bàn trên Tablet POS, chuyển trạng thái bàn sang `Occupied`.
 
-4. **Quét mã QR gọi món & Điều phối Bếp (Table QR Self-Ordering & Serving Management)**:
-   * **Quét mã QR đặt món tại bàn (Self-ordering)**: Khách hàng tại bàn dùng điện thoại quét mã QR để mở E-Menu, chọn Tasting Menu, các Course món ăn kèm đồ uống và gửi đơn Order trực tiếp vào hệ thống.
-   * **In phiếu Bếp tự động**: Hệ thống xuất/in phiếu Bếp (số bàn, tên món, ghi chú dị ứng) và gửi thông báo real-time qua SignalR cho Bếp trưởng và Phục vụ.
-   * **Điều phối chế biến & Bưng món**: Bếp chế biến xong và chuyển món ra quầy ra món (Pass).
-   * **Nhân viên phục vụ xác nhận hoàn thành**: Nhân viên phục vụ nhận món, bưng ra bàn cho khách và **bấm nút "Xác nhận món đã hoàn thành / Đã phục vụ" trên điện thoại/tablet** để cập nhật trạng thái đơn món trên toàn hệ thống.
+4. **Trình diễn E-Menu, Gọi món tại bàn & Điều phối Bếp (Table E-Menu, Waitstaff Ordering & KDS)**:
+   * **Tablet E-Menu cầm tay (EMenuTablet)**: Chế độ thụ động 100% chỉ xem (Passive View-only, ZERO nút bấm tương tác: không nút "Gọi phục vụ", không nút "Yêu cầu tính tiền", không giỏ hàng, không tự đặt món). Khách chiêm ngưỡng hình ảnh độ phân giải cao và câu chuyện ẩm thực.
+   * **Nhân viên Phục vụ tư vấn & Tạo Order**: Waitstaff tư vấn ẩm thực, ghi nhận lưu ý dị ứng (`SpecialNotes`) và tạo Order trực tiếp trên Tablet POS gửi Bếp.
+   * **Điều phối KDS Bếp (Hands-free)**: Hệ thống điều phối vé điện tử thời gian thực qua SignalR tới các trạm Bếp rảnh tay, đếm ngược SLA chuẩn bị và bôi đậm cảnh báo dị ứng.
+   * **Kiểm soát quầy Pass & Expediter xác nhận Served**: Expediter tại quầy Pass kiểm tra QC đĩa món và bấm "Xác nhận ra món" (`Served`) trên Pass Tablet (`BR-04`). SignalR gửi thông báo tức thời / rung chuông tới Smartphone Waitstaff, Waitstaff nhận đĩa món và bưng phục vụ ra bàn bằng 2 tay, trực tiếp giới thiệu món ăn bằng lời.
 
 5. **Thanh toán, Hóa đơn & Báo cáo thống kê (Billing, Payment & Analytics)**:
-   * **Tính tiền & Xuất hóa đơn (Invoice)**: Tự động tổng hợp các món/menu đã gọi qua QR hoặc nhân viên mở, áp dụng phí dịch vụ (Service Charge 5%), thuế VAT (10%), và tự động cấn trừ số tiền đặt cọc (Deposit) đã thanh toán trước đó.
-   * **Hỗ trợ thanh toán linh hoạt**: Tiền mặt, thẻ ngân hàng, chuyển khoản hoặc tích hợp cổng thanh toán trực tuyến (VNPAY/MoMo).
+   * **Yêu cầu thanh toán & Xuất hóa đơn (UC-E3)**: Khách yêu cầu thanh toán trực tiếp với Waitstaff (lời nói / cử chỉ). Waitstaff mở Tablet POS xuất hóa đơn tạm tính tự động cấn trừ tiền cọc theo công thức tài chính bắt buộc `BR-03`: $\max(0, \text{Subtotal} + 5\% \text{ SVC} + 10\% \text{ VAT} - \text{Deposit Paid})$.
+   * **Hiển thị hóa đơn & VietQR động lên EMenuTablet**: SignalR đẩy bảng kê chi tiết và mã VietQR động lên màn hình `EMenuTablet` tại bàn để khách kiểm tra minh bạch và thanh toán không chạm (hoặc thanh toán tiền mặt / quẹt thẻ POS qua Waitstaff).
+   * **Xác nhận thanh toán & Đóng bàn**: Waitstaff bấm "Hoàn tất thanh toán" trên smartphone cá nhân và bàn chuyển sang trạng thái `Cleaning`.
    * **Dashboard Báo cáo & Thống kê**: Biểu đồ doanh thu theo thời gian, tỷ lệ lấp đầy bàn, số lượt đặt bàn thành công/hủy, thống kê các món ăn và Tasting Menu bán chạy nhất.
 
 ---
@@ -108,27 +113,27 @@
 
 ### **Tuần 1–2: Proposal + Analysis (Phân tích yêu cầu)**
 * **Mục tiêu:**
-  * Hiểu rõ bài toán quản lý nhà hàng Fine Dining, quy trình đặt bàn tiệc và đặt món qua mã QR tại bàn.
+  * Hiểu rõ bài toán quản lý nhà hàng Fine Dining, quy trình đặt bàn tiệc có đặt cọc VNPAY, thực đơn EMenuTablet view-only và quy trình phục vụ Zero-touch tại bàn.
   * Xác định phạm vi và toàn bộ danh mục chức năng của hệ thống.
 * **Công việc:**
-  * Xác định Stakeholders (Khách hàng, Phục vụ, Bếp trưởng, Quản lý, Admin).
+  * Xác định Stakeholders (Khách hàng, Phục vụ, Điều phối Expediter, Bếp trưởng, Quản lý, Admin).
   * Viết tài liệu nghiệp vụ:
     * User Story cho từng nhóm đối tượng
     * Use Case Diagram tổng quát và chi tiết
   * Phân tích chức năng hệ thống:
     * Đăng ký / Đăng nhập & Phân quyền
     * Quản lý thực đơn Fine Dining (Tasting Menu, Course, Wine Pairing)
-    * Đặt bàn trực tuyến & Đặt cọc giữ chỗ (Deposit)
-    * Quét mã QR tại bàn & Tự đặt món (Self-ordering)
-    * In phiếu Bếp & Điều phối món
-    * Thanh toán hóa đơn (cấn trừ cọc, VAT, phí dịch vụ)
+    * Đặt bàn trực tuyến & Đặt cọc giữ chỗ (Deposit) qua VNPAY
+    * Tablet E-Menu cầm tay (EMenuTablet 100% view-only)
+    * Tạo Order tại bàn qua Tablet POS & Điều phối KDS Bếp
+    * Thanh toán hóa đơn (cấn trừ cọc BR-03, VAT, phí dịch vụ)
   * Viết tài liệu:
     * BRS (Business Requirement Specification)
     * SRS (Software Requirement Specification - bản draft)
 * **Phân công (Gợi ý):**
   * Thành viên 1: Leader + viết BRS, quản lý tiến độ dự án
   * Thành viên 2: Viết User Story + Thiết kế Use Case Diagram
-  * Thành viên 3: Phân tích quy trình nghiệp vụ (Flow đặt bàn & Flow quét QR gọi món)
+  * Thành viên 3: Phân tích quy trình nghiệp vụ (Flow đặt bàn & Flow gọi món tại bàn)
   * Thành viên 4: Khảo sát các hệ thống nhà hàng thực tế & đặc tả tính năng thanh toán cọc
   * Thành viên 5: Soạn thảo tài liệu SRS draft + vẽ Flowchart / Activity Diagram
 
@@ -143,20 +148,22 @@
     * Mô hình Web API phân tầng (API, Application, Infrastructure, Domain)
     * Thiết kế luồng xử lý CQRS với MediatR
     * Thiết kế RESTful API Specification (Swagger/OpenAPI draft)
-    * Thiết kế cơ chế Real-time qua SignalR Hub cho Bếp và Phục vụ
+    * Thiết kế cơ chế Real-time qua SignalR Hub cho Sơ đồ bàn, KDS Bếp và Smartphone Phục vụ
   * Thiết kế Cơ sở dữ liệu (Database Design):
     * Thiết kế Sơ đồ quan hệ thực thể (ERD trên SQL Server)
     * Thiết kế chi tiết các bảng: Users, Roles, Tables, Reservations, TastingMenus, Courses, Orders, OrderItems, Deposits, Invoices
   * Thiết kế giao diện UI/UX (Figma / Wireframes):
-    * Giao diện Mobile Web: Khách hàng quét mã QR xem E-menu và tự đặt món
-    * Giao diện Mobile/Tablet: Nhân viên phục vụ theo dõi sơ đồ bàn và xác nhận hoàn thành món
-    * Giao diện Tablet/Desktop: Bếp trưởng theo dõi đơn món & màn hình KDS
-    * Giao diện Desktop: Quản trị viên/Quản lý xem Dashboard thống kê và quản lý thực đơn
+    * Giao diện Mobile Web: Khách hàng đặt bàn trực tuyến & cọc VNPAY
+    * Giao diện Tablet E-Menu (EMenuTablet): 100% view-only (chỉ xem, không nút tương tác)
+    * Giao diện EMenuTablet Catalog & Mẫu in phiếu tạm tính VietQR quầy thu ngân
+    * Giao diện Tablet POS Waitstaff: Tạo order tại bàn, ghi chú dị ứng, xuất hóa đơn
+    * Giao diện Pass Tablet & Màn hình KDS Bếp: Expediter QC xác nhận Served & Trạm bếp rảnh tay
+    * Giao diện Desktop: Quản trị viên/Quản lý xem Dashboard thống kê và quản lý thực đơn, sơ đồ bàn
 * **Phân công (Gợi ý):**
   * Thành viên 1: Thiết kế Kiến trúc Clean Architecture + Thiết kế Database ERD
-  * Thành viên 2: Thiết kế giao diện UI/UX Khách hàng (Đặt bàn + E-Menu QR trên Mobile)
+  * Thành viên 2: Thiết kế giao diện UI/UX Khách hàng (Đặt bàn Mobile + EMenuTablet view-only)
   * Thành viên 3: Thiết kế giao diện UI/UX Sơ đồ bàn (Floor Plan) & Màn hình Bếp (KDS)
-  * Thành viên 4: Thiết kế giao diện UI/UX Dashboard Quản lý (Admin Portal)
+  * Thành viên 4: Thiết kế giao diện UI/UX Tablet POS Waitstaff & Dashboard Quản lý (Admin Portal)
   * Thành viên 5: Viết tài liệu Thiết kế Kiến trúc (SDD) + Thiết kế API Contracts
 
 ---
@@ -175,7 +182,7 @@
   * Khởi tạo và thiết lập Frontend (React + Vite):
     * Cấu hình React + TypeScript + Vite + Tailwind CSS
     * Cấu hình React Router v6 điều hướng đa trang và bảo vệ route (Protected Routes)
-    * Cấu hình State Management: Zustand (Auth/Cart Store) và TanStack Query (API Cache)
+    * Cấu hình State Management: Zustand (Auth/Order Store) và TanStack Query (API Cache)
     * Cấu hình Axios Interceptors tự động đính kèm Token và xử lý Refresh Token
     * Kết nối SignalR Client (`@microsoft/signalr`)
 * **Phân công (Gợi ý):**
@@ -194,25 +201,25 @@
 * **Công việc:**
   * Phát triển Module Thực đơn & Bàn ăn:
     * Quản lý Tasting Menu, Course món ăn, Wine Pairing, cảnh báo dị ứng
-    * Quản lý sơ đồ bàn và tính năng sinh mã QR tự động cho từng bàn ăn
+    * Quản lý sơ đồ bàn và quy trình phục vụ bàn ăn (EMenuTablet view-only & In hóa đơn sổ da)
   * Phát triển Module Đặt bàn & Đặt cọc (Reservation & Deposit):
     * Khách hàng đặt bàn trực tuyến theo khung giờ/khu vực
-    * Tính tiền cọc và tích hợp thanh toán cọc trực tuyến (VNPAY/MoMo)
+    * Tính tiền cọc và tích hợp thanh toán cọc trực tuyến VNPAY với khóa bàn 17p (BR-01)
     * Quản lý sơ đồ bàn thời gian thực (Floor Plan Real-time)
-  * Phát triển Module Quét QR gọi món & Điều phối Bếp:
-    * Khách hàng quét mã QR tại bàn để xem E-Menu và tự gửi Order vào hệ thống
-    * Xuất/in phiếu Bếp tự động (in order ghi số bàn, tên món, ghi chú dị ứng)
-    * Bếp điều phối nấu và chuyển món ra quầy
-    * Nhân viên phục vụ bấm xác nhận "Đã hoàn thành món" trên điện thoại/tablet
-  * Phát triển Module Hóa đơn & Thanh toán:
-    * Tính tiền hóa đơn (Invoice), tự động cấn trừ tiền cọc trước đó, tính VAT và phí dịch vụ
-    * Hỗ trợ xuất hóa đơn và đóng bàn
+  * Phát triển Module Phục vụ, KDS Bếp & Quầy Pass:
+    * EMenuTablet chỉ xem cho khách thưởng lãm tại bàn (không nút tương tác)
+    * Waitstaff tạo Order trên Tablet POS & điều phối KDS Bếp tự động qua SignalR
+    * Expediter kiểm tra QC tại quầy Pass và bấm xác nhận Served (BR-04)
+      * Phát triển Module Hóa đơn & Thanh toán (UC-E3):
+    * Tính tiền hóa đơn (Invoice), tự động cấn trừ tiền cọc theo BR-03, tính VAT và phí dịch vụ
+    * Xuất lệnh in phiếu tạm tính cấn trừ cọc kèm mã VietQR động ra máy in nhiệt quầy Thu ngân (80mm)
+    * Xác nhận thanh toán trên Tablet POS và chuyển bàn sang Cleaning
 * **Phân công (Gợi ý):**
-  * Thành viên 1: Lập trình Module Thực đơn (Tasting Menu, Course) + Sinh mã QR bàn
-  * Thành viên 2: Lập trình Module Đặt bàn trực tuyến + Tích hợp cổng thanh toán cọc (VNPAY)
-  * Thành viên 3: Lập trình Module Quét mã QR tại bàn + Giao diện E-Menu Self-Ordering
-  * Thành viên 4: Lập trình Module In phiếu Bếp + Phục vụ xác nhận hoàn thành món (SignalR)
-  * Thành viên 5: Lập trình Module Quản lý Sơ đồ bàn (Floor Plan) + Tính hóa đơn thanh toán
+  * Thành viên 1: Lập trình Module Thực đơn (Tasting Menu, Course) + Quản trị sơ đồ bàn
+  * Thành viên 2: Lập trình Module Đặt bàn trực tuyến + Tích hợp cổng thanh toán cọc (VNPAY IPN)
+  * Thành viên 3: Lập trình Giao diện EMenuTablet (100% view-only Digital Catalog)
+  * Thành viên 4: Lập trình Module KDS Bếp + Pass Tablet xác nhận Served + Tablet POS Waitstaff
+  * Thành viên 5: Lập trình Module Tính toán Hóa đơn cấn cọc BR-03 + VietQR + Dashboard Quản lý
 
 ---
 
@@ -223,7 +230,7 @@
 * **Công việc:**
   * Kiểm thử hệ thống (Testing & Bug Fixing):
     * Kiểm thử chức năng (Functional Testing) và kiểm thử API với Postman
-    * Kiểm thử luồng Real-time SignalR khi nhiều bàn cùng quét QR gọi món đồng thời
+    * Kiểm thử luồng Real-time SignalR giữa Smartphone Phục vụ, KDS Bếp, Pass Tablet và Máy in quầy
     * Kiểm thử giao diện Responsive trên Smartphone, Tablet và Desktop
   * Tối ưu hiệu năng:
     * Đánh Index CSDL SQL Server để tăng tốc truy vấn
@@ -238,8 +245,8 @@
 * **Phân công (Gợi ý):**
   * Thành viên 1: Kiểm thử API, tối ưu Index SQL Server + Tổng hợp cuốn Báo cáo
   * Thành viên 2: Lập trình Dashboard Báo cáo thống kê doanh thu + Sửa lỗi UI
-  * Thành viên 3: Kiểm thử luồng Quét QR đặt món trên thiết bị di động thật + Viết tài liệu HDSD
-  * Thành viên 4: Kiểm thử luồng In phiếu Bếp & Phục vụ xác nhận món + Chuẩn bị kịch bản Demo
+  * Thành viên 3: Kiểm thử luồng Đặt bàn cọc VNPAY + EMenuTablet trên thiết bị thật
+  * Thành viên 4: Kiểm thử luồng KDS Bếp, Pass QC & Waitstaff Tablet POS + Chuẩn bị kịch bản Demo
   * Thành viên 5: Thiết kế Slide thuyết trình bảo vệ + Hoàn thiện các biểu đồ và hình ảnh trong báo cáo
 
 

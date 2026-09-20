@@ -10,25 +10,25 @@
         <mxCell id="start5" parent="lane5_1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;fontSize=19;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="g5_act1" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Nhấn &#39;Yêu cầu thanh toán&#39;&#xa;trên Web hoặc báo Phục vụ" vertex="1">
+        <mxCell id="g5_act1" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Yêu cầu thanh toán trực tiếp&#xa;với Phục vụ (lời nói / cử chỉ)" vertex="1">
           <mxGeometry height="110" width="210" x="65" y="120" as="geometry" />
         </mxCell>
-        <mxCell id="g5_act2" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Kiểm tra Hóa đơn tạm tính&#xa;&amp;amp; dòng tiền cấn trừ cọc Deposit" vertex="1">
+        <mxCell id="g5_act2" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Kiểm tra hóa đơn trên TableDisplay&#xa;&amp;amp; đối chiếu cấn trừ cọc Deposit" vertex="1">
           <mxGeometry height="120" width="210" x="65" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="g5_act3" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Thanh toán số tiền còn thiếu&#xa;(Tiền mặt / Thẻ POS / Chuyển khoản)" vertex="1">
+        <mxCell id="g5_act3" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Thanh toán số tiền còn thiếu&#xa;(Quét VietQR TableDisplay / Thẻ POS / Tiền mặt)" vertex="1">
           <mxGeometry height="130" width="220" x="60" y="480" as="geometry" />
         </mxCell>
         <mxCell id="lane5_2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Nhân viên Phục vụ / Thu ngân" vertex="1">
           <mxGeometry height="1110" width="340" x="380" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="w5_act1" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Chọn &#39;Thanh toán hóa đơn&#39;&#xa;cho bàn trên Tablet" vertex="1">
+        <mxCell id="w5_act1" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Mở Tablet POS thao tác&#xa;chọn &#39;Thanh toán bàn&#39; (BR-03)" vertex="1">
           <mxGeometry height="110" width="210" x="65" y="120" as="geometry" />
         </mxCell>
-        <mxCell id="w5_act2" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Cầm Hóa đơn tạm tính&#xa;đem ra bàn cho khách kiểm tra" vertex="1">
+        <mxCell id="w5_act2" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Hướng dẫn khách kiểm tra trên&#xa;TableDisplay (hoặc phiếu tạm tính)" vertex="1">
           <mxGeometry height="110" width="210" x="65" y="317.5" as="geometry" />
         </mxCell>
-        <mxCell id="w5_act3" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Xác nhận đủ tiền &amp;amp; bấm&#xa;&#39;Hoàn tất thanh toán&#39; trên Tablet" vertex="1">
+        <mxCell id="w5_act3" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Xác nhận đủ tiền &amp;amp; bấm&#xa;&#39;Hoàn tất thanh toán&#39; trên Tablet POS" vertex="1">
           <mxGeometry height="110" width="220" x="65" y="485" as="geometry" />
         </mxCell>
         <mxCell id="w5_act4" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Giao Hóa đơn tài chính cho khách&#xa;&amp;amp; tiến hành dọn dẹp bàn" vertex="1">
@@ -55,10 +55,10 @@
         <mxCell id="s5_act1" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Áp công thức tài chính BR-03:&#xa;max(0, Subtotal + 5% SVC + 10% VAT - Deposit Paid)" vertex="1">
           <mxGeometry height="120" width="230" x="55" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="s5_act2" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="In phiếu Hóa đơn tạm tính&#xa;qua máy in nhiệt thu ngân" vertex="1">
+        <mxCell id="s5_act2" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Đẩy chi tiết hóa đơn &amp;amp; VietQR động&#xa;lên TableDisplay (in tạm tính nếu cần)" vertex="1">
           <mxGeometry height="145" width="210" x="65" y="300" as="geometry" />
         </mxCell>
-        <mxCell id="s5_act3" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Đóng phiên phục vụ bàn,&#xa;in Hóa đơn tài chính cuối cùng" vertex="1">
+        <mxCell id="s5_act3" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="TableDisplay hiện lời cảm ơn,&#xa;in Hóa đơn tài chính cuối cùng" vertex="1">
           <mxGeometry height="110" width="230" x="55" y="570" as="geometry" />
         </mxCell>
         <mxCell id="s5_act4" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Chuyển trạng thái bàn sang&#xa;&#39;Cleaning&#39; (Chờ dọn dẹp)" vertex="1">

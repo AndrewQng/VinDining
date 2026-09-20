@@ -36,7 +36,7 @@ enum ReservationStatus {
     Completed
     Cancelled
     Expired
-    Paid_TableLost
+    Expired_AutoRefunded
 }
 
 enum DepositStatus {
@@ -53,6 +53,7 @@ enum OrderStatus {
 }
 
 enum OrderItemStatus {
+    Queued
     Preparing
     Served
     Cancelled
@@ -98,7 +99,7 @@ class Reservation {
     +string DiningShift
     +int PartySize
     +ReservationStatus Status
-    +string? AllergyNotes
+    +string? SpecialNotes
     +DateTime? CancelledAt
     +string? CancellationReason
 }
@@ -147,7 +148,7 @@ class OrderItem {
     +Guid MenuItemId
     +int Quantity
     +decimal UnitPrice
-    +string? Note
+    +string? SpecialNotes
     +OrderItemStatus Status
     +Guid? ServedByStaffId
     +DateTime? ServedAt

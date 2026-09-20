@@ -1,671 +1,761 @@
-# BÁO CÁO PHÂN TÍCH HỆ THỐNG (SYSTEM ANALYSIS REPORT)
-## Dự án: Hệ thống Quản lý và Đặt bàn Nhà hàng Fine Dining (VinDining)
-
----
-
-### THÔNG TIN TÀI LIỆU
-* **Tên tài liệu**: Báo cáo Phân tích Yêu cầu & Mô hình hóa Hệ thống (System Analysis & Modeling Report)
-* **Dự án**: VinDining — Fine Dining Restaurant Management & Reservation System
-* **Giai đoạn**: Phase 1 (Tuần 1–2) — Proposal & Requirement Analysis
-* **Nhóm thực hiện**: Nguyễn Mạnh Quyền, Đặng Quốc Khánh, Nguyễn Hoàng Đạt
-* **Giảng viên hướng dẫn**: ThS. Phạm Hữu Tùng
-
----
-
-## CHƯƠNG 1: TỔNG QUAN TÁC NHÂN & MA TRẬN PHÂN QUYỀN (STAKEHOLDER & RBAC)
-
-### 1.1 Danh mục Tác nhân Hệ thống (System Actors)
-
-| Tác nhân (Actor)                                | Phân loại                | Thiết bị / Nền tảng                               | Phạm vi quyền hạn trong hệ thống                                                                                                                                                                                                                                                                         | Mục tiêu cốt lõi                                                                                                     |
-| :------------------------------------------------| :-------------------------| :--------------------------------------------------| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| :---------------------------------------------------------------------------------------------------------------------|
-| **Khách hàng (Guest)**                          | Tác nhân chính (Primary) | Smartphone cá nhân *(Mobile Web Responsive)*      | - Tìm kiếm, chọn bàn, đặt bàn trực tuyến.<br>- Thanh toán cọc giữ chỗ qua cổng VNPAY.<br>- Xem thực đơn qua màn hình Digital Display tại bàn (chỉ xem).<br>- Theo dõi trạng thái món và yêu cầu thanh toán.                                                                                              | Đặt chỗ nhanh chóng, minh bạch cọc; tự do gọi món không phải chờ đợi; đảm bảo an toàn tuyệt đối về dị ứng thực phẩm. |
-| **Nhân viên Phục vụ (Waitstaff)**               | Tác nhân chính (Primary) | Điện thoại / Tablet cầm tay *(Mobile/Tablet Web)* | - Xem sơ đồ bàn ăn và check-in khách đến bàn (`Occupied`).<br>- Tiếp nhận yêu cầu gọi món từ khách, tư vấn dị ứng.<br>- Bấm tạo đơn trực tiếp (Create Order) và kích hoạt lệnh in phiếu Bếp tự động.<br>- Bưng món từ quầy Pass ra bàn.<br>- Xuất hóa đơn tạm tính cấn trừ cọc và đóng bàn (`Cleaning`). | Phục vụ tận tình; giảm sai sót ghi nhận đơn thủ công.                                                                |
-| **Nhân viên Điều phối (Expediter / Checkfood)** | Tác nhân chính (Primary) | Tablet cố định tại quầy Pass                      | - Nhận món từ nhà bếp đặt ra quầy Pass.<br>- Đối chiếu phiếu Bếp, kiểm tra chất lượng.<br>- Bấm "Xác nhận hoàn thành món" (Served) trên hệ thống.<br>- Điều phối Waitstaff bưng món ra bàn.                                                                                                              | Đảm bảo 100% món ăn đúng bàn, đúng khách, đúng yêu cầu dị ứng; kiểm soát mốc thời gian ra món chính xác.             |
-| **Quản lý (Manager)**                           | Tác nhân chính (Primary) | Máy tính cá nhân *(Desktop Web Portal)*           | - Quản lý thực đơn (Danh mục món ăn, giá bán).<br>- Thiết lập sơ đồ bàn ăn và kết nối thiết bị Digital Display cho từng bàn.<br>- Xem báo cáo thống kê doanh thu và tỷ lệ lấp đầy bàn thời gian thực.<br>- Thực hiện duyệt hoàn tiền cọc thủ công (*Manual Refund Override*) khi có sự cố bất khả kháng. | Giám sát toàn diện vận hành nhà hàng; kiểm soát doanh thu chặt chẽ; linh hoạt xử lý khiếu nại khách hàng.            |
-| **Quản trị viên (Admin)**                       | Tác nhân chính (Primary) | Máy tính cá nhân *(Desktop Web Portal)*           | - Quản trị danh sách tài khoản người dùng và gán quyền (RBAC).<br>- Cấu hình tham số hệ thống (thời gian giữ bàn, tỷ lệ VAT, phí dịch vụ).<br>- Giám sát nhật ký hệ thống (System Logs) và sao lưu dữ liệu.                                                                                              | Đảm bảo tính toàn vẹn, bảo mật và sự hoạt động ổn định liên tục của toàn bộ nền tảng.                                |
-| **Cổng thanh toán VNPAY**                       | Tác nhân phụ (Secondary) | Hệ thống máy chủ VNPAY Gateway                    | - Tiếp nhận yêu cầu thanh toán cọc trực tuyến.<br>- Xử lý giao dịch thẻ/QR ngân hàng và gửi tín hiệu xác nhận tức thời (IPN callback) về Backend hệ thống.                                                                                                                                               | Đảm bảo giao dịch thanh toán an toàn, chính xác và bảo mật.                                                          |
-| **Máy in nhiệt Bếp (Kitchen Printer)**          | Tác nhân phụ (Secondary) | Máy in nhiệt mạng LAN/Wi-Fi (ESC/POS)             | - Tự động nhả phiếu order vật lý tại các trạm Bếp nóng, Bếp lạnh, Bar ngay khi nhận lệnh in từ hệ thống.                                                                                                                                                                                                 | Cung cấp phiếu in chế biến rõ ràng, in đậm cảnh báo dị ứng cho đầu bếp thao tác.                                     |
-
-> [!NOTE]
-> **Ranh giới nghiệp vụ Nhà bếp (Kitchen)**: Trong mô hình VinDining, **Nhà bếp (Kitchen/Chef) không phải là tác nhân tương tác trực tiếp với giao diện phần mềm**. Đầu bếp nhận lệnh thông qua phiếu in nhiệt tự động và đặt món ra quầy chuyển món (Pass) để nhân viên phục vụ tiếp nhận. Điều này giúp tối ưu hóa thao tác, loại bỏ màn hình cảm ứng dễ bám bẩn trong khu vực bếp.
-
----
-
-### 1.2 Ma trận phân quyền chức năng (Role-Based Access Control - RBAC)
-
-| Phân hệ chức năng               | Chức năng chi tiết                              | Khách hàng (Guest) | Phục vụ (Waitstaff) | Quản lý (Manager) | Quản trị (Admin) |
-| :--------------------------------| :------------------------------------------------| :------------------:| :-------------------:| :-----------------:| :----------------:|
-| **Tài khoản & Hồ sơ**           | Đăng nhập hệ thống (Nội bộ)                     | ✗                  | ✓                   | ✓                 | ✓                |
-|                                 | Quản lý hồ sơ nhân sự                           | ✗                  | ✓                   | ✓                 | ✓                |
-|                                 | Quản trị người dùng & Phân quyền                | ✗                  | ✗                   | ✗                 | **✓**            |
-| **Đặt bàn & Đặt cọc**           | Tra cứu sơ đồ bàn & Đặt bàn trực tuyến          | **✓**              | ✗                   | ✗                 | ✗                |
-|                                 | Thanh toán tiền cọc giữ chỗ (VNPAY)             | **✓**              | ✗                   | ✗                 | ✗                |
-|                                 | Hủy đặt bàn tự động (Trước >= 4h)               | **✓**              | ✗                   | ✗                 | ✗                |
-|                                 | Duyệt hoàn cọc thủ công ngoại lệ                | ✗                  | ✗                   | **✓**             | **✓**            |
-| **Sơ đồ bàn & Digital Display** | Theo dõi sơ đồ bàn trực quan Real-time          | ✗                  | **✓**               | **✓**             | **✓**            |
-|                                 | Check-in khách vào bàn (`Occupied`)             | ✗                  | **✓**               | **✓**             | ✗                |
-|                                 | Kết nối thiết bị Digital Display theo bàn       | ✗                  | ✗                   | **✓**             | **✓**            |
-|                                 | Chuyển trạng thái bàn sau dọn dẹp (`Available`) | ✗                  | **✓**               | **✓**             | ✗                |
-| **Gọi món & Bếp**               | Khách xem Menu qua Digital Display              | **✓**              | ✗                   | ✗                 | ✗                |
-|                                 | Tạo đơn trực tiếp & Kích hoạt in Bếp            | ✗                  | **✓**               | **✓**             | ✗                |
-|                                 | Bấm xác nhận "Đã phục vụ món" tại Pass          | ✗                  | ✗ (Expediter: ✓)    | **✓**             | ✗                |
-| **Hóa đơn & Doanh thu**         | Yêu cầu tính tiền từ Web E-Menu                 | **✓**              | ✗                   | ✗                 | ✗                |
-|                                 | Xuất hóa đơn tạm tính (Cấn trừ cọc)             | ✗                  | **✓**               | **✓**             | ✗                |
-|                                 | Xác nhận thanh toán & Đóng bàn                  | ✗                  | **✓**               | **✓**             | ✗                |
-|                                 | Báo cáo thống kê doanh thu & Món bán chạy       | ✗                  | ✗                   | **✓**             | **✓**            |
-
----
-
-## CHƯƠNG 2: MÔ HÌNH HÓA USE CASE (USE CASE MODELING)
-
-### 2.1 Sơ đồ Use Case tổng quát toàn hệ thống (Overall Use Case Diagram)
-
-> 📐 **Tệp thiết kế Draw.io**: [`use_case_overall.drawio`](./drawio/use_case_overall.drawio)
-
-```mermaid
-graph LR
-    subgraph Actors [Tác nhân Hệ thống]
-        Guest(("Khách hàng<br/>(Guest)"))
-        Waitstaff(("Nhân viên Phục vụ<br/>(Waitstaff)"))
-        Expediter(("Điều phối viên<br/>(Expediter)"))
-        Manager(("Quản lý<br/>(Manager)"))
-        Admin(("Quản trị viên<br/>(Admin)"))
-        SystemAuto(("Hệ thống tự động<br/>(Background System)"))
-        VNPAY["Cổng VNPAY"]
-        Printer["Máy in nhiệt Bếp"]
-    end
-
-    subgraph SystemBoundary [Hệ thống VinDining]
-        subgraph GroupUser [1. Phân hệ Khách hàng (User)]
-            UCU1(["UC-U1: Đặt bàn trực tuyến & Đặt cọc"])
-            UCU2(["UC-U2: Xem E-Menu qua Digital Display"])
-            UCU3(["UC-U3: Hủy đặt bàn & Hoàn cọc tự động"])
-            UCU4(["UC-U4: Đánh giá chất lượng dịch vụ"])
-        end
-
-        subgraph GroupEmployee [2. Phân hệ Nhân viên (Employee)]
-            UCE1(["UC-E1: Nhân viên tạo Order & In Bếp"])
-            UCE2(["UC-E2: Phục vụ & Xác nhận hoàn thành (Pass)"])
-            UCE3(["UC-E3: Thanh toán & Cấn trừ tiền cọc"])
-            UCE4(["UC-E4: Đổi bàn / Chuyển bàn"])
-            UCE5(["UC-E5: Đăng nhập & Xác thực hệ thống"])
-        end
-
-        subgraph GroupAdmin [3. Phân hệ Quản trị & Quản lý (Admin & Manager)]
-            UCA1(["UC-A1: Quản trị Danh mục & Thực đơn"])
-            UCA2(["UC-A2: Quản lý Sơ đồ bàn & Digital Display"])
-            UCA3(["UC-A3: Duyệt hoàn cọc thủ công ngoại lệ"])
-            UCA4(["UC-A4: Quản trị Tài khoản & Phân quyền"])
-            UCA5(["UC-A5: Báo cáo Thống kê & Dashboard"])
-        end
-
-        subgraph GroupSystem [4. Phân hệ Tự động (System Services)]
-            UCS1(["UC-S1: Tự động giải phóng bàn hết hạn cọc"])
-        end
-    end
-
-    %% Tương tác Khách hàng
-    Guest --> UCU1
-    UCU1 -.->|include| VNPAY
-    Guest --> UCU2
-    Guest --> UCU3
-    UCU3 -.->|include| VNPAY
-    Guest --> UCU4
-
-    %% Tương tác Nhân viên & Include Đăng nhập
-    Waitstaff --> UCE1
-    UCE1 -.->|include| Printer
-    UCE1 -.->|include| UCE5
-    Expediter --> UCE2
-    UCE2 -.->|include| UCE5
-    Waitstaff --> UCE3
-    UCE3 -.->|include| UCE5
-    Waitstaff --> UCE4
-    UCE4 -.->|include| UCE5
-    Waitstaff --> UCE5
-
-    %% Tương tác Quản lý / Admin
-    Manager --> UCE5
-    Admin --> UCE5
-    Manager --> UCA1
-    UCA1 -.->|include| UCE5
-    Manager --> UCA2
-    UCA2 -.->|include| UCE5
-    Manager --> UCA3
-    UCA3 -.->|include| UCE5
-    UCA3 -.->|include| VNPAY
-    Admin --> UCA4
-    UCA4 -.->|include| UCE5
-    Manager --> UCA5
-    Admin --> UCA5
-    UCA5 -.->|include| UCE5
-
-    %% Tương tác Hệ thống tự động
-    SystemAuto --> UCS1
-    UCS1 -.->|extend| UCU1
-```
-
----
-
-### 2.2 Sơ đồ Use Case phân rã theo Phân hệ
-
-> 📐 **Tệp thiết kế Draw.io**: [`use_case_subsystems.drawio`](./drawio/use_case_subsystems.drawio)
-
-
----
-
-### 2.3 Đặc tả chi tiết các Use Case (Use Case Specifications)
-
-> 💡 **Quy ước mã định danh & Cấu trúc phân nhóm Use Case**:
-> - **Nhóm Khách hàng (User - `UC-U`)**: Các chức năng trực tiếp của thực khách trải nghiệm trên Smartphone & Digital Display tại bàn.
-> - **Nhóm Nhân viên (Employee - `UC-E`)**: Các chức năng thao tác nghiệp vụ tại bàn, quầy Pass và thanh toán của Phục vụ & Điều phối.
-> - **Nhóm Quản lý & Quản trị (Admin & Manager - `UC-A`)**: Các chức năng quản trị danh mục, sơ đồ bàn, duyệt hoàn cọc và thống kê báo cáo.
-> - **Nhóm Tự động Hệ thống (System - `UC-S`)**: Các tác vụ nền chạy ngầm tự động bảo toàn trạng thái dữ liệu và giải phóng tài nguyên.
-
----
-
-#### 2.3.1 Nhóm Use Case Khách hàng (User / Guest Use Cases)
-
-#### 📋 UC-U1: Đặt bàn trực tuyến & Đặt cọc (Table Reservation & Deposit)
-* **Mã Use Case**: `UC-U1`
-* **Tên Use Case**: Đặt bàn trực tuyến & Đặt cọc giữ chỗ (TableReservationUseCase)
-* **Tác nhân**: Khách hàng (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<include>> Cổng VNPAY (Xử lý giao dịch cọc trực tuyến); <<extend>> UC-S1 (Hệ thống tự động giải phóng bàn khi quá hạn cọc 17 phút).
-* **Mục tiêu tóm tắt**: Cho phép khách hàng truy cập trang Web, chọn ngày/ca/vị trí bàn và hoàn tất đặt chỗ bằng cách thanh toán khoản tiền cọc cố định qua cổng VNPAY.
-* **Điều kiện tiên quyết**: Khách hàng truy cập vào hệ thống Web; sơ đồ bàn đang hoạt động.
-* **Điều kiện sau hoàn thành**: Bàn ăn chuyển sang trạng thái `Reserved`; hệ thống ghi nhận khoản cọc thành công và tự động gửi `BookingCode` qua SMS/Email cho khách.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng chọn Ngày hẹn, Ca phục vụ (Giờ hẹn), Số lượng khách và Khu vực bàn mong muốn (VIP, Sảnh chính, Ban công).
-  2. Hệ thống kiểm tra trạng thái sơ đồ bàn thời gian thực và hiển thị danh sách bàn trống khả dụng.
-  3. Khách hàng điền thông tin cá nhân (Họ tên, SĐT, Email), ghi chú các yêu cầu đặc biệt/cảnh báo dị ứng và nhấn "Tiến hành đặt cọc".
-  4. Hệ thống khóa giữ tạm thời vị trí bàn đã chọn trong tối đa **17 phút** (`BR-01` - gồm 15 phút VNPAY + 2 phút Grace Period), đồng thời chuyển hướng khách sang giao diện thanh toán VNPAY (QR code có thời hạn 15 phút).
-  5. Khách hàng thực hiện thanh toán tiền cọc trên cổng VNPAY (quét QR ngân hàng hoặc nhập thẻ).
-  6. Cổng VNPAY xử lý giao dịch thành công và gửi tín hiệu xác nhận (IPN) thời gian thực về Backend.
-  7. Hệ thống cập nhật trạng thái bàn sang `Reserved`, sinh mã đặt bàn `BookingCode` duy nhất và gửi thông báo xác nhận cho khách.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *5a. Khách hủy thanh toán hoặc giao dịch VNPAY thất bại*: Cổng VNPAY trả về mã lỗi giao dịch hoặc khách chủ động hủy, hệ thống ghi nhận thất bại và hiển thị thông báo mời khách thao tác lại. (Trường hợp khách không thanh toán, Background Worker `UC-S1` sẽ tự động quét giải phóng bàn về `Available` sau 17 phút theo `BR-01`).
-  - *5b. Giao dịch mồ côi (Late IPN > 17 phút)*: Tín hiệu IPN báo thành công nhưng gửi về trễ sau 17 phút và bàn cũ đã được giải phóng theo `BR-01`. Hệ thống tự động quét tìm bàn trống tương đương (cùng khu vực, sức chứa) để gán cho khách. Nếu hết sạch bàn tương đương, lưu trạng thái `Paid_TableLost` và báo động đỏ cho Quản lý (CSKH) gọi điện trực tiếp để xử lý ngoại lệ (đổi ngày/hoàn tiền thủ công).
-  - *2a. Khung giờ hoặc khu vực bàn đã hết chỗ*: Hệ thống thông báo hết bàn và tự động gợi ý các khung giờ hoặc phân khu bàn lân cận còn trống.
-  - *Khách hủy đặt bàn trước $\ge$ 4 tiếng (`BR-05`)*: Hệ thống tự động kích hoạt hoàn cọc 100% qua API VNPAY và giải phóng bàn về `Available`.
-  - *Khách hủy đặt bàn trong vòng < 4 tiếng (`BR-05`)*: Hệ thống ghi nhận hủy bàn nhưng phạt 100% tiền cọc (không hoàn tiền).
-
----
-
-#### 📋 UC-U2: Xem E-Menu qua Digital Display (Table Digital Menu)
-* **Mã Use Case**: `UC-U2`
-* **Tên Use Case**: Xem E-Menu qua Digital Display (ViewDigitalMenuUseCase)
-* **Tác nhân**: Khách hàng (Chính).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: Độc lập (Chỉ hiển thị dữ liệu danh mục thực đơn tại bàn).
-* **Mục tiêu tóm tắt**: Khách hàng tại bàn xem danh mục các món ăn (A La Carte) qua thiết bị màn hình Digital Display (chỉ xem, không có tính năng đặt món trực tiếp).
-* **Điều kiện tiên quyết**: Khách hàng đã ngồi tại bàn thực tế; thiết bị Digital Display đang hoạt động.
-* **Điều kiện sau hoàn thành**: Khách hàng xem xong thực đơn và quyết định gọi món thông qua nhân viên phục vụ.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng ngồi tại bàn, màn hình Digital Display đã được tự động hiển thị Menu.
-  2. Khách hàng chạm/lướt màn hình để duyệt danh mục món ăn trực quan (Các món khai vị, món chính, đồ uống, giá bán).
-  3. Khách hàng thảo luận và quyết định chọn các món ăn.
-  4. Khách hàng gọi nhân viên phục vụ để tiến hành đặt món.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *Màn hình tắt hoặc lỗi mạng*: Nhân viên phục vụ khởi động lại thiết bị hoặc đổi thiết bị khác cho khách.
-
----
-
-#### 📋 UC-U3: Hủy đặt bàn trực tuyến & Hoàn cọc tự động (Cancel Reservation)
-* **Mã Use Case**: `UC-U3`
-* **Tên Use Case**: Hủy đặt bàn trực tuyến & Hoàn cọc (CancelReservationUseCase)
-* **Tác nhân**: Khách hàng (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<include>> Cổng VNPAY (Xử lý API hoàn trả tiền cọc tự động 100% khi hủy trước >= 4h theo BR-05).
-* **Mục tiêu tóm tắt**: Cho phép khách hàng tự chủ động hủy lịch đặt bàn của mình trên Web. Hệ thống kiểm tra điều kiện thời gian để tự động hoàn tiền cọc qua VNPAY hoặc phạt cọc theo chính sách.
-* **Điều kiện tiên quyết**: Khách hàng có một mã đặt bàn (`BookingCode`) đang ở trạng thái `Reserved`.
-* **Điều kiện sau hoàn thành**: Trạng thái đặt bàn chuyển sang `Cancelled`, bàn ăn được giải phóng về `Available`, ghi nhận giao dịch hoàn tiền hoặc phạt cọc thành công.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng truy cập trang Tra cứu đặt bàn, nhập SĐT và `BookingCode`.
-  2. Hệ thống hiển thị chi tiết lịch đặt bàn và nút "Hủy đặt bàn".
-  3. Khách hàng bấm "Hủy đặt bàn" và xác nhận thao tác.
-  4. Hệ thống kiểm tra thời gian hiện tại so với giờ hẹn (`BR-05`). Thời gian cách giờ hẹn $\ge$ 4 tiếng.
-  5. Hệ thống gọi API VNPAY (Refund API) để hoàn trả 100% số tiền cọc về tài khoản của khách.
-  6. Hệ thống cập nhật trạng thái Reservation -> `Cancelled`, Table -> `Available`.
-  7. Gửi thông báo Email/SMS xác nhận hủy và hoàn tiền cho khách.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *4a. Khách hủy bàn khi thời gian cách giờ hẹn < 4 tiếng*: Hệ thống cảnh báo khách sẽ bị mất 100% cọc (không hoàn tiền). Khách đồng ý, hệ thống ghi nhận trạng thái `Cancelled` nhưng giữ lại tiền cọc làm phí phạt. Bàn vẫn được giải phóng về `Available`.
-
----
-
-#### 📋 UC-U4: Đánh giá chất lượng dịch vụ (Feedback / Review)
-* **Mã Use Case**: `UC-U4`
-* **Tên Use Case**: Gửi đánh giá dịch vụ (SubmitFeedbackUseCase)
-* **Tác nhân**: Khách hàng (Chính).
-* **Mức độ ưu tiên**: Bổ sung (Could Have).
-* **Quan hệ (Relationships)**: Độc lập (Thu thập khảo sát phản hồi của khách hàng sau bữa ăn).
-* **Mục tiêu tóm tắt**: Thu thập ý kiến của khách hàng về chất lượng món ăn và dịch vụ ngay sau khi dùng bữa.
-* **Điều kiện tiên quyết**: Khách hàng đã thanh toán hóa đơn.
-* **Điều kiện sau hoàn thành**: Lưu feedback vào hệ thống.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng nhận được Email cảm ơn kèm link đánh giá, hoặc quét mã QR thanh toán tích hợp link đánh giá.
-  2. Khách hàng điền mức độ hài lòng (1-5 sao) và ghi chú.
-  3. Bấm Gửi.
-  4. Hệ thống lưu đánh giá vào CSDL. Quản lý có thể xem lại tại Dashboard.
-
----
-
-#### 2.3.2 Nhóm Use Case Nhân viên Nội bộ (Employee Use Cases)
-
-#### 📋 UC-E1: Nhân viên tạo Order trực tiếp & In phiếu Bếp (Order Creation & Dispatching)
-* **Mã Use Case**: `UC-E1`
-* **Tên Use Case**: Nhân viên tạo Order & In Bếp (OrderCreationUseCase)
-* **Tác nhân**: Nhân viên Phục vụ (Chính), Máy in nhiệt Bếp (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Máy in nhiệt Bếp (Tự động in phiếu order ESC/POS theo phân khu).
-* **Mục tiêu tóm tắt**: Nhân viên phục vụ đứng tại bàn, nhập đơn gọi món trực tiếp vào thiết bị di động theo yêu cầu của khách, hệ thống lưu đơn ở trạng thái `Processing` và tự động in phiếu Bếp.
-* **Điều kiện tiên quyết**: Bàn ăn đã được check-in (`Occupied`), khách hàng đã quyết định xong món.
-* **Điều kiện sau hoàn thành**: Đơn hàng được tạo (Status: `Processing`), máy in nhiệt tại các phân khu bếp nhả phiếu order chuẩn xác.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng đọc danh sách các món muốn gọi.
-  2. Nhân viên phục vụ mở ứng dụng trên Tablet, chọn đúng bàn tương ứng đang phục vụ.
-  3. Nhân viên thêm các món ăn vào giỏ hàng, đồng thời điền các yêu cầu đặc biệt/cảnh báo dị ứng do khách yêu cầu.
-  4. Nhân viên nhấn nút "Tạo đơn & Gửi Bếp" trên màn hình thiết bị cầm tay.
-  5. Hệ thống khởi tạo Order với trạng thái `Processing` và lưu mốc thời gian bắt đầu.
-  6. Hệ thống tự động gửi lệnh in nhiệt (ESC/POS) ra các máy in tại phân khu Bếp tương ứng. Phiếu in ghi rõ: Số bàn, Tên món, và **bôi đậm cảnh báo dị ứng**.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *3a. Khách hàng muốn gọi thêm món bổ sung sau này*: Nhân viên phục vụ mở lại bàn đó và tạo tiếp một lượt Order mới, hệ thống sẽ gom chung vào hóa đơn tổng của bàn.
-
----
-
-#### 📋 UC-E2: Phục vụ món & Xác nhận hoàn thành món tại quầy Pass (Serving Confirmation)
-* **Mã Use Case**: `UC-E2`
-* **Tên Use Case**: Phục vụ & Xác nhận hoàn thành món (ServiceConfirmationUseCase)
-* **Tác nhân**: Nhân viên Điều phối / Checkfood (Chính), Nhân viên Phục vụ (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Nhân viên Checkfood tại quầy Pass nhận món từ bếp, đối chiếu, giao cho Waitstaff bưng đi, và bấm xác nhận "Đã hoàn thành" trên tablet tại quầy.
-* **Điều kiện tiên quyết**: Món ăn đã được nhà bếp hoàn thành và đặt tại quầy Pass.
-* **Điều kiện sau hoàn thành**: Trạng thái món ăn chuyển sang `Served`, hệ thống ghi nhận mốc thời gian phục vụ thực tế (`ServeTimestamp`).
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Đầu bếp nấu xong đĩa món chuẩn vị, đặt ra quầy chuyển món (Pass).
-  2. Nhân viên Điều phối (Checkfood) kiểm tra món ăn đối chiếu với thông tin order trên Tablet (kiểm tra dị ứng, hình thức).
-  3. Nhân viên Checkfood bấm chọn "Xác nhận hoàn thành món" (`BR-04`) trên thiết bị.
-  4. Hệ thống cập nhật trạng thái món thành `Served` và lưu mốc thời gian phục vụ.
-  5. Nhân viên Checkfood giao đĩa món cho Nhân viên phục vụ (Waitstaff) cùng số bàn để bưng ra cho khách.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *2a. Món ăn làm sai yêu cầu (VD: Quên loại bỏ đậu phộng)*: Checkfood phát hiện sai sót, trả lại đĩa món cho bếp làm lại và không bấm xác nhận.
-
----
-
-#### 📋 UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (Checkout & Invoice Settlement)
-* **Mã Use Case**: `UC-E3`
-* **Tên Use Case**: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (InvoiceSettlementUseCase)
-* **Tác nhân**: Nhân viên Phục vụ (Chính), Khách hàng (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Tự động cấn trừ tiền cọc theo công thức tài chính (BR-03).
-* **Mục tiêu tóm tắt**: Tự động tổng hợp toàn bộ tiền món ăn, tính 5% phí dịch vụ, 10% VAT, tự động cấn trừ số tiền cọc (Deposit) đã thanh toán trước đó, xuất hóa đơn tài chính và chuyển trạng thái bàn sang chờ dọn dẹp (`Cleaning`).
-* **Điều kiện tiên quyết**: Bàn ăn đang ở trạng thái `Occupied` và toàn bộ các món ăn đã được phục vụ hoàn tất (`Served`).
-* **Điều kiện sau hoàn thành**: Hóa đơn được thanh toán thành công, đơn hàng hoàn tất, bàn chuyển trạng thái sang `Cleaning`.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng nhấn nút "Yêu cầu thanh toán" trên Web E-Menu hoặc báo miệng với nhân viên phục vụ.
-  2. Nhân viên phục vụ chọn chức năng "Thanh toán hóa đơn" cho bàn tương ứng trên thiết bị cầm tay.
-  3. Hệ thống tự động truy vấn đơn hàng của bàn, thực thi công thức tính toán tài chính bắt buộc (`BR-03`):
-     - $\text{Subtotal} = \sum (\text{Tiền món dùng thực tế})$
-     - $\text{Phí dịch vụ (5\%)} = \text{Subtotal} \times 0.05$
-     - $\text{Thuế VAT (10\%)} = (\text{Subtotal} + \text{Phí dịch vụ}) \times 0.10$
-     - $\text{Số tiền phải trả} = \max(0, (\text{Subtotal} + \text{Phí dịch vụ} + \text{Thuế VAT}) - \text{Tiền cọc đã trả (Deposit)})$
-  4. Hệ thống in phiếu Hóa đơn tạm tính hiển thị minh bạch toàn bộ các dòng tiền và số tiền cọc đã cấn trừ để nhân viên đem ra bàn cho khách kiểm tra.
-  5. Khách hàng thực hiện thanh toán số tiền còn thiếu qua tiền mặt, thẻ ngân hàng hoặc quét mã QR chuyển khoản.
-  6. Nhân viên phục vụ bấm "Hoàn tất thanh toán" trên thiết bị.
-  7. Hệ thống tự động vô hiệu hóa phiên QR, in hóa đơn tài chính cuối cùng và chuyển trạng thái bàn sang `Cleaning`. Sau khi nhân viên dọn bàn xong, bàn chuyển về trạng thái `Available`.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *3a. Hóa đơn âm (Tổng tiền < Tiền cọc)*: Theo chính sách Deposit = Minimum Spend, hệ thống tự động làm tròn Số tiền phải trả = 0 VNĐ (không thối lại tiền thừa). Hệ thống hiển thị cảnh báo đỏ trên Tablet để Waitstaff biết và ra bàn nhắc nhở khách nên gọi thêm đồ uống hoặc mang về để tận dụng tối đa số tiền cọc.
-  - *5a. Khách hàng có thắc mắc về số tiền cọc*: Nhân viên phục vụ tra cứu trực tiếp lịch sử giao dịch cọc gắn với `BookingCode` trên hệ thống để giải thích minh bạch cho khách.
-
----
-
-#### 📋 UC-E4: Đổi bàn / Chuyển bàn (Change & Merge Tables)
-* **Mã Use Case**: `UC-E4`
-* **Tên Use Case**: Đổi bàn / Chuyển bàn (ChangeTableUseCase)
-* **Tác nhân**: Nhân viên Phục vụ (Chính), Quản lý (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<extend>> Ghép bàn (Merge Tables - mở rộng khi khách có nhu cầu gộp nhóm bàn).
-* **Mục tiêu tóm tắt**: Cho phép nhân viên phục vụ chuyển toàn bộ đơn hàng (Order) và tiền cọc (nếu có) từ bàn hiện tại sang một bàn khác trống trên hệ thống khi khách có nhu cầu đổi chỗ ngồi.
-* **Điều kiện tiên quyết**: Khách đang ngồi tại bàn cũ (`Occupied`); bàn mới mục tiêu phải ở trạng thái `Available`.
-* **Điều kiện sau hoàn thành**: Bàn cũ chuyển về trạng thái `Cleaning`, bàn mới chuyển sang `Occupied` và kế thừa toàn bộ Order.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Khách hàng yêu cầu đổi sang bàn khác (VD: Từ sảnh trong ra ban công).
-  2. Nhân viên phục vụ chọn chức năng "Đổi bàn" trên Tablet đối với bàn hiện tại.
-  3. Hệ thống hiển thị sơ đồ các bàn trống (`Available`) để nhân viên chọn.
-  4. Nhân viên chọn bàn mới mục tiêu và bấm xác nhận chuyển.
-  5. Hệ thống di chuyển toàn bộ Order, OrderItems (cả những món đã phục vụ và đang nấu) sang TableId mới.
-  6. Bàn cũ chuyển sang trạng thái `Cleaning`. Bàn mới chuyển sang `Occupied`. Máy in bếp không cần in lại phiếu nhưng hệ thống tự động ghi chú cho bộ phận Checkfood biết bàn đã đổi.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *Khách muốn ghép 2 bàn lại với nhau*: Nhân viên sử dụng tính năng "Ghép bàn" (Merge) để gộp chung 2 TableId thành 1 nhóm và hợp nhất hóa đơn.
-
----
-
-#### 📋 UC-E5: Đăng nhập & Xác thực hệ thống (Authentication)
-* **Mã Use Case**: `UC-E5`
-* **Tên Use Case**: Đăng nhập hệ thống nội bộ (LoginUseCase)
-* **Tác nhân**: Nhân viên Phục vụ, Quản lý, Admin (Chính).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: Use Case cơ sở (Base Use Case) được <<include>> bởi toàn bộ các Use Case nghiệp vụ nội bộ của Phục vụ, Điều phối, Quản lý và Quản trị viên.
-* **Mục tiêu tóm tắt**: Cung cấp cơ chế đăng nhập an toàn để nhân viên truy cập vào các chức năng nghiệp vụ tương ứng với quyền hạn (Role).
-* **Điều kiện tiên quyết**: Tài khoản đã được cấp phát bởi Admin.
-* **Điều kiện sau hoàn thành**: Người dùng được cấp phiên đăng nhập (JWT token) và chuyển hướng tới Dashboard/Sơ đồ bàn theo quyền.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Người dùng truy cập trang Đăng nhập hệ thống.
-  2. Người dùng nhập Username / Email và Password.
-  3. Bấm "Đăng nhập".
-  4. Hệ thống kiểm tra thông tin định danh và quyền hạn.
-  5. Hệ thống cấp JWT token và chuyển hướng tới màn hình tương ứng (Tablet Order cho Waitstaff, Dashboard cho Manager).
-
----
-
-#### 2.3.3 Nhóm Use Case Quản trị & Quản lý (Admin & Manager Use Cases)
-
-#### 📋 UC-A1: Quản trị Danh mục & Thực đơn món ăn (Menu Management)
-* **Mã Use Case**: `UC-A1`
-* **Tên Use Case**: Quản trị Thực đơn (MenuManagementUseCase)
-* **Tác nhân**: Quản lý (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Cho phép Quản lý (Manager) thêm, sửa, xóa, vô hiệu hóa các món ăn và danh mục món ăn (A La Carte) trên hệ thống.
-* **Điều kiện tiên quyết**: Quản lý đã đăng nhập thành công vào hệ thống.
-* **Điều kiện sau hoàn thành**: Dữ liệu thực đơn được cập nhật đồng bộ lên CSDL và hiển thị tức thời trên Digital Display/Tablet phục vụ.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý truy cập trang Quản trị Thực đơn trên Web Portal.
-  2. Hệ thống hiển thị danh sách các món ăn hiện có.
-  3. Quản lý chọn chức năng 'Thêm món mới'.
-  4. Quản lý nhập thông tin món ăn (Tên món, Hình ảnh, Giá bán, Phân loại, Cảnh báo dị ứng).
-  5. Quản lý bấm 'Lưu'.
-  6. Hệ thống kiểm tra tính hợp lệ của dữ liệu (Validation) và lưu vào CSDL.
-  7. Hệ thống cập nhật Menu trên các thiết bị của Khách và Nhân viên phục vụ.
-
----
-
-#### 📋 UC-A2: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Management)
-* **Mã Use Case**: `UC-A2`
-* **Tên Use Case**: Quản trị Sơ đồ bàn (FloorPlanUseCase)
-* **Tác nhân**: Quản lý / Admin (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Quản lý/Admin thiết lập và cấu hình bố cục không gian bàn ăn theo từng khu vực (Sảnh chính, Phòng VIP, Ban công), định vị tọa độ hiển thị trực quan 2D và đồng bộ thời gian thực cho nhân viên phục vụ qua SignalR.
-* **Điều kiện tiên quyết**: Quản lý / Admin đăng nhập thành công.
-* **Điều kiện sau hoàn thành**: Sơ đồ bàn được lưu vào CSDL và tự động đồng bộ xuống thiết bị cầm tay của toàn bộ nhân viên phục vụ.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý mở chức năng Quản trị Sơ đồ bàn trên Web Portal.
-  2. Hệ thống hiển thị giao diện sơ đồ bố trí trực quan 2D (Floor Plan Canvas).
-  3. Quản lý chọn khu vực hoặc thêm mới khu vực, sau đó thêm/xóa/sửa vị trí, tên bàn, sức chứa (Capacity) và trạng thái hoạt động của bàn.
-  4. Quản lý sắp xếp lại vị trí tọa độ các bàn ăn khớp với không gian thực tế của nhà hàng.
-  5. Quản lý bấm 'Lưu thay đổi Sơ đồ bàn'.
-  6. Hệ thống kiểm tra hợp lệ (mã bàn không trùng lặp, bàn đang phục vụ không bị đổi sức chứa), lưu CSDL qua UnitOfWork và phát sự kiện SignalR cập nhật tức thời xuống app của nhân viên phục vụ.
-
----
-
-#### 📋 UC-A3: Duyệt hoàn tiền cọc thủ công ngoại lệ (Manual Refund)
-* **Mã Use Case**: `UC-A3`
-* **Tên Use Case**: Duyệt hoàn tiền cọc thủ công (ManualRefundUseCase)
-* **Tác nhân**: Quản lý / Admin (Chính), Cổng VNPAY (Phụ), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống); <<include>> Cổng VNPAY (Xử lý API hoàn tiền cọc thủ công ngoại lệ).
-* **Mục tiêu tóm tắt**: Quản lý xử lý hoàn tiền cọc cho khách hàng trong các trường hợp bất khả kháng (lỗi hệ thống, thiên tai...) mà không tuân theo quy tắc hoàn tự động.
-* **Điều kiện tiên quyết**: Đặt bàn có trạng thái Cancelled nhưng tiền cọc chưa được hoàn trả, hoặc có khiếu nại từ khách.
-* **Điều kiện sau hoàn thành**: Tiền cọc được hoàn trả qua VNPAY, ghi nhận lịch sử xử lý khiếu nại.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý tiếp nhận khiếu nại và tra cứu mã BookingCode trên hệ thống.
-  2. Quản lý bấm nút 'Hoàn tiền thủ công (Override)' đối với khoản cọc đã thu.
-  3. Quản lý nhập lý do hoàn tiền bắt buộc.
-  4. Hệ thống gọi API VNPAY (Refund API) để hoàn trả tiền cho khách.
-  5. Hệ thống lưu vết (Audit Log) giao dịch hoàn tiền với UserID của người Quản lý đã duyệt.
-
----
-
-#### 📋 UC-A4: Quản trị Tài khoản & Phân quyền (Account & RBAC Management)
-* **Mã Use Case**: `UC-A4`
-* **Tên Use Case**: Quản trị Tài khoản & Phân quyền (AccountManagementUseCase)
-* **Tác nhân**: Quản trị viên - Admin (Chính), Hệ thống (Phụ).
-* **Mức độ ưu tiên**: Quan trọng (Should Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Admin cấp phát, khóa tài khoản và gán vai trò (Role) cho các nhân viên trong nhà hàng (Waitstaff, Checkfood, Manager).
-* **Điều kiện tiên quyết**: Admin đăng nhập với tài khoản có quyền cao nhất.
-* **Điều kiện sau hoàn thành**: Thông tin tài khoản nhân viên được cập nhật, quyền truy cập thay đổi có hiệu lực trong lần đăng nhập tiếp theo.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Admin truy cập trang Quản lý Nhân viên.
-  2. Admin bấm 'Tạo tài khoản mới'.
-  3. Admin nhập thông tin nhân sự và chọn Vai trò (Waitstaff / Expediter / Manager).
-  4. Hệ thống lưu tài khoản và gửi Email cấp mật khẩu mặc định cho nhân viên.
-
----
-
-#### 📋 UC-A5: Xem Báo cáo Dashboard & Thống kê (Reporting & Analytics)
-* **Mã Use Case**: `UC-A5`
-* **Tên Use Case**: Xem Báo cáo Thống kê (ViewReportsUseCase)
-* **Tác nhân**: Quản lý / Admin (Chính).
-* **Mức độ ưu tiên**: Bổ sung (Could Have).
-* **Quan hệ (Relationships)**: <<include>> UC-E5 (Đăng nhập & Xác thực hệ thống).
-* **Mục tiêu tóm tắt**: Xem doanh thu, tỷ lệ lấp đầy bàn, thống kê số lượng khách bùng bàn (No-show), món ăn bán chạy nhất.
-* **Điều kiện tiên quyết**: Quản lý đăng nhập vào hệ thống.
-* **Điều kiện sau hoàn thành**: Hiển thị biểu đồ báo cáo thành công.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Quản lý chọn menu Dashboard Báo cáo.
-  2. Chọn mốc thời gian cần xem (Ngày/Tuần/Tháng).
-  3. Hệ thống tổng hợp dữ liệu từ CSDL (Invoices, Orders, Reservations).
-  4. Hệ thống render biểu đồ đường, biểu đồ tròn và bảng dữ liệu.
-
----
-
-#### 2.3.4 Nhóm Use Case Hệ thống Tự động (System Background Use Cases)
-
-#### 📋 UC-S1: Tự động giải phóng bàn hết hạn giữ cọc (Auto-Release Expired Reservation Lock)
-* **Mã Use Case**: `UC-S1`
-* **Tên Use Case**: Tự động giải phóng bàn hết hạn giữ cọc (AutoReleaseExpiredLockUseCase)
-* **Tác nhân**: Hệ thống tự động (Background Service / Cron Worker - Chính).
-* **Mức độ ưu tiên**: Trọng yếu (Must Have).
-* **Quan hệ (Relationships)**: <<extend>> Mở rộng từ UC-U1 (Kích hoạt tự động bởi Background Service khi phiên giữ cọc vượt quá thời hạn 17 phút - BR-01).
-* **Mục tiêu tóm tắt**: Hệ thống chạy ngầm định kỳ mỗi 60 giây, tự động phát hiện và hủy các phiên đặt bàn tạm thời quá 17 phút (15 phút hạn QR VNPAY + 2 phút Grace Period theo BR-01) mà chưa nhận được xác nhận IPN thanh toán, giải phóng bàn ăn về trạng thái `Available` và gửi thông báo real-time qua SignalR tới Sơ đồ bàn của Nhân viên & Quản lý.
-* **Điều kiện tiên quyết**: Bản ghi đặt bàn đang ở trạng thái giữ tạm (`PendingPayment/Locked`) có thời gian tạo vượt quá 17 phút.
-* **Điều kiện sau hoàn thành**: Bàn ăn được giải phóng về trạng thái `Available`, phiên đặt bàn chuyển sang `Expired_Cancelled`, sự kiện SignalR cập nhật tức thì trên sơ đồ bàn trực quan.
-* **Luồng sự kiện chính (Basic Flow)**:
-  1. Hệ thống chạy tác vụ nền (Background Worker / Hangfire Job) định kỳ mỗi 60 giây.
-  2. Truy vấn cơ sở dữ liệu tìm các đơn đặt bàn có trạng thái `PendingPayment` và thời điểm tạo đã quá 17 phút (`BR-01`).
-  3. Cập nhật trạng thái phiên đặt bàn thành `Expired_Cancelled`.
-  4. Cập nhật trạng thái vị trí bàn ăn tương ứng từ `Locked` về `Available`.
-  5. Phát thông điệp qua SignalR Hub (`TableStatusChanged`) để đổi màu trạng thái bàn thành xanh lá (Available) trên màn hình của Waitstaff và Quản lý.
-  6. Ghi nhật ký kiểm toán hệ thống (System Audit Log) lưu vết thời điểm giải phóng bàn tự động.
-* **Luồng phụ & Ngoại lệ (Alternative & Exception Flows)**:
-  - *Xung đột IPN trễ (Late IPN > 17 phút)*: Cổng VNPAY gửi tín hiệu IPN thành công nhưng trễ sau 17 phút và bàn cũ đã được giải phóng cho khách khác đặt. Hệ thống tự động kích hoạt logic gán bàn tương đương cùng khu vực và sức chứa. Nếu hết bàn tương đương, đánh dấu `Paid_TableLost` và bắn cảnh báo đỏ ưu tiên tới Dashboard của Quản lý để gọi điện hỗ trợ đổi lịch hẹn hoặc hoàn tiền thủ công (`UC-A3`).
-
----
-
-## CHƯƠNG 3: MÔ HÌNH HÓA QUY TRÌNH NGHIỆP VỤ (SWIMLANE ACTIVITY DIAGRAMS)
-
-### 3.1 AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY (3 Làn: Khách hàng | Hệ thống | VNPAY)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad01_reservation_deposit.drawio`](./drawio/ad01_reservation_deposit.drawio)
-
-
----
-
-### 3.2 AD-02: Quy trình Nhân viên Order trực tiếp & In Bếp (3 Làn: Khách hàng | Phục vụ | Hệ thống & Máy in)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad02_waitstaff_ordering.drawio`](./drawio/ad02_waitstaff_ordering.drawio)
-
----
-
-### 3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món (3 Làn: Nhà bếp | Expediter | Hệ thống)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad03_serving_confirmation.drawio`](./drawio/ad03_serving_confirmation.drawio)
-
-
----
-
-### 3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn (3 Làn: Khách hàng | Phục vụ/Thu ngân | Hệ thống)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad04_invoice_settlement.drawio`](./drawio/ad04_invoice_settlement.drawio)
-
-
----
-
-### 3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY (3 Làn: Khách/Quản lý | Hệ thống | Cổng VNPAY)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad05_cancellation_refund.drawio`](./drawio/ad05_cancellation_refund.drawio)
-### 3.6 AD-06: Quy trình Đăng nhập & Xác thực nhân viên nội bộ (3 Làn: Nhân viên | Trình duyệt / Web POS | ASP.NET Core API & DB)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad06_staff_login.drawio`](./drawio/ad06_staff_login.drawio)
-
----
-
-### 3.7 AD-07: Quy trình Chuyển bàn / Đổi bàn phục vụ (3 Làn: Phục vụ | Hệ thống & UnitOfWork | Màn hình Khách & Bếp)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad07_change_table.drawio`](./drawio/ad07_change_table.drawio)
-
----
-
-### 3.8 AD-08: Quy trình Quản trị & Cấu hình Sơ đồ bàn ăn (3 Làn: Quản lý | Hệ thống API & DB | Ứng dụng Phục vụ)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad08_floor_plan_pairing.drawio`](./drawio/ad08_floor_plan_pairing.drawio)
-
----
-
-### 3.9 AD-09: Quy trình Duyệt hoàn cọc thủ công ngoại lệ (3 Làn: Quản lý / Thu ngân | Hệ thống API & DB | Cổng VNPAY)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad09_manual_refund.drawio`](./drawio/ad09_manual_refund.drawio)
-
----
-
-### 3.10 AD-10: Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc (3 Làn: Hangfire Background Job | Cơ sở dữ liệu | SignalR Hub)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad10_auto_release_timeout.drawio`](./drawio/ad10_auto_release_timeout.drawio)
-
----
-
-### 3.11 AD-11: Quy trình Quản trị Thực đơn & Trạng thái món (3 Làn: Quản lý Bếp / Admin | Hệ thống API | POS Phục vụ & Digital Display)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad11_menu_management.drawio`](./drawio/ad11_menu_management.drawio)
-
----
-
-### 3.12 AD-12: Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT (3 Làn: Khách hàng | Hệ thống API | Dashboard Quản trị)
-
-> 📐 **Tệp thiết kế Draw.io**: [`ad12_guest_feedback.drawio`](./drawio/ad12_guest_feedback.drawio)
-
-
-
----
-
-## CHƯƠNG 4: MÔ HÌNH HÓA TƯƠNG TÁC HỆ THỐNG (SEQUENCE DIAGRAMS)
-
-### 4.1 SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd01_reservation_vnpay.drawio`](./drawio/sd01_reservation_vnpay.drawio)
-
-
----
-
-### 4.2 SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd02_waitstaff_ordering.drawio`](./drawio/sd02_waitstaff_ordering.drawio)
-
----
-
-### 4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd03_serving_confirmation.drawio`](./drawio/sd03_serving_confirmation.drawio)
-
-
----
-
-### 4.4 SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd04_invoice_settlement.drawio`](./drawio/sd04_invoice_settlement.drawio)
-
-
----
-
-### 4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd05_cancellation_refund.drawio`](./drawio/sd05_cancellation_refund.drawio)
-### 4.6 SD-06: Đăng nhập & Xác thực JWT Token nhân viên nội bộ
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd06_staff_login.drawio`](./drawio/sd06_staff_login.drawio)
-
----
-
-### 4.7 SD-07: Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd07_change_table.drawio`](./drawio/sd07_change_table.drawio)
-
----
-
-### 4.8 SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration)
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd08_tablet_pairing.drawio`](./drawio/sd08_tablet_pairing.drawio)
-
-![SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn](./drawio/sd08_tablet_pairing.png)
-
----
-
-### 4.9 SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd09_manual_refund.drawio`](./drawio/sd09_manual_refund.drawio)
-
----
-
-### 4.10 SD-10: Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd10_auto_release_late_ipn.drawio`](./drawio/sd10_auto_release_late_ipn.drawio)
-
----
-
-### 4.11 SD-11: Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd11_menu_management.drawio`](./drawio/sd11_menu_management.drawio)
-
----
-
-### 4.12 SD-12: Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT
-
-> 📐 **Tệp thiết kế Draw.io**: [`sd12_guest_feedback.drawio`](./drawio/sd12_guest_feedback.drawio)
-
-
-
----
-
-## CHƯƠNG 5: QUY TẮC NGHIỆP VỤ BẮT BUỘC (BUSINESS RULES MATRIX)
-
-| Mã quy tắc | Tên quy tắc | Mô tả nội dung logic nghiệp vụ bắt buộc | Tầng kiểm soát |
-| :--- | :--- | :--- | :--- |
-| **BR-01** | **Thời hạn giữ cọc tạm thời (Reservation Lock Timeout)** | Khi khách hàng chọn bàn và bấm đặt cọc, hệ thống khóa giữ chỗ tạm thời trên sơ đồ trong **tối đa 15 phút**. Quá 15 phút không nhận được xác nhận IPN thành công từ VNPAY, hệ thống tự động giải phóng vị trí bàn về trạng thái `Available`. | Backend Background Worker / Hangfire |
-| **BR-02** | **Màn hình hiển thị thực đơn tĩnh (Passive Digital Display)** | Mỗi bàn ăn vật lý được trang bị một màn hình hiển thị thụ động (View-only E-Menu) để khách ngắm thực đơn và cảnh báo dị ứng. Màn hình hoàn toàn không có tương tác đặt món. Toàn bộ thao tác chọn bàn và tạo Order do Nhân viên phục vụ (Waitstaff) thực hiện trên ứng dụng cầm tay qua Sơ đồ bàn trực tuyến. | Backend API Middleware & Frontend Router |
-| **BR-03** | **Công thức tính Hóa đơn chuẩn (Financial Calculation Formula)** | Công thức tính bắt buộc áp dụng theo trình tự tuần tự:<br>1. $\text{Subtotal} = \sum (\text{Tiền món dùng thực tế})$<br>2. $\text{Phí dịch vụ (5\%)} = \text{Subtotal} \times 0.05$<br>3. $\text{Thuế VAT (10\%)} = (\text{Subtotal} + \text{Phí dịch vụ}) \times 0.10$<br>4. $\text{Số tiền phải trả} = (\text{Subtotal} + \text{Phí dịch vụ} + \text{Thuế VAT}) - \text{Deposit Paid}$ | Application Service Layer & Domain Entity |
-| **BR-04** | **Thẩm quyền xác nhận phục vụ món (Service Confirmation Privilege)** | Chỉ có tài khoản Nhân viên Điều phối (Expediter/Checkfood) hoặc Quản lý (Manager) mới có quyền bấm nút "Xác nhận món đã hoàn thành" trên thiết bị tại quầy Pass. Đầu bếp và Khách hàng không có quyền thực hiện thao tác này để tránh lỗi báo khống tiến độ phục vụ. | Backend JWT Role-based Authorization |
-| **BR-05** | **Chính sách hủy bàn & Hoàn phạt tiền cọc (Cancellation & Refund Policy)** | - Khách được **hoàn cọc tự động 100%** nếu thực hiện hủy đặt bàn trước giờ hẹn **tối thiểu 04 tiếng**.<br>- Mọi giao dịch hủy **dưới 04 tiếng** sẽ bị phạt 100% tiền cọc (không hoàn tiền).<br>- *Ngoại lệ*: Quản lý (Manager) có quyền sử dụng chức năng `Manual Refund Override` để hoàn cọc thủ công trong các tình huống bất khả kháng. | Application Service Layer & VNPAY API |
-
----
-
-## CHƯƠNG 6: MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU (RTM MATRIX)
-
-| Mã yêu cầu | Tên yêu cầu nghiệp vụ cấp cao | Mã Use Case | Mã Activity | Mã Sequence | Quy tắc nghiệp vụ | Mã Test Case kiểm thử |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **REQ-01** | Đặt bàn trực tuyến & Đặt cọc VNPAY | `UC-U1` | `AD-01` | `SD-01` | `BR-01`, `BR-05` | `TC-RES-01`, `TC-RES-02` |
-| **REQ-02** | Xem E-Menu qua Digital Display tại bàn | `UC-U2` | `AD-02` | `SD-02` | `BR-02` | `TC-ORD-01`, `TC-ORD-02` |
-| **REQ-03** | Hủy đặt bàn trực tuyến & Hoàn cọc tự động | `UC-U3` | `AD-05` | `SD-05` | `BR-05` | `TC-RES-03` |
-| **REQ-04** | Khách hàng đánh giá chất lượng dịch vụ | `UC-U4` | `AD-12` | `SD-12` | `BR-03` | `TC-FB-01` |
-| **REQ-05** | Nhân viên tạo Order trực tiếp & In phiếu Bếp | `UC-E1` | `AD-02` | `SD-02` | `BR-04` | `TC-KIT-01`, `TC-KIT-02` |
-| **REQ-06** | Phục vụ món & Xác nhận hoàn thành tại quầy Pass | `UC-E2` | `AD-03` | `SD-03` | `BR-04` | `TC-SER-01` |
-| **REQ-07** | Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn | `UC-E3` | `AD-04` | `SD-04` | `BR-03` | `TC-INV-01`, `TC-INV-02` |
-| **REQ-08** | Chuyển bàn / Đổi bàn / Ghép bàn | `UC-E4` | `AD-07` | `SD-07` | `BR-02` | `TC-TBL-03` |
-| **REQ-09** | Đăng nhập & Xác thực tài khoản nội bộ | `UC-E5` | `AD-06` | `SD-06` | `BR-04` | `TC-SEC-01`, `TC-SEC-02` |
-| **REQ-10** | Quản trị Danh mục & Thực đơn món ăn | `UC-A1` | `AD-11` | `SD-11` | `BR-04` | `TC-MNU-01` |
-| **REQ-11** | Quản trị & Cấu hình Sơ đồ bàn ăn | `UC-A2` | `AD-08` | `SD-08` | `BR-02` | `TC-TBL-01`, `TC-TBL-02` |
-| **REQ-12** | Duyệt hoàn tiền cọc thủ công ngoại lệ | `UC-A3` | `AD-09` | `SD-09` | `BR-05` | `TC-REF-01` |
-| **REQ-13** | Quản trị Tài khoản nhân viên & Phân quyền | `UC-A4` | — | — | `BR-04` | `TC-SEC-03` |
-| **REQ-14** | Báo cáo Thống kê Doanh thu & Dashboard | `UC-A5` | — | — | — | `TC-REP-01` |
-| **REQ-15** | Tự động quét & Giải phóng bàn hết hạn giữ cọc | `UC-S1` | `AD-10` | `SD-10` | `BR-01` | `TC-SYS-01` |
----
-
-## CHƯƠNG 7: DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)
-
-1. **Microsoft Corporation** (2026), *ASP.NET Core Web API & SignalR Real-time Communication Documentation*, Microsoft Learn.
-2. **Martin Fowler** (2002), *Patterns of Enterprise Application Architecture*, Addison-Wesley Professional.
-3. **Robert C. Martin** (2017), *Clean Architecture: A Craftsman's Guide to Software Structure and Design*, Prentice Hall.
-4. **VNPAY Payment Gateway** (2025), *VNPAY E-Commerce Merchant Integration Specifications (v2.1.0)*, Vietnam Payment Solution Joint Stock Company.
-5. **Epson ESC/POS** (2024), *ESC/POS Application Programming Guide for POS Thermal Printers*, Seiko Epson Corporation.
+BỘ GIÁO DỤC VÀ ĐÀO TẠO — HỆ THỐNG ĐÀO TẠO CÔNG NGHỆ
+KHOA CÔNG NGHỆ THÔNG TIN — BỘ MÔN KỸ THUẬT PHẦN MỀM
+――――――――――――――――――――――――――――
+BÁO CÁO PHÂN TÍCH YÊU CẦU & MÔ HÌNH HÓA HỆ THỐNG
+SYSTEM REQUIREMENTS ANALYSIS & MODELING REPORT
+ĐỀ TÀI DỰ ÁN:
+VINDINING — HỆ THỐNG QUẢN LÝ VÀ ĐẶT BÀN
+NHÀ HÀNG FINE DINING CAO CẤP
+
+Giảng viên hướng dẫn:	ThS. Phạm Hữu Tùng
+Sinh viên thực hiện 1:	Nguyễn Mạnh Quyền
+Sinh viên thực hiện 2:	Đặng Quốc Khánh
+Sinh viên thực hiện 3:	Nguyễn Hoàng Đạt
+Giai đoạn đồ án:	Phase 1: Phân tích Yêu cầu & Thiết kế Hệ thống
+ 
+MỤC LỤC BÁO CÁO PHÂN TÍCH HỆ THỐNG
+CHƯƠNG 1: TỔNG QUAN TÁC NHÂN & MA TRẬN PHÂN QUYỀN (STAKEHOLDER & RBAC)	3
+1.1 Danh mục Tác nhân Hệ thống (System Actors)	3
+1.2 Ma trận Phân quyền Chức năng (Role-Based Access Control - RBAC)	4
+CHƯƠNG 2: MÔ HÌNH HÓA USE CASE (USE CASE MODELING)	6
+2.1 Sơ đồ Use Case tổng quát toàn hệ thống (Overall Use Case Diagram)	6
+2.2 Sơ đồ Use Case phân rã theo Phân hệ (Subsystem Use Case Diagrams)	7
+2.3 Đặc tả chi tiết 15 Use Case hệ thống (Use Case Specifications)	8
+2.3.1 Nhóm Use Case Khách hàng (UC-U1 đến UC-U4)	8
+2.3.2 Nhóm Use Case Nhân viên Nội bộ (UC-E1 đến UC-E5)	13
+2.3.3 Nhóm Use Case Quản trị & Quản lý (UC-A1 đến UC-A5)	19
+2.3.4 Nhóm Use Case Hệ thống Tự động (UC-S1)	25
+CHƯƠNG 3: MÔ HÌNH HÓA QUY TRÌNH NGHIỆP VỤ (SWIMLANE ACTIVITY DIAGRAMS)	27
+3.1 AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY	27
+3.2 AD-02: Quy trình Nhân viên Order trực tiếp & In Bếp	29
+3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass	31
+3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn	33
+3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY	35
+3.6 AD-06: Quy trình Đăng nhập & Xác thực nhân viên nội bộ	37
+3.7 AD-07: Quy trình Chuyển bàn / Đổi bàn phục vụ	39
+3.8 AD-08: Quy trình Quản trị & Cấu hình Sơ đồ bàn ăn	41
+3.9 AD-09: Quy trình Duyệt hoàn cọc thủ công ngoại lệ	43
+3.10 AD-10: Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc	45
+3.11 AD-11: Quy trình Quản trị Thực đơn & Trạng thái món	47
+3.12 AD-12: Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT	49
+CHƯƠNG 4: MÔ HÌNH HÓA TƯƠNG TÁC HỆ THỐNG (SEQUENCE DIAGRAMS)	40
+4.1 SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY	40
+4.2 SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp	42
+4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass	44
+4.4 SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn	46
+4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY	48
+4.6 SD-06: Đăng nhập & Xác thực JWT Token nhân viên nội bộ	50
+4.7 SD-07: Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng	52
+4.8 SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn	54
+4.9 SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ	56
+4.10 SD-10: Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN	58
+4.11 SD-11: Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món	60
+4.12 SD-12: Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT	62
+CHƯƠNG 5: QUY TẮC NGHIỆP VỤ BẮT BUỘC (BUSINESS RULES MATRIX)	53
+CHƯƠNG 6: MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU (RTM MATRIX)	55
+CHƯƠNG 7: DANH MỤC TÀI LIỆU THAM KHẢO (REFERENCES)	57
+ 
+CHƯƠNG 1: TỔNG QUAN TÁC NHÂN & MA TRẬN PHÂN QUYỀN (STAKEHOLDER & RBAC)
+1.1 Danh mục Tác nhân Hệ thống (System Actors)
+Hệ thống phân định 5 tác nhân chính thuộc nhóm người dùng trực tiếp và 2 tác nhân phụ đóng vai trò là các hệ thống dịch vụ tích hợp bên ngoài:
+Tác nhân (Actor)	Phân loại	Thiết bị / Nền tảng	Phạm vi quyền hạn
+Khách hàng
+(Guest)	Tác nhân chính
+(Primary Actor)	Điện thoại thông minh cá nhân
+(Mobile Web Responsive)	Khách hàng chủ động tra cứu sơ đồ phân khu bàn ăn, chọn vị trí và đặt bàn trực tuyến; thực hiện thanh toán khoản tiền cọc cố định qua cổng thanh toán VNPAY; quét mã QR tại bàn để xem thực đơn E-Menu trên điện thoại cá nhân (BYOD) hoặc mượn Tablet dùng chung; gửi yêu cầu phục vụ hoặc thanh toán hóa đơn.
+Nhân viên Phục vụ
+(Waitstaff)	Tác nhân chính
+(Primary Actor)	Điện thoại di động / Máy tính bảng
+(Mobile/Tablet Web POS)	Nhân viên theo dõi sơ đồ mặt bằng bàn ăn thời gian thực để đón tiếp và check-in khách vào bàn; tư vấn chi tiết các món ăn và ghi nhận ghi chú; tạo đơn gọi món trực tiếp trên thiết bị cầm tay kích hoạt lệnh in Bếp tự động; phục vụ món ăn từ quầy Pass; xuất phiếu tạm tính cấn trừ tiền cọc kẹp sổ da và chuyển trạng thái bàn sang chờ dọn dẹp.
+Nhân viên Điều phối
+(Expediter / Checkfood)	Tác nhân chính
+	Máy tính bảng cố định tại quầy Pass	Nhân viên tiếp nhận các đĩa món hoàn thiện từ nhà bếp đặt ra quầy Pass; đối chiếu hình thức trình bày và thành phần món ăn với phiếu in Bếp; bấm xác nhận hoàn thành món trên màn hình điều phối; kích hoạt thông báo tức thời đến điện thoại của nhân viên phục vụ phụ trách bàn.
+Quản lý Nhà hàng
+(Manager)	Tác nhân chính
+	Laptop/PC	Quản lý thiết lập danh mục thực đơn, giá bán món ăn và định lượng nguyên liệu; cấu hình sơ đồ phân khu bàn ăn; theo dõi báo cáo doanh thu, tỷ lệ lấp đầy bàn và hiệu suất phục vụ thời gian thực; thực hiện phê duyệt lệnh hoàn tiền cọc thủ công ngoại lệ khi xảy ra sự cố bất khả kháng.
+Quản trị viên
+(System Admin)	Tác nhân chính
+	Laptop/PC	Quản trị viên khởi tạo, phân bổ và quản lý danh sách tài khoản người dùng nội bộ theo mô hình phân quyền dựa trên vai trò (RBAC); thiết lập các tham số hệ thống như thời gian khóa giữ bàn, tỷ lệ thuế VAT và phí dịch vụ; giám sát nhật ký vận hành hệ thống và thực hiện sao lưu dữ liệu định kỳ.
+Cổng thanh toán
+(VNPAY Gateway)	Tác nhân phụ
+	Hệ thống máy chủ dịch vụ thanh toán
+(VNPAY Payment Server)	Tiếp nhận các yêu cầu khởi tạo giao dịch thanh toán tiền cọc trực tuyến từ Backend; cung cấp giao diện thanh toán bảo mật cho khách hàng quét mã VietQR hoặc nhập thẻ ngân hàng; gửi tín hiệu phản hồi kết quả giao dịch tức thời qua kênh IPN callback về máy chủ hệ thống; xử lý các yêu cầu hoàn trả tiền cọc theo chỉ định tự động hoặc thủ công.
+
+1.2 Ma trận Phân quyền Chức năng (Role-Based Access Control - RBAC)
+Ma trận phân quyền chi tiết thiết lập ranh giới thẩm quyền nghiêm ngặt giữa Khách hàng, Nhân viên Phục vụ, Quản lý Nhà hàng và Quản trị viên hệ thống:
+Phân hệ chức năng	Chức năng chi tiết	Khách hàng	Phục vụ	Quản lý
+Tài khoản & Phân quyền	Đăng nhập hệ thống nội bộ	✗	✓	✓
+	Quản lý thông tin hồ sơ nhân sự	✗	✓	✓
+	Quản trị tài khoản & Cấp quyền người dùng	✗	✗	✗
+Đặt bàn & Đặt cọc	Tra cứu sơ đồ bàn & Đặt bàn trước	✓	✓	✓
+	Thanh toán tiền cọc giữ chỗ trực tuyến qua VNPAY	✓	✗	✗
+	Hủy đặt bàn tự động khi trước giờ hẹn từ 4 tiếng	✓	✗	✗
+	Phê duyệt lệnh hoàn cọc thủ công ngoại lệ	✗	✗	✓
+Sơ đồ bàn & Hiển thị	Theo dõi sơ đồ bàn trực quan theo thời gian thực	✗	✓	✓
+	Check-in khách vào bàn ăn thực tế	✗	✓	✓
+	Cấu hình sơ đồ mặt bằng	✗	✗	✓
+	Chuyển trạng thái bàn sang sẵn sàng sau khi dọn dẹp	✗	✓	✓
+Gọi món & Phục vụ	Xem thực đơn qua E-Menu	✓	✗	✗
+	Nhân viên tạo đơn gọi món	✗	✓	✓
+	Xác nhận hoàn thành món ăn tại quầy điều phối Pass	✗	Expediter: ✓	✓
+Hóa đơn & Doanh thu	Gửi yêu cầu tính tiền	✗	✓	✗
+	Xuất hóa đơn tạm tính tự động cấn trừ tiền cọc	✗	✓	✓
+	Xác nhận hoàn tất thanh toán & Đóng bàn	✗	✓	✓
+	Báo cáo thống kê doanh thu & Hiệu suất kinh doanh	✗	✗	✓
+
+ 
+CHƯƠNG 2: MÔ HÌNH HÓA USE CASE (USE CASE MODELING)
+2.1 Sơ đồ Use Case tổng quát toàn hệ thống (Overall Use Case Diagram)
+ 
+Hình 2.1: Sơ đồ Use Case tổng quát toàn hệ thống VinDining
+2.3 Đặc tả chi tiết 15 Use Case hệ thống (Use Case Specifications)
+Phần này cung cấp bảng đặc tả chuẩn kỹ thuật phần mềm cho toàn bộ 15 Use Case của dự án, bao gồm bảng thuộc tính, luồng sự kiện chính và các luồng xử lý ngoại lệ theo đúng nguyên tắc không sử dụng các tiền tố viết tắt.
+2.3.1 Phân hệ Khách hàng
+Đặc tả UC-U1: Đặt bàn trực tuyến & Đặt cọc giữ chỗ (Table Reservation & Deposit)
+Mã Use Case	UC-U1
+Tên Use Case	Đặt bàn trực tuyến & Đặt cọc giữ chỗ \
+Tác nhân tham gia	Khách hàng (Chính), Cổng thanh toán VNPAY (Phụ), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Trọng yếu (Must Have)
+Mối quan hệ	Bao gồm tương tác cổng VNPAY để thanh toán; Mở rộng tác vụ nền giải phóng bàn UC-S1 khi quá hạn giữ chỗ 17 phút
+Mục tiêu chức năng	Cho phép khách hàng truy cập website, tra cứu sơ đồ bàn theo thời gian thực, lựa chọn thời điểm và vị trí bàn mong muốn, sau đó thanh toán tiền cọc cố định qua VNPAY để xác nhận giữ chỗ chắc chắn.
+Điều kiện tiên quyết	Khách hàng truy cập hệ thống website đặt chỗ; sơ đồ mặt bằng bàn ăn của nhà hàng đang trong trạng thái hoạt động.
+Điều kiện kết thúc	Vị trí bàn ăn chuyển sang trạng thái Đã đặt chỗ (Reserved); hệ thống ghi nhận khoản cọc thành công và tự động gửi mã đặt bàn BookingCode kèm chi tiết xác nhận đến khách hàng.
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng truy cập giao diện đặt bàn, lựa chọn Ngày hẹn, Ca phục vụ, Số lượng khách tham dự và Khu vực bàn ăn mong muốn như Phòng VIP, Sảnh chính hoặc Ban công.
+2.  Hệ thống kiểm tra trạng thái sơ đồ bàn thời gian thực và hiển thị trực quan danh sách các vị trí bàn ăn khả dụng tương ứng.
+3.  Khách hàng điền thông tin liên hệ cá nhân gồm Họ tên, Số điện thoại, Email, ghi chú chi tiết các yêu cầu đặc biệt về khẩu vị hoặc cảnh báo dị ứng thực phẩm và bấm chọn xác nhận đặt cọc.
+4.  Hệ thống khóa giữ chỗ tạm thời vị trí bàn đã chọn trong thời gian tối đa 17 phút (bao gồm 15 phút hiệu lực mã QR VNPAY cộng thêm 2 phút xử lý mạng), đồng thời chuyển hướng sang giao diện thanh toán của cổng VNPAY.
+5.  Khách hàng thực hiện thao tác quét mã VietQR ngân hàng hoặc điền thông tin thẻ thanh toán trên cổng VNPAY trong thời hạn 15 phút.
+6.  Cổng VNPAY xử lý giao dịch thành công và phát tín hiệu thông báo thanh toán tức thời (IPN callback) về máy chủ hệ thống.
+7.  Hệ thống cập nhật trạng thái bàn ăn sang Đã đặt chỗ (Reserved), tự động sinh mã đặt bàn BookingCode duy nhất và gửi thông báo xác nhận thành công tới khách hàng qua tin nhắn và thư điện tử.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng chủ động hủy thao tác thanh toán hoặc giao dịch qua VNPAY thất bại, hệ thống ghi nhận trạng thái chưa hoàn tất và hiển thị thông báo mời khách thao tác lại. Trường hợp quá thời hạn quy định mà chưa thanh toán, hệ thống tự động giải phóng vị trí bàn về trạng thái sẵn sàng đón khách.
+•  Khi phát sinh phản hồi thanh toán thành công trễ từ cổng VNPAY sau khi bàn đã được giải phóng do vượt quá 17 phút, hệ thống tự động quét tìm bàn ăn trống có vị trí và sức chứa tương đương để bố trí cho khách. Nếu nhà hàng đã kín chỗ, hệ thống ghi nhận trạng thái chờ xử lý và kích hoạt cảnh báo tới Quản lý để trực tiếp liên hệ hỗ trợ đổi ngày hoặc hoàn tiền.
+•  Khi toàn bộ các bàn ăn trong khung giờ hoặc phân khu mong muốn đã kín chỗ, hệ thống thông báo trạng thái hết chỗ và tự động gợi ý các khung giờ hoặc phân khu lân cận còn khả dụng.
+•  Khi khách hàng thực hiện hủy đặt bàn trước giờ hẹn từ 4 tiếng trở lên, hệ thống tự động kích hoạt thủ tục hoàn lại tiền cọc qua cổng VNPAY và đưa vị trí bàn về trạng thái sẵn sàng phục vụ.
+•  Khi khách hàng yêu cầu hủy đặt bàn trong vòng dưới 4 tiếng trước giờ hẹn, hệ thống ghi nhận việc hủy bàn, giải phóng bàn ăn nhưng giữ lại toàn bộ số tiền cọc theo đúng cam kết chính sách.
+
+Đặc tả UC-U2: Xem E-Menu tại bàn (Table E-Menu)
+Mã Use Case	UC-U2
+Tên Use Case	Xem E-Menu tại bàn (Table E-Menu)
+Tác nhân tham gia	Khách hàng (Chính)
+Mức độ ưu tiên	Trọng yếu (Must Have)
+Mối quan hệ	Độc lập
+Mục tiêu chức năng	Cho phép khách hàng tại bàn chiêm ngưỡng hình ảnh thực đơn chất lượng cao, thành phần món ăn và cảnh báo dị ứng qua Web E-Menu trên Smartphone cá nhân (quét mã QR tại bàn) hoặc mượn Tablet dùng chung; hỗ trợ gửi yêu cầu phục vụ hoặc thanh toán kín đáo.
+Điều kiện tiên quyết	Khách hàng đã ngồi tại bàn ăn thực tế tại nhà hàng.
+Điều kiện kết thúc	Khách hàng nắm bắt toàn diện thông tin món ăn và sẵn sàng trao đổi trực tiếp với nhân viên phục vụ để gọi món.
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng ngồi vào vị trí bàn ăn, dùng Smartphone quét mã QR định danh bàn (hoặc mượn Tablet dùng chung từ nhân viên phục vụ) để mở trang Web E-Menu.
+2.  Khách hàng thực hiện thao tác lướt xem các danh mục món ăn như Khai vị, Món chính, Tráng miệng, Đồ uống và khám phá câu chuyện ẩm thực cùng hình ảnh chất lượng cao.
+3.  Khách hàng tham khảo kỹ lưỡng các thông tin cảnh báo dị ứng thực phẩm và bảng thành phần đính kèm cho từng món ăn.
+4.  Khách hàng thảo luận cùng những người đi cùng và đưa ra quyết định lựa chọn món ăn.
+5.  Khách hàng trao đổi trực tiếp nguyện vọng gọi món với nhân viên phục vụ đang túc trực tại phân khu để nhân viên tạo đơn; trong bữa ăn, khách có thể nhấn nút gửi yêu cầu phục vụ hoặc yêu cầu thanh toán trên E-Menu.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng không mang theo điện thoại thông minh hoặc điện thoại hết pin, nhân viên phục vụ chủ động cung cấp Tablet từ kho dùng chung (Floating Pool) hoặc cuốn thực đơn bìa da truyền thống cho khách.
+
+Đặc tả UC-U3: Hủy đặt bàn trực tuyến & Hoàn cọc tự động (Cancel Reservation & Refund)
+Mã Use Case	UC-U3
+Tên Use Case	Hủy đặt bàn trực tuyến & Hoàn cọc tự động (Cancel Reservation & Refund)
+Tác nhân tham gia	Khách hàng (Chính), Cổng thanh toán VNPAY (Phụ), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Bao gồm (include) tương tác cổng VNPAY để xử lý lệnh hoàn tiền cọc tự động qua API
+Mục tiêu chức năng	Cho phép khách hàng chủ động hủy lịch đặt bàn trực tuyến trên hệ thống website; hệ thống tự động kiểm tra mốc thời gian đối chiếu chính sách để thực hiện hoàn tiền hoặc phạt cọc hoàn toàn tự động.
+Điều kiện tiên quyết	Khách hàng sở hữu một mã đặt bàn BookingCode đang ở trạng thái hợp lệ Đã đặt chỗ (Reserved).
+Điều kiện kết thúc	Trạng thái lịch đặt bàn chuyển sang Đã hủy (Cancelled); vị trí bàn ăn được giải phóng về trạng thái Sẵn sàng (Available); giao dịch hoàn tiền hoặc giữ cọc được ghi nhận minh bạch vào hệ thống.
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng truy cập trang Tra cứu đặt bàn trên website, điền Số điện thoại và mã đặt bàn BookingCode đã được cấp.
+2.  Hệ thống truy xuất dữ liệu, hiển thị chi tiết lịch hẹn cùng nút chức năng Hủy đặt bàn.
+3.  Khách hàng nhấn nút Hủy đặt bàn và xác nhận đồng ý với các điều khoản xử lý.
+4.  Hệ thống thực hiện kiểm tra chênh lệch thời gian giữa thời điểm hiện tại và giờ hẹn dùng bữa thực tế.
+5.  Xác nhận thời gian còn cách giờ hẹn từ 4 tiếng trở lên, hệ thống tự động gửi yêu cầu gọi API hoàn tiền sang cổng VNPAY để hoàn lại 100% khoản cọc cho khách hàng.
+6.  Hệ thống cập nhật trạng thái đặt bàn sang Đã hủy (Cancelled) và đưa trạng thái bàn ăn về Sẵn sàng đón khách (Available).
+7.  Hệ thống gửi thư điện tử và tin nhắn thông báo xác nhận hủy đặt bàn cùng chứng từ hoàn tiền thành công tới khách hàng.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng thực hiện hủy lịch đặt bàn khi thời gian còn cách giờ hẹn dưới 4 tiếng, hệ thống hiển thị thông báo cảnh báo khách hàng sẽ bị giữ lại 100% tiền cọc do vi phạm chính sách cam kết thời gian chuẩn bị nguyên liệu. Sau khi khách hàng xác nhận đồng ý, hệ thống ghi nhận trạng thái hủy bàn, giải phóng vị trí bàn về trạng thái sẵn sàng đón khách và giữ lại khoản cọc theo đúng quy định.
+
+Đặc tả UC-U4: Gửi đánh giá và phản hồi chất lượng dịch vụ (Submit Guest Feedback & Review)
+Mã Use Case	UC-U4
+Tên Use Case	Gửi đánh giá và phản hồi chất lượng dịch vụ (Submit Guest Feedback & Review)
+Tác nhân tham gia	Khách hàng (Chính), Hệ thống quản trị (Phụ)
+Mức độ ưu tiên	Bổ sung (Could Have - Giá trị gia tăng)
+Mối quan hệ	Độc lập (Kênh thu thập khảo sát mức độ hài lòng khách hàng sau trải nghiệm ẩm thực)
+Mục tiêu chức năng	Thu thập ý kiến đánh giá định lượng và đóng góp chất lượng từ khách hàng sau bữa ăn nhằm nâng cao tiêu chuẩn phục vụ của nhà hàng.
+Điều kiện tiên quyết	Khách hàng đã dùng bữa xong và hoàn tất thủ tục thanh toán hóa đơn.
+Điều kiện kết thúc	Dữ liệu khảo sát và chấm điểm được lưu trữ an toàn vào cơ sở dữ liệu và hiển thị trên bảng điều khiển thống kê của Quản lý.
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng nhận thư điện tử cảm ơn kèm đường dẫn đánh giá hoặc quét mã QR khảo sát được in trên phiếu hóa đơn thanh toán.
+2.  Khách hàng truy cập biểu mẫu khảo sát trực tuyến, lựa chọn mức độ hài lòng theo thang điểm từ 1 đến 5 sao cho từng hạng mục gồm chất lượng món ăn, không gian và thái độ phục vụ.
+3.  Khách hàng nhập các ý kiến phản hồi chi tiết hoặc đề xuất cải tiến và nhấn nút Gửi đánh giá.
+4.  Hệ thống xác thực tính hợp lệ, lưu trữ dữ liệu khảo sát vào cơ sở dữ liệu và cập nhật chỉ số đo lường mức độ hài lòng khách hàng (CSAT) trên bảng điều khiển quản trị.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng gửi đánh giá kèm phản ánh mức độ hài lòng dưới 3 sao, hệ thống tự động gắn nhãn cảnh báo ưu tiên và chuyển tiếp thông báo đến hộp thư của Quản lý nhà hàng để kịp thời tiếp thu và xử lý.
+
+2.3.2 Phân hệ Nhân viên Nội bộ
+Đặc tả UC-E1: Nhân viên tạo Order trực tiếp & Điều phối KDS Bếp (Waitstaff Order Creation & Kitchen Dispatching)
+Mã Use Case	UC-E1
+Tên Use Case	Nhân viên tạo Order trực tiếp & Điều phối KDS Bếp (Waitstaff Order Creation & Kitchen Dispatching)
+Tác nhân tham gia	Nhân viên Phục vụ (Chính), Màn hình KDS Bếp (Phụ), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5; Tương tác thời gian thực SignalR Hub với KDS
+Mục tiêu chức năng	Cho phép nhân viên phục vụ đứng tại bàn tiếp nhận yêu cầu gọi món từ thực khách, ghi nhận cảnh báo dị ứng và nhập đơn hàng trên thiết bị di động, kích hoạt tự động điều phối vé điện tử lên màn hình KDS Bếp.
+Điều kiện tiên quyết	Vị trí bàn ăn đã được check-in ở trạng thái Đang phục vụ (Occupied) và khách hàng đã hoàn thành việc chọn món.
+Điều kiện kết thúc	Đơn hàng mới được tạo thành công ở trạng thái Đang chế biến (Processing); các màn hình KDS tại trạm Bếp nóng, Bếp lạnh và Quầy bar tự động hiển thị vé món kèm đồng hồ đếm ngược SLA và cảnh báo dị ứng.
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng trao đổi trực tiếp danh sách các món ăn và đồ uống mong muốn gọi với nhân viên phục vụ.
+2.  Nhân viên phục vụ mở ứng dụng Web POS trên thiết bị di động, chọn đúng vị trí bàn ăn đang túc trực.
+3.  Nhân viên tìm kiếm và thêm các món ăn vào giỏ hàng, đồng thời nhập chi tiết các ghi chú đặc biệt và cảnh báo dị ứng thực phẩm theo yêu cầu của khách hàng.
+4.  Nhân viên kiểm tra lại toàn bộ danh mục đơn hàng và nhấn nút Tạo đơn & Gửi Bếp.
+5.  Hệ thống khởi tạo thực thể đơn hàng mới với trạng thái Đang chế biến (Processing) và ghi nhận mốc thời gian bắt đầu.
+6.  Hệ thống tự động phát tín hiệu SignalR thời gian thực đẩy vé điện tử lên màn hình KDS tại trạm Bếp tương ứng với thông tin số bàn, tên món, đồng hồ SLA và bôi đậm nội dung cảnh báo dị ứng.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng có nhu cầu gọi bổ sung món ăn trong quá trình dùng bữa, nhân viên phục vụ thực hiện mở lại bàn ăn trên ứng dụng và tạo một lượt gọi món mới; hệ thống sẽ gom chung các món mới vào đơn hàng hiện hữu của bàn và chỉ đẩy vé chế biến cho những món vừa bổ sung lên KDS.
+
+Đặc tả UC-E2: Phục vụ món & Xác nhận hoàn thành tại quầy Pass (Expediter Serving Confirmation)
+Mã Use Case	UC-E2
+Tên Use Case	Phục vụ món & Xác nhận hoàn thành tại quầy Pass (Expediter Serving Confirmation)
+Tác nhân tham gia	Nhân viên Điều phối / Checkfood (Chính), Nhân viên Phục vụ (Phụ), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Nhân viên Checkfood tại quầy Pass tiếp nhận món ăn hoàn thành từ đầu bếp, kiểm tra tiêu chuẩn chất lượng và lưu ý dị ứng, bấm xác nhận hoàn thành trên thiết bị để kích hoạt thông báo điều phối nhân viên bưng món ra bàn.
+Điều kiện tiên quyết	Món ăn đã được nhà bếp hoàn thành chế biến và chuyển ra đặt tại quầy Pass có đèn sưởi nhiệt.
+Điều kiện kết thúc	Trạng thái món ăn chuyển sang Đã phục vụ (Served); hệ thống lưu mốc thời gian hoàn thành thực tế và gửi tín hiệu thông báo tức thời đến điện thoại của nhân viên phục vụ.
+
+• Luồng sự kiện chính tuần tự:
+1.  Đầu bếp nấu xong đĩa món chuẩn mực, đặt ra quầy chuyển món Pass bên dưới đèn giữ nhiệt kèm phiếu chế biến tương ứng.
+2.  Nhân viên Điều phối (Expediter) tại quầy Pass kiểm tra đối chiếu đĩa món với thông tin hiển thị trên máy tính bảng điều phối, rà soát cẩn thận độ chuẩn xác của các yêu cầu loại trừ dị ứng.
+3.  Nhân viên Điều phối nhấn nút Xác nhận hoàn thành món (Served) trên giao diện thiết bị tại quầy Pass.
+4.  Hệ thống cập nhật trạng thái món ăn thành Đã phục vụ (Served), ghi nhận mốc thời gian hoàn thành và phát sự kiện thông báo qua SignalR làm rung nhẹ thiết bị di động của nhân viên phục vụ phụ trách bàn.
+5.  Nhân viên Điều phối bàn giao đĩa món cho nhân viên phục vụ mang ra bàn đặt cho khách bằng hai tay.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi nhân viên Điều phối phát hiện đĩa món chế biến sai yêu cầu hoặc quên loại bỏ thành phần dị ứng đã ghi chú, nhân viên từ chối bấm xác nhận và yêu cầu đầu bếp lập tức chế biến lại đĩa mới.
+
+Đặc tả UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn (Checkout, Deposit Deduction & Turnover)
+Mã Use Case	UC-E3
+Tên Use Case	Thanh toán, Cấn trừ tiền cọc & Đóng bàn (Checkout, Deposit Deduction & Turnover)
+Tác nhân tham gia	Nhân viên Phục vụ (Chính), Khách hàng (Chính), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5; Áp dụng công thức cấn trừ tiền cọc theo quy tắc tài chính BR-03
+Mục tiêu chức năng	Tự động tổng hợp chi phí toàn bộ món ăn thực tế đã dùng, tính toán 5% phí phục vụ, 10% thuế VAT, tự động cấn trừ chính xác số tiền cọc đã thu trước đó, xuất hóa đơn tạm tính và đóng bàn phục vụ.
+Điều kiện tiên quyết	Vị trí bàn ăn đang ở trạng thái Đang phục vụ (Occupied) và toàn bộ các món ăn đã được nhân viên điều phối xác nhận hoàn thành (Served).
+Điều kiện kết thúc	Hóa đơn được thanh toán thành công; đơn hàng được đóng lại; trạng thái bàn ăn chuyển sang Chờ dọn dẹp (Cleaning) và sau đó về Sẵn sàng (Available).
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng thông báo yêu cầu tính tiền trực tiếp với nhân viên phục vụ hoặc nhấn nút yêu cầu thanh toán trên màn hình E-Menu.
+2.  Nhân viên phục vụ mở chức năng Thanh toán bàn ăn tương ứng trên ứng dụng di động.
+3.  Hệ thống tự động thực hiện tính toán tài chính tuần tự: Tổng tiền món dùng thực tế, Phí phục vụ bằng 5% tổng tiền món, Thuế VAT bằng 10% của tổng tiền món cộng phí phục vụ, và Số tiền phải thu bằng tổng chi phí trừ đi số tiền cọc đã nộp với cận dưới tối thiểu bằng 0 đồng.
+4.  Hệ thống gửi lệnh in phiếu Hóa đơn tạm tính ra máy in nhiệt tại quầy thu ngân; nhân viên kẹp phiếu vào sổ da trang trọng mang ra bàn cho khách kiểm tra đối chiếu.
+5.  Khách hàng kiểm tra các mục tiền và thực hiện thanh toán phần chênh lệch còn lại qua tiền mặt, thẻ POS hoặc quét mã VietQR in sẵn trên phiếu.
+6.  Nhân viên phục vụ bấm nút Xác nhận hoàn tất thanh toán trên ứng dụng di động.
+7.  Hệ thống lưu trữ hóa đơn tài chính cuối cùng và tự động chuyển trạng thái bàn ăn sang Chờ dọn dẹp (Cleaning) để chuẩn bị đón đợt khách kế tiếp.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi tổng chi phí bữa ăn thấp hơn số tiền cọc đã thanh toán, hệ thống tự động áp dụng chính sách tiền cọc là mức chi tiêu tối thiểu (Minimum Spend) và thiết lập số tiền phải thu bằng 0 đồng, đồng thời hiển thị thông báo để nhân viên gợi ý khách gọi thêm đồ uống hoặc món tráng miệng mang về.
+•  Khi khách hàng có thắc mắc về số tiền cọc được khấu trừ, nhân viên tra cứu trực tiếp lịch sử giao dịch cọc gắn với mã BookingCode trên ứng dụng để giải thích minh bạch cho khách.
+
+Đặc tả UC-E4: Đổi bàn / Chuyển bàn phục vụ (Change & Merge Tables)
+Mã Use Case	UC-E4
+Tên Use Case	Đổi bàn / Chuyển bàn phục vụ (Change & Merge Tables)
+Tác nhân tham gia	Nhân viên Phục vụ (Chính), Quản lý (Phụ)
+Mức độ ưu tiên	Quan trọng (Should Have - Rất cần thiết)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Cho phép nhân viên phục vụ chuyển toàn bộ đơn hàng và khoản tiền cọc liên kết từ bàn hiện tại sang một bàn ăn trống khác khi khách hàng có nhu cầu thay đổi chỗ ngồi.
+Điều kiện tiên quyết	Bàn ăn ban đầu đang ở trạng thái Đang phục vụ (Occupied); vị trí bàn mới mong muốn chuyển đến phải đang ở trạng thái Sẵn sàng (Available).
+Điều kiện kết thúc	Toàn bộ dữ liệu đơn hàng và tiền cọc được di chuyển trọn vẹn sang bàn mới; bàn ăn cũ chuyển trạng thái sang Chờ dọn dẹp (Cleaning); bàn ăn mới chuyển sang Đang phục vụ (Occupied).
+
+• Luồng sự kiện chính tuần tự:
+1.  Khách hàng đề đạt nguyện vọng chuyển sang vị trí bàn khác thuận tiện hơn.
+2.  Nhân viên phục vụ chọn chức năng Đổi bàn trên ứng dụng di động đối với bàn ăn hiện tại.
+3.  Hệ thống hiển thị sơ đồ mặt bằng các bàn ăn đang trống khả dụng trong cùng ca phục vụ.
+4.  Nhân viên chọn vị trí bàn mới mục tiêu và nhấn nút Xác nhận chuyển bàn.
+5.  Hệ thống thực thi giao dịch cơ sở dữ liệu chuyển toàn bộ đơn hàng, các món ăn và giá trị đặt cọc sang mã bàn mới.
+6.  Hệ thống chuyển trạng thái bàn cũ sang Chờ dọn dẹp (Cleaning), chuyển bàn mới sang Đang phục vụ (Occupied) và gửi thông báo cập nhật sơ đồ bàn đến quầy Điều phối Pass.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi khách hàng có nhu cầu ghép thêm bạn và gộp hai bàn ăn lại với nhau, nhân viên sử dụng chức năng Ghép bàn để liên kết hai mã bàn thành một nhóm phục vụ chung và hợp nhất hóa đơn.
+
+Đặc tả UC-E5: Đăng nhập & Xác thực hệ thống nội bộ (Staff Authentication & Authorization)
+Mã Use Case	UC-E5
+Tên Use Case	Đăng nhập & Xác thực hệ thống nội bộ (Staff Authentication & Authorization)
+Tác nhân tham gia	Nhân viên Phục vụ, Điều phối viên, Quản lý, Quản trị viên (Chính)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Use Case nền tảng cơ sở (Base Use Case) được bao gồm bởi toàn bộ các Use Case nghiệp vụ nội bộ của hệ thống
+Mục tiêu chức năng	Cung cấp cơ chế xác thực danh tính an toàn và phân quyền truy cập dựa trên vai trò cho toàn bộ cán bộ nhân viên nhà hàng.
+Điều kiện tiên quyết	Tài khoản nhân sự đã được Quản trị viên khởi tạo và cấp quyền trên hệ thống.
+Điều kiện kết thúc	Người dùng được cấp mã thông báo JWT Bearer Token hợp lệ và được điều hướng tới giao diện màn hình làm việc tương ứng với quyền hạn.
+
+• Luồng sự kiện chính tuần tự:
+1.  Nhân viên truy cập trang Đăng nhập hệ thống trên trình duyệt máy tính hoặc thiết bị di động.
+2.  Nhân viên nhập Tên đăng nhập hoặc Email và Mật khẩu cá nhân đã được cấp.
+3.  Nhân viên nhấn nút Đăng nhập.
+4.  Hệ thống thực hiện kiểm tra tính hợp lệ của thông tin tài khoản và kiểm tra trạng thái kích hoạt.
+5.  Hệ thống sinh mã thông báo JWT chứa thông tin định danh và danh mục quyền (Roles), sau đó điều hướng người dùng tới giao diện làm việc phù hợp.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi người dùng nhập sai mật khẩu quá 5 lần liên tiếp, hệ thống tự động tạm khóa tài khoản trong 15 phút nhằm phòng chống các cuộc tấn công dò quét mật khẩu tự động.
+•  Khi mã thông báo JWT hết hạn trong phiên làm việc, hệ thống tự động yêu cầu làm mới phiên hoặc chuyển hướng người dùng về trang đăng nhập để bảo mật dữ liệu.
+
+2.3.3 Phân hệ Quản lý & Quản trị
+Đặc tả UC-A1: Quản trị Danh mục & Thực đơn món ăn (Menu & Category Management)
+Mã Use Case	UC-A1
+Tên Use Case	Quản trị Danh mục & Thực đơn món ăn (Menu & Category Management)
+Tác nhân tham gia	Quản lý Nhà hàng (Chính), Quản trị viên (Phụ)
+Mức độ ưu tiên	Quan trọng (Should Have - Rất cần thiết)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Cung cấp công cụ cho Quản lý thêm mới, chỉnh sửa, cập nhật giá bán, hình ảnh và quản lý trạng thái Còn món hoặc Hết món cho toàn bộ thực đơn ẩm thực.
+Điều kiện tiên quyết	Quản lý đã đăng nhập thành công vào hệ thống với quyền hạn phù hợp.
+Điều kiện kết thúc	Thông tin thực đơn được cập nhật đồng bộ trong cơ sở dữ liệu và hiển thị tức thời trên các thiết bị E-Menu và ứng dụng phục vụ.
+
+• Luồng sự kiện chính tuần tự:
+1.  Quản lý truy cập phân hệ Quản lý Thực đơn trên cổng thông tin quản trị.
+2.  Hệ thống hiển thị danh sách toàn bộ các món ăn được phân loại theo danh mục ẩm thực.
+3.  Quản lý lựa chọn thao tác Thêm món mới hoặc chọn một món hiện có để Chỉnh sửa.
+4.  Quản lý nhập hoặc điều chỉnh Tên món, Mô tả câu chuyện ẩm thực, Đơn giá, Phân loại món, Đính kèm hình ảnh và khai báo chi tiết các thành phần gây dị ứng.
+5.  Quản lý nhấn nút Lưu thay đổi.
+6.  Hệ thống kiểm tra tính hợp lệ của dữ liệu đầu vào, lưu vào cơ sở dữ liệu và phát sự kiện cập nhật thời gian thực xuống toàn bộ thiết bị hiển thị tại nhà hàng.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi nhà bếp thông báo hết nguyên liệu đột xuất trong ca phục vụ, Quản lý sử dụng chức năng Bật/Tắt trạng thái Còn hàng nhanh trên ứng dụng để ngay lập tức ẩn món ăn đó trên E-Menu của khách.
+
+Đặc tả UC-A2: Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration & Canvas)
+Mã Use Case	UC-A2
+Tên Use Case	Quản trị & Cấu hình Sơ đồ bàn ăn (Floor Plan Configuration & Canvas)
+Tác nhân tham gia	Quản lý Nhà hàng (Chính), Quản trị viên (Phụ)
+Mức độ ưu tiên	Quan trọng (Should Have - Rất cần thiết)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Quản lý thiết lập bố cục không gian bàn ăn trực quan theo từng phân khu, định vị tọa độ hiển thị 2D và quản lý mã QR định danh bàn ăn.
+Điều kiện tiên quyết	Quản lý đã đăng nhập thành công với quyền quản trị sơ đồ mặt bằng.
+Điều kiện kết thúc	Bố cục sơ đồ mặt bằng bàn ăn được lưu trữ an toàn và đồng bộ hóa tức thời qua SignalR tới ứng dụng di động của toàn bộ nhân viên.
+
+• Luồng sự kiện chính tuần tự:
+1.  Quản lý mở giao diện Quản trị Sơ đồ bàn trên cổng quản trị.
+2.  Hệ thống hiển thị màn hình thiết kế mặt bằng trực quan dạng 2D Canvas.
+3.  Quản lý lựa chọn phân khu cần thao tác hoặc tạo phân khu mới, sau đó thực hiện kéo thả vị trí bàn, điều chỉnh tên bàn, sức chứa tối đa và hướng hiển thị khớp với thực tế nhà hàng.
+4.  Hệ thống tự động khởi tạo mã định danh và mã QR tương ứng với vị trí bàn ăn để phục vụ in đặt tại bàn.
+5.  Quản lý kiểm tra tính hợp lý của không gian và nhấn nút Lưu cấu hình sơ đồ bàn.
+6.  Hệ thống xác thực tính hợp lệ, lưu trữ các thay đổi vào cơ sở dữ liệu và tự động phát tín hiệu đồng bộ sơ đồ mới tới toàn bộ nhân viên phục vụ đang trong ca trực.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi Quản lý thực hiện thay đổi thông số sức chứa của một bàn ăn đang trong trạng thái Đang phục vụ, hệ thống sẽ đưa ra cảnh báo ngăn chặn để tránh gây sai lệch dữ liệu phục vụ hiện hành.
+
+Đặc tả UC-A3: Duyệt hoàn tiền cọc thủ công ngoại lệ (Manager Manual Refund Override)
+Mã Use Case	UC-A3
+Tên Use Case	Duyệt hoàn tiền cọc thủ công ngoại lệ (Manager Manual Refund Override)
+Tác nhân tham gia	Quản lý Nhà hàng (Chính), Cổng thanh toán VNPAY (Phụ), Hệ thống tự động (Phụ)
+Mức độ ưu tiên	Quan trọng (Should Have - Rất cần thiết)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5; Tương tác API hoàn tiền cổng VNPAY
+Mục tiêu chức năng	Cung cấp thẩm quyền cho Quản lý xử lý hoàn lại tiền cọc cho khách hàng trong các tình huống phát sinh ngoại lệ hoặc sự cố bất khả kháng ngoài quy tắc hoàn tiền tự động.
+Điều kiện tiên quyết	Lịch đặt bàn đang ở trạng thái Đã hủy nhưng chưa được hoàn tiền cọc, hoặc có đơn khiếu nại chính đáng từ phía khách hàng.
+Điều kiện kết thúc	Khoản tiền cọc được hoàn trả về tài khoản khách hàng thông qua cổng VNPAY; hệ thống lưu vết nhật ký kiểm toán danh tính người phê duyệt.
+
+• Luồng sự kiện chính tuần tự:
+1.  Quản lý tiếp nhận khiếu nại từ khách hàng và tra cứu mã đặt bàn BookingCode trên cổng quản trị.
+2.  Hệ thống hiển thị chi tiết lịch sử giao dịch đặt cọc và lý do chưa được hoàn tiền tự động.
+3.  Quản lý kiểm tra xác minh sự việc và bấm chọn chức năng Hoàn cọc thủ công (Override Refund).
+4.  Quản lý nhập bắt buộc nội dung lý do giải trình phê duyệt hoàn tiền vào hệ thống.
+5.  Hệ thống gọi API hoàn tiền sang cổng thanh toán VNPAY để thực hiện chuyển khoản lại cho khách hàng.
+6.  Hệ thống cập nhật trạng thái đơn đặt cọc thành Đã hoàn cọc ngoại lệ và tự động ghi nhật ký kiểm toán (Audit Log) lưu vết mã định danh của Quản lý đã ký duyệt.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi kết nối API hoàn tiền sang cổng VNPAY gặp trục trặc mạng gián đoạn, hệ thống ghi nhận trạng thái Chờ xử lý hoàn cọc và tự động thử lại định kỳ, đồng thời thông báo cho Quản lý nắm bắt tiến độ.
+
+Đặc tả UC-A4: Quản trị Tài khoản & Phân quyền nhân viên (Account & RBAC Administration)
+Mã Use Case	UC-A4
+Tên Use Case	Quản trị Tài khoản & Phân quyền nhân viên (Account & RBAC Administration)
+Tác nhân tham gia	Quản trị viên - Admin (Chính)
+Mức độ ưu tiên	Quan trọng (Should Have - Rất cần thiết)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Quản trị viên quản lý danh sách nhân sự, khởi tạo tài khoản, phân bổ vai trò nghiệp vụ và khóa tài khoản khi nhân viên nghỉ việc.
+Điều kiện tiên quyết	Quản trị viên đăng nhập với quyền hạn cao nhất trong hệ thống.
+Điều kiện kết thúc	Thông tin nhân sự và quyền hạn truy cập được cập nhật chính xác và có hiệu lực ngay lập tức.
+
+• Luồng sự kiện chính tuần tự:
+1.  Quản trị viên truy cập phân hệ Quản lý Nhân sự trên cổng quản trị.
+2.  Hệ thống hiển thị danh sách toàn bộ cán bộ nhân viên cùng vai trò được phân công.
+3.  Quản trị viên nhấn nút Tạo tài khoản mới hoặc chọn tài khoản hiện có để điều chỉnh.
+4.  Quản trị viên nhập thông tin nhân sự gồm Họ tên, Số điện thoại, Email và gán vai trò tương ứng gồm Phục vụ, Điều phối viên, Quản lý hoặc Quản trị viên.
+5.  Quản trị viên nhấn nút Lưu tài khoản.
+6.  Hệ thống tạo mã định danh, lưu trữ thông tin an toàn và tự động gửi thư điện tử kích hoạt kèm mật khẩu mặc định tới nhân viên.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi nhân viên nghỉ việc, Quản trị viên thực hiện kích hoạt chức năng Khóa tài khoản; hệ thống ngay lập tức vô hiệu hóa phiên làm việc hiện hành của tài khoản đó trên toàn bộ các thiết bị.
+
+Đặc tả UC-A5: Xem Báo cáo Thống kê & Dashboard doanh thu (Analytics & Executive Reporting)
+Mã Use Case	UC-A5
+Tên Use Case	Xem Báo cáo Thống kê & Dashboard doanh thu (Analytics & Executive Reporting)
+Tác nhân tham gia	Quản lý Nhà hàng, Quản trị viên (Chính)
+Mức độ ưu tiên	Bổ sung (Could Have - Giá trị gia tăng)
+Mối quan hệ	Bao gồm (include) Use Case cơ sở Đăng nhập UC-E5
+Mục tiêu chức năng	Cung cấp bảng điều khiển trực quan tổng hợp doanh thu, tỷ lệ lấp đầy bàn ăn, số lượng hủy cọc và xếp hạng các món ăn bán chạy nhất theo thời gian thực.
+Điều kiện tiên quyết	Quản lý hoặc Quản trị viên đã đăng nhập thành công vào cổng thông tin quản trị.
+Điều kiện kết thúc	Các biểu đồ phân tích và bảng số liệu thống kê được hiển thị trực quan và hỗ trợ xuất báo cáo định dạng chuẩn.
+
+• Luồng sự kiện chính tuần tự:
+1.  Quản lý chọn phân hệ Báo cáo Thống kê trên thanh điều hướng.
+2.  Quản lý chọn khung thời gian cần phân tích theo Ngày, Tuần, Tháng hoặc khoảng thời gian tùy chỉnh.
+3.  Hệ thống tổng hợp dữ liệu từ các phân hệ Hóa đơn, Đặt bàn và Đơn hàng trong cơ sở dữ liệu.
+4.  Hệ thống hiển thị bảng điều khiển trực quan gồm biểu đồ đường biến động doanh thu, biểu đồ tròn phân bổ món ăn bán chạy và các chỉ số vận hành trọng yếu.
+5.  Quản lý có thể nhấn nút Xuất báo cáo để tải tệp dữ liệu chi tiết phục vụ công tác đối soát.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi hệ thống phát hiện tỷ lệ hủy bàn hoặc không đến dùng bữa tăng cao bất thường trong một ca phục vụ, bảng điều khiển tự động hiển thị biểu tượng cảnh báo để Quản lý kịp thời rà soát nguyên nhân.
+
+2.3.4 Phân hệ Hệ thống Tự động
+Đặc tả UC-S1: Tự động giải phóng bàn hết hạn giữ cọc (Auto-Release Expired Reservation Lock)
+Mã Use Case	UC-S1
+Tên Use Case	Tự động giải phóng bàn hết hạn giữ cọc (Auto-Release Expired Reservation Lock)
+Tác nhân tham gia	Hệ thống tự động / Background Worker (Chính)
+Mức độ ưu tiên	Trọng yếu (Must Have - Bắt buộc hoàn thành)
+Mối quan hệ	Mở rộng (extend) cho Use Case Đặt bàn UC-U1 khi phát sinh quá hạn thời gian
+Mục tiêu chức năng	Tiến trình chạy ngầm định kỳ quét cơ sở dữ liệu mỗi 60 giây, tự động phát hiện và hủy các phiên đặt bàn quá 17 phút mà chưa nhận được thanh toán cọc, giải phóng bàn về trạng thái sẵn sàng và đồng bộ sơ đồ qua SignalR.
+Điều kiện tiên quyết	Tồn tại các bản ghi đặt bàn ở trạng thái Chờ thanh toán (PendingPayment) có thời gian khởi tạo vượt quá 17 phút.
+Điều kiện kết thúc	Vị trí bàn ăn được giải phóng về trạng thái Sẵn sàng (Available); phiên đặt bàn chuyển sang Hết hạn (Expired); sơ đồ bàn trên thiết bị của nhân viên được cập nhật màu sắc thời gian thực.
+
+• Luồng sự kiện chính tuần tự:
+1.  Tiến trình dịch vụ nền (Background Worker) được kích hoạt tự động theo chu kỳ mỗi 60 giây một lần.
+2.  Hệ thống thực hiện truy vấn cơ sở dữ liệu để tìm kiếm tất cả các đơn đặt chỗ đang ở trạng thái Chờ thanh toán có mốc thời gian tạo đã vượt quá 17 phút.
+3.  Hệ thống cập nhật trạng thái các đơn đặt chỗ thỏa mãn điều kiện sang Đã hết hạn giữ chỗ (Expired_Cancelled).
+4.  Hệ thống cập nhật trạng thái các vị trí bàn ăn tương ứng từ trạng thái Khóa giữ chỗ (Locked) trở về trạng thái Sẵn sàng đón khách (Available).
+5.  Hệ thống phát thông điệp sự kiện qua kênh SignalR Hub để lập tức đổi màu trạng thái bàn ăn thành màu xanh lá cây trên màn hình làm việc của toàn bộ nhân viên và quản lý.
+6.  Hệ thống ghi nhận thông tin chi tiết vào nhật ký kiểm toán hệ thống để lưu vết lịch sử giải phóng bàn tự động.
+• Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:
+•  Khi cổng VNPAY phản hồi tín hiệu thanh toán thành công nhưng bị trễ sau 17 phút và vị trí bàn cũ đã được cấp cho khách hàng khác, hệ thống tự động kích hoạt tiến trình tìm kiếm bàn trống tương đương để bố trí cho khách; trường hợp nhà hàng đã kín chỗ, hệ thống chuyển giao dịch sang trạng thái ngoại lệ và kích hoạt cảnh báo ưu tiên cao tới Quản lý để gọi điện hỗ trợ.
+
+ 
+CHƯƠNG 3: MÔ HÌNH HÓA QUY TRÌNH NGHIỆP VỤ (SWIMLANE ACTIVITY DIAGRAMS)
+Chương này mô hình hóa chi tiết 12 quy trình nghiệp vụ trọng yếu của hệ thống VinDining thông qua sơ đồ hoạt động phân làn (Swimlane Activity Diagrams). Mô hình phân làn giúp phân định tuyệt đối ranh giới trách nhiệm và chuỗi tương tác phối hợp tuần tự giữa Khách hàng, Nhân viên Phục vụ, Điều phối viên, Quản lý, Nhà bếp cùng các dịch vụ kỹ thuật hạ tầng.
+3.1 AD-01: Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY
+• Phân làn trách nhiệm tham gia: Khách hàng | Hệ thống VinDining | Cổng thanh toán VNPAY
+ 
+Hình 3.1: Sơ đồ hoạt động Quy trình Đặt bàn trực tuyến & Đặt cọc VNPAY
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Khách hàng chủ động truy cập hệ thống website đặt chỗ, lựa chọn thời gian dùng bữa, ca phục vụ, số lượng người tham dự và phân khu bàn ăn mong muốn.
+•  Hệ thống tiếp nhận thông số, thực hiện tra cứu trạng thái khả dụng trên sơ đồ mặt bằng thời gian thực và phản hồi danh sách các vị trí bàn ăn phù hợp.
+•  Khách hàng điền đầy đủ thông tin định danh cá nhân, nhập các ghi chú đặc biệt hoặc lưu ý dị ứng thực phẩm và bấm chọn phương thức thanh toán tiền cọc.
+•  Hệ thống thiết lập trạng thái khóa giữ chỗ tạm thời cho vị trí bàn ăn trong thời gian tối đa 17 phút và khởi tạo phiên giao dịch chuyển tiếp sang cổng VNPAY.
+•  Khách hàng thực hiện thao tác quét mã VietQR hoặc nhập thông tin thanh toán trên giao diện bảo mật của cổng VNPAY trong vòng 15 phút.
+•  Cổng VNPAY xử lý trừ tiền và phát tín hiệu thông báo tức thời (IPN callback) về máy chủ hệ thống VinDining.
+•  Hệ thống cập nhật trạng thái bàn ăn sang Đã đặt chỗ (Reserved), lưu trữ thông tin cọc và phát thông báo xác nhận thành công tới khách hàng.
+
+3.2 AD-02: Quy trình Nhân viên Order trực tiếp & Điều phối KDS Bếp
+• Phân làn trách nhiệm tham gia: Khách hàng | Nhân viên Phục vụ (Waitstaff) | Hệ thống VinDining & Màn hình KDS Bếp
+ 
+Hình 3.2: Sơ đồ hoạt động Quy trình Nhân viên Order trực tiếp & Điều phối KDS Bếp
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Khách hàng xem hình ảnh và chi tiết món ăn qua Web E-Menu trên điện thoại cá nhân (quét mã QR tại bàn) hoặc mượn Tablet dùng chung, sau đó trao đổi trực tiếp nguyện vọng gọi món với nhân viên phục vụ.
+•  Nhân viên phục vụ mở ứng dụng di động Web POS, lựa chọn đúng số bàn đang phục vụ và thực hiện thêm các món ăn vào đơn gọi món.
+•  Nhân viên ghi nhận kỹ lưỡng các cảnh báo dị ứng thực phẩm và ghi chú khẩu vị riêng biệt của từng vị khách theo từng món ăn cụ thể.
+•  Nhân viên phục vụ rà soát lại toàn bộ đơn hàng và bấm chọn xác nhận Tạo đơn & Gửi Bếp trên thiết bị di động.
+•  Hệ thống ghi nhận đơn hàng mới vào cơ sở dữ liệu với trạng thái Đang chế biến và tự động truyền tải vé điện tử qua SignalR đến màn hình KDS tại các trạm Bếp tương ứng.
+•  Màn hình KDS tại các phân khu Bếp nóng, Bếp lạnh và Quầy bar hiển thị vé món kèm đồng hồ đếm ngược SLA và cảnh báo dị ứng được bôi đậm rõ nét.
+
+3.3 AD-03: Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
+• Phân làn trách nhiệm tham gia: Nhà bếp (Kitchen/Chef) | Điều phối viên (Expediter / Checkfood) | Hệ thống VinDining
+ 
+Hình 3.3: Sơ đồ hoạt động Quy trình Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Đầu bếp căn cứ theo nội dung phiếu in nhiệt để tiến hành chế biến món ăn chuẩn mực và đặt đĩa món hoàn chỉnh ra quầy chuyển món Pass dưới hệ thống đèn sưởi nhiệt.
+•  Nhân viên Điều phối tại quầy Pass tiếp nhận đĩa món, đối chiếu cẩn thận hình thức trình bày và thành phần chế biến với phiếu in và thông tin trên máy tính bảng điều phối.
+•  Nhân viên Điều phối kiểm tra nghiêm ngặt tính tuân thủ đối với các cảnh báo dị ứng thực phẩm của thực khách.
+•  Nhân viên Điều phối nhấn nút Xác nhận hoàn thành món trên giao diện máy tính bảng tại quầy Pass theo đúng thẩm quyền được phân công.
+•  Hệ thống ghi nhận trạng thái món ăn thành Đã phục vụ (Served), lưu mốc thời gian thực hiện và phát tín hiệu thông báo tức thời qua SignalR tới điện thoại của nhân viên phục vụ phụ trách bàn.
+•  Nhân viên phục vụ tiếp nhận món ăn từ quầy Pass và bưng ra phục vụ tại bàn cho khách hàng bằng hai tay trang trọng.
+
+3.4 AD-04: Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn
+• Phân làn trách nhiệm tham gia: Khách hàng | Nhân viên Phục vụ / Thu ngân | Hệ thống VinDining
+ 
+Hình 3.4: Sơ đồ hoạt động Quy trình Thanh toán, Cấn trừ tiền cọc & Đóng bàn
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Khách hàng đưa ra yêu cầu tính tiền bữa ăn trực tiếp với nhân viên phục vụ hoặc qua thao tác trên màn hình hiển thị tại bàn.
+•  Nhân viên phục vụ mở chức năng Thanh toán bàn ăn tương ứng trên thiết bị di động cá nhân.
+•  Hệ thống tự động tính toán tổng tiền món thực tế, cộng thêm 5% phí phục vụ và 10% thuế VAT, sau đó tự động cấn trừ chính xác số tiền cọc đã thanh toán từ trước.
+•  Hệ thống in phiếu Hóa đơn tạm tính hiển thị minh bạch toàn bộ các dòng tiền cấn trừ ra máy in thu ngân; nhân viên kẹp phiếu vào sổ da mang ra bàn cho khách đối chiếu.
+•  Khách hàng kiểm tra chứng từ và thực hiện thanh toán phần chênh lệch còn lại qua tiền mặt, thẻ POS hoặc quét mã VietQR in trên phiếu.
+•  Nhân viên phục vụ bấm nút xác nhận Hoàn tất thanh toán trên ứng dụng di động.
+•  Hệ thống lưu trữ hóa đơn thanh toán hoàn tất và tự động chuyển trạng thái bàn ăn sang Chờ dọn dẹp (Cleaning) để chuẩn bị đón đợt khách tiếp theo.
+
+3.5 AD-05: Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY
+• Phân làn trách nhiệm tham gia: Khách hàng / Quản lý | Hệ thống VinDining | Cổng thanh toán VNPAY
+ 
+Hình 3.5: Sơ đồ hoạt động Quy trình Hủy đặt bàn & Hoàn phạt tiền cọc VNPAY
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Khách hàng hoặc Quản lý gửi yêu cầu hủy lịch đặt bàn qua trang tra cứu trực tuyến hoặc cổng thông tin quản trị.
+•  Hệ thống tiếp nhận yêu cầu và tự động tính toán khoảng chênh lệch thời gian từ thời điểm hiện tại đến giờ hẹn dùng bữa thực tế.
+•  Trường hợp thời gian hủy trước giờ hẹn từ 4 tiếng trở lên, hệ thống tự động gửi lệnh gọi API hoàn tiền 100% sang cổng thanh toán VNPAY.
+•  Cổng VNPAY tiếp nhận lệnh, hoàn trả tiền cọc về tài khoản của khách và phản hồi xác nhận cho hệ thống.
+•  Hệ thống cập nhật trạng thái lịch đặt bàn sang Đã hủy và giải phóng vị trí bàn ăn về trạng thái Sẵn sàng đón khách.
+•  Trường hợp thời gian hủy dưới 4 tiếng trước giờ hẹn, hệ thống ghi nhận hủy lịch, đưa bàn về trạng thái sẵn sàng nhưng giữ lại toàn bộ tiền cọc làm phí phạt bồi hoàn chi phí chuẩn bị nguyên liệu.
+
+3.6 AD-06: Quy trình Đăng nhập & Xác thực nhân viên nội bộ
+• Phân làn trách nhiệm tham gia: Nhân viên nội bộ | Ứng dụng Web POS / Portal | Backend API & Cơ sở dữ liệu
+ 
+Hình 3.6: Sơ đồ hoạt động Quy trình Đăng nhập & Xác thực nhân viên nội bộ
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Nhân viên nhập Tên đăng nhập hoặc Email và Mật khẩu cá nhân vào biểu mẫu đăng nhập hệ thống.
+•  Ứng dụng thực hiện kiểm tra tính hợp lệ cơ bản của dữ liệu và gửi yêu cầu xác thực bảo mật tới máy chủ Backend API.
+•  Hệ thống Backend truy vấn cơ sở dữ liệu, kiểm tra tính khớp của mật khẩu đã được mã hóa bảo mật và trạng thái hoạt động của tài khoản.
+•  Hệ thống xác thực thành công, đóng gói thông tin vai trò người dùng và sinh mã thông báo JWT Bearer Token có thời hạn.
+•  Ứng dụng lưu trữ token bảo mật và tự động điều hướng nhân viên tới giao diện màn hình chức năng tương ứng với vai trò được giao.
+
+3.7 AD-07: Quy trình Chuyển bàn / Đổi bàn phục vụ
+• Phân làn trách nhiệm tham gia: Nhân viên Phục vụ | Hệ thống VinDining & CSDL | Màn hình Khách & Bếp
+ 
+Hình 3.7: Sơ đồ hoạt động Quy trình Chuyển bàn / Đổi bàn phục vụ
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Khách hàng đề đạt nguyện vọng chuyển đổi chỗ ngồi sang một khu vực hoặc vị trí bàn khác trong nhà hàng.
+•  Nhân viên phục vụ mở chức năng Đổi bàn trên thiết bị di động và tra cứu danh sách các bàn ăn đang trống khả dụng.
+•  Nhân viên chọn vị trí bàn mới mục tiêu và xác nhận thực hiện thao tác chuyển đổi.
+•  Hệ thống thực thi giao dịch cơ sở dữ liệu chuyển toàn bộ đơn hàng, danh mục món ăn và khoản tiền cọc liên kết sang mã bàn mới.
+•  Hệ thống chuyển trạng thái bàn cũ sang Chờ dọn dẹp và chuyển bàn mới sang trạng thái Đang phục vụ.
+•  Hệ thống tự động phát thông báo qua SignalR cập nhật số bàn mới tới quầy điều phối Pass để nhân viên giao đúng vị trí.
+
+3.8 AD-08: Quy trình Quản trị & Cấu hình Sơ đồ bàn ăn
+• Phân làn trách nhiệm tham gia: Quản lý Nhà hàng | Hệ thống API & CSDL | Ứng dụng Nhân viên phục vụ
+ 
+Hình 3.8: Sơ đồ hoạt động Quy trình Quản trị & Cấu hình Sơ đồ bàn ăn
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Quản lý truy cập giao diện Quản trị Sơ đồ bàn ăn trên cổng thông tin quản trị.
+•  Hệ thống hiển thị không gian thiết kế mặt bằng trực quan dạng 2D Canvas tương ứng với từng phân khu nhà hàng.
+•  Quản lý thực hiện thêm mới phân khu, kéo thả định vị tọa độ các bàn ăn, cập nhật sức chứa tối đa và cấu hình mã kết nối thiết bị hiển thị.
+•  Quản lý nhấn nút Lưu thay đổi sơ đồ mặt bằng.
+•  Hệ thống kiểm tra tính hợp lệ của cấu hình, lưu trữ dữ liệu vào cơ sở dữ liệu và phát sự kiện đồng bộ qua SignalR Hub.
+•  Ứng dụng của toàn bộ nhân viên phục vụ tự động cập nhật và hiển thị giao diện sơ đồ mặt bằng mới theo thời gian thực.
+
+3.9 AD-09: Quy trình Duyệt hoàn cọc thủ công ngoại lệ
+• Phân làn trách nhiệm tham gia: Quản lý Nhà hàng | Hệ thống API & Audit Log | Cổng thanh toán VNPAY
+ 
+Hình 3.9: Sơ đồ hoạt động Quy trình Duyệt hoàn cọc thủ công ngoại lệ
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Quản lý tiếp nhận khiếu nại hoặc thông tin sự cố bất khả kháng từ khách hàng và tra cứu mã đặt bàn BookingCode trên hệ thống.
+•  Hệ thống hiển thị chi tiết lịch sử giao dịch và lý do khoản tiền cọc chưa được xử lý hoàn trả tự động.
+•  Quản lý chọn chức năng Phê duyệt hoàn cọc thủ công ngoại lệ và nhập bắt buộc lý do giải trình phê duyệt.
+•  Hệ thống gửi yêu cầu gọi API hoàn trả tiền cọc sang cổng thanh toán VNPAY.
+•  Cổng VNPAY xử lý giao dịch hoàn tiền về tài khoản của khách hàng và phản hồi kết quả thành công.
+•  Hệ thống cập nhật trạng thái đơn đặt cọc và tự động ghi nhật ký kiểm toán lưu vết mã định danh Quản lý đã ký duyệt.
+
+3.10 AD-10: Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc
+• Phân làn trách nhiệm tham gia: Tiến trình chạy ngầm (Hangfire) | Cơ sở dữ liệu SQL Server | Kênh SignalR Hub
+ 
+Hình 3.10: Sơ đồ hoạt động Quy trình Tự động quét & Giải phóng bàn hết hạn giữ cọc
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Tiến trình dịch vụ nền tự động kích hoạt chu kỳ quét định kỳ mỗi 60 giây một lần.
+•  Hệ thống thực hiện truy vấn cơ sở dữ liệu để tìm kiếm các bản ghi đặt chỗ ở trạng thái Chờ thanh toán đã vượt quá thời hạn 17 phút.
+•  Hệ thống cập nhật trạng thái các đơn đặt chỗ thỏa mãn sang Đã hết hạn giữ cọc.
+•  Hệ thống đưa trạng thái vị trí bàn ăn tương ứng từ trạng thái Khóa giữ chỗ trở về trạng thái Sẵn sàng đón khách.
+•  Hệ thống phát thông điệp sự kiện qua SignalR Hub để cập nhật tức thời màu sắc trạng thái bàn trên màn hình của nhân viên phục vụ.
+•  Trường hợp phát sinh phản hồi thanh toán thành công trễ sau khi bàn đã được giải phóng, hệ thống tự động quét tìm bàn ăn trống tương đương hoặc gửi cảnh báo ưu tiên tới Quản lý để xử lý ngoại lệ.
+
+3.11 AD-11: Quy trình Quản trị Thực đơn & Trạng thái món
+• Phân làn trách nhiệm tham gia: Quản lý Ẩm thực / Bếp | Hệ thống Web API | Màn hình Khách & POS Phục vụ
+ 
+Hình 3.11: Sơ đồ hoạt động Quy trình Quản trị Thực đơn & Trạng thái món
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Quản lý mở giao diện Quản trị Thực đơn trên cổng thông tin quản trị.
+•  Quản lý thực hiện thêm món mới hoặc điều chỉnh giá bán, hình ảnh, mô tả thành phần và các thông tin cảnh báo dị ứng thực phẩm.
+•  Khi xảy ra tình trạng hết nguyên liệu chế biến đột xuất, Quản lý thao tác bật/tắt nhanh trạng thái Còn món hoặc Hết món.
+•  Quản lý bấm nút Lưu thay đổi dữ liệu thực đơn.
+•  Hệ thống xác thực dữ liệu, cập nhật cơ sở dữ liệu và phát tín hiệu đồng bộ thời gian thực.
+•  Trang Web E-Menu và ứng dụng di động của nhân viên phục vụ tự động cập nhật danh mục món ăn mới ngay lập tức qua SignalR.
+
+3.12 AD-12: Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT
+• Phân làn trách nhiệm tham gia: Khách hàng | Hệ thống Backend API | Bảng điều khiển Quản trị
+ 
+Hình 3.12: Sơ đồ hoạt động Quy trình Khách hàng đánh giá & Phản hồi dịch vụ CSAT
+Diễn giải các bước thực thi chi tiết trong quy trình:
+•  Sau khi hoàn tất thanh toán hóa đơn, khách hàng nhận đường dẫn khảo sát qua thư điện tử hoặc quét mã QR trên phiếu tính tiền.
+•  Khách hàng truy cập biểu mẫu khảo sát, thực hiện chấm điểm hài lòng theo thang điểm từ 1 đến 5 sao và đóng góp ý kiến nhận xét.
+•  Khách hàng nhấn nút Gửi đánh giá dịch vụ.
+•  Hệ thống Backend tiếp nhận dữ liệu, kiểm tra tính hợp lệ và lưu trữ phản hồi vào cơ sở dữ liệu.
+•  Hệ thống tự động tính toán chỉ số đo lường mức độ hài lòng khách hàng (CSAT) và cập nhật số liệu lên bảng điều khiển quản trị.
+•  Trường hợp phản hồi có mức đánh giá thấp dưới chuẩn, hệ thống tự động phát cảnh báo ưu tiên tới Quản lý để kịp thời liên hệ giải quyết.
+
+ 
+CHƯƠNG 4: MÔ HÌNH HÓA TƯƠNG TÁC HỆ THỐNG (SEQUENCE DIAGRAMS)
+Chương này trình bày 12 sơ đồ tuần tự (Sequence Diagrams) thể hiện chuỗi trao đổi thông điệp theo trục thời gian giữa các thành phần kiến trúc Clean Architecture: Tác nhân người dùng, Lớp trình diễn (Frontend SPA / Web POS), Bộ điều khiển tiếp nhận (API Controller), Trạm điều phối trung gian (MediatR Handler), Thực thể nghiệp vụ miền (Domain Entities) và Cơ sở dữ liệu.
+4.1 SD-01: Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY
+• Các thành phần tham gia tương tác: Guest | WebBookingSPA | ReservationAPI | VNPAYGateway | Database | SignalRHub
+ 
+Hình 4.1: Sơ đồ tuần tự Đặt bàn trực tuyến & Thanh toán cọc qua VNPAY
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Khách hàng thực hiện gửi yêu cầu tra cứu bàn trống và chọn vị trí bàn trên giao diện WebBookingSPA.
+•  Giao diện SPA gửi lệnh HTTP POST khởi tạo phiên đặt cọc tới ReservationAPI.
+•  API kiểm tra trạng thái khả dụng, thực hiện khóa giữ chỗ tạm thời bàn ăn trong 17 phút và gọi dịch vụ cổng VNPAY tạo liên kết thanh toán.
+•  Khách hàng được chuyển hướng sang giao diện VNPAY và tiến hành quét mã VietQR hoàn tất trừ tiền trong thời hạn 15 phút.
+•  Cổng VNPAY phát tín hiệu IPN callback bất đồng bộ về ReservationAPI để xác nhận kết quả thanh toán thành công.
+•  API cập nhật trạng thái bàn sang Reserved trong Database, sinh mã BookingCode và phát sự kiện qua SignalRHub để đồng bộ giao diện sơ đồ bàn.
+
+4.2 SD-02: Nhân viên tạo Order trực tiếp & In phiếu Bếp
+• Các thành phần tham gia tương tác: Waitstaff | POSClient | OrderAPI | Database | PrintWorker | KitchenPrinter
+ 
+Hình 4.2: Sơ đồ tuần tự Nhân viên tạo Order trực tiếp & In phiếu Bếp
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Nhân viên phục vụ nhập danh sách món ăn cùng các ghi chú cảnh báo dị ứng trên ứng dụng di động POSClient và nhấn nút Gửi đơn.
+•  Ứng dụng POSClient gửi yêu cầu HTTP POST đóng gói đơn hàng tới OrderAPI.
+•  OrderAPI thực hiện kiểm tra tính hợp lệ của dữ liệu đầu vào qua FluentValidation Pipeline.
+•  API lưu trữ đơn hàng mới với trạng thái Processing vào Database thông qua Unit of Work Pattern.
+•  API gửi thông điệp sự kiện bất đồng bộ tới PrintWorker để định tuyến phiếu chế biến theo phân khu Bếp tương ứng.
+•  PrintWorker kết nối mạng nội bộ và kích hoạt máy in KitchenPrinter tự động nhả phiếu in với nội dung cảnh báo dị ứng được bôi đậm.
+
+4.3 SD-03: Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
+• Các thành phần tham gia tương tác: Chef | Expediter | PassTablet | KitchenHub | Database | WaitstaffDevice
+ 
+Hình 4.3: Sơ đồ tuần tự Kiểm đồ (Checkfood) & Xác nhận hoàn thành món tại quầy Pass
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Đầu bếp đặt đĩa món hoàn chỉnh ra quầy chuyển món Pass bên dưới hệ thống đèn giữ nhiệt.
+•  Nhân viên Điều phối kiểm tra đối chiếu đĩa món trên PassTablet và nhấn nút Xác nhận hoàn thành (Served).
+•  Thiết bị PassTablet gửi yêu cầu cập nhật trạng thái món ăn kèm mốc thời gian hoàn thành tới Backend API.
+•  Backend API cập nhật trạng thái món ăn thành Served trong Database.
+•  Backend API kích hoạt sự kiện thời gian thực thông qua KitchenHub gửi tới WaitstaffDevice của nhân viên phụ trách bàn.
+•  Thiết bị di động của nhân viên phục vụ phát tín hiệu rung thông báo đĩa món đã sẵn sàng để bưng ra bàn cho thực khách.
+
+4.4 SD-04: Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn
+• Các thành phần tham gia tương tác: Guest | Waitstaff | BillingAPI | CashierPrinter | Database | TableHub
+ 
+Hình 4.4: Sơ đồ tuần tự Thanh toán hóa đơn, Cấn trừ cọc & Đóng bàn
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Khách hàng thông báo yêu cầu tính tiền bữa ăn với nhân viên phục vụ.
+•  Nhân viên phục vụ chọn chức năng Thanh toán trên ứng dụng di động gửi yêu cầu tới BillingAPI.
+•  BillingAPI truy vấn toàn bộ các món ăn đã dùng, tự động tính 5% phí phục vụ, 10% thuế VAT và cấn trừ chính xác số tiền cọc đã thu trước đó.
+•  BillingAPI phát lệnh in phiếu Hóa đơn tạm tính kèm mã VietQR động ra thiết bị CashierPrinter để nhân viên kẹp sổ da mang ra bàn.
+•  Khách hàng hoàn tất thanh toán phần tiền chênh lệch còn lại và nhân viên phục vụ bấm xác nhận trên ứng dụng.
+•  BillingAPI lưu trữ giao dịch hóa đơn thành công vào Database và gửi sự kiện qua TableHub chuyển trạng thái bàn sang Cleaning.
+
+4.5 SD-05: Hủy đặt bàn & Hoàn tiền cọc VNPAY
+• Các thành phần tham gia tương tác: Guest | BookingPortal | CancelAPI | VNPAYRefundService | Database | NotificationService
+ 
+Hình 4.5: Sơ đồ tuần tự Hủy đặt bàn & Hoàn tiền cọc VNPAY
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Khách hàng nhập mã BookingCode và gửi yêu cầu hủy đặt chỗ trên giao diện BookingPortal.
+•  Giao diện gửi yêu cầu HTTP POST hủy đặt bàn tới CancelAPI.
+•  CancelAPI tính toán khoảng cách thời gian giữa thời điểm hiện tại và giờ hẹn dùng bữa.
+•  Xác nhận thời gian hủy trước giờ hẹn từ 4 tiếng trở lên, CancelAPI gọi dịch vụ VNPAYRefundService thực hiện lệnh hoàn tiền 100%.
+•  VNPAYRefundService chuyển tiền cọc về tài khoản khách hàng và phản hồi kết quả thành công cho hệ thống.
+•  CancelAPI cập nhật trạng thái đặt bàn sang Cancelled, giải phóng bàn về Available trong Database và kích hoạt NotificationService gửi thông báo xác nhận.
+
+4.6 SD-06: Đăng nhập & Xác thực JWT Token nhân viên nội bộ
+• Các thành phần tham gia tương tác: StaffUser | AuthClient | IdentityAPI | SecurityService | Database | SessionStorage
+ 
+Hình 4.6: Sơ đồ tuần tự Đăng nhập & Xác thực JWT Token nhân viên nội bộ
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Nhân viên nhập thông tin định danh gồm Tên đăng nhập và Mật khẩu trên giao diện AuthClient.
+•  AuthClient gửi yêu cầu xác thực bảo mật tới IdentityAPI.
+•  IdentityAPI truy vấn thông tin tài khoản và đối chiếu mật khẩu băm bảo mật trong Database.
+•  Hệ thống xác thực thành công, SecurityService khởi tạo mã thông báo JWT Bearer Token chứa thông tin vai trò và danh mục quyền hạn.
+•  IdentityAPI phản hồi token về cho AuthClient lưu trữ an toàn trong SessionStorage để đính kèm vào các yêu cầu tiếp theo.
+
+4.7 SD-07: Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng
+• Các thành phần tham gia tương tác: Guest | Waitstaff | TableAPI | UnitOfWork | Database | FloorPlanHub
+ 
+Hình 4.7: Sơ đồ tuần tự Chuyển bàn / Đổi bàn trực tiếp tại nhà hàng
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Khách hàng đề đạt nguyện vọng chuyển đổi chỗ ngồi sang vị trí bàn ăn khác thuận tiện hơn.
+•  Nhân viên phục vụ chọn bàn mới trên ứng dụng di động và gửi yêu cầu đổi bàn tới TableAPI.
+•  TableAPI kiểm tra trạng thái bàn mới mục tiêu đảm bảo đang ở trạng thái Available.
+•  API thực thi giao dịch UnitOfWork chuyển giao toàn bộ đơn hàng, danh mục món ăn và tiền cọc sang mã bàn mới trong Database.
+•  Hệ thống cập nhật trạng thái bàn cũ sang Cleaning và bàn mới sang Occupied.
+•  TableAPI phát sự kiện qua FloorPlanHub để đồng bộ tức thời trạng thái bàn mới tới toàn bộ nhân viên và quầy Pass.
+
+4.8 SD-08: Quản trị & Cấu hình Sơ đồ bàn ăn
+• Các thành phần tham gia tương tác: Manager | AdminPortal | FloorPlanAPI | Database | FloorPlanHub | StaffClients
+ 
+Hình 4.8: Sơ đồ tuần tự Quản trị & Cấu hình Sơ đồ bàn ăn
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Quản lý điều chỉnh tọa độ bố trí bàn ăn và cấu hình mã định danh bàn trên giao diện 2D Canvas của AdminPortal.
+•  AdminPortal gửi dữ liệu cấu hình mặt bằng mới tới FloorPlanAPI.
+•  FloorPlanAPI kiểm tra các ràng buộc nghiệp vụ đảm bảo không có sự trùng lặp mã bàn hoặc thay đổi bàn đang phục vụ.
+•  API lưu trữ toàn bộ cấu hình sơ đồ mặt bằng mới vào Database.
+•  FloorPlanAPI phát sự kiện cập nhật cấu hình qua FloorPlanHub.
+•  Tất cả các ứng dụng StaffClients của nhân viên phục vụ nhận sự kiện và tự động vẽ lại sơ đồ mặt bằng theo thời gian thực.
+
+4.9 SD-09: Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ
+• Các thành phần tham gia tương tác: Manager | AdminPortal | RefundAPI | VNPAYGateway | AuditLogService | Database
+ 
+Hình 4.9: Sơ đồ tuần tự Quản lý duyệt hoàn tiền cọc thủ công ngoại lệ
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Quản lý tra cứu đơn đặt bàn phát sinh khiếu nại và nhập nội dung giải trình phê duyệt trên AdminPortal.
+•  AdminPortal gửi yêu cầu phê duyệt hoàn tiền thủ công ngoại lệ tới RefundAPI.
+•  RefundAPI xác thực thẩm quyền Quản lý và kích hoạt lệnh gọi API sang cổng VNPAYGateway.
+•  Cổng VNPAY tiếp nhận và hoàn trả khoản tiền cọc về tài khoản của khách hàng thành công.
+•  RefundAPI cập nhật trạng thái giao dịch đặt cọc thành công trong Database.
+•  AuditLogService tự động ghi nhận nhật ký kiểm toán lưu vết mã định danh Quản lý, mốc thời gian và lý do phê duyệt hoàn cọc.
+
+4.10 SD-10: Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN
+• Các thành phần tham gia tương tác: HangfireWorker | Database | TableStateService | SignalRHub | LateIPNHandler | ManagerAlertQueue
+ 
+Hình 4.10: Sơ đồ tuần tự Tự động giải phóng bàn hết hạn giữ cọc & Xử lý Late IPN
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Tiến trình HangfireWorker định kỳ mỗi 60 giây gửi lệnh quét Database tìm các đơn đặt cọc PendingPayment quá 17 phút.
+•  TableStateService cập nhật trạng thái các đơn quá hạn sang Expired và đưa vị trí bàn ăn về Available trong Database.
+•  Hệ thống phát sự kiện qua SignalRHub đồng bộ màu sắc bàn ăn xanh lá cây trên sơ đồ của nhân viên phục vụ.
+•  Trường hợp cổng thanh toán gửi tín hiệu IPN thành công trễ sau khi bàn đã bị giải phóng, LateIPNHandler tiếp nhận xử lý.
+•  LateIPNHandler quét tìm bàn ăn trống tương đương trong cùng phân khu để tự động gán cho khách hàng.
+•  Trường hợp nhà hàng đã kín chỗ, LateIPNHandler đẩy bản ghi vào ManagerAlertQueue để Quản lý chủ động gọi điện xử lý ngoại lệ.
+
+4.11 SD-11: Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món
+• Các thành phần tham gia tương tác: Manager | AdminPortal | MenuAPI | Database | MenuHub | EMenuClients
+ 
+Hình 4.11: Sơ đồ tuần tự Quản trị Thực đơn & Cập nhật trạng thái Còn/Hết món
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Quản lý cập nhật giá bán, hình ảnh hoặc thao tác bật/tắt trạng thái Còn món hoặc Hết món trên AdminPortal.
+•  AdminPortal gửi yêu cầu cập nhật thông tin thực đơn tới MenuAPI.
+•  MenuAPI thực hiện xác thực tính hợp lệ của dữ liệu đầu vào và lưu trữ các thay đổi vào Database.
+•  MenuAPI phát sự kiện cập nhật thực đơn thời gian thực thông qua MenuHub.
+•  Toàn bộ các thiết bị hiển thị EMenuClients tại các bàn ăn và ứng dụng POS của nhân viên phục vụ tự động làm mới danh mục thực đơn.
+
+4.12 SD-12: Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT
+• Các thành phần tham gia tương tác: Guest | FeedbackSPA | FeedbackAPI | AnalyticsEngine | Database | ManagerDashboard
+ 
+Hình 4.12: Sơ đồ tuần tự Khách hàng đánh giá dịch vụ & Tự động gửi Email CSAT
+Diễn giải chuỗi thông điệp và cơ chế bảo đảm an toàn dữ liệu:
+•  Khách hàng truy cập liên kết khảo sát trên FeedbackSPA, lựa chọn thang điểm đánh giá và nhập nhận xét chất lượng phục vụ.
+•  Giao diện FeedbackSPA gửi dữ liệu khảo sát tới FeedbackAPI.
+•  FeedbackAPI kiểm tra tính hợp lệ và lưu trữ bản ghi đánh giá vào Database.
+•  AnalyticsEngine tự động tính toán lại chỉ số mức độ hài lòng khách hàng (CSAT) theo thời gian thực.
+•  Hệ thống phát thông báo cập nhật chỉ số CSAT trực tiếp lên giao diện theo dõi của ManagerDashboard.
+•  Trường hợp phản hồi có điểm đánh giá thấp dưới 3 sao, hệ thống tự động gửi thư điện tử cảnh báo ưu tiên cao tới Quản lý nhà hàng.
+
+ 
+CHƯƠNG 5: QUY TẮC NGHIỆP VỤ BẮT BUỘC (BUSINESS RULES MATRIX)
+Các quy tắc nghiệp vụ cốt lõi (Core Business Rules) đóng vai trò định hình logic vận hành và được đóng gói trực tiếp bên trong các thực thể nghiệp vụ tầng Domain. Điều này bảo đảm các quy tắc tài chính, thời gian khóa giữ chỗ và quyền hạn xác nhận món ăn không bị phá vỡ bởi bất kỳ thay đổi nào từ tầng giao diện hay cơ sở dữ liệu.
+Mã quy tắc	Tên quy tắc	Nội dung logic nghiệp vụ bắt buộc	Tầng kiểm soát
+BR-01	Thời hạn giữ cọc tạm thời
+(Reservation Lock Timeout)	Khi khách hàng lựa chọn vị trí bàn và nhấn nút đặt cọc, hệ thống kích hoạt cơ chế khóa giữ chỗ tạm thời trên sơ đồ mặt bằng trong thời gian tối đa 17 phút (bao gồm 15 phút thời hạn thanh toán mã QR VNPAY cộng thêm 02 phút ân hạn trễ mạng). Quá thời hạn 17 phút nếu không nhận được tín hiệu xác nhận thanh toán thành công (IPN) từ cổng VNPAY, hệ thống dịch vụ nền sẽ tự động giải phóng vị trí bàn ăn về trạng thái Sẵn sàng đón khách.	Dịch vụ nền chạy ngầm
+(Hangfire Background Worker)
+BR-02	Công thức tính Hóa đơn chuẩn
+(Financial Calculation Formula)	Hệ thống áp dụng công thức tính toán tài chính bắt buộc theo trình tự tuần tự:
+1. Tổng tiền món dùng thực tế (Subtotal) bằng tổng giá trị các món ăn đã phục vụ.
+2. Phí phục vụ (5%) bằng Subtotal nhân với 0.05.
+3. Thuế VAT (10%) bằng tổng của Subtotal và Phí phục vụ nhân với 0.10.
+4. Số tiền phải thu bằng tổng chi phí bữa ăn trừ đi số tiền cọc đã nộp, với điều kiện giá trị tối thiểu bằng 0 đồng (không hoàn lại phần chênh lệch khi tổng chi phí thấp hơn tiền cọc tối thiểu).	Tầng Dịch vụ Ứng dụng &
+Thực thể Nghiệp vụ Miền (Domain)
+BR-03	Thẩm quyền xác nhận phục vụ
+(Service Confirmation Privilege)	Chỉ có tài khoản thuộc vai trò Nhân viên Điều phối (Expediter / Checkfood) tại quầy Pass hoặc Quản lý nhà hàng (Manager) mới có quyền bấm nút xác nhận hoàn thành món ăn trên thiết bị điều phối. Đầu bếp và Khách hàng hoàn toàn không được phân quyền thực hiện thao tác này nhằm bảo đảm quy trình kiểm soát chất lượng độc lập và ngăn chặn tình trạng báo khống tiến độ phục vụ.	Tầng Phân quyền Xác thực Token
+(Backend JWT Role Authorization)
+BR-04	Chính sách hủy bàn & Hoàn cọc
+(Cancellation & Refund Policy)	Khách hàng được hoàn trả tự động 100% số tiền cọc qua cổng thanh toán VNPAY nếu thực hiện thao tác hủy đặt bàn trước giờ hẹn dùng bữa tối thiểu từ 04 tiếng trở lên. Mọi giao dịch hủy lịch hẹn trong vòng dưới 04 tiếng sẽ bị giữ lại toàn bộ số tiền cọc làm phí bồi hoàn chuẩn bị nguyên liệu tươi sống. Quản lý có thẩm quyền đặc cách sử dụng tính năng duyệt hoàn cọc thủ công trong các tình huống bất khả kháng.	Tầng Dịch vụ Ứng dụng &
+Tích hợp Cổng thanh toán VNPAY
+
+Phân tích chuyên sâu về Công thức Tài chính Hóa đơn
+Công thức tính toán tài chính của VinDining tuân thủ nguyên tắc tính toán tuần tự nghiêm ngặt nhằm tránh các sai lệch về thuế suất và bảo toàn quyền lợi của nhà hàng:
+•  Tổng tiền món ăn thực tế được tính bằng tổng đơn giá nhân số lượng của tất cả các món ăn đã được xác nhận phục vụ hoàn tất.
+•  Phí phục vụ tiêu chuẩn nhà hàng cao cấp được ấn định mức 5% trên tổng tiền món ăn thực tế.
+•  Thuế giá trị gia tăng VAT được tính mức 10% áp dụng trên tổng chi phí bao gồm cả tiền món ăn và phí phục vụ theo đúng quy định hiện hành.
+•  Khoản tiền cọc đã thanh toán được khấu trừ trực tiếp vào tổng chi phí sau thuế, trong đó số tiền phải thu cuối cùng có cận dưới bằng 0 đồng để thực thi chính sách tiền cọc đóng vai trò là mức chi tiêu tối thiểu không hoàn lại.
+ 
+CHƯƠNG 6: MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU (RTM MATRIX)
+Ma trận truy xuất nguồn gốc yêu cầu (Requirements Traceability Matrix - RTM) bảo đảm tính nhất quán hai chiều, kết nối xuyên suốt từ yêu cầu nghiệp vụ cấp cao (REQ) tới các trường hợp sử dụng (Use Case), quy trình hoạt động (Activity Diagram), tương tác hệ thống (Sequence Diagram), quy tắc nghiệp vụ (Business Rules) và các kịch bản kiểm thử (Test Cases).
+Mã Y/C	Tên yêu cầu nghiệp vụ	Use Case	Activity	Sequence	Quy tắc	Test Case
+REQ-01	Đặt bàn trực tuyến & Đặt cọc VNPAY	UC-U1	AD-01	SD-01	BR-01, BR-05	TC-RES-01, TC-RES-02
+REQ-02	Xem E-Menu tại bàn (Mã QR & Tablet mượn)	UC-U2	AD-02	SD-02	BR-02	TC-ORD-01, TC-ORD-02
+REQ-03	Hủy đặt bàn trực tuyến & Hoàn cọc tự động	UC-U3	AD-05	SD-05	BR-05	TC-RES-03
+REQ-04	Khách hàng đánh giá chất lượng dịch vụ	UC-U4	AD-12	SD-12	BR-03	TC-FB-01
+REQ-05	Nhân viên tạo Order trực tiếp & Điều phối KDS Bếp	UC-E1	AD-02	SD-02	BR-04	TC-KIT-01, TC-KIT-02
+REQ-06	Phục vụ món & Xác nhận hoàn thành tại Pass	UC-E2	AD-03	SD-03	BR-04	TC-SER-01
+REQ-07	Xuất hóa đơn, Cấn trừ tiền cọc & Đóng bàn	UC-E3	AD-04	SD-04	BR-03	TC-INV-01, TC-INV-02
+REQ-08	Chuyển bàn / Đổi bàn phục vụ	UC-E4	AD-07	SD-07	BR-02	TC-TBL-03
+REQ-09	Đăng nhập & Xác thực tài khoản nội bộ	UC-E5	AD-06	SD-06	BR-04	TC-SEC-01, TC-SEC-02
+REQ-10	Quản trị Danh mục & Thực đơn món ăn	UC-A1	AD-11	SD-11	BR-04	TC-MNU-01
+REQ-11	Quản trị & Cấu hình Sơ đồ bàn ăn	UC-A2	AD-08	SD-08	BR-02	TC-TBL-01, TC-TBL-02
+REQ-12	Duyệt hoàn tiền cọc thủ công ngoại lệ	UC-A3	AD-09	SD-09	BR-05	TC-REF-01
+REQ-13	Quản trị Tài khoản nhân viên & Phân quyền	UC-A4	AD-06	SD-06	BR-04	TC-SEC-03
+REQ-14	Báo cáo Thống kê Doanh thu & Dashboard	UC-A5	AD-12	SD-12	BR-03	TC-REP-01
+REQ-15	Tự động quét & Giải phóng bàn hết hạn cọc	UC-S1	AD-10	SD-10	BR-01	TC-SYS-01
+
+ 
+

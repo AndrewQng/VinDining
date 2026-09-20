@@ -32,7 +32,7 @@ Dự án áp dụng mô hình **Clean Architecture** (phân tách 4 tầng độ
 - **Styling**: Tailwind CSS (Thiết kế phong cách Dark Gold Luxury Fine Dining), Lucide Icons
 - **State Management**:
   - **TanStack Query (React Query)**: Quản lý server state, caching, background refetching.
-  - **Zustand**: Quản lý client global state (Auth, giỏ hàng, bộ lọc, trạng thái bàn).
+  - **Zustand**: Quản lý client global state (Auth, Order / đơn món, bộ lọc, trạng thái bàn).
 - **Routing**: React Router v6+
 - **HTTP Client**: Axios (với Request/Response Interceptors tự động refresh JWT token).
 - **Real-time Client**: `@microsoft/signalr`
