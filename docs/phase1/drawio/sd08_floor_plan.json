@@ -3,7 +3,7 @@
   "participants": [
     {
       "id": "mgr",
-      "label": "Quản lý (Manager / Admin)",
+      "label": "Quản lý (Manager)",
       "actor": true
     },
     {
@@ -11,101 +11,102 @@
       "label": "Manager Web Portal"
     },
     {
-      "id": "api",
-      "label": "Web API (TableController)"
+      "id": "ctrl",
+      "label": "TableController"
     },
     {
-      "id": "cqrs",
-      "label": "MediatR (UpdateFloorPlanCmd)"
+      "id": "handler",
+      "label": "UpdateFloorPlanCommandHandler"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core 9)"
+      "label": "AppDbContext"
     },
     {
       "id": "hub",
-      "label": "SignalR FloorPlanHub"
+      "label": "TableHub (SignalR)"
     },
     {
-      "id": "waitstaff",
-      "label": "Ứng dụng Phục vụ & TableDisplay"
+      "id": "staff",
+      "label": "Waitstaff Tablet"
     }
   ],
   "messages": [
     {
       "from": "mgr",
       "to": "fe",
-      "label": "1. Kéo thả định vị tọa độ bàn (X, Y) & Sức chứa (TableDisplay kết nối LAN/Wi-Fi)"
+      "label": "1. Kéo thả định vị tọa độ (X, Y), phân khu & sức chứa bàn"
     },
     {
       "from": "mgr",
       "to": "fe",
-      "label": "2. Bấm 'Lưu thay đổi Sơ đồ bàn'"
+      "label": "2. Bấm \"Lưu thay đổi Sơ đồ bàn\""
     },
     {
       "from": "fe",
-      "to": "api",
+      "to": "ctrl",
       "label": "3. PUT /api/admin/tables/layout (TableLayoutDto[])"
     },
     {
-      "from": "api",
-      "to": "cqrs",
+      "from": "ctrl",
+      "to": "handler",
       "label": "4. Send(UpdateFloorPlanCommand)"
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "db",
-      "label": "5. Kiểm tra mã bàn duy nhất & trạng thái bàn"
+      "label": "5. Query danh sách bàn hiện tại"
     },
     {
       "from": "db",
-      "to": "cqrs",
-      "label": "6. Dữ liệu hợp lệ (Validation OK)",
+      "to": "handler",
+      "label": "6. Trả về danh sách Table Entities",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
+      "to": "handler",
+      "label": "7. Kiểm tra trùng lặp mã bàn & trạng thái"
+    },
+    {
+      "from": "handler",
       "to": "db",
-      "label": "7. SaveChangesAsync() lưu tọa độ & khu vực bàn"
+      "label": "8. Cập nhật tọa độ (X, Y), Zone, Capacity & SaveChangesAsync()"
     },
     {
       "from": "db",
-      "to": "cqrs",
-      "label": "8. Commit transaction thành công",
+      "to": "handler",
+      "label": "9. Commit Transaction thành công",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "hub",
-      "label": "9. Clients.All.SendAsync(\"FloorPlanConfigUpdated\", layout)",
-      "async": true
+      "label": "10. Clients.All.SendAsync(\"FloorPlanUpdated\", layout)"
     },
     {
       "from": "hub",
-      "to": "waitstaff",
-      "label": "10. Broadcast SignalR tới Tablet phục vụ & TableDisplay re-render",
-      "async": true,
-      "activate": false,
-      "deactivate": true
-    },
-    {
-      "from": "cqrs",
-      "to": "api",
-      "label": "11. Return Result.Success()",
+      "to": "staff",
+      "label": "11. Broadcast SignalR cập nhật sơ đồ bàn thời gian thực",
       "return": true
     },
     {
-      "from": "api",
+      "from": "handler",
+      "to": "ctrl",
+      "label": "12. Return Result.Success()",
+      "return": true
+    },
+    {
+      "from": "ctrl",
       "to": "fe",
-      "label": "12. 200 OK (LayoutUpdatedResponse)",
+      "label": "13. 200 OK (LayoutUpdatedResponse)",
       "return": true
     },
     {
       "from": "fe",
       "to": "mgr",
-      "label": "13. Hiển thị thông báo lưu thành công & cập nhật trực quan",
-      "return": true,
-      "activate": false
+      "label": "14. Hiển thị thông báo lưu thành công & cập nhật trực quan",
+      "return": true
     }
   ]
 }

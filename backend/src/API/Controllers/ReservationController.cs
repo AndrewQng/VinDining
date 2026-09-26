@@ -12,14 +12,14 @@ public class ReservationController : ApiControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateReservation()
     {
-        // var result = await Mediator.Send(new CreateReservationCommand(...));
+        await Task.CompletedTask;
         return Ok(new { Message = "Reservation CQRS Command placeholder" });
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetReservation(Guid id)
     {
-        // var result = await Mediator.Send(new GetReservationQuery(id));
+        await Task.CompletedTask;
         return Ok(new { Message = "Reservation CQRS Query placeholder" });
     }
 }

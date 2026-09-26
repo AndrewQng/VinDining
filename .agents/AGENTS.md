@@ -20,6 +20,8 @@
 * **Bug Reproduction**: Always reproduce bugs and isolate root causes before proposing or applying fixes.
 * **Tool Priority**: Prioritize using native platform tools and standard libraries.
 * **No Bureaucratic Tagging**: Never inject artificial business rule codes or spec tags (e.g. `(BR-01)`, `(BR-02)`, `(BR-03)`, `(UC-xx)`) into user-facing responses, feature matrices, or summaries unless explicitly requested. Keep explanations concise, natural, and directly focused on domain logic.
+* **Direct List Phrasing (No Artificial Prefixes)**: Do not prepend artificial bold summary labels or lead-in phrases at the start of numbered steps or bullet points (e.g., avoid `1. **Chọn thông tin:** Khách hàng...` or `* **2a. Hết chỗ:** Khi...`). Write steps and list items directly and naturally starting with the actor, action, or condition (e.g., `1. Khách hàng truy cập...`, `* 2a. Khi khung giờ...`).
+* **Concise & Fluff-Free (Lean Writing)**: Keep descriptions, specifications, and responses ultra-concise. Strictly eliminate filler words, decorative adjectives, and redundant phrasing. State facts, actors, triggers, and outcomes directly with minimal words.
 
 ### High-Performance Coding Standards
 * **Data Locality**: Store related data accessed together in close proximity in memory/storage.

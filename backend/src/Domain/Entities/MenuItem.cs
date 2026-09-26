@@ -2,12 +2,17 @@ using Domain.Common;
 
 namespace Domain.Entities;
 
-public class MenuItem : BaseEntity
+public class MenuItem : BaseEntity, IHasCreatedAt
 {
+    public Guid CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
+
     public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public decimal Price { get; set; }
-    public string Category { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
-    public bool IsAvailable { get; set; } = true;
+    public string Status { get; set; } = "Available";
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

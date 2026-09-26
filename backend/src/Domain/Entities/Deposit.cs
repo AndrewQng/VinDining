@@ -1,14 +1,18 @@
 using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
-public class Deposit : BaseEntity
+public class Deposit : BaseEntity, IHasCreatedAt
 {
     public Guid ReservationId { get; set; }
     public Reservation Reservation { get; set; } = null!;
 
     public decimal Amount { get; set; }
     public string TransactionId { get; set; } = string.Empty;
-    public string PaymentMethod { get; set; } = "VNPAY";
-    public DateTime PaymentTime { get; set; }
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+    public DepositStatus Status { get; set; } = DepositStatus.Pending;
+    public DateTime? PaidAt { get; set; }
+    public decimal? RefundAmount { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

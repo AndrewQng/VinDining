@@ -12,27 +12,27 @@
     },
     {
       "id": "api",
-      "label": "Web API (MenuController)"
+      "label": "MenuController"
     },
     {
       "id": "cqrs",
-      "label": "MediatR (UpsertMenuCmd)"
+      "label": "CreateMenuItemCommandHandler"
     },
     {
       "id": "val",
-      "label": "FluentValidation"
+      "label": "CreateMenuItemCommandValidator"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core 9)"
+      "label": "AppDbContext"
     },
     {
       "id": "hub",
-      "label": "SignalR Hub"
+      "label": "MenuHub (SignalR)"
     },
     {
-      "id": "display",
-      "label": "Digital Display tại bàn"
+      "id": "emenu",
+      "label": "Tablet E-Menu"
     },
     {
       "id": "staff",
@@ -43,7 +43,7 @@
     {
       "from": "mgr",
       "to": "fe",
-      "label": "1. Nhập Tên món, Phân loại Danh mục (Category), Giá bán, Cảnh báo dị ứng"
+      "label": "1. Nhập Tên món, Phân loại Danh mục, Giá bán, Cảnh báo dị ứng"
     },
     {
       "from": "fe",
@@ -58,17 +58,17 @@
     {
       "from": "cqrs",
       "to": "val",
-      "label": "4. Validate (Tên, Giá > 0, CategoryId tồn tại)"
-    },
-    {
-      "note": "[alt: Dữ liệu hợp lệ (Tên, Giá > 0, CategoryId tồn tại)]",
-      "over": "val"
+      "label": "4. Validate (Tên, Giá > 0, CategoryId)"
     },
     {
       "from": "val",
       "to": "cqrs",
-      "label": "5a. Validation Passed",
+      "label": "5. ValidationResult (IsValid / Errors)",
       "return": true
+    },
+    {
+      "note": "[alt: ValidationResult.IsValid == true]",
+      "over": "cqrs"
     },
     {
       "from": "cqrs",
@@ -88,20 +88,20 @@
     },
     {
       "from": "hub",
-      "to": "display",
-      "label": "9a. Cập nhật danh mục món trên màn hình Digital Display",
+      "to": "emenu",
+      "label": "9a. Sync danh mục món trên Tablet E-Menu",
       "async": true
     },
     {
       "from": "hub",
       "to": "staff",
-      "label": "10a. Đồng bộ món & cảnh báo dị ứng trên Tablet phục vụ",
+      "label": "10a. Sync danh mục món & cảnh báo dị ứng trên Tablet phục vụ",
       "async": true
     },
     {
       "from": "cqrs",
       "to": "api",
-      "label": "11a. MenuItemDetailDto",
+      "label": "11a. Result.Success(MenuItemDetailDto)",
       "return": true
     },
     {
@@ -116,14 +116,8 @@
       "label": "13a. Thông báo lưu món thành công trên Dashboard"
     },
     {
-      "note": "[else: Lỗi Validation (Tên rỗng hoặc Giá <= 0)]",
-      "over": "val"
-    },
-    {
-      "from": "val",
-      "to": "cqrs",
-      "label": "5b. Validation Failed (ValidationException)",
-      "return": true
+      "note": "[else: Lỗi Validation]",
+      "over": "cqrs"
     },
     {
       "from": "cqrs",

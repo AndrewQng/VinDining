@@ -13,14 +13,9 @@ public class OrderItem : BaseEntity
 
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
-    public string? SpecialNotes { get; set; }
-    public string? Note 
-    { 
-        get => SpecialNotes; 
-        set => SpecialNotes = value; 
-    }
-    
     public OrderItemStatus Status { get; set; } = OrderItemStatus.Queued;
-    public Guid? ServedByStaffId { get; set; }
+    public string? Note { get; set; }
+    public Guid? ServedById { get; set; }
+    public Staff? ServedBy { get; set; }
     public DateTime? ServedAt { get; set; }
 }

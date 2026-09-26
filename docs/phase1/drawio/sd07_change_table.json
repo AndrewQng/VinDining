@@ -8,32 +8,32 @@
     },
     {
       "id": "waitstaff",
-      "label": "Nhân viên Phục vụ",
+      "label": "Phục vụ (Waitstaff)",
       "actor": true
     },
     {
       "id": "tablet",
-      "label": "Tablet Web (React)"
+      "label": "Waitstaff Tablet"
     },
     {
-      "id": "api",
-      "label": "Web API (TablesController)"
+      "id": "ctrl",
+      "label": "TableController"
     },
     {
-      "id": "cqrs",
-      "label": "MediatR (ChangeTableCmd)"
+      "id": "handler",
+      "label": "ChangeTableCommandHandler"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core 9)"
+      "label": "AppDbContext"
     },
     {
       "id": "hub",
-      "label": "SignalR Hub (Realtime)"
+      "label": "TableHub (SignalR)"
     },
     {
       "id": "exp",
-      "label": "Expediter (Quầy Pass)"
+      "label": "Điều phối (Expediter)"
     }
   ],
   "messages": [
@@ -45,99 +45,114 @@
     {
       "from": "waitstaff",
       "to": "tablet",
-      "label": "2. Chọn chức năng Đổi bàn trên giao diện bàn hiện tại",
-      "deactivate": true
+      "label": "2. Chọn chức năng Đổi bàn trên giao diện"
     },
     {
       "from": "tablet",
-      "to": "api",
+      "to": "ctrl",
       "label": "3. GET /api/v1/tables/available"
     },
     {
-      "from": "api",
+      "from": "ctrl",
       "to": "db",
       "label": "4. Query các bàn trống (Status = Available)"
     },
     {
       "from": "db",
-      "to": "api",
+      "to": "ctrl",
       "label": "5. Danh sách bàn trống khả dụng",
       "return": true
     },
     {
-      "from": "api",
+      "from": "ctrl",
       "to": "tablet",
       "label": "6. 200 OK (Danh sách bàn)",
       "return": true
     },
     {
+      "note": "[alt: Có bàn trống phù hợp]",
+      "over": "tablet"
+    },
+    {
       "from": "waitstaff",
       "to": "tablet",
-      "label": "7. Chọn Bàn mới mục tiêu & Xác nhận chuyển"
+      "label": "7a. Chọn bàn mới mục tiêu & Xác nhận chuyển"
     },
     {
       "from": "tablet",
-      "to": "api",
-      "label": "8. POST /api/v1/tables/change-table"
+      "to": "ctrl",
+      "label": "8a. POST /api/v1/tables/change-table"
     },
     {
-      "from": "api",
-      "to": "cqrs",
-      "label": "9. Send(ChangeTableCommand)"
+      "from": "ctrl",
+      "to": "handler",
+      "label": "9a. Send(ChangeTableCommand)"
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "db",
-      "label": "10. Di chuyển Order, OrderItems, Deposit sang TableId mới"
-    },
-    {
-      "from": "cqrs",
-      "to": "db",
-      "label": "11. Set Bàn cũ = Cleaning, Bàn mới = Occupied"
+      "label": "10a. Cập nhật Order.TableId, Bàn cũ = Cleaning, Bàn mới = Occupied & SaveChangesAsync()"
     },
     {
       "from": "db",
-      "to": "cqrs",
-      "label": "12. Commit Transaction thành công",
+      "to": "handler",
+      "label": "11a. Commit Transaction thành công",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "hub",
-      "label": "13. Broadcast TableChanged & OrderMoved"
+      "label": "12a. Broadcast sự kiện TableChanged (tableId, newTableId, orderId)"
     },
     {
       "from": "hub",
       "to": "exp",
-      "label": "14. Notify Pass: Cập nhật số bàn mới cho món đang chờ",
-      "async": true,
-      "activate": false
+      "label": "13a. Cập nhật số bàn mới cho các món đang chế biến",
+      "return": true
     },
     {
       "from": "hub",
       "to": "tablet",
-      "label": "15. Sync Sơ đồ bàn: Bàn cũ (Cleaning), Bàn mới (Occupied)",
-      "async": true,
-      "activate": false,
-      "deactivate": true
-    },
-    {
-      "from": "cqrs",
-      "to": "api",
-      "label": "16. Result (Success)",
+      "label": "14a. Sync sơ đồ bàn: Bàn cũ (Cleaning), Bàn mới (Occupied)",
       "return": true
     },
     {
-      "from": "api",
+      "from": "handler",
+      "to": "ctrl",
+      "label": "15a. Result (Success)",
+      "return": true
+    },
+    {
+      "from": "ctrl",
       "to": "tablet",
-      "label": "17. 200 OK (Chuyển bàn thành công)",
+      "label": "16a. 200 OK (Chuyển bàn thành công)",
       "return": true
     },
     {
       "from": "tablet",
       "to": "waitstaff",
-      "label": "18. Thông báo thành công & Mở đơn tại bàn mới",
-      "activate": false
+      "label": "17a. Thông báo thành công & Mở đơn bàn mới",
+      "return": true
+    },
+    {
+      "from": "waitstaff",
+      "to": "guest",
+      "label": "18a. Mời khách di chuyển sang vị trí bàn mới"
+    },
+    {
+      "note": "[else: Hết bàn trống khả dụng]",
+      "over": "tablet"
+    },
+    {
+      "from": "tablet",
+      "to": "waitstaff",
+      "label": "7b. Hiển thị thông báo không còn bàn trống phù hợp",
+      "return": true
+    },
+    {
+      "from": "waitstaff",
+      "to": "guest",
+      "label": "8b. Thông báo hết bàn & xin lỗi thực khách"
     }
   ]
 }

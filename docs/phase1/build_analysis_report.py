@@ -815,7 +815,11 @@ def build_chapter_2(doc, base_dir):
 
         add_p(doc, "Các luồng sự kiện phụ và xử lý tình huống ngoại lệ:", bold_prefix="• ")
         for alt in uc["alt_flow"]:
-            add_bullet(doc, alt)
+            if ": " in alt:
+                prefix, body = alt.split(": ", 1)
+                add_bullet(doc, body, bold_prefix=f"{prefix}: ")
+            else:
+                add_bullet(doc, alt)
 
         p_spacer = doc.add_paragraph()
         p_spacer.paragraph_format.space_after = Pt(6)
@@ -997,7 +1001,6 @@ def generate_report():
     project_root = os.path.normpath(os.path.join(script_dir, "..", ".."))
 
     out_docx_phase1 = os.path.join(script_dir, "03_BAO_CAO_PHAN_TICH.docx")
-    out_docx_full_name = os.path.join(script_dir, "BAO_CAO_PHAN_TICH_HE_THONG_VINDINING.docx")
     out_docx_root = os.path.join(project_root, "BAO_CAO_PHAN_TICH.docx")
 
     print(f"Generating full analysis report from base dir: {base_dir}")
@@ -1049,16 +1052,16 @@ def generate_report():
     print("Building Chapter 7 (References)...")
     build_chapter_7(doc)
 
-    # 5. Lưu tệp
-    targets = [out_docx_phase1, out_docx_full_name, out_docx_root]
-    for t in targets:
-        try:
-            doc.save(t)
-            print(f"SUCCESS: Saved report to {t}")
-        except PermissionError:
-            alt_path = t.replace(".docx", "_UPDATED.docx")
-            doc.save(alt_path)
-            print(f"NOTICE: {t} is locked by Word. Saved to {alt_path} instead.")
+    # 5. Lưu tệp (Chỉ xuất file 03_BAO_CAO_PHAN_TICH.docx, không ghi đè file khác của người dùng)
+    try:
+        doc.save(out_docx_phase1)
+        print(f"SUCCESS: Saved report to {out_docx_phase1}")
+    except PermissionError:
+        alt_path = out_docx_phase1.replace(".docx", "_UPDATED.docx")
+        doc.save(alt_path)
+        print(f"NOTICE: {out_docx_phase1} is locked by Word. Saved to {alt_path} instead.")
+    except Exception as ex:
+        print(f"ERROR saving to {out_docx_phase1}: {ex}")
 
 if __name__ == "__main__":
     generate_report()

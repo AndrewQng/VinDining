@@ -3,7 +3,7 @@
   "participants": [
     {
       "id": "k",
-      "label": "Nhà bếp & Trạm KDS",
+      "label": "Nhà bếp & KDS",
       "actor": true
     },
     {
@@ -13,86 +13,106 @@
     },
     {
       "id": "tab",
-      "label": "Pass Tablet tại quầy Pass"
-    },
-    {
-      "id": "api",
-      "label": "Web API (.NET 9)"
-    },
-    {
-      "id": "db",
-      "label": "SQL Server"
-    },
-    {
-      "id": "hub",
-      "label": "SignalR Hub"
-    },
-    {
-      "id": "disp",
-      "label": "Màn hình TableDisplay tại bàn"
+      "label": "Pass Tablet tại Pass"
     },
     {
       "id": "w",
       "label": "Phục vụ (Waitstaff)",
       "actor": true
+    },
+    {
+      "id": "ctrl",
+      "label": "OrderController"
+    },
+    {
+      "id": "handler",
+      "label": "ConfirmServingHandler"
+    },
+    {
+      "id": "db",
+      "label": "AppDbContext"
     }
   ],
   "messages": [
     {
       "from": "k",
       "to": "exp",
-      "label": "1. Đặt món đã hoàn thành ra quầy Pass dưới đèn sưởi"
+      "label": "1. Đặt món ra quầy Pass"
     },
     {
       "from": "exp",
       "to": "exp",
-      "label": "2. Đối chiếu món ăn trên Pass Tablet (Kiểm tra thẩm mỹ, nhiệt độ & dị ứng món ăn)"
+      "label": "2. Kiểm tra thẩm mỹ & nhiệt độ"
     },
     {
       "from": "exp",
       "to": "tab",
-      "label": "3. Chạm nút 'Xác nhận ra món' (Served) trên Pass Tablet (BR-04)"
+      "label": "3. Chạm nút \"Xác nhận ra món\""
     },
     {
       "from": "tab",
-      "to": "api",
+      "to": "ctrl",
       "label": "4. PATCH /api/orders/{orderId}/items/{itemId}/serve"
     },
     {
-      "from": "api",
+      "from": "ctrl",
+      "to": "handler",
+      "label": "5. Send(ConfirmServingCommand)"
+    },
+    {
+      "from": "handler",
       "to": "db",
-      "label": "5. Cập nhật OrderItem -> Served, Lưu ServeTimestamp & Đánh giá Course Pacing (BR-06)"
+      "label": "6. Query OrderItem"
     },
     {
-      "from": "api",
-      "to": "hub",
-      "label": "6. Broadcast sự kiện ItemServed (tableId, dishName, orderItemId)"
+      "from": "db",
+      "to": "handler",
+      "label": "7. Trả về thông tin OrderItem",
+      "return": true
     },
     {
-      "from": "hub",
-      "to": "disp",
-      "label": "7. TableDisplay nhấp nháy: 'Món [Tên món] đang được dọn lên!'"
+      "from": "handler",
+      "to": "db",
+      "label": "8. Update(Status = Served, ServedAt = UtcNow) & SaveChangesAsync()"
     },
     {
-      "from": "hub",
+      "from": "db",
+      "to": "handler",
+      "label": "9. Xác nhận thành công",
+      "return": true
+    },
+    {
+      "from": "handler",
       "to": "w",
-      "label": "8. Cập nhật tiến độ bàn & đĩa món đang dọn tới Tablet Waitstaff"
+      "label": "10. SignalR: Báo món sẵn sàng (tableId, dishName)"
     },
     {
-      "from": "api",
+      "from": "handler",
+      "to": "ctrl",
+      "label": "11. ServingConfirmedResponseDto",
+      "return": true
+    },
+    {
+      "from": "ctrl",
       "to": "tab",
-      "label": "9. 200 OK (Item Status: Served)",
+      "label": "12. 200 OK",
+      "return": true
+    },
+    {
+      "from": "tab",
+      "to": "exp",
+      "label": "13. Hiển thị xác nhận ra món thành công",
       "return": true
     },
     {
       "from": "exp",
       "to": "w",
-      "label": "10. Bàn giao đĩa món cho Waitstaff tại quầy Pass"
+      "label": "14. Đưa món cho Waitstaff"
     },
     {
       "from": "w",
       "to": "w",
-      "label": "11. Bưng món ra bàn phục vụ khách bằng 2 tay (Zero-touch tại bàn)"
+      "label": "15. Bưng món phục vụ bàn"
     }
   ]
 }

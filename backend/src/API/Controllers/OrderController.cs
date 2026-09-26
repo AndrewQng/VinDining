@@ -8,7 +8,7 @@ public class OrderController : ApiControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateOrder()
     {
-        // var result = await Mediator.Send(new CreateOrderCommand(...));
+        await Task.CompletedTask;
         return Ok();
     }
 }

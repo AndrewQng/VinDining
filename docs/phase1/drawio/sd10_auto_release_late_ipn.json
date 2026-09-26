@@ -3,27 +3,27 @@
   "participants": [
     {
       "id": "vn",
-      "label": "Cổng VNPAY (Late IPN / Refund)"
+      "label": "Cổng VNPAY"
     },
     {
       "id": "api",
-      "label": "Web API (IPN Controller)"
+      "label": "PaymentController"
     },
     {
       "id": "worker",
-      "label": "Background Worker (Hangfire)"
+      "label": "TableReleaseWorker"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core 9)"
+      "label": "AppDbContext"
     },
     {
       "id": "hub",
-      "label": "SignalR Hub"
+      "label": "TableHub (SignalR)"
     },
     {
       "id": "staff",
-      "label": "Nhân viên & Sơ đồ bàn"
+      "label": "Waitstaff Tablet"
     },
     {
       "id": "guest",
@@ -33,95 +33,94 @@
   ],
   "messages": [
     {
+      "note": "[Phần 1: Định kỳ quét giải phóng bàn quá 17 phút (Hangfire Worker)]",
+      "over": "worker"
+    },
+    {
       "from": "worker",
       "to": "db",
-      "label": "1. Query Reservation (PendingPayment & CreatedAt > 17m)"
+      "label": "1. Query Reservation (AwaitingPayment & CreatedAtUtc > 17m)"
     },
     {
       "from": "db",
       "to": "worker",
-      "label": "2. Danh sách đơn quá hạn 17 phút (BR-01)",
+      "label": "2. Trả về danh sách đơn giữ bàn quá hạn 17 phút",
       "return": true
     },
     {
       "from": "worker",
       "to": "db",
-      "label": "3. Update Reservation = Expired_Cancelled"
-    },
-    {
-      "from": "worker",
-      "to": "db",
-      "label": "4. Update Table = Available (Giải phóng bàn)"
+      "label": "3. Update(Reservation = Expired, Table = Available) & SaveChangesAsync()"
     },
     {
       "from": "db",
       "to": "worker",
-      "label": "5. SaveChangesAsync()",
+      "label": "4. Xác nhận lưu CSDL thành công",
       "return": true
     },
     {
       "from": "worker",
       "to": "hub",
-      "label": "6. Broadcast TableStatusChanged (TableId, Available)"
+      "label": "5. Broadcast TableStatusChanged (TableId, \"Available\")"
     },
     {
       "from": "hub",
       "to": "staff",
-      "label": "7. Sơ đồ bàn đổi màu Xanh (Available) tức thời",
-      "async": true,
-      "activate": false,
-      "deactivate": true
+      "label": "6. Cập nhật sơ đồ bàn đổi màu Xanh (Available) tức thời",
+      "return": true
+    },
+    {
+      "note": "[Phần 2: Xử lý ngoại lệ Late IPN (> 17 phút) & Tự động hoàn cọc 100% qua VNPAY]",
+      "over": "api"
     },
     {
       "from": "vn",
       "to": "api",
-      "label": "8. Late IPN Callback: Giao dịch thành công (> 17 phút)"
+      "label": "7. POST /api/payments/vnpay-ipn (Late IPN: Giao dịch thành công > 17 phút)"
     },
     {
       "from": "api",
       "to": "db",
-      "label": "9. Kiểm tra: Đơn đã Expired & Bàn cũ đã giải phóng / có khách đặt?"
+      "label": "8. Query kiểm tra: Đơn đã Expired & Bàn cũ đã giải phóng?"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "10. Xác nhận: Bàn cũ đã giải phóng / đã đặt lại (Hết chỗ)",
+      "label": "9. Xác nhận: Đơn đã Expired, bàn đã giải phóng cho khách khác",
       "return": true
     },
     {
       "from": "api",
       "to": "vn",
-      "label": "11. POST /refund (Gọi VNPAY Refund API hoàn 100% cọc tự động)"
+      "label": "10. POST /refund (Gọi VNPAY Refund API hoàn 100% cọc tự động)"
     },
     {
       "from": "vn",
       "to": "api",
-      "label": "12. Refund Success (Mã giao dịch hoàn tiền thành công)",
+      "label": "11. 200 OK (RspCode: 00 - Hoàn tiền cọc thành công)",
       "return": true
     },
     {
       "from": "api",
       "to": "db",
-      "label": "13. Update Reservation = Expired_AutoRefunded & Deposit = Refunded"
+      "label": "12. Update(Status = Expired_AutoRefunded, Deposit = Refunded) & SaveChangesAsync()"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "14. SaveChangesAsync() thành công",
+      "label": "13. Xác nhận lưu CSDL thành công",
       "return": true
     },
     {
       "from": "api",
       "to": "guest",
-      "label": "15. Tự động gửi SMS/Email xin lỗi quá hạn & xác nhận hoàn cọc 100%",
-      "async": true,
-      "activate": false,
-      "deactivate": true
+      "label": "14. Tự động gửi SMS/Email xin lỗi quá hạn & xác nhận hoàn cọc 100%",
+      "return": true
     },
     {
       "from": "api",
       "to": "vn",
-      "label": "16. Trả về RspCode: 00 (Ghi nhận IPN hoàn tất)",
+      "label": "15. Phản hồi IPN: RspCode: 00 (Xác nhận xử lý Late IPN hoàn tất)",
       "return": true
     }
   ]

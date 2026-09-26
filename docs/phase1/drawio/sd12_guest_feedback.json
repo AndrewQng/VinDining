@@ -12,19 +12,19 @@
     },
     {
       "id": "api",
-      "label": "Web API (FeedbackController)"
+      "label": "FeedbackController"
     },
     {
       "id": "cqrs",
-      "label": "MediatR (FeedbackCmd)"
+      "label": "SubmitFeedbackCommandHandler"
     },
     {
       "id": "db",
-      "label": "SQL Server (EF Core 9)"
+      "label": "AppDbContext"
     },
     {
       "id": "hub",
-      "label": "SignalR Hub"
+      "label": "FeedbackHub (SignalR)"
     },
     {
       "id": "mgr",
@@ -35,7 +35,7 @@
     {
       "from": "guest",
       "to": "mobile",
-      "label": "1. Mở link từ Email/QR hóa đơn sau khi dùng bữa"
+      "label": "1. Mở link từ Email / QR hóa đơn sau khi dùng bữa"
     },
     {
       "from": "mobile",
@@ -45,18 +45,19 @@
     {
       "from": "api",
       "to": "db",
-      "label": "3. Kiểm tra mã đặt bàn & Hóa đơn đã thanh toán"
+      "label": "3. Query Reservation & Invoice (IsPaid == true)"
     },
     {
       "from": "db",
       "to": "api",
-      "label": "4. Thông tin bữa ăn hợp lệ",
+      "label": "4. Thông tin bữa ăn hợp lệ (DiningContextDto)",
       "return": true
     },
     {
       "from": "api",
       "to": "mobile",
-      "label": "5. 200 OK (Render form đánh giá)"
+      "label": "5. 200 OK (Render form đánh giá)",
+      "return": true
     },
     {
       "from": "guest",
@@ -93,9 +94,7 @@
       "from": "hub",
       "to": "mgr",
       "label": "12. Cập nhật chỉ số CSAT & Thông báo đánh giá mới",
-      "async": true,
-      "activate": false,
-      "deactivate": true
+      "async": true
     },
     {
       "from": "cqrs",
@@ -112,8 +111,7 @@
     {
       "from": "mobile",
       "to": "guest",
-      "label": "15. Hiển thị thông điệp triân thực khách",
-      "activate": false
+      "label": "15. Hiển thị thông điệp tri ân thực khách"
     }
   ]
 }

@@ -1,0 +1,190 @@
+<mxfile host="Electron">
+  <diagram id="seqlayout" name="SD-05: Hủy đặt bàn &amp; Hoàn tiền cọc VNPAY">
+    <mxGraphModel dx="2357" dy="1402" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1580" pageHeight="1120" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 1. Khách hàng / Quản lý -->
+        <mxCell id="g" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;fontSize=15;fontStyle=1;strokeColor=#333333;" value="Khách hàng / Quản lý" vertex="1">
+          <mxGeometry height="1000" width="110" x="50" y="40" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Web Booking / Portal (React) -->
+        <mxCell id="fe" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="Web Booking / Portal&#xa;(React)" vertex="1">
+          <mxGeometry height="1000" width="130" x="240" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_fe" parent="fe" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="910" width="10" x="60" y="70" as="geometry" />
+        </mxCell>
+
+        <!-- 3. ReservationController -->
+        <mxCell id="ctrl" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="ReservationController" vertex="1">
+          <mxGeometry height="1000" width="150" x="460" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="830" width="10" x="70" y="120" as="geometry" />
+        </mxCell>
+
+        <!-- 4. CancelReservationHandler -->
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="CancelReservationHandler" vertex="1">
+          <mxGeometry height="1000" width="160" x="700" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="750" width="10" x="75" y="170" as="geometry" />
+        </mxCell>
+
+        <!-- 5. VnPayService -->
+        <mxCell id="vnpay" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="VnPayService" vertex="1">
+          <mxGeometry height="1000" width="130" x="940" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_v1" parent="vnpay" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="100" width="10" x="60" y="410" as="geometry" />
+        </mxCell>
+
+        <!-- 6. AppDbContext -->
+        <mxCell id="db" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="AppDbContext" vertex="1">
+          <mxGeometry height="1000" width="130" x="1150" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_db1" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="80" width="10" x="60" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="act_db2" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="80" width="10" x="60" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="act_db3" parent="db" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="80" width="10" x="60" y="770" as="geometry" />
+        </mxCell>
+
+        <!-- 7. Cổng VNPAY -->
+        <mxCell id="vn" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="Cổng VNPAY" vertex="1">
+          <mxGeometry height="1000" width="120" x="1360" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_vn" parent="vn" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
+          <mxGeometry height="60" width="10" x="55" y="450" as="geometry" />
+        </mxCell>
+
+        <!-- Messages Flow -->
+        <!-- 1. Bấm yêu cầu Hủy bàn -->
+        <mxCell id="m0" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0800;entryX=0;entryY=0.0110;fontSize=14;" target="act_fe" value="1. Yêu cầu Hủy bàn (Nhập lý do)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. POST /api/reservations/{id}/cancel -->
+        <mxCell id="m1" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0659;entryX=0;entryY=0.0120;fontSize=14;" target="act_ctrl" value="2. POST /api/reservations/{id}/cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Send(CancelReservationCommand) -->
+        <mxCell id="m2" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0723;entryX=0;entryY=0.0133;fontSize=14;" target="act_h" value="3. Send(CancelReservationCommand)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Query thông tin đặt bàn & cọc -->
+        <mxCell id="m3" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0800;entryX=0;entryY=0.1250;fontSize=14;" target="act_db1" value="4. Query thông tin đặt bàn &amp; mã giao dịch cọc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Trả về thông tin Reservation & Deposit -->
+        <mxCell id="m4" edge="1" parent="1" source="act_db1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.7500;entryX=1;entryY=0.1467;fontSize=14;" target="act_h" value="5. Trả về thông tin Reservation &amp; Deposit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 6. Kiểm tra điều kiện thời gian -->
+        <mxCell id="m5" edge="1" parent="1" source="act_h" style="edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;html=1;exitX=1;exitY=0.2000;entryX=1;entryY=0.2400;strokeColor=#333333;fontColor=#333333;fontSize=14;" target="act_h" value="6. Kiểm tra thời gian hẹn (Giờ hẹn - Hiện tại)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="360" />
+              <mxPoint x="860" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Alt Frame -->
+        <mxCell id="frame_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=50;height=25;fontSize=14;fontStyle=1;strokeColor=#333333;" value="alt" vertex="1">
+          <mxGeometry height="580" width="1500" x="30" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_if" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=13;fontStyle=1;fontColor=#15803d;" value="[Đủ điều kiện hoàn cọc (Trước &gt;= 4h HOẶC Quản lý Override)]" vertex="1">
+          <mxGeometry height="25" width="410" x="90" y="425" as="geometry" />
+        </mxCell>
+
+        <!-- 7a. RefundDeposit -->
+        <mxCell id="m6a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3333;entryX=0;entryY=0.1000;fontSize=14;" target="act_v1" value="7a. RefundDeposit(txnRef, amount, refundBy)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 8a. POST /refund sang VNPAY -->
+        <mxCell id="m7a" edge="1" parent="1" source="act_v1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.5000;entryX=0;entryY=0.1667;fontSize=14;" target="act_vn" value="8a. POST /refund (Gọi VNPAY Refund API)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 9a. VNPAY trả về RspCode: 00 -->
+        <mxCell id="m8a" edge="1" parent="1" source="act_vn" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.8333;entryX=1;entryY=0.9000;fontSize=14;" target="act_v1" value="9a. 200 OK (RspCode: 00 - Hoàn tiền thành công)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 10a. Cập nhật Reservation: Cancelled_Refunded, Table: Available -->
+        <mxCell id="m9a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4933;entryX=0;entryY=0.1250;fontSize=14;" target="act_db2" value="10a. Cancelled_Refunded, Table: Available, SaveChangesAsync()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11a. Xác nhận lưu CSDL thành công -->
+        <mxCell id="m10a" edge="1" parent="1" source="act_db2" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6250;entryX=1;entryY=0.5467;fontSize=14;" target="act_h" value="11a. Xác nhận lưu CSDL thành công">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 12a. Trả về Response -->
+        <mxCell id="m11a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6000;entryX=1;entryY=0.6024;fontSize=14;" target="act_ctrl" value="12a. CancelSuccessResponse (Hoàn 100% cọc)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 13a. 200 OK -->
+        <mxCell id="m12a" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6506;entryX=1;entryY=0.6484;fontSize=14;" target="act_fe" value="13a. 200 OK (Đã hủy bàn &amp; hoàn cọc)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 14a. Thông báo tới Khách -->
+        <mxCell id="m13a" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6813;entryX=0.5;entryY=0.6900;fontSize=14;" target="g" value="14a. Thông báo hủy thành công &amp; tiền hoàn về tài khoản">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Alt Divider Line -->
+        <mxCell id="line_alt_div" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="30" y="770" as="sourcePoint" />
+            <mxPoint x="1530" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_else" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=13;fontStyle=1;fontColor=#b91c1c;" value="[Hủy trễ dưới 4 tiếng (Khách tự hủy, không Override - Giữ cọc)]" vertex="1">
+          <mxGeometry height="25" width="420" x="90" y="775" as="geometry" />
+        </mxCell>
+
+        <!-- 7b. Cập nhật Cancelled_Forfeited -->
+        <mxCell id="m6b" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.8133;entryX=0;entryY=0.1250;fontSize=14;" target="act_db3" value="7b. Cancelled_Forfeited, Table: Available, SaveChangesAsync()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 8b. Xác nhận lưu CSDL thành công -->
+        <mxCell id="m7b" edge="1" parent="1" source="act_db3" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6250;entryX=1;entryY=0.8667;fontSize=14;" target="act_h" value="8b. Xác nhận lưu CSDL thành công">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 9b. Trả về Response -->
+        <mxCell id="m8b" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9200;entryX=1;entryY=0.8916;fontSize=14;" target="act_ctrl" value="9b. CancelForfeitedResponse (Giữ cọc do hủy trễ)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 10b. 200 OK -->
+        <mxCell id="m9b" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9398;entryX=1;entryY=0.9121;fontSize=14;" target="act_fe" value="10b. 200 OK (Đã hủy bàn, giữ lại tiền cọc)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11b. Thông báo tới Khách -->
+        <mxCell id="m10b" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9451;entryX=0.5;entryY=0.9300;fontSize=14;" target="g" value="11b. Thông báo hủy bàn thành công &amp; tiền cọc không được hoàn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

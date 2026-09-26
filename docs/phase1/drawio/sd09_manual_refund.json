@@ -3,12 +3,12 @@
   "participants": [
     {
       "id": "guest",
-      "label": "Khách hàng (Khiếu nại)",
+      "label": "Khách hàng (Guest)",
       "actor": true
     },
     {
       "id": "mgr",
-      "label": "Quản lý / Admin",
+      "label": "Quản lý (Manager)",
       "actor": true
     },
     {
@@ -16,24 +16,24 @@
       "label": "Manager Web Portal"
     },
     {
-      "id": "api",
-      "label": "Web API (RefundController)"
+      "id": "ctrl",
+      "label": "ReservationController"
     },
     {
-      "id": "cqrs",
-      "label": "MediatR (ManualRefundCmd)"
+      "id": "handler",
+      "label": "ManualRefundCommandHandler"
     },
     {
-      "id": "vn",
-      "label": "Cổng VNPAY (Refund API)"
+      "id": "vnpay",
+      "label": "VnPayService"
     },
     {
       "id": "db",
-      "label": "SQL Server & Audit Log"
+      "label": "AppDbContext"
     },
     {
       "id": "mail",
-      "label": "Email Service"
+      "label": "EmailService"
     }
   ],
   "messages": [
@@ -45,93 +45,84 @@
     {
       "from": "mgr",
       "to": "fe",
-      "label": "2. Tra cứu BookingCode, bấm 'Hoàn cọc thủ công (Override)'"
+      "label": "2. Tra cứu BookingCode, chọn \"Hoàn cọc ngoại lệ\""
     },
     {
       "from": "mgr",
       "to": "fe",
-      "label": "3. Nhập lý do ngoại lệ bắt buộc (Audit Reason) & Mã OTP"
+      "label": "3. Nhập lý do giải trình bắt buộc (Audit Reason)"
     },
     {
       "from": "fe",
-      "to": "api",
-      "label": "4. POST /api/v1/reservations/{id}/manual-refund"
+      "to": "ctrl",
+      "label": "4. POST /api/admin/reservations/{id}/manual-refund"
     },
     {
-      "from": "api",
-      "to": "cqrs",
+      "from": "ctrl",
+      "to": "handler",
       "label": "5. Send(ManualRefundCommand)"
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "db",
-      "label": "6. Kiểm tra quyền Manager & Trạng thái cọc (Deposit = Paid)"
+      "label": "6. Query Reservation, Deposit & kiểm tra quyền Manager"
     },
     {
       "from": "db",
-      "to": "cqrs",
-      "label": "7. Hợp lệ",
+      "to": "handler",
+      "label": "7. Trả về thông tin hợp lệ (Deposit = Paid)",
       "return": true
     },
     {
-      "from": "cqrs",
-      "to": "vn",
-      "label": "8. Call VNPAY Refund API (Mã giao dịch, Số tiền cọc)"
+      "from": "handler",
+      "to": "vnpay",
+      "label": "8. RefundDeposit(txnRef, amount, reason)"
     },
     {
-      "from": "vn",
-      "to": "cqrs",
-      "label": "9. VNPAY Callback: Hoàn tiền thành công (RspCode = 00)",
+      "from": "vnpay",
+      "to": "handler",
+      "label": "9. RefundResult (Success, RspCode = 00)",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "db",
-      "label": "10. Set DepositStatus = Refunded, Reservation = Cancelled"
-    },
-    {
-      "from": "cqrs",
-      "to": "db",
-      "label": "11. Ghi Audit Log: ManagerId, Reason, Timestamp"
+      "label": "10. Set Deposit = Refunded, ghi AuditLog & SaveChangesAsync()"
     },
     {
       "from": "db",
-      "to": "cqrs",
-      "label": "12. Commit Transaction",
+      "to": "handler",
+      "label": "11. Commit Transaction thành công",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "mail",
-      "label": "13. Gửi Email thông báo đã duyệt hoàn cọc cho khách",
-      "async": true,
-      "activate": false
+      "label": "12. SendRefundConfirmationEmail(guestEmail, amount)"
     },
     {
       "from": "mail",
       "to": "guest",
-      "label": "14. Khách nhận Email xác nhận hoàn tiền cọc từ VNPAY",
-      "async": true,
-      "activate": false,
-      "deactivate": true
-    },
-    {
-      "from": "cqrs",
-      "to": "api",
-      "label": "15. RefundSuccessDto",
+      "label": "13. Gửi Email thông báo tiền hoàn về tài khoản",
       "return": true
     },
     {
-      "from": "api",
+      "from": "handler",
+      "to": "ctrl",
+      "label": "14. RefundSuccessResponse",
+      "return": true
+    },
+    {
+      "from": "ctrl",
       "to": "fe",
-      "label": "16. 200 OK (Hoàn tiền thủ công thành công)",
+      "label": "15. 200 OK (Hoàn tiền ngoại lệ thành công)",
       "return": true
     },
     {
       "from": "fe",
       "to": "mgr",
-      "label": "17. Cập nhật trạng thái giao dịch: Hoàn cọc ngoại lệ",
-      "activate": false
+      "label": "16. Cập nhật trạng thái: Đã hoàn cọc ngoại lệ",
+      "return": true
     }
   ]
 }

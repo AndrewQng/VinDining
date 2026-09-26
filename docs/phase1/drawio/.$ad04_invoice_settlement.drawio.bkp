@@ -1,0 +1,107 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram name="AD-04 Thanh toán &amp; Cấn trừ cọc" id="ad-04_thanh_toán_&amp;_cấn_trừ_cọc">
+    <mxGraphModel dx="1811" dy="1041" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lane5_1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Khách hàng (Guest)" vertex="1">
+          <mxGeometry height="1110" width="340" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="start5" parent="lane5_1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e53935;strokeColor=#b71c1c;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g5_act1" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Yêu cầu thanh toán trực tiếp&#xa;với Phục vụ (lời nói / cử chỉ)" vertex="1">
+          <mxGeometry height="110" width="210" x="65" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="g5_act2" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Kiểm tra hóa đơn trên TableDisplay&#xa;&amp;amp; đối chiếu cấn trừ cọc Deposit" vertex="1">
+          <mxGeometry height="120" width="210" x="65" y="315" as="geometry" />
+        </mxCell>
+        <mxCell id="g5_act3" parent="lane5_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Thanh toán số tiền còn thiếu&#xa;(Quét VietQR TableDisplay / Thẻ POS / Tiền mặt)" vertex="1">
+          <mxGeometry height="130" width="220" x="60" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="lane5_2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Nhân viên Phục vụ / Thu ngân" vertex="1">
+          <mxGeometry height="1110" width="340" x="380" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="w5_act1" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Mở Tablet POS thao tác&#xa;chọn &#39;Thanh toán bàn&#39; (BR-03)" vertex="1">
+          <mxGeometry height="110" width="210" x="65" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="w5_act2" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Hướng dẫn khách kiểm tra trên&#xa;TableDisplay (hoặc phiếu tạm tính)" vertex="1">
+          <mxGeometry height="110" width="210" x="65" y="317.5" as="geometry" />
+        </mxCell>
+        <mxCell id="w5_act3" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Xác nhận đủ tiền &amp;amp; bấm&#xa;&#39;Hoàn tất thanh toán&#39; trên Tablet POS" vertex="1">
+          <mxGeometry height="110" width="220" x="65" y="485" as="geometry" />
+        </mxCell>
+        <mxCell id="w5_act4" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Giao Hóa đơn tài chính cho khách&#xa;&amp;amp; tiến hành dọn dẹp bàn" vertex="1">
+          <mxGeometry height="100" width="230" x="60" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="w5_act5" parent="lane5_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Dọn dẹp xong, bấm chuyển bàn&#xa;về trạng thái &#39;Available&#39; (Trống)" vertex="1">
+          <mxGeometry height="100" width="230" x="60" y="885" as="geometry" />
+        </mxCell>
+        <mxCell id="end_w5" parent="lane5_2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#2e7d32;strokeWidth=2;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="160" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="end_w5_dot" parent="lane5_2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2e7d32;strokeColor=none;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="166" y="1026" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_12" edge="1" parent="lane5_2" source="w5_act4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="w5_act5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_13" edge="1" parent="lane5_2" source="w5_act5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="end_w5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lane5_3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="Hệ thống VinDining (Invoice Engine &amp;amp; DB)" vertex="1">
+          <mxGeometry height="1110" width="390" x="720" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_act1" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Áp công thức tài chính BR-03:&#xa;max(0, Subtotal + 5% SVC + 10% VAT - Deposit Paid)" vertex="1">
+          <mxGeometry height="120" width="230" x="55" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_act2" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Đẩy chi tiết hóa đơn &amp;amp; VietQR động&#xa;lên TableDisplay (in tạm tính nếu cần)" vertex="1">
+          <mxGeometry height="145" width="210" x="65" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_act3" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="TableDisplay hiện lời cảm ơn,&#xa;in Hóa đơn tài chính cuối cùng" vertex="1">
+          <mxGeometry height="110" width="230" x="55" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_act4" parent="lane5_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Chuyển trạng thái bàn sang&#xa;&#39;Cleaning&#39; (Chờ dọn dẹp)" vertex="1">
+          <mxGeometry height="100" width="210" x="65" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_1" edge="1" parent="1" source="start5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="g5_act1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_2" edge="1" parent="1" source="g5_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="w5_act1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_3" edge="1" parent="1" source="w5_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="s5_act1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_4" edge="1" parent="1" source="s5_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="s5_act2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_5" edge="1" parent="1" source="s5_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="w5_act2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_6" edge="1" parent="1" source="w5_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="g5_act2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_7" edge="1" parent="1" source="g5_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="g5_act3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_8" edge="1" parent="1" source="g5_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="w5_act3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="597" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5_9" edge="1" parent="1" source="w5_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="s5_act3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_10" edge="1" parent="1" source="s5_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="s5_act4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5_11" edge="1" parent="1" source="s5_act4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="w5_act4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

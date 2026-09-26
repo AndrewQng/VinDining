@@ -143,11 +143,14 @@ USE_CASES_DATA = [
             "Hệ thống cập nhật trạng thái bàn ăn sang Đã đặt chỗ (Reserved), tự động sinh mã đặt bàn BookingCode duy nhất và gửi thông báo xác nhận thành công tới khách hàng qua tin nhắn và thư điện tử."
         ],
         "alt_flow": [
-            "Khi khách hàng chủ động hủy thao tác thanh toán hoặc giao dịch qua VNPAY thất bại, hệ thống ghi nhận trạng thái chưa hoàn tất và hiển thị thông báo mời khách thao tác lại. Trường hợp quá thời hạn quy định mà chưa thanh toán, hệ thống tự động giải phóng vị trí bàn về trạng thái sẵn sàng đón khách.",
-            "Khi phát sinh phản hồi thanh toán thành công trễ từ cổng VNPAY sau khi bàn đã được giải phóng do vượt quá 17 phút, hệ thống tự động quét tìm bàn ăn trống có vị trí và sức chứa tương đương để bố trí cho khách. Nếu nhà hàng đã kín chỗ, hệ thống ghi nhận trạng thái chờ xử lý và kích hoạt cảnh báo tới Quản lý để trực tiếp liên hệ hỗ trợ đổi ngày hoặc hoàn tiền.",
-            "Khi toàn bộ các bàn ăn trong khung giờ hoặc phân khu mong muốn đã kín chỗ, hệ thống thông báo trạng thái hết chỗ và tự động gợi ý các khung giờ hoặc phân khu lân cận còn khả dụng.",
-            "Khi khách hàng thực hiện hủy đặt bàn trước giờ hẹn từ 4 tiếng trở lên, hệ thống tự động kích hoạt thủ tục hoàn lại 100% tiền cọc qua cổng VNPAY và đưa vị trí bàn về trạng thái sẵn sàng phục vụ.",
-            "Khi khách hàng yêu cầu hủy đặt bàn trong vòng dưới 4 tiếng trước giờ hẹn, hệ thống ghi nhận việc hủy bàn, giải phóng bàn ăn nhưng giữ lại toàn bộ số tiền cọc theo đúng cam kết chính sách."
+            "2a. Phân khu hoặc khung giờ mong muốn đã kín chỗ: Khi toàn bộ các bàn ăn trong khung giờ hoặc phân khu mong muốn đã kín chỗ, hệ thống thông báo trạng thái hết chỗ và tự động gợi ý các khung giờ hoặc phân khu lân cận còn khả dụng. Khách hàng lựa chọn thời điểm/khu vực khác hoặc kết thúc phiên đặt bàn.",
+            "3a. Thông tin liên hệ hoặc yêu cầu đặc biệt không hợp lệ: Khi khách hàng để trống các trường dữ liệu bắt buộc hoặc nhập sai định dạng số điện thoại/email, hệ thống hiển thị cảnh báo lỗi trực quan tại trường tương ứng và chặn thao tác chuyển cổng thanh toán cho đến khi thông tin được hoàn thiện.",
+            "5a. Khách hàng chủ động hủy thanh toán hoặc giao dịch qua VNPAY thất bại: Khi khách hàng chủ động hủy thao tác thanh toán hoặc giao dịch qua VNPAY thất bại, hệ thống ghi nhận trạng thái chưa hoàn tất, giữ nguyên phiên khóa bàn (nếu chưa hết hạn 17 phút) và hiển thị thông báo mời khách hàng thao tác lại.",
+            "5b. Hết thời hạn 17 phút khóa bàn mà chưa hoàn tất thanh toán (Timeout): Khi vượt quá thời hạn 17 phút (bao gồm 15 phút hiệu lực mã VietQR cộng thêm 2 phút ân hạn xử lý mạng) mà chưa nhận được tín hiệu thanh toán, hệ thống tự động giải phóng vị trí bàn về trạng thái sẵn sàng đón khách (Available) và hủy phiên đặt chỗ.",
+            "6a. Phản hồi thanh toán thành công trễ sau khi bàn đã bị giải phóng (Late IPN > 17 phút): Khi phát sinh phản hồi thanh toán thành công trễ từ cổng VNPAY sau khi bàn đã được giải phóng do vượt quá 17 phút, hệ thống tự động quét tìm bàn ăn trống có vị trí và sức chứa tương đương để bố trí cho khách. Nếu nhà hàng đã kín chỗ, hệ thống chuyển giao dịch sang trạng thái ngoại lệ chờ xử lý và kích hoạt cảnh báo tới Quản lý để trực tiếp liên hệ hỗ trợ đổi ngày hoặc hoàn lại 100% tiền cọc.",
+            "7a. Sự cố kết nối dịch vụ gửi tin nhắn SMS / Email xác nhận: Khi hệ thống đã cập nhật trạng thái bàn sang Đã đặt chỗ (Reserved) nhưng kết nối dịch vụ SMS/Email bên thứ ba gặp gián đoạn, hệ thống ghi nhận đặt bàn thành công, đẩy thông báo vào hàng đợi gửi bù (Retry Queue) và hiển thị mã BookingCode trực tiếp trên giao diện trình duyệt để khách hàng lưu giữ.",
+            "7b. Khách hàng yêu cầu hủy bàn trước giờ hẹn từ 4 tiếng trở lên (Xem chi tiết tại UC-U3): Sau khi đặt bàn thành công, nếu khách hàng thực hiện hủy đặt bàn trước giờ hẹn từ 4 tiếng trở lên, hệ thống tự động kích hoạt thủ tục hoàn lại 100% tiền cọc qua cổng VNPAY và đưa vị trí bàn về trạng thái sẵn sàng phục vụ.",
+            "7c. Khách hàng yêu cầu hủy bàn trong vòng dưới 4 tiếng trước giờ hẹn (Xem chi tiết tại UC-U3): Sau khi đặt bàn thành công, nếu khách hàng yêu cầu hủy đặt bàn trong vòng dưới 4 tiếng trước giờ hẹn, hệ thống ghi nhận việc hủy bàn, giải phóng bàn ăn nhưng giữ lại toàn bộ số tiền cọc theo đúng cam kết chính sách."
         ]
     },
     {
@@ -168,7 +171,7 @@ USE_CASES_DATA = [
             "Khách hàng trao đổi trực tiếp nguyện vọng gọi món với nhân viên phục vụ đang túc trực tại phân khu để nhân viên tạo đơn; trong bữa ăn, khách có thể nhấn nút gửi yêu cầu phục vụ hoặc yêu cầu thanh toán trên E-Menu."
         ],
         "alt_flow": [
-            "Khi khách hàng không mang theo điện thoại thông minh hoặc điện thoại hết pin, nhân viên phục vụ chủ động cung cấp Tablet từ kho dùng chung (Floating Pool) hoặc cuốn thực đơn bìa da truyền thống cho khách."
+            "1a. Khách hàng không mang theo điện thoại thông minh hoặc điện thoại hết pin: Nhân viên phục vụ chủ động cung cấp Tablet từ kho dùng chung (Floating Pool) hoặc cuốn thực đơn bìa da truyền thống cho khách."
         ]
     },
     {
@@ -191,7 +194,7 @@ USE_CASES_DATA = [
             "Hệ thống gửi thư điện tử và tin nhắn thông báo xác nhận hủy đặt bàn cùng chứng từ hoàn tiền thành công tới khách hàng."
         ],
         "alt_flow": [
-            "Khi khách hàng thực hiện hủy lịch đặt bàn khi thời gian còn cách giờ hẹn dưới 4 tiếng, hệ thống hiển thị thông báo cảnh báo khách hàng sẽ bị giữ lại 100% tiền cọc do vi phạm chính sách cam kết thời gian chuẩn bị nguyên liệu. Sau khi khách hàng xác nhận đồng ý, hệ thống ghi nhận trạng thái hủy bàn, giải phóng vị trí bàn về trạng thái sẵn sàng đón khách và giữ lại khoản cọc theo đúng quy định."
+            "4a. Hủy đặt bàn khi thời gian cách giờ hẹn dưới 4 tiếng: Khi khách hàng thực hiện hủy lịch đặt bàn khi thời gian còn cách giờ hẹn dưới 4 tiếng, hệ thống hiển thị thông báo cảnh báo khách hàng sẽ bị giữ lại 100% tiền cọc do vi phạm chính sách cam kết thời gian chuẩn bị nguyên liệu. Sau khi khách hàng xác nhận đồng ý, hệ thống ghi nhận trạng thái hủy bàn, giải phóng vị trí bàn về trạng thái sẵn sàng đón khách và giữ lại khoản cọc theo đúng quy định."
         ]
     },
     {
@@ -211,7 +214,7 @@ USE_CASES_DATA = [
             "Hệ thống xác thực tính hợp lệ, lưu trữ dữ liệu khảo sát vào cơ sở dữ liệu và cập nhật chỉ số đo lường mức độ hài lòng khách hàng (CSAT) trên bảng điều khiển quản trị."
         ],
         "alt_flow": [
-            "Khi khách hàng gửi đánh giá kèm phản ánh mức độ hài lòng dưới 3 sao, hệ thống tự động gắn nhãn cảnh báo ưu tiên và chuyển tiếp thông báo đến hộp thư của Quản lý nhà hàng để kịp thời tiếp thu và xử lý."
+            "3a. Khách hàng phản ánh mức độ hài lòng dưới 3 sao: Khi khách hàng gửi đánh giá kèm phản ánh mức độ hài lòng dưới 3 sao, hệ thống tự động gắn nhãn cảnh báo ưu tiên và chuyển tiếp thông báo đến hộp thư của Quản lý nhà hàng để kịp thời tiếp thu và xử lý."
         ]
     },
 
@@ -235,7 +238,7 @@ USE_CASES_DATA = [
             "Hệ thống tự động kích hoạt tiến trình phát sự kiện SignalR thời gian thực đẩy vé điện tử ra màn hình KDS tại các trạm Bếp tương ứng với thông tin số bàn, tên món, đồng hồ đếm ngược SLA và bôi đậm nội dung cảnh báo dị ứng thực phẩm."
         ],
         "alt_flow": [
-            "Khi khách hàng có nhu cầu gọi bổ sung món ăn trong quá trình dùng bữa, nhân viên phục vụ thực hiện mở lại bàn ăn trên ứng dụng và tạo một lượt gọi món mới; hệ thống sẽ gom chung các món mới vào đơn hàng hiện hữu của bàn và chỉ đẩy vé điện tử lên màn hình KDS cho những món vừa bổ sung."
+            "6a. Khách hàng gọi bổ sung món ăn trong bữa ăn: Khi khách hàng có nhu cầu gọi bổ sung món ăn trong quá trình dùng bữa, nhân viên phục vụ thực hiện mở lại bàn ăn trên ứng dụng và tạo một lượt gọi món mới; hệ thống sẽ gom chung các món mới vào đơn hàng hiện hữu của bàn và chỉ đẩy vé điện tử lên màn hình KDS cho những món vừa bổ sung."
         ]
     },
     {
@@ -256,7 +259,7 @@ USE_CASES_DATA = [
             "Nhân viên Điều phối bàn giao đĩa món cho nhân viên phục vụ mang ra bàn đặt cho khách bằng hai tay."
         ],
         "alt_flow": [
-            "Khi nhân viên Điều phối phát hiện đĩa món chế biến sai yêu cầu hoặc quên loại bỏ thành phần dị ứng đã ghi chú, nhân viên từ chối bấm xác nhận và yêu cầu đầu bếp lập tức chế biến lại đĩa mới."
+            "2a. Đĩa món chế biến sai yêu cầu hoặc bỏ quên ghi chú dị ứng: Khi nhân viên Điều phối phát hiện đĩa món chế biến sai yêu cầu hoặc quên loại bỏ thành phần dị ứng đã ghi chú, nhân viên từ chối bấm xác nhận và yêu cầu đầu bếp lập tức chế biến lại đĩa mới."
         ]
     },
     {
@@ -279,8 +282,8 @@ USE_CASES_DATA = [
             "Hệ thống lưu trữ hóa đơn tài chính cuối cùng và tự động chuyển trạng thái bàn ăn sang Chờ dọn dẹp (Cleaning) để chuẩn bị đón đợt khách kế tiếp."
         ],
         "alt_flow": [
-            "Khi tổng chi phí bữa ăn thấp hơn số tiền cọc đã thanh toán, hệ thống tự động áp dụng chính sách tiền cọc là mức chi tiêu tối thiểu (Minimum Spend) và thiết lập số tiền phải thu bằng 0 đồng, đồng thời hiển thị thông báo để nhân viên gợi ý khách gọi thêm đồ uống hoặc món tráng miệng mang về.",
-            "Khi khách hàng có thắc mắc về số tiền cọc được khấu trừ, nhân viên tra cứu trực tiếp lịch sử giao dịch cọc gắn với mã BookingCode trên ứng dụng để giải thích minh bạch cho khách."
+            "3a. Tổng chi phí bữa ăn thấp hơn số tiền cọc đã thanh toán: Khi tổng chi phí bữa ăn thấp hơn số tiền cọc đã thanh toán, hệ thống tự động áp dụng chính sách tiền cọc là mức chi tiêu tối thiểu (Minimum Spend) và thiết lập số tiền phải thu bằng 0 đồng, đồng thời hiển thị thông báo để nhân viên gợi ý khách gọi thêm đồ uống hoặc món tráng miệng mang về.",
+            "5a. Khách hàng có thắc mắc về số tiền cọc được khấu trừ: Khi khách hàng có thắc mắc về số tiền cọc được khấu trừ, nhân viên tra cứu trực tiếp lịch sử giao dịch cọc gắn với mã BookingCode trên ứng dụng để giải thích minh bạch cho khách."
         ]
     },
     {
@@ -302,7 +305,7 @@ USE_CASES_DATA = [
             "Hệ thống chuyển trạng thái bàn cũ sang Chờ dọn dẹp (Cleaning), chuyển bàn mới sang Đang phục vụ (Occupied) và gửi thông báo cập nhật sơ đồ bàn đến quầy Điều phối Pass."
         ],
         "alt_flow": [
-            "Khi khách hàng có nhu cầu ghép thêm bạn và gộp hai bàn ăn lại với nhau, nhân viên sử dụng chức năng Ghép bàn để liên kết hai mã bàn thành một nhóm phục vụ chung và hợp nhất hóa đơn."
+            "1a. Khách hàng có nhu cầu ghép thêm bạn và gộp bàn (Merge Tables): Khi khách hàng có nhu cầu ghép thêm bạn và gộp hai bàn ăn lại với nhau, nhân viên sử dụng chức năng Ghép bàn để liên kết hai mã bàn thành một nhóm phục vụ chung và hợp nhất hóa đơn."
         ]
     },
     {
@@ -323,8 +326,8 @@ USE_CASES_DATA = [
             "Hệ thống sinh mã thông báo JWT chứa thông tin định danh và danh mục quyền (Roles), sau đó điều hướng người dùng tới giao diện làm việc phù hợp."
         ],
         "alt_flow": [
-            "Khi người dùng nhập sai mật khẩu quá 5 lần liên tiếp, hệ thống tự động tạm khóa tài khoản trong 15 phút nhằm phòng chống các cuộc tấn công dò quét mật khẩu tự động.",
-            "Khi mã thông báo JWT hết hạn trong phiên làm việc, hệ thống tự động yêu cầu làm mới phiên hoặc chuyển hướng người dùng về trang đăng nhập để bảo mật dữ liệu."
+            "4a. Người dùng nhập sai mật khẩu quá 5 lần liên tiếp: Khi người dùng nhập sai mật khẩu quá 5 lần liên tiếp, hệ thống tự động tạm khóa tài khoản trong 15 phút nhằm phòng chống các cuộc tấn công dò quét mật khẩu tự động.",
+            "5a. Mã thông báo JWT hết hạn trong phiên làm việc: Khi mã thông báo JWT hết hạn trong phiên làm việc, hệ thống tự động yêu cầu làm mới phiên hoặc chuyển hướng người dùng về trang đăng nhập để bảo mật dữ liệu."
         ]
     },
 
@@ -348,7 +351,7 @@ USE_CASES_DATA = [
             "Hệ thống kiểm tra tính hợp lệ của dữ liệu đầu vào, lưu vào cơ sở dữ liệu và phát sự kiện cập nhật thời gian thực xuống toàn bộ thiết bị hiển thị tại nhà hàng."
         ],
         "alt_flow": [
-            "Khi nhà bếp thông báo hết nguyên liệu đột xuất trong ca phục vụ, Quản lý sử dụng chức năng Bật/Tắt trạng thái Còn hàng nhanh trên ứng dụng để ngay lập tức ẩn món ăn đó trên E-Menu của khách."
+            "3a. Nhà bếp thông báo hết nguyên liệu đột xuất trong ca phục vụ: Khi nhà bếp thông báo hết nguyên liệu đột xuất trong ca phục vụ, Quản lý sử dụng chức năng Bật/Tắt trạng thái Còn hàng nhanh trên ứng dụng để ngay lập tức ẩn món ăn đó trên E-Menu của khách."
         ]
     },
     {
@@ -370,7 +373,7 @@ USE_CASES_DATA = [
             "Hệ thống xác thực tính hợp lệ, lưu trữ các thay đổi vào cơ sở dữ liệu và tự động phát tín hiệu đồng bộ sơ đồ mới tới toàn bộ nhân viên phục vụ đang trong ca trực."
         ],
         "alt_flow": [
-            "Khi Quản lý thực hiện thay đổi thông số sức chứa của một bàn ăn đang trong trạng thái Đang phục vụ, hệ thống sẽ đưa ra cảnh báo ngăn chặn để tránh gây sai lệch dữ liệu phục vụ hiện hành."
+            "3a. Thay đổi thông số của bàn đang trong trạng thái phục vụ: Khi Quản lý thực hiện thay đổi thông số sức chứa của một bàn ăn đang trong trạng thái Đang phục vụ, hệ thống sẽ đưa ra cảnh báo ngăn chặn để tránh gây sai lệch dữ liệu phục vụ hiện hành."
         ]
     },
     {
@@ -392,7 +395,7 @@ USE_CASES_DATA = [
             "Hệ thống cập nhật trạng thái đơn đặt cọc thành Đã hoàn cọc ngoại lệ và tự động ghi nhật ký kiểm toán (Audit Log) lưu vết mã định danh của Quản lý đã ký duyệt."
         ],
         "alt_flow": [
-            "Khi kết nối API hoàn tiền sang cổng VNPAY gặp trục trặc mạng gián đoạn, hệ thống ghi nhận trạng thái Chờ xử lý hoàn cọc và tự động thử lại định kỳ, đồng thời thông báo cho Quản lý nắm bắt tiến độ."
+            "5a. Kết nối API hoàn tiền sang cổng VNPAY gặp trục trặc gián đoạn: Khi kết nối API hoàn tiền sang cổng VNPAY gặp trục trặc mạng gián đoạn, hệ thống ghi nhận trạng thái Chờ xử lý hoàn cọc và tự động thử lại định kỳ, đồng thời thông báo cho Quản lý nắm bắt tiến độ."
         ]
     },
     {
@@ -414,7 +417,7 @@ USE_CASES_DATA = [
             "Hệ thống tạo mã định danh, lưu trữ thông tin an toàn và tự động gửi thư điện tử kích hoạt kèm mật khẩu mặc định tới nhân viên."
         ],
         "alt_flow": [
-            "Khi nhân viên nghỉ việc, Quản trị viên thực hiện kích hoạt chức năng Khóa tài khoản; hệ thống ngay lập tức vô hiệu hóa phiên làm việc hiện hành của tài khoản đó trên toàn bộ các thiết bị."
+            "3a. Nhân viên nghỉ việc hoặc điều chuyển công tác: Khi nhân viên nghỉ việc, Quản trị viên thực hiện kích hoạt chức năng Khóa tài khoản; hệ thống ngay lập tức vô hiệu hóa phiên làm việc hiện hành của tài khoản đó trên toàn bộ các thiết bị."
         ]
     },
     {
@@ -435,7 +438,7 @@ USE_CASES_DATA = [
             "Quản lý có thể nhấn nút Xuất báo cáo để tải tệp dữ liệu chi tiết phục vụ công tác đối soát."
         ],
         "alt_flow": [
-            "Khi hệ thống phát hiện tỷ lệ hủy bàn hoặc không đến dùng bữa tăng cao bất thường trong một ca phục vụ, bảng điều khiển tự động hiển thị biểu tượng cảnh báo để Quản lý kịp thời rà soát nguyên nhân."
+            "4a. Tỷ lệ hủy bàn hoặc vắng mặt tăng cao bất thường: Khi hệ thống phát hiện tỷ lệ hủy bàn hoặc không đến dùng bữa tăng cao bất thường trong một ca phục vụ, bảng điều khiển tự động hiển thị biểu tượng cảnh báo để Quản lý kịp thời rà soát nguyên nhân."
         ]
     },
 
@@ -459,7 +462,7 @@ USE_CASES_DATA = [
             "Hệ thống ghi nhận thông tin chi tiết vào nhật ký kiểm toán hệ thống để lưu vết lịch sử giải phóng bàn tự động."
         ],
         "alt_flow": [
-            "Khi cổng VNPAY phản hồi tín hiệu thanh toán thành công nhưng bị trễ sau 17 phút và vị trí bàn cũ đã được cấp cho khách hàng khác, hệ thống tự động kích hoạt tiến trình tìm kiếm bàn trống tương đương để bố trí cho khách; trường hợp nhà hàng đã kín chỗ, hệ thống chuyển giao dịch sang trạng thái ngoại lệ và kích hoạt cảnh báo ưu tiên cao tới Quản lý để gọi điện hỗ trợ."
+            "4a. Cổng VNPAY phản hồi tín hiệu thanh toán thành công trễ sau 17 phút: Khi cổng VNPAY phản hồi tín hiệu thanh toán thành công nhưng bị trễ sau 17 phút và vị trí bàn cũ đã được cấp cho khách hàng khác, hệ thống tự động kích hoạt tiến trình tìm kiếm bàn trống tương đương để bố trí cho khách; trường hợp nhà hàng đã kín chỗ, hệ thống chuyển giao dịch sang trạng thái ngoại lệ và kích hoạt cảnh báo ưu tiên cao tới Quản lý để gọi điện hỗ trợ."
         ]
     }
 ]

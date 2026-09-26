@@ -8,19 +8,19 @@
     },
     {
       "id": "fe",
-      "label": "Web Frontend (React)"
+      "label": "Web Frontend"
     },
     {
-      "id": "api",
-      "label": "Web API (AuthController)"
+      "id": "ctrl",
+      "label": "AuthController"
     },
     {
-      "id": "cqrs",
-      "label": "MediatR (LoginCommand)"
+      "id": "handler",
+      "label": "LoginCommandHandler"
     },
     {
-      "id": "id",
-      "label": "ASP.NET Identity / DB"
+      "id": "identity",
+      "label": "IdentityService"
     },
     {
       "id": "jwt",
@@ -35,69 +35,101 @@
     },
     {
       "from": "fe",
-      "to": "api",
+      "to": "ctrl",
       "label": "2. POST /api/v1/auth/login"
     },
     {
-      "from": "api",
-      "to": "cqrs",
+      "from": "ctrl",
+      "to": "handler",
       "label": "3. Send(LoginCommand)"
     },
     {
-      "from": "cqrs",
-      "to": "id",
+      "from": "handler",
+      "to": "identity",
       "label": "4. FindByNameAsync(username)"
     },
     {
-      "from": "id",
-      "to": "cqrs",
-      "label": "5. Trả về AppUser Entity & Roles",
+      "from": "identity",
+      "to": "handler",
+      "label": "5. Trả về ApplicationUser & Roles",
       "return": true
     },
     {
-      "from": "cqrs",
-      "to": "id",
+      "from": "handler",
+      "to": "identity",
       "label": "6. CheckPasswordSignInAsync(user, pass)"
     },
     {
-      "from": "id",
-      "to": "cqrs",
-      "label": "7. Xác thực credentials hợp lệ",
+      "note": "[alt: Mật khẩu chính xác & Tài khoản Active]",
+      "over": "handler"
+    },
+    {
+      "from": "identity",
+      "to": "handler",
+      "label": "7a. SignInResult (Success)",
       "return": true
     },
     {
-      "from": "cqrs",
+      "from": "handler",
       "to": "jwt",
-      "label": "8. GenerateTokens(user, roles)"
+      "label": "8a. GenerateTokens(user, roles)"
     },
     {
       "from": "jwt",
-      "to": "cqrs",
-      "label": "9. AccessToken (JWT) + RefreshToken",
+      "to": "handler",
+      "label": "9a. AccessToken (JWT) + RefreshToken",
       "return": true
     },
     {
-      "from": "cqrs",
-      "to": "api",
-      "label": "10. AuthResponseDto",
+      "from": "handler",
+      "to": "ctrl",
+      "label": "10a. AuthResponseDto(AccessToken, Roles, Profile)",
       "return": true
     },
     {
-      "from": "api",
+      "from": "ctrl",
       "to": "fe",
-      "label": "11. 200 OK (Token, Roles, Profile)",
+      "label": "11a. 200 OK (AuthResponseDto)",
       "return": true
     },
     {
       "from": "fe",
       "to": "fe",
-      "label": "12. Lưu JWT vào Zustand Store & Cookie"
+      "label": "12a. Lưu JWT vào Zustand Store & Cookie"
     },
     {
       "from": "fe",
       "to": "staff",
-      "label": "13. Điều hướng màn hình theo Role (Waitstaff/Pass/Admin)",
-      "activate": false
+      "label": "13a. Điều hướng màn hình theo Role (Waitstaff/Expediter/Manager)",
+      "return": true
+    },
+    {
+      "note": "[else: Thông tin đăng nhập không hợp lệ]",
+      "over": "handler"
+    },
+    {
+      "from": "identity",
+      "to": "handler",
+      "label": "7b. SignInResult (Failed / LockedOut)",
+      "return": true
+    },
+    {
+      "from": "handler",
+      "to": "ctrl",
+      "label": "8b. Result.Failure(\"Invalid credentials\")",
+      "return": true
+    },
+    {
+      "from": "ctrl",
+      "to": "fe",
+      "label": "9b. 401 Unauthorized (\"Tên đăng nhập hoặc mật khẩu không đúng\")",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "staff",
+      "label": "10b. Hiển thị thông báo lỗi màu đỏ & Cho phép nhập lại",
+      "return": true
     }
   ]
 }

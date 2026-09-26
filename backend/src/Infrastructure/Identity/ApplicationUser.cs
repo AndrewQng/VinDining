@@ -1,3 +1,4 @@
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Identity;
@@ -10,4 +11,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public DateTime? RefreshTokenExpiryTime { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+
+    public Guid? StaffId { get; set; }
+    public Staff? Staff { get; set; }
 }
