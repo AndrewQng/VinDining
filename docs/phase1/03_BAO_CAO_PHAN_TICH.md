@@ -106,6 +106,21 @@ Hóa đơn & Doanh thu	Gửi yêu cầu tính tiền	✓	✓	✓	✗
 CHƯƠNG 2: MÔ HÌNH HÓA USE CASE (USE CASE MODELING)
 2.1 Sơ đồ Use Case tổng quát toàn hệ thống (Overall Use Case Diagram)
 
+Sơ đồ Use Case tổng quát phản ánh toàn bộ 15 trường hợp sử dụng (Use Cases) được phân bổ theo 4 phân hệ chức năng chính, tương tác cùng 5 tác nhân chính (Primary Actors) và 3 tác nhân phụ/hệ thống tích hợp bên ngoài (Secondary / External Actors).
+
+* **Tệp thiết kế sơ đồ:** [`docs/phase1/drawio/use_case_overall.drawio`](file:///d:/Doanandroid/Đồ%20án%20CDTH/VinDining/docs/phase1/drawio/use_case_overall.drawio)
+* **Quy chuẩn kiến trúc:** 
+  - Toàn bộ 15 Use Case nằm trọn vẹn trong ranh giới hệ thống (System Boundary: `VinDining System`).
+  - Các hệ thống ngoại vi (`Cổng thanh toán VNPAY`, `Màn hình KDS Bếp`, `Hệ thống tự động - Background Worker`) được đặt ngoài biên giới hệ thống theo đúng chuẩn UML 2.5.
+  - Phân tách quyền lực chặt chẽ giữa `Quản lý Nhà hàng (Manager)` và `Quản trị viên (System Admin)` (RBAC).
+  - Tích hợp quan hệ mở rộng `<<extend>>` từ `UC-S1` vào `UC-U1` khi phát sinh điều kiện quá hạn khóa bàn 17 phút.
+
+2.2 Danh mục Phân hệ & Phạm vi Use Case
+* **Phân hệ Khách hàng (Guest Subsystem):** Gồm 4 Use Case (`UC-U1` đến `UC-U4`) phục vụ trải nghiệm thực khách từ đặt bàn, tra cứu thực đơn, hủy đặt chỗ đến đánh giá dịch vụ.
+* **Phân hệ Nhân viên Nội bộ (Staff Subsystem):** Gồm 5 Use Case (`UC-E1` đến `UC-E5`) phục vụ nhân viên phục vụ (Waitstaff) và điều phối (Expediter) vận hành đón tiếp, gọi món, điều phối bếp và thanh toán.
+* **Phân hệ Quản trị & Quản lý (Management Subsystem):** Gồm 5 Use Case (`UC-A1` đến `UC-A5`) phân định rõ quyền hạn vận hành món, sơ đồ bàn, doanh thu của Manager và quyền quản trị người dùng tối cao của System Admin.
+* **Phân hệ Tác vụ Tự động (Background Processing):** Gồm `UC-S1` quét nền chu kỳ 1 phút để giải phóng bàn ăn hết hạn giữ cọc.
+
 2.3 Đặc tả chi tiết 15 Use Case hệ thống 
 Phần này cung cấp bảng đặc tả chuẩn kỹ thuật phần mềm cho toàn bộ 15 Use Case của dự án, bao gồm bảng thuộc tính, luồng sự kiện chính và các luồng xử lý ngoại lệ theo đúng nguyên tắc không sử dụng các tiền tố viết tắt.
 2.3.1 Phân hệ Khách hàng

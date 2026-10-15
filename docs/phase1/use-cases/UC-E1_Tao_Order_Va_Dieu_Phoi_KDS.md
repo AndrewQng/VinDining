@@ -1,0 +1,49 @@
+```plantuml
+@startuml SD_UC_E1_Create_Order_KDS
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web POS" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn, món ăn, phân Course & bấm Gửi Bếp
+UI -> Controller: POST /api/orders (TableId, Items, Courses, Notes)
+Controller -> Service: CreateOrder(dto)
+Service -> Repo: InsertOrder(Processing) & OrderItems
+Repo -> DB: INSERT Orders & OrderItems
+DB --> Repo: OK
+Service -> Repo: SetCourseStatus(Course1: Cooking, Course2_3: OnHold)
+Repo -> DB: UPDATE CourseStatus & Table(Occupied)
+DB --> Repo: OK
+Repo --> Service: Saved(OrderId)
+Service --> Controller: Result(OrderId, Processing)
+Controller --> UI: 201 Created
+UI --> Waitstaff: Hiển thị Order đã tạo & thời gian SLA
+
+opt Khách gọi thêm món trong bữa ăn
+    Waitstaff -> UI: Chọn thêm món & bấm Cập nhật Order
+    UI -> Controller: POST /api/orders/{id}/items (Items, Course)
+    Controller -> Service: AddOrderItems(id, items)
+    Service -> Repo: InsertAdditionalItems(id, items)
+    Repo -> DB: INSERT OrderItems
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Cập nhật đơn hàng thành công
+end
+@enduml
+```

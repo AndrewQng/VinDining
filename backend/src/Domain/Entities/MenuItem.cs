@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
@@ -12,7 +13,10 @@ public class MenuItem : BaseEntity, IHasCreatedAt
     public decimal Price { get; set; }
     public string? ImageUrl { get; set; }
     public string Status { get; set; } = "Available";
+    public int PrepTimeMinutes { get; set; } = 15;
+    public CourseType CourseType { get; set; } = CourseType.Appetizer;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public ICollection<TastingMenuItem> TastingMenuItems { get; set; } = new List<TastingMenuItem>();
 }

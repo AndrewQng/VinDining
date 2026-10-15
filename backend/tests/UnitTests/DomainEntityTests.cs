@@ -269,6 +269,48 @@ public class DomainEntityTests
     }
 
     [Fact]
+    public void TastingMenu_ShouldInitializeProperties_Correctly()
+    {
+        var menu = new TastingMenu
+        {
+            Name = "Chef's Signature 5-Course",
+            Description = "A curated seasonal journey",
+            Price = 1800000m,
+            ImageUrl = "https://example.com/tasting.jpg",
+            IsActive = true
+        };
+
+        Assert.NotEqual(Guid.Empty, menu.Id);
+        Assert.Equal("Chef's Signature 5-Course", menu.Name);
+        Assert.Equal("A curated seasonal journey", menu.Description);
+        Assert.Equal(1800000m, menu.Price);
+        Assert.Equal("https://example.com/tasting.jpg", menu.ImageUrl);
+        Assert.True(menu.IsActive);
+        Assert.NotEqual(default, menu.CreatedAt);
+        Assert.NotNull(menu.TastingMenuItems);
+    }
+
+    [Fact]
+    public void TastingMenuItem_ShouldInitializeProperties_Correctly()
+    {
+        var menuId = Guid.NewGuid();
+        var itemId = Guid.NewGuid();
+        var item = new TastingMenuItem
+        {
+            TastingMenuId = menuId,
+            MenuItemId = itemId,
+            CourseOrder = 1,
+            CourseType = CourseType.Appetizer
+        };
+
+        Assert.NotEqual(Guid.Empty, item.Id);
+        Assert.Equal(menuId, item.TastingMenuId);
+        Assert.Equal(itemId, item.MenuItemId);
+        Assert.Equal(1, item.CourseOrder);
+        Assert.Equal(CourseType.Appetizer, item.CourseType);
+    }
+
+    [Fact]
     public void Enums_ShouldContainOnlySpecifiedDrawIOValues()
     {
         // StaffRole: waitstaff, expediter, admin

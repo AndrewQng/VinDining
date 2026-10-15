@@ -19,6 +19,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasDefaultValue(OrderStatus.Processing)
             .IsRequired();
 
+        builder.Property(o => o.IsPriority)
+            .HasDefaultValue(false)
+            .IsRequired();
+
         builder.Property(o => o.OpenedAt)
             .IsRequired();
 

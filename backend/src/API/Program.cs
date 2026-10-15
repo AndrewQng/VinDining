@@ -19,6 +19,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add API services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IKitchenNotifier, KitchenNotifier>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

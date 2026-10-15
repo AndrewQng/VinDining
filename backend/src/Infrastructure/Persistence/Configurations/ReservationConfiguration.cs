@@ -23,6 +23,10 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.Property(r => r.PartySize)
             .IsRequired();
 
+        builder.Property(r => r.DurationMinutes)
+            .HasDefaultValue(120)
+            .IsRequired();
+
         builder.Property(r => r.Status)
             .HasConversion<string>()
             .HasMaxLength(50)

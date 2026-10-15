@@ -1,0 +1,31 @@
+@startuml SD_UC_A2_Floor_Plan_Layout
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản lý" as Manager
+boundary "Giao diện Canvas 2D" as UI
+control "AdminTableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Kéo thả bàn, chỉnh sức chứa & bấm Lưu sơ đồ
+UI -> Controller: PUT /api/admin/tables/layout (LayoutData)
+Controller -> Service: UpdateFloorPlan(LayoutData)
+Service -> Repo: SaveCoordinatesAndZones(LayoutData)
+Repo -> DB: UPDATE TableCoordinates, Zones, Capacities
+DB --> Repo: OK
+Repo --> Service: Saved
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Manager: Hiển thị thông báo lưu sơ đồ thành công
+@enduml

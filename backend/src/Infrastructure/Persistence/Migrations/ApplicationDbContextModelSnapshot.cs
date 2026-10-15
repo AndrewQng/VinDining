@@ -228,6 +228,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CourseType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Appetizer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -244,6 +251,11 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<int>("PrepTimeMinutes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(15);
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -258,6 +270,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CourseType");
 
                     b.HasIndex("Name");
 
@@ -279,6 +293,11 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("CreateById")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPriority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("OpenedAt")
                         .HasColumnType("datetime2");
@@ -317,7 +336,10 @@ namespace Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MenuItemId")
+                    b.Property<DateTime?>("FiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("MenuItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Note")
@@ -341,7 +363,10 @@ namespace Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Queued");
+                        .HasDefaultValue("Hold");
+
+                    b.Property<Guid?>("TastingMenuId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
@@ -356,6 +381,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("ServedById");
 
                     b.HasIndex("Status");
+
+                    b.HasIndex("TastingMenuId");
 
                     b.HasIndex("OrderId", "Status");
 
@@ -382,6 +409,11 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationMinutes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(120);
 
                     b.Property<Guid>("GuestId")
                         .HasColumnType("uniqueidentifier");
@@ -525,6 +557,77 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("Zone");
 
                     b.ToTable("Tables", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.TastingMenu", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("TastingMenus", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.TastingMenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CourseOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CourseType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Appetizer");
+
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TastingMenuId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.HasIndex("TastingMenuId", "CourseOrder");
+
+                    b.ToTable("TastingMenuItems", (string)null);
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationRole", b =>
@@ -836,8 +939,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Entities.MenuItem", "MenuItem")
                         .WithMany("OrderItems")
                         .HasForeignKey("MenuItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Entities.Order", "Order")
                         .WithMany("OrderItems")
@@ -850,11 +952,18 @@ namespace Infrastructure.Persistence.Migrations
                         .HasForeignKey("ServedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Domain.Entities.TastingMenu", "TastingMenu")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("TastingMenuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("MenuItem");
 
                     b.Navigation("Order");
 
                     b.Navigation("ServedBy");
+
+                    b.Navigation("TastingMenu");
                 });
 
             modelBuilder.Entity("Domain.Entities.Reservation", b =>
@@ -874,6 +983,25 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Guest");
 
                     b.Navigation("Table");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TastingMenuItem", b =>
+                {
+                    b.HasOne("Domain.Entities.MenuItem", "MenuItem")
+                        .WithMany("TastingMenuItems")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.TastingMenu", "TastingMenu")
+                        .WithMany("TastingMenuItems")
+                        .HasForeignKey("TastingMenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("TastingMenu");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
@@ -950,6 +1078,8 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.MenuItem", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("TastingMenuItems");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -982,6 +1112,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TastingMenu", b =>
+                {
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("TastingMenuItems");
                 });
 #pragma warning restore 612, 618
         }

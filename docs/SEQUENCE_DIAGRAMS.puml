@@ -1,0 +1,692 @@
+' ==============================================================================
+' VIN DINING - SEQUENCE DIAGRAMS (15 USE CASES)
+' Layers: Stakeholder -> UI -> Controller -> Service -> Repository -> DB -> 3rd Party
+' All optional sub-flows use opt ... end
+' ==============================================================================
+
+@startuml SD_UC_U1_Reservation_Deposit
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+boundary "Giao diện Web" as UI
+control "ReservationController" as Controller
+participant "ReservationService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "VNPAY" as VNPAY
+
+Guest -> UI: Chọn ngày, giờ, số khách & bấm Đặt bàn
+UI -> Controller: POST /api/reservations (PartySize, Time, Zone)
+Controller -> Service: CreateReservation(dto)
+Service -> Repo: CheckAvailable & LockTable(Locked, 17p)
+Repo -> DB: SELECT & UPDATE TableStatus
+DB --> Repo: OK
+Repo --> Service: TableLocked
+Service -> VNPAY: CreatePaymentUrl(BookingCode, Amount)
+VNPAY --> Service: PaymentUrl
+Service --> Controller: Result(BookingCode, PaymentUrl)
+Controller --> UI: 201 Created
+UI --> Guest: Hiển thị mã QR thanh toán VNPAY
+
+Guest -> VNPAY: Quét VietQR & Thanh toán cọc
+VNPAY -> Controller: POST /api/payments/vnpay-ipn (vnp_Params)
+Controller -> Service: ProcessIpn(vnp_Params)
+Service -> Repo: UpdateReservation(Reserved, Paid)
+Repo -> DB: UPDATE Reservation & TableStatus
+DB --> Repo: OK
+Repo --> Service: OK
+Service --> Controller: RspCode: 00
+Controller --> VNPAY: 200 OK
+UI --> Guest: Hiển thị thông báo đặt bàn thành công
+
+opt Xử lý Late IPN (>17 phút khi bàn đã có khách khác)
+    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late IPN > 17p)
+    Controller -> Service: ProcessLateIpn(vnp_Params)
+    Service -> Repo: CheckTableStatus(TableId)
+    Repo -> DB: SELECT Status FROM Tables WHERE Id = TableId
+    DB --> Repo: Reserved / Occupied
+    Repo --> Service: AlreadyBooked
+    Service -> VNPAY: CallRefundApi(BookingCode, 100% Cọc)
+    VNPAY --> Service: RefundSuccess (00)
+    Service -> Repo: UpdateReservation(Expired_AutoRefunded)
+    Repo -> DB: UPDATE ReservationStatus = Expired_AutoRefunded
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: RspCode: 00
+    Controller --> VNPAY: 200 OK
+end
+@enduml
+
+@startuml SD_UC_U2_View_Menu
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+boundary "Giao diện E-Menu" as UI
+control "MenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Guest -> UI: Quét QR tại bàn mở E-Menu
+UI -> Controller: GET /api/menu
+Controller -> Service: GetActiveMenu()
+Service -> Repo: GetActiveMenuItems()
+Repo -> DB: SELECT Categories, Items, SLA, Allergy
+DB --> Repo: MenuData
+Repo --> Service: MenuList
+Service --> Controller: Result(MenuList)
+Controller --> UI: 200 OK
+UI --> Guest: Hiển thị thực đơn hình ảnh & giá món
+
+opt Gọi nhân viên phục vụ tại bàn
+    Guest -> UI: Bấm nút Gọi phục vụ tại bàn
+    UI -> Controller: POST /api/tables/{id}/call-staff (Reason)
+    Controller -> Service: NotifyStaff(TableId, Reason)
+    Service -> Repo: LogStaffCall(TableId, Reason)
+    Repo -> DB: INSERT TableNotifications
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Guest: Hiển thị thông báo nhân viên đang đến
+end
+@enduml
+
+@startuml SD_UC_U3_Cancel_Reservation
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+boundary "Giao diện Web" as UI
+control "ReservationController" as Controller
+participant "ReservationService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "VNPAY" as VNPAY
+
+Guest -> UI: Nhập SĐT, BookingCode & bấm Hủy bàn
+UI -> Controller: PATCH /api/reservations/{code}/cancel (Reason)
+Controller -> Service: CancelReservation(code, reason)
+Service -> Repo: GetReservation(code)
+Repo -> DB: SELECT Reservation By BookingCode
+DB --> Repo: ReservationData
+Repo --> Service: Reservation
+
+alt Thời gian hủy >= 4 tiếng (Hoàn 100% tiền cọc)
+    Service -> VNPAY: CallRefundApi(BookingCode, Amount)
+    VNPAY --> Service: RefundSuccess (00)
+    Service -> Repo: UpdateCancel(Cancelled, Refunded) & FreeTable()
+    Repo -> DB: UPDATE Reservation & Table(Available)
+    DB --> Repo: OK
+else Thời gian hủy < 4 tiếng (Phạt giữ 100% tiền cọc)
+    Service -> Repo: UpdateCancel(Cancelled, Forfeited) & FreeTable()
+    Repo -> DB: UPDATE Reservation & Table(Available)
+    DB --> Repo: OK
+end
+
+Repo --> Service: OK
+Service --> Controller: Result(CancelStatus, RefundInfo)
+Controller --> UI: 200 OK
+UI --> Guest: Hiển thị kết quả hủy bàn & hoàn cọc
+@enduml
+
+@startuml SD_UC_U4_Submit_Feedback
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+boundary "Giao diện Đánh giá" as UI
+control "FeedbackController" as Controller
+participant "FeedbackService" as Service
+participant "FeedbackRepository" as Repo
+database "SQL Server" as DB
+
+Guest -> UI: Chấm sao (1-5) & nhập nhận xét
+UI -> Controller: POST /api/feedbacks (BookingCode, Ratings, Comment)
+Controller -> Service: SubmitFeedback(dto)
+Service -> Repo: ValidateBooking(BookingCode)
+Repo -> DB: SELECT Reservation WHERE Status = Completed
+DB --> Repo: Valid
+Repo --> Service: OK
+Service -> Repo: SaveFeedback & UpdateCSAT(dto)
+Repo -> DB: INSERT Feedback & UPDATE CSAT
+DB --> Repo: OK
+Repo --> Service: Saved
+Service --> Controller: Result(Success)
+Controller --> UI: 201 Created
+UI --> Guest: Hiển thị thông báo cảm ơn
+@enduml
+
+@startuml SD_UC_E1_Create_Order_KDS
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web POS" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn, món ăn, phân Course & bấm Gửi Bếp
+UI -> Controller: POST /api/orders (TableId, Items, Courses, Notes)
+Controller -> Service: CreateOrder(dto)
+Service -> Repo: InsertOrder(Processing) & OrderItems
+Repo -> DB: INSERT Orders & OrderItems
+DB --> Repo: OK
+Service -> Repo: SetCourseStatus(Course1: Cooking, Course2_3: OnHold)
+Repo -> DB: UPDATE CourseStatus & Table(Occupied)
+DB --> Repo: OK
+Repo --> Service: Saved(OrderId)
+Service --> Controller: Result(OrderId, Processing)
+Controller --> UI: 201 Created
+UI --> Waitstaff: Hiển thị Order đã tạo & thời gian SLA
+
+opt Khách gọi thêm món trong bữa ăn
+    Waitstaff -> UI: Chọn thêm món & bấm Cập nhật Order
+    UI -> Controller: POST /api/orders/{id}/items (Items, Course)
+    Controller -> Service: AddOrderItems(id, items)
+    Service -> Repo: InsertAdditionalItems(id, items)
+    Repo -> DB: INSERT OrderItems
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Cập nhật đơn hàng thành công
+end
+@enduml
+
+@startuml SD_UC_E2_Expediter_Serve_CourseFiring
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Điều phối" as Expediter
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Pass / POS" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Expediter -> UI: Kiểm đồ & bấm Xác nhận ra món (Served)
+UI -> Controller: PATCH /api/orders/{id}/items/{itemId}/serve
+Controller -> Service: ConfirmServed(orderId, itemId)
+Service -> Repo: UpdateItemServed(itemId, ActualPrepTime)
+Repo -> DB: UPDATE OrderItems SET Status = Served
+DB --> Repo: OK
+Repo --> Service: OK
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Expediter: Cập nhật thẻ món đã hoàn thành
+
+opt Kích hoạt Course tiếp theo
+    Waitstaff -> UI: Khách dùng 60-70% & bấm Course Firing
+    UI -> Controller: POST /api/orders/{id}/fire-course (CourseNo, Priority)
+    Controller -> Service: FireCourse(orderId, courseNo, priority)
+    Service -> Repo: UpdateCourseStatus(orderId, courseNo, Cooking)
+    Repo -> DB: UPDATE CourseStatus = Cooking
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Hiển thị Course kế tiếp đang chế biến
+end
+@enduml
+
+@startuml SD_UC_E3_Settle_Invoice
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web POS" as UI
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "InvoiceRepository" as Repo
+database "SQL Server" as DB
+participant "Máy in Bill" as Printer
+
+Waitstaff -> UI: Chọn bàn & bấm Xem tạm tính
+UI -> Controller: GET /api/invoices/preview/{tableId}
+Controller -> Service: CalculateInvoice(tableId)
+Service -> Repo: GetServedItemsAndDeposit(tableId)
+Repo -> DB: SELECT ServedItems & DepositAmount
+DB --> Repo: InvoiceRawData
+Repo --> Service: InvoiceData
+Service -> Service: Subtotal + 5% Phí + 10% VAT - Cọc
+Service --> Controller: InvoicePreviewDto
+Controller --> UI: 200 OK
+UI --> Waitstaff: Hiển thị số tiền khách cần thanh toán thêm
+
+Waitstaff -> UI: Nhận tiền khách & bấm Xác nhận thanh toán
+UI -> Controller: POST /api/invoices/settle (TableId, PaymentMethod)
+Controller -> Service: SettleInvoice(dto)
+Service -> Repo: SaveInvoice(Paid) & SetTableCleaning(tableId)
+Repo -> DB: INSERT Invoices & UPDATE TableStatus = Cleaning
+DB --> Repo: OK
+Repo --> Service: InvoiceSaved
+Service -> Printer: PrintReceipt(InvoiceDetails)
+Printer --> Service: PrintOK
+Service --> Controller: Result(InvoiceId, Paid)
+Controller --> UI: 200 OK
+UI --> Waitstaff: Bàn chuyển sang Chờ dọn dẹp (Cleaning)
+
+opt Khách yêu cầu xuất hóa đơn điện tử VAT doanh nghiệp
+    Waitstaff -> UI: Nhập Mã số thuế, Tên công ty, Email
+    UI -> Controller: POST /api/invoices/{id}/vat-request (TaxCode, CompanyName, Email)
+    Controller -> Service: CreateVatInvoice(id, dto)
+    Service -> Repo: SaveVatInvoiceDetails(id, dto)
+    Repo -> DB: INSERT VatInvoices
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Thông báo xuất VAT thành công
+end
+@enduml
+
+@startuml SD_UC_E4_Transfer_Table
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web POS" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn đích & bấm Xác nhận chuyển bàn
+UI -> Controller: POST /api/tables/{id}/transfer (TargetTableId, Reason)
+Controller -> Service: TransferTable(sourceId, targetId, reason)
+Service -> Repo: CheckTargetAvailable(targetId)
+Repo -> DB: SELECT Status FROM Tables WHERE Id = targetId
+DB --> Repo: Available
+Repo --> Service: Valid
+Service -> Repo: MoveOrderAndDeposit(sourceId, targetId)
+Repo -> DB: UPDATE Orders, Table(Source: Cleaning, Target: Occupied)
+DB --> Repo: OK
+Repo --> Service: Transferred
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Waitstaff: Cập nhật sơ đồ bàn mới
+
+opt Ghép nhiều bàn thành một nhóm (Merge Tables)
+    Waitstaff -> UI: Chọn danh sách bàn & bấm Ghép bàn
+    UI -> Controller: POST /api/tables/merge (TableIds, PrimaryTableId)
+    Controller -> Service: MergeTables(tableIds, primaryId)
+    Service -> Repo: LinkTablesAndOrders(tableIds, primaryId)
+    Repo -> DB: UPDATE Tables SET GroupId = primaryId
+    DB --> Repo: OK
+    Repo --> Service: Merged
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Hiển thị nhóm bàn đã hợp nhất
+end
+@enduml
+
+@startuml SD_UC_E5_Staff_Authentication
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên" as Staff
+boundary "Giao diện Đăng nhập" as UI
+control "AuthController" as Controller
+participant "AuthService" as Service
+participant "UserRepository" as Repo
+database "SQL Server" as DB
+
+Staff -> UI: Nhập Username, Password & bấm Đăng nhập
+UI -> Controller: POST /api/auth/login (Username, Password)
+Controller -> Service: Authenticate(dto)
+Service -> Repo: FindByUsername(Username)
+Repo -> DB: SELECT User, Roles, PasswordHash, IsActive
+DB --> Repo: UserData
+Repo --> Service: User
+
+alt Xác thực thành công
+    Service -> Service: VerifyPassword() & GenerateJwt(UserId, Roles)
+    Service --> Controller: Result(AccessToken, Roles, FullName)
+    Controller --> UI: 200 OK
+    UI --> Staff: Điều hướng vào màn hình làm việc
+else Nhập sai mật khẩu >= 5 lần
+    Service -> Repo: LockAccount(UserId, 15m)
+    Repo -> DB: UPDATE Users SET LockoutEnd = Now + 15m
+    DB --> Repo: OK
+    Repo --> Service: Locked
+    Service --> Controller: Fail("Tài khoản tạm khóa 15 phút")
+    Controller --> UI: 423 Locked (Tài khoản bị khóa)
+    UI --> Staff: Cảnh báo tài khoản tạm khóa 15 phút
+end
+@enduml
+
+@startuml SD_UC_A1_Menu_PrepSLA
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản lý" as Manager
+boundary "Giao diện Quản trị" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Nhập thông tin món, giá, SLA & bấm Lưu
+UI -> Controller: POST /api/admin/menu-items (Name, Price, Category, SLA, Station)
+Controller -> Service: UpsertMenuItem(dto)
+Service -> Repo: SaveMenuItem(dto)
+Repo -> DB: INSERT / UPDATE MenuItems
+DB --> Repo: OK(MenuItemId)
+Repo --> Service: Saved
+Service --> Controller: Result(Success, MenuItemId)
+Controller --> UI: 201 Created
+UI --> Manager: Hiển thị món mới trong danh sách
+
+opt Chuyển trạng thái tạm hết món
+    Manager -> UI: Gạt tắt Còn hàng cho món ăn
+    UI -> Controller: PATCH /api/admin/menu-items/{id}/availability (IsAvailable: false)
+    Controller -> Service: UpdateAvailability(id, false)
+    Service -> Repo: SetItemOutOfStock(id)
+    Repo -> DB: UPDATE MenuItems SET IsAvailable = false
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Manager: Hiển thị nhãn Tạm hết hàng
+end
+@enduml
+
+@startuml SD_UC_A2_Floor_Plan_Layout
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản lý" as Manager
+boundary "Giao diện Canvas 2D" as UI
+control "AdminTableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Kéo thả bàn, chỉnh sức chứa & bấm Lưu sơ đồ
+UI -> Controller: PUT /api/admin/tables/layout (LayoutData)
+Controller -> Service: UpdateFloorPlan(LayoutData)
+Service -> Repo: SaveCoordinatesAndZones(LayoutData)
+Repo -> DB: UPDATE TableCoordinates, Zones, Capacities
+DB --> Repo: OK
+Repo --> Service: Saved
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Manager: Hiển thị thông báo lưu sơ đồ thành công
+@enduml
+
+@startuml SD_UC_A3_Manual_Refund_Approval
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản lý" as Manager
+boundary "Giao diện Quản trị" as UI
+control "AdminRefundController" as Controller
+participant "RefundService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "VNPAY" as VNPAY
+
+Manager -> UI: Nhập mã BookingCode, lý do & bấm Duyệt hoàn cọc
+UI -> Controller: POST /api/admin/reservations/{id}/manual-refund (Reason, Notes)
+Controller -> Service: OverrideRefund(id, reason, managerId)
+Service -> Repo: GetReservation(id)
+Repo -> DB: SELECT Reservation WHERE Id = id
+DB --> Repo: ReservationData
+Repo --> Service: Reservation(PaidDeposit)
+Service -> VNPAY: CallRefundApi(BookingCode, Amount)
+VNPAY --> Service: RefundSuccess (00)
+Service -> Repo: UpdateRefundStatus & InsertAuditLog(id, managerId, reason)
+Repo -> DB: UPDATE ReservationStatus & INSERT AuditLogs
+DB --> Repo: OK
+Repo --> Service: Saved
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Manager: Cập nhật trạng thái Đã hoàn ngoại lệ
+@enduml
+
+@startuml SD_UC_A4_Manage_Staff_Accounts
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản trị viên" as Admin
+boundary "Giao diện Quản trị" as UI
+control "AdminStaffController" as Controller
+participant "StaffService" as Service
+participant "StaffRepository" as Repo
+database "SQL Server" as DB
+participant "Email Service" as MailService
+
+Admin -> UI: Nhập họ tên, email, vai trò & bấm Tạo tài khoản
+UI -> Controller: POST /api/admin/staff (FullName, Email, Role)
+Controller -> Service: CreateStaffAccount(dto)
+Service -> Repo: InsertUserAndRole(dto)
+Repo -> DB: INSERT Users & UserRoles (ASP.NET Identity)
+DB --> Repo: OK(UserId)
+Repo --> Service: Saved(UserId, TempPassword)
+Service -> MailService: SendActivationEmail(Email, TempPassword)
+MailService --> Service: Sent
+Service --> Controller: Result(Success, UserId)
+Controller --> UI: 201 Created
+UI --> Admin: Hiển thị thông báo đã gửi email kích hoạt
+
+opt Khóa tài khoản khi nghỉ việc
+    Admin -> UI: Chọn nhân sự & bấm Khóa tài khoản
+    UI -> Controller: PATCH /api/admin/staff/{id}/status (IsActive: false)
+    Controller -> Service: LockStaffAccount(id)
+    Service -> Repo: DeactivateUser(id)
+    Repo -> DB: UPDATE Users SET IsActive = false
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Admin: Cập nhật trạng thái tài khoản Đã khóa
+end
+@enduml
+
+@startuml SD_UC_A5_Analytics_Dashboard
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Quản lý" as Manager
+boundary "Giao diện Báo cáo" as UI
+control "AdminReportController" as Controller
+participant "ReportService" as Service
+participant "ReportRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Chọn khoảng thời gian (Ngày/Tuần/Tháng)
+UI -> Controller: GET /api/admin/reports/dashboard?from=...&to=...
+Controller -> Service: GetDashboardMetrics(from, to)
+Service -> Repo: QueryMetrics(from, to)
+Repo -> DB: SELECT SUM(Revenue), COUNT(Reservations), TOP(Dishes)
+DB --> Repo: RawMetrics
+Repo --> Service: MetricsData
+Service -> Service: CalculateGrowthAndRates()
+Service --> Controller: Result(DashboardMetricsDto)
+Controller --> UI: 200 OK
+UI --> Manager: Hiển thị biểu đồ doanh thu & tỷ lệ lấp đầy bàn
+@enduml
+
+@startuml SD_UC_S1_Auto_Release_Expired_Lock
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Background Worker" as Worker
+control "SystemJobController" as Controller
+participant "CleanupLockService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "VNPAY" as VNPAY
+
+Worker -> Controller: TriggerCleanupJob() [Mỗi 60s]
+Controller -> Service: ReleaseExpiredLocks()
+Service -> Repo: GetExpiredPendingReservations(17p)
+Repo -> DB: SELECT * WHERE Status=PendingPayment AND CreatedAt < Now-17p
+DB --> Repo: ExpiredList
+Repo --> Service: List
+
+loop Cho từng đơn quá 17 phút
+    Service -> Repo: UpdateExpiredAndFreeTable(id)
+    Repo -> DB: UPDATE Reservation=Expired_Cancelled, Table=Available
+    DB --> Repo: OK
+end
+
+opt Xử lý Late IPN (>17 phút)
+    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late IPN > 17p)
+    Controller -> Service: ProcessLateIpn(vnp_Params)
+    Service -> Repo: CheckTableStatus(TableId)
+    Repo -> DB: SELECT Status FROM Tables WHERE Id=TableId
+    DB --> Repo: Reserved / Occupied
+    Repo --> Service: AlreadyBooked
+    Service -> VNPAY: CallRefundApi(BookingCode, 100% Cọc)
+    VNPAY --> Service: RefundSuccess (00)
+    Service -> Repo: UpdateReservation(Expired_AutoRefunded)
+    Repo -> DB: UPDATE ReservationStatus = Expired_AutoRefunded
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: RspCode: 00
+    Controller --> VNPAY: 200 OK
+end
+@enduml
+

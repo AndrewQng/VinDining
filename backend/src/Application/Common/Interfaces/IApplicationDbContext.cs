@@ -16,6 +16,8 @@ public interface IApplicationDbContext
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Invoice> Invoices { get; }
     DbSet<Feedback> Feedbacks { get; }
+    DbSet<TastingMenu> TastingMenus { get; }
+    DbSet<TastingMenuItem> TastingMenuItems { get; }
 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

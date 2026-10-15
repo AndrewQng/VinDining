@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,6 +32,16 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
             .HasDefaultValue("Available")
             .IsRequired();
 
+        builder.Property(m => m.PrepTimeMinutes)
+            .HasDefaultValue(15)
+            .IsRequired();
+
+        builder.Property(m => m.CourseType)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .HasDefaultValue(CourseType.Appetizer)
+            .IsRequired();
+
         builder.Property(m => m.CreatedAt)
             .IsRequired();
 
@@ -44,6 +55,8 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
         builder.HasIndex(m => m.Name);
 
         builder.HasIndex(m => m.Status);
+
+        builder.HasIndex(m => m.CourseType);
 
         builder.HasIndex(m => new { m.CategoryId, m.Status });
     }

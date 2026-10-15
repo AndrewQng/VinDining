@@ -34,6 +34,8 @@ public class DbContextModelTests
         Assert.NotNull(model.FindEntityType(typeof(OrderItem)));
         Assert.NotNull(model.FindEntityType(typeof(Invoice)));
         Assert.NotNull(model.FindEntityType(typeof(Feedback)));
+        Assert.NotNull(model.FindEntityType(typeof(TastingMenu)));
+        Assert.NotNull(model.FindEntityType(typeof(TastingMenuItem)));
     }
 
     [Fact]
@@ -53,6 +55,8 @@ public class DbContextModelTests
         Assert.Equal("OrderItems", model.FindEntityType(typeof(OrderItem))?.GetTableName());
         Assert.Equal("Invoices", model.FindEntityType(typeof(Invoice))?.GetTableName());
         Assert.Equal("Feedbacks", model.FindEntityType(typeof(Feedback))?.GetTableName());
+        Assert.Equal("TastingMenus", model.FindEntityType(typeof(TastingMenu))?.GetTableName());
+        Assert.Equal("TastingMenuItems", model.FindEntityType(typeof(TastingMenuItem))?.GetTableName());
     }
 
     [Fact]

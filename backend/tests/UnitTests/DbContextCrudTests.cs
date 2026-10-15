@@ -213,6 +213,7 @@ public class DbContextCrudTests
         Assert.Single(loadedOrder.OrderItems);
 
         var loadedItem = loadedOrder.OrderItems.First();
+        Assert.NotNull(loadedItem.MenuItem);
         Assert.Equal("Pan-Seared Foie Gras", loadedItem.MenuItem.Name);
         Assert.Equal("Medium rare", loadedItem.Note);
         Assert.Equal("Le Thi Expediter", loadedItem.ServedBy?.FullName);
@@ -430,5 +431,90 @@ public class DbContextCrudTests
         Assert.NotNull(updated);
         Assert.Equal(DepositStatus.Refunded, updated.Status);
         Assert.Equal(1000000m, updated.RefundAmount);
+    }
+
+    [Fact]
+    public async Task Order_WithTastingMenuAndChildCourseItems_ShouldSucceed()
+    {
+        using var context = CreateContext();
+
+        var table = new Table { TableNumber = "VIP-09", Capacity = 4 };
+        var staff = new Staff { FullName = "Server", Username = "server_test", Email = "server@test.vn", PasswordHash = "pw" };
+        var category = new Category { Name = "Fine Dining" };
+        var soup = new MenuItem { Name = "Lobster Bisque", Price = 300000m, Category = category, CourseType = CourseType.Appetizer };
+        var steak = new MenuItem { Name = "Wagyu A5", Price = 1200000m, Category = category, CourseType = CourseType.MainCourse };
+
+        var tastingMenu = new TastingMenu
+        {
+            Name = "Prestige Autumn Menu",
+            Price = 1800000m,
+            IsActive = true
+        };
+
+        var tmItem1 = new TastingMenuItem { TastingMenu = tastingMenu, MenuItem = soup, CourseOrder = 1, CourseType = CourseType.Appetizer };
+        var tmItem2 = new TastingMenuItem { TastingMenu = tastingMenu, MenuItem = steak, CourseOrder = 2, CourseType = CourseType.MainCourse };
+        tastingMenu.TastingMenuItems.Add(tmItem1);
+        tastingMenu.TastingMenuItems.Add(tmItem2);
+
+        await context.Tables.AddAsync(table);
+        await context.Staffs.AddAsync(staff);
+        await context.Categories.AddAsync(category);
+        await context.MenuItems.AddRangeAsync(soup, steak);
+        await context.TastingMenus.AddAsync(tastingMenu);
+
+        var order = new Order { Table = table, CreateBy = staff, Status = OrderStatus.Processing };
+        await context.Orders.AddAsync(order);
+
+        // Billing line item: Tasting Menu package price
+        var billingLine = new OrderItem
+        {
+            Order = order,
+            TastingMenuId = tastingMenu.Id,
+            Quantity = 2,
+            UnitPrice = 1800000m,
+            Status = OrderItemStatus.Queued
+        };
+        await context.OrderItems.AddAsync(billingLine);
+
+        // Course items for kitchen orchestration (TastingMenuId linked, UnitPrice = 0)
+        var course1 = new OrderItem
+        {
+            Order = order,
+            TastingMenuId = tastingMenu.Id,
+            MenuItem = soup,
+            Quantity = 2,
+            UnitPrice = 0m,
+            Status = OrderItemStatus.Queued
+        };
+        var course2 = new OrderItem
+        {
+            Order = order,
+            TastingMenuId = tastingMenu.Id,
+            MenuItem = steak,
+            Quantity = 2,
+            UnitPrice = 0m,
+            Status = OrderItemStatus.Queued
+        };
+        await context.OrderItems.AddRangeAsync(course1, course2);
+
+        await context.SaveChangesAsync();
+
+        var loadedOrder = await context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.TastingMenu)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+            .FirstOrDefaultAsync(o => o.Id == order.Id);
+
+        Assert.NotNull(loadedOrder);
+        Assert.Equal(3, loadedOrder.OrderItems.Count);
+
+        var loadedBillingLine = loadedOrder.OrderItems.First(oi => oi.MenuItemId == null);
+        Assert.Equal("Prestige Autumn Menu", loadedBillingLine.TastingMenu?.Name);
+        Assert.Equal(1800000m, loadedBillingLine.UnitPrice);
+
+        var kitchenCourses = loadedOrder.OrderItems.Where(oi => oi.MenuItemId != null).ToList();
+        Assert.Equal(2, kitchenCourses.Count);
+        Assert.All(kitchenCourses, c => Assert.Equal(0m, c.UnitPrice));
     }
 }

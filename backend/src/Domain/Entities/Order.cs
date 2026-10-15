@@ -15,6 +15,7 @@ public class Order : BaseEntity
     public Staff CreateBy { get; set; } = null!;
 
     public OrderStatus Status { get; set; } = OrderStatus.Processing;
+    public bool IsPriority { get; set; } = false;
     public DateTime OpenedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ClosedAt { get; set; }
 

@@ -1,0 +1,46 @@
+```plantuml
+@startuml SD_UC_U2_View_Menu
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+boundary "Giao diện E-Menu" as UI
+control "MenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Guest -> UI: Quét QR tại bàn mở E-Menu
+UI -> Controller: GET /api/menu
+Controller -> Service: GetActiveMenu()
+Service -> Repo: GetActiveMenuItems()
+Repo -> DB: SELECT Categories, Items, SLA, Allergy
+DB --> Repo: MenuData
+Repo --> Service: MenuList
+Service --> Controller: Result(MenuList)
+Controller --> UI: 200 OK
+UI --> Guest: Hiển thị thực đơn hình ảnh & giá món
+
+opt Gọi nhân viên phục vụ tại bàn
+    Guest -> UI: Bấm nút Gọi phục vụ tại bàn
+    UI -> Controller: POST /api/tables/{id}/call-staff (Reason)
+    Controller -> Service: NotifyStaff(TableId, Reason)
+    Service -> Repo: LogStaffCall(TableId, Reason)
+    Repo -> DB: INSERT TableNotifications
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Guest: Hiển thị thông báo nhân viên đang đến
+end
+@enduml
+```

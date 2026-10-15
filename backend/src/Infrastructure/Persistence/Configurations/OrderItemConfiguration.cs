@@ -23,7 +23,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.Property(oi => oi.Status)
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue(OrderItemStatus.Queued)
+            .HasDefaultValue(OrderItemStatus.Hold)
             .IsRequired();
 
         builder.Property(oi => oi.Note)
@@ -37,6 +37,13 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.HasOne(oi => oi.MenuItem)
             .WithMany(m => m.OrderItems)
             .HasForeignKey(oi => oi.MenuItemId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(oi => oi.TastingMenu)
+            .WithMany(tm => tm.OrderItems)
+            .HasForeignKey(oi => oi.TastingMenuId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(oi => oi.ServedBy)
@@ -48,6 +55,8 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.HasIndex(oi => oi.OrderId);
 
         builder.HasIndex(oi => oi.MenuItemId);
+
+        builder.HasIndex(oi => oi.TastingMenuId);
 
         builder.HasIndex(oi => oi.ServedById);
 

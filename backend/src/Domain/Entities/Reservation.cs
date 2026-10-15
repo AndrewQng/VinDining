@@ -17,6 +17,7 @@ public class Reservation : BaseEntity, IHasCreatedAt
     public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
     public string? Note { get; set; }
     public int PartySize { get; set; }
+    public int DurationMinutes { get; set; } = 120;
     public DateTime? CancelledAt { get; set; }
     public string? CancelledReason { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

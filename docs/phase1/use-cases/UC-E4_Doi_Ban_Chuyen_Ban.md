@@ -1,0 +1,50 @@
+```plantuml
+@startuml SD_UC_E4_Transfer_Table
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web POS" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn đích & bấm Xác nhận chuyển bàn
+UI -> Controller: POST /api/tables/{id}/transfer (TargetTableId, Reason)
+Controller -> Service: TransferTable(sourceId, targetId, reason)
+Service -> Repo: CheckTargetAvailable(targetId)
+Repo -> DB: SELECT Status FROM Tables WHERE Id = targetId
+DB --> Repo: Available
+Repo --> Service: Valid
+Service -> Repo: MoveOrderAndDeposit(sourceId, targetId)
+Repo -> DB: UPDATE Orders, Table(Source: Cleaning, Target: Occupied)
+DB --> Repo: OK
+Repo --> Service: Transferred
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Waitstaff: Cập nhật sơ đồ bàn mới
+
+opt Ghép nhiều bàn thành một nhóm (Merge Tables)
+    Waitstaff -> UI: Chọn danh sách bàn & bấm Ghép bàn
+    UI -> Controller: POST /api/tables/merge (TableIds, PrimaryTableId)
+    Controller -> Service: MergeTables(tableIds, primaryId)
+    Service -> Repo: LinkTablesAndOrders(tableIds, primaryId)
+    Repo -> DB: UPDATE Tables SET GroupId = primaryId
+    DB --> Repo: OK
+    Repo --> Service: Merged
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Hiển thị nhóm bàn đã hợp nhất
+end
+@enduml
+```

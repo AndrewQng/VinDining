@@ -1,0 +1,43 @@
+@startuml SD_UC_E5_Staff_Authentication
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên" as Staff
+boundary "Giao diện Đăng nhập" as UI
+control "AuthController" as Controller
+participant "AuthService" as Service
+participant "UserRepository" as Repo
+database "SQL Server" as DB
+
+Staff -> UI: Nhập Username, Password & bấm Đăng nhập
+UI -> Controller: POST /api/auth/login (Username, Password)
+Controller -> Service: Authenticate(dto)
+Service -> Repo: FindByUsername(Username)
+Repo -> DB: SELECT User, Roles, PasswordHash, IsActive
+DB --> Repo: UserData
+Repo --> Service: User
+
+alt Xác thực thành công
+    Service -> Service: VerifyPassword() & GenerateJwt(UserId, Roles)
+    Service --> Controller: Result(AccessToken, Roles, FullName)
+    Controller --> UI: 200 OK
+    UI --> Staff: Điều hướng vào màn hình làm việc
+else Nhập sai mật khẩu >= 5 lần
+    Service -> Repo: LockAccount(UserId, 15m)
+    Repo -> DB: UPDATE Users SET LockoutEnd = Now + 15m
+    DB --> Repo: OK
+    Repo --> Service: Locked
+    Service --> Controller: Fail("Tài khoản tạm khóa 15 phút")
+    Controller --> UI: 423 Locked (Tài khoản bị khóa)
+    UI --> Staff: Cảnh báo tài khoản tạm khóa 15 phút
+end
+@enduml

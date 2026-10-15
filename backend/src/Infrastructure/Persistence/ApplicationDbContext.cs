@@ -20,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Feedback> Feedbacks => Set<Feedback>();
+    public DbSet<TastingMenu> TastingMenus => Set<TastingMenu>();
+    public DbSet<TastingMenuItem> TastingMenuItems => Set<TastingMenuItem>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

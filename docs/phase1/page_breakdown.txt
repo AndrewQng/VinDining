@@ -1,11 +1,0 @@
-Total Pages: 10
-Page 1 start: B? GIAO D?C VA DAO T?O - H? TH?NG DAO T?O CONG NGH?KHOA CONG NGH? THONG TIN - B? MON K? THU?T PH?N M?M
-Page 2 start: M?C L?C BAO CAO KH?O SAT
-Page 3 start: CHUONG 1: KH?O SAT HI?N TR?NG QUY TRINH V?N HANH FINE DINING T?I VI?T NAM
-Page 4 start: Th?c t? hi?n nay: Ph?c v? ghi phi?u gi?y (Order Pad) k�m luu y d? ?ng, ch?y b? xu?ng b?p c?m phi?u v�o thanh k?p order. B?p tru?ng nh�n thanh ray di?u ph?i th? t? b?ng tr� nh? v� h� g?i ph? b?p n?u qua ti?ng h� l?n.
-Page 5 start: CHUONG 2: KH?O SAT CHI TI?T TH?C T? CAC PH?N M?M TH? TRU?NG
-Page 6 start: 2.4 Kh?o s�t th?c t? gi?i ph�p KiotViet F&B
-Page 7 start: CHUONG 3: PHAN TICH KHO?NG TR?NG V?N HANH (GAP ANALYSIS) VA MA TR?N SO SANH TINH NANG
-Page 8 start: 3.2 B?ng ma tr?n so s�nh t�nh nang th?c t? 100% gi?a 4 h? th?ng
-Page 9 start: CHUONG 4: BAO CAO DANH GIA TINH KH? THI (FEASIBILITY STUDY)
-Page 10 start: CHUONG 5: K?T LU?N & D?NH HU?NG GI?I PHAP H? TH?NG VINDINING
