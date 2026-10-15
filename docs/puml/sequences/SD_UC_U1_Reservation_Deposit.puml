@@ -3,13 +3,6 @@ autonumber
 skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
-skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
 
 actor "Khách hàng" as Guest
 boundary "Giao diện Web" as UI
@@ -29,7 +22,7 @@ Repo --> Service: TableLocked
 Service -> VNPAY: CreatePaymentUrl(BookingCode, Amount)
 VNPAY --> Service: PaymentUrl
 Service --> Controller: Result(BookingCode, PaymentUrl)
-Controller --> UI: 201 Created
+Controller --> UI: 201 Created (BookingCode, PaymentUrl)
 UI --> Guest: Hiển thị mã QR thanh toán VNPAY
 
 Guest -> VNPAY: Quét VietQR & Thanh toán cọc
@@ -40,7 +33,7 @@ Repo -> DB: UPDATE Reservation & TableStatus
 DB --> Repo: OK
 Repo --> Service: OK
 Service --> Controller: RspCode: 00
-Controller --> VNPAY: 200 OK
+Controller --> VNPAY: 200 OK (RspCode: 00)
 UI --> Guest: Hiển thị thông báo đặt bàn thành công
 
 opt Xử lý Late IPN (>17 phút khi bàn đã có khách khác)
@@ -57,6 +50,6 @@ opt Xử lý Late IPN (>17 phút khi bàn đã có khách khác)
     DB --> Repo: OK
     Repo --> Service: OK
     Service --> Controller: RspCode: 00
-    Controller --> VNPAY: 200 OK
+    Controller --> VNPAY: 200 OK (RspCode: 00)
 end
 @enduml
