@@ -1,0 +1,11 @@
+{
+  "name": "vindining",
+  "private": true,
+  "description": "VinDining Fine Dining Restaurant Management System",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "typecheck": "npm --prefix frontend run build"
+  }
+}
