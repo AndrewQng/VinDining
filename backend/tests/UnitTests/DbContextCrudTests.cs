@@ -472,7 +472,7 @@ public class DbContextCrudTests
             TastingMenuId = tastingMenu.Id,
             Quantity = 2,
             UnitPrice = 1800000m,
-            Status = OrderItemStatus.Queued
+            Status = OrderItemStatus.Hold
         };
         await context.OrderItems.AddAsync(billingLine);
 
@@ -484,7 +484,7 @@ public class DbContextCrudTests
             MenuItem = soup,
             Quantity = 2,
             UnitPrice = 0m,
-            Status = OrderItemStatus.Queued
+            Status = OrderItemStatus.Hold
         };
         var course2 = new OrderItem
         {
@@ -493,7 +493,7 @@ public class DbContextCrudTests
             MenuItem = steak,
             Quantity = 2,
             UnitPrice = 0m,
-            Status = OrderItemStatus.Queued
+            Status = OrderItemStatus.Hold
         };
         await context.OrderItems.AddRangeAsync(course1, course2);
 

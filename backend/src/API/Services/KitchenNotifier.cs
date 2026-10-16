@@ -25,4 +25,51 @@ public class KitchenNotifier : IKitchenNotifier
             },
             cancellationToken);
     }
+
+    public async Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, Domain.Enums.CourseType courseType, CancellationToken cancellationToken = default)
+    {
+        await _kitchenHub.Clients.All.SendAsync(
+            "CourseFired",
+            new
+            {
+                OrderId = orderId,
+                TableNumber = tableNumber,
+                CourseType = courseType.ToString(),
+                FiredAt = DateTime.UtcNow
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifyItemRemakeAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+    {
+        await _kitchenHub.Clients.All.SendAsync(
+            "ItemRemake",
+            new
+            {
+                OrderId = orderId,
+                TableNumber = tableNumber,
+                OrderItemId = orderItemId,
+                MenuItemName = menuItemName,
+                Reason = reason,
+                IsRush = true,
+                RemakeAt = DateTime.UtcNow
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifyItemServedAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, Guid? servedById, CancellationToken cancellationToken = default)
+    {
+        await _kitchenHub.Clients.All.SendAsync(
+            "ItemServed",
+            new
+            {
+                OrderId = orderId,
+                TableNumber = tableNumber,
+                OrderItemId = orderItemId,
+                MenuItemName = menuItemName,
+                ServedById = servedById,
+                ServedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+    }
 }

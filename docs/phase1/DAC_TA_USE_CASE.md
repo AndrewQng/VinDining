@@ -266,7 +266,6 @@
 
 ##### Luồng ngoại lệ (Alternative / Exception Flows)
 * 3a. Khi tổng chi phí bữa ăn thực tế nhỏ hơn số tiền cọc đã đóng trước đó, hệ thống áp dụng nguyên tắc tiền cọc là mức chi tiêu tối thiểu không hoàn lại, ghi nhận số tiền khách phải trả thêm là 0 VNĐ và khóa chức năng hoàn tiền cọc thừa.
-* 5a. Khi khách hàng yêu cầu xuất hóa đơn điện tử VAT cho doanh nghiệp, nhân viên phục vụ nhập thông tin Tên công ty, Mã số thuế và Email vào form xuất hóa đơn trên ứng dụng POS.
 
 ---
 

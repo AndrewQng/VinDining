@@ -44,18 +44,5 @@ Printer --> Service: PrintOK
 Service --> Controller: Result(InvoiceId, Paid)
 Controller --> UI: 200 OK
 UI --> Waitstaff: Bàn chuyển sang Chờ dọn dẹp (Cleaning)
-
-opt Khách yêu cầu xuất hóa đơn điện tử VAT doanh nghiệp
-    Waitstaff -> UI: Nhập Mã số thuế, Tên công ty, Email
-    UI -> Controller: POST /api/invoices/{id}/vat-request (TaxCode, CompanyName, Email)
-    Controller -> Service: CreateVatInvoice(id, dto)
-    Service -> Repo: SaveVatInvoiceDetails(id, dto)
-    Repo -> DB: INSERT VatInvoices
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Thông báo xuất VAT thành công
-end
 @enduml
 ```

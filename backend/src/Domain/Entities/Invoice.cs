@@ -15,6 +15,7 @@ public class Invoice : BaseEntity, IHasCreatedAt
     public decimal ServiceCharge { get; set; }
     public decimal VatAmount { get; set; }
     public decimal DeductedDeposit { get; set; }
+    public decimal TotalAmount => Subtotal + ServiceCharge + VatAmount - DeductedDeposit;
 
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
     public bool IsPaid { get; set; } = false;

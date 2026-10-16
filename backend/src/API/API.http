@@ -1,6 +1,153 @@
 @API_HostAddress = http://localhost:5159
 
-GET {{API_HostAddress}}/weatherforecast/
+### 0. Health Check
+GET {{API_HostAddress}}/api/health
 Accept: application/json
 
-###
+### 1. Khởi tạo dữ liệu mẫu kiểm thử (Seed Data)
+# Tự động tạo Bàn VIP-01, M-01, Nhân viên, 4 Món ăn các Course, Lịch đặt bàn có cọc 500k
+POST {{API_HostAddress}}/api/testing/seed
+Accept: application/json
+
+### 2. Xem tổng quan trạng thái bàn và các đơn hàng gần đây
+GET {{API_HostAddress}}/api/testing/overview
+Accept: application/json
+
+### ==============================================================================
+### PHÂN HỆ ĐẶT BÀN VÀ ĐẶT CỌC (RESERVATION & DEPOSIT SUBSYSTEM)
+### ==============================================================================
+
+### 2.1 Tra cứu danh sách bàn trống khả dụng (Available Tables)
+GET {{API_HostAddress}}/api/reservation/available-tables?reservationTime=2026-10-25T19:00:00Z&partySize=4&zone=1
+Accept: application/json
+
+### 2.2 Đặt bàn trực tuyến & Tạm khóa giữ bàn (Create Reservation)
+# Tự động khóa bàn VIP-01 sang LockedForPayment, sinh mã bookingCode và URL cọc VNPAY 500k
+# @name createReservation
+POST {{API_HostAddress}}/api/reservation
+Content-Type: application/json
+
+{
+  "fullName": "Nguyễn Mạnh Quyền",
+  "phoneNumber": "0912345678",
+  "email": "quyen@vindining.vn",
+  "tableId": "99999999-9999-9999-9999-999999999999",
+  "reservationTime": "2026-10-25T19:00:00Z",
+  "partySize": 4,
+  "note": "Kỷ niệm ngày cưới, chuẩn bị nến thơm"
+}
+
+### 2.3 Tra cứu chi tiết lịch đặt bàn theo mã BookingCode
+# Thay {bookingCode} bằng mã trả về từ bước 2.2 (VD: VD-261016-XXXXX) hoặc mã mẫu BOOK-VIP01
+GET {{API_HostAddress}}/api/reservation/BOOK-VIP01
+Accept: application/json
+
+### 2.4 Xác nhận thanh toán tiền cọc thành công (Confirm Deposit)
+# Chuyển Reservation sang Confirmed và Bàn sang Reserved
+POST {{API_HostAddress}}/api/reservation/confirm-deposit
+Content-Type: application/json
+
+{
+  "bookingCode": "BOOK-VIP01",
+  "transactionId": "VNPAY-TRANS-9999",
+  "paymentMethod": 2
+}
+
+### 2.5 Hủy đặt bàn trực tuyến & Hoàn cọc (Cancel Reservation)
+# Hủy trước >= 4 tiếng hoàn 100% cọc; Hủy dưới 4 tiếng giữ lại toàn bộ cọc
+PATCH {{API_HostAddress}}/api/reservation/BOOK-VIP01/cancel
+Content-Type: application/json
+
+{
+  "reason": "Thay đổi lịch trình công tác đột xuất"
+}
+
+### ==============================================================================
+### PHÂN HỆ PHỤC VỤ TẠI BÀN & ĐIỀU PHỐI BẾP (IN-DINING & COURSE FIRING)
+### ==============================================================================
+
+### 3. Tạo Đơn gọi món tại bàn VIP-01 (Create Order)
+# Món Khai vị và Đồ uống tự động chuyển sang Preparing, Món chính và Tráng miệng ở trạng thái Hold
+# @name createOrder
+POST {{API_HostAddress}}/api/order
+Content-Type: application/json
+
+{
+  "tableId": "99999999-9999-9999-9999-999999999999",
+  "reservationId": "77777777-7777-7777-7777-777777777777",
+  "staffId": "11111111-1111-1111-1111-111111111111",
+  "items": [
+    {
+      "menuItemId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "quantity": 2,
+      "note": "Không hành tây"
+    },
+    {
+      "menuItemId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "quantity": 2,
+      "note": "Medium rare"
+    },
+    {
+      "menuItemId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "quantity": 2,
+      "note": "Ăn tráng miệng sau cùng"
+    },
+    {
+      "menuItemId": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "quantity": 1,
+      "note": "Ướp lạnh trước"
+    }
+  ]
+}
+
+### 4. Waitstaff kích hoạt nấu Món chính (Course Firing - MainCourse)
+# Đẩy các món Bò Wagyu A5 từ Hold sang Preparing, gắn cờ ưu tiên (isPriority) nếu cần
+# Thay {orderId} bằng GUID trả về từ bước 3
+POST {{API_HostAddress}}/api/order/REPLACE_WITH_ORDER_ID/fire-course
+Content-Type: application/json
+
+{
+  "courseType": 1,
+  "isPriority": true
+}
+
+### 5. Expediter kiểm đồ và xác nhận ra món (Served)
+# Thay {orderId} và {itemId} từ bước 2 overview
+PATCH {{API_HostAddress}}/api/order/REPLACE_WITH_ORDER_ID/items/REPLACE_WITH_ITEM_ID/serve
+Accept: application/json
+
+### 6. Expediter kích hoạt làm lại món khẩn cấp tại quầy Pass (Remake - Rush)
+# Đẩy món về lại Preparing, gắn cờ IsRush = true và phát thông báo SignalR
+PATCH {{API_HostAddress}}/api/order/REPLACE_WITH_ORDER_ID/items/REPLACE_WITH_ITEM_ID/remake
+Content-Type: application/json
+
+{
+  "reason": "Đĩa món chưa đạt nhiệt độ tiêu chuẩn Fine Dining, yêu cầu làm lại gấp"
+}
+
+### 7. Hủy món ăn theo yêu cầu của khách (Cancel Item)
+PATCH {{API_HostAddress}}/api/order/REPLACE_WITH_ORDER_ID/items/REPLACE_WITH_ITEM_ID/cancel
+Content-Type: application/json
+
+{
+  "reason": "Khách no, xin phép hủy món tráng miệng"
+}
+
+### 8. Xem trước hóa đơn tạm tính và tiền cọc cấn trừ (Get Invoice Preview)
+# Tự động tính 5% Phí phục vụ, 10% VAT, trừ 500k tiền cọc, và cảnh báo nếu còn món chưa phục vụ
+GET {{API_HostAddress}}/api/invoice/preview/99999999-9999-9999-9999-999999999999
+Accept: application/json
+
+### 9. Quyết toán hóa đơn, cấn trừ cọc và chuyển bàn sang Chờ dọn dẹp (Settle Invoice)
+POST {{API_HostAddress}}/api/invoice/settle
+Content-Type: application/json
+
+{
+  "orderId": "REPLACE_WITH_ORDER_ID",
+  "paymentMethod": 1,
+  "staffId": "11111111-1111-1111-1111-111111111111"
+}
+
+### 10. Kiểm tra lại trạng thái bàn sau thanh toán (Bàn VIP-01 đã chuyển sang Cleaning)
+GET {{API_HostAddress}}/api/testing/overview
+Accept: application/json

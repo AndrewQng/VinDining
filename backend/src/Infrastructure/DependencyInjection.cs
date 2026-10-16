@@ -72,6 +72,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IPaymentGateway, MockPaymentGateway>();
 
         return services;
     }

@@ -9,6 +9,8 @@ import {
 } from 'lucide-react'
 import type { Table, TableStatus, TableZone } from '@/types/table'
 import { cn } from '@/lib/utils'
+import { useTestingOverview, useSeedSampleData } from '@/hooks'
+import { Button } from '@/components/ui'
 
 export function FloorPlanPage() {
   const [selectedZone, setSelectedZone] = useState<TableZone | 'All'>('All')
@@ -86,6 +88,20 @@ export function FloorPlanPage() {
   ]
 
   const [tables, setTables] = useState<Table[]>(initialTables)
+  const { data: serverData } = useTestingOverview()
+  const seedMutation = useSeedSampleData()
+
+  // Đồng bộ bàn từ server nếu có dữ liệu kiểm thử
+  const activeTables: Table[] =
+    serverData?.tables && serverData.tables.length > 0
+      ? serverData.tables.map((st) => ({
+          id: st.id,
+          tableNumber: st.tableNumber,
+          capacity: 4,
+          zone: (st.zone === 'VIP' ? 'VIP' : st.zone === 'Balcony' ? 'Balcony' : 'MainHall') as TableZone,
+          status: (st.status as TableStatus) || 'Available',
+        }))
+      : tables
 
   const handleUpdateStatus = (tableId: string, newStatus: TableStatus) => {
     setTables((prev) =>
@@ -126,17 +142,17 @@ export function FloorPlanPage() {
     },
   }
 
-  const filteredTables = tables.filter((t) => {
+  const filteredTables = activeTables.filter((t) => {
     const matchZone = selectedZone === 'All' || t.zone === selectedZone
     const matchStatus = selectedStatus === 'All' || t.status === selectedStatus
     return matchZone && matchStatus
   })
 
   // Counters
-  const countAvailable = tables.filter((t) => t.status === 'Available').length
-  const countOccupied = tables.filter((t) => t.status === 'Occupied').length
-  const countReserved = tables.filter((t) => t.status === 'Reserved').length
-  const countCleaning = tables.filter((t) => t.status === 'Cleaning').length
+  const countAvailable = activeTables.filter((t) => t.status === 'Available').length
+  const countOccupied = activeTables.filter((t) => t.status === 'Occupied').length
+  const countReserved = activeTables.filter((t) => t.status === 'Reserved').length
+  const countCleaning = activeTables.filter((t) => t.status === 'Cleaning').length
 
   return (
     <div className="space-y-6">
@@ -152,8 +168,19 @@ export function FloorPlanPage() {
           </p>
         </div>
 
-        {/* Status Counters */}
+        {/* Status Counters & Action */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <Button
+            variant="outline"
+            size="sm"
+            isLoading={seedMutation.isPending}
+            onClick={() => seedMutation.mutate()}
+            className="text-xs shrink-0"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-gold-400 mr-1" />
+            Nạp Dữ Liệu Test
+          </Button>
+
           <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-medium whitespace-nowrap">
             Trống: <strong>{countAvailable}</strong>
           </div>

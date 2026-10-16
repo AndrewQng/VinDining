@@ -83,9 +83,9 @@ _Tránh dùng_: Nấu lại, Sửa món, Trả đĩa
 - Một **Table** ở trạng thái `Occupied` gắn liền với đúng một **Order** đang hoạt động.
 - Một **Order** có thể được khởi tạo hoặc bổ sung món bởi **Waitstaff** (trên Mobile POS) hoặc trực tiếp bởi **Guest** (quét mã QR tại bàn trên smartphone cá nhân).
 - Một **Order** bao gồm một hoặc nhiều **Course** theo trình tự phục vụ, được cấu thành từ gói **TastingMenu** trọn gói hoặc các **MenuItem** riêng lẻ (A La Carte).
-- Một **Course** tiếp theo chỉ chuyển sang trạng thái chế biến tại **KitchenKDS** khi nhận được tín hiệu **CourseFiring** từ nhân viên phục vụ (hoặc yêu cầu lên món từ Guest).
+- Một **Course** tiếp theo chỉ chuyển sang trạng thái chế biến tại **KitchenKDS** khi nhận được tín hiệu **CourseFiring** từ nhân viên phục vụ (hoặc yêu cầu lên món từ Guest). Lệnh này được kích hoạt linh hoạt khi khách dùng khoảng 60-70% Course hiện tại và không bị chặn cứng bởi trạng thái chế biến của các món thuộc Course trước đó để đón đầu thời gian nấu món chính.
 - Khi **Expediter** kích hoạt lệnh **Remake**, món ăn lập tức được đẩy về đầu hàng đợi **KitchenKDS** với trạng thái ưu tiên khẩn cấp (`Rush`), đồng thời gửi thông báo kín tới điện thoại **Waitstaff** phụ trách bàn để chủ động chăm sóc thực khách.
-- Một **Order** kết thúc bằng một **Invoice** tự động cấn trừ khoản **Deposit** đã nộp.
+- Một **Order** kết thúc bằng một **Invoice** tự động cấn trừ khoản **Deposit** đã nộp. Phí dịch vụ tính bằng 5% Subtotal, thuế VAT 10% tính trên tổng (Subtotal + Phí dịch vụ), và tổng tiền phải trả bằng (Subtotal + Phí dịch vụ + VAT - Deposit). Hệ thống yêu cầu toàn bộ món trong đơn phải được phân định rõ ràng (hoàn tất `Served` hoặc hủy `Cancelled`), tuyệt đối chặn xuất hóa đơn khi còn món dở dang ở trạng thái `Hold` hoặc `Preparing`.
 
 ## Example Dialogue
 

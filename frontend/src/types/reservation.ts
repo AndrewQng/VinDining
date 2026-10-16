@@ -33,3 +33,64 @@ export interface CreateReservationRequest {
   zone: TableZone
   specialRequests?: string
 }
+
+export interface AvailableTableDto {
+  id: string
+  tableNumber: string
+  capacity: number
+  zone: number | string
+  zoneName: string
+  status: number | string
+}
+
+export interface CreateReservationCommand {
+  fullName: string
+  phoneNumber: string
+  email: string
+  tableId: string
+  reservationTime: string
+  partySize: number
+  note?: string
+}
+
+export interface CreateReservationResultDto {
+  reservationId: string
+  bookingCode: string
+  tableNumber: string
+  depositAmount: number
+  paymentUrl: string
+  expiresAt: string
+}
+
+export interface ConfirmDepositPaymentCommand {
+  bookingCode: string
+  transactionId: string
+  paymentMethod?: number
+}
+
+export interface CancelReservationResultDto {
+  bookingCode: string
+  status: string
+  isRefunded: boolean
+  refundAmount: number
+  message: string
+}
+
+export interface ReservationDetailDto {
+  id: string
+  bookingCode: string
+  guestName: string
+  guestPhone: string
+  guestEmail: string
+  tableId: string
+  tableNumber: string
+  tableZone: string
+  reservationTime: string
+  partySize: number
+  status: string
+  note?: string
+  depositAmount?: number
+  depositStatus?: string
+  createdAt: string
+}
+

@@ -1,21 +1,46 @@
 import { useState } from 'react'
-import { ChefHat, CheckCircle2, RotateCcw, AlertTriangle, Flame, BellRing } from 'lucide-react'
-import type { OrderItem, OrderItemStatus } from '@/types/order'
+import {
+  ChefHat,
+  CheckCircle2,
+  RotateCcw,
+  AlertTriangle,
+  Flame,
+  BellRing,
+  Sparkles,
+  Loader2,
+} from 'lucide-react'
+import { useTestingOverview, useSeedSampleData } from '@/hooks/useTestingData'
+import { useServeItem, useRemakeItem } from '@/hooks/useOrders'
+import { Button, Badge, Card } from '@/components/ui'
 
-interface ExpediterItem extends OrderItem {
+interface DisplayItem {
+  id: string
+  orderId: string
   tableNumber: string
   waitstaffName: string
+  menuItemName: string
+  unitPrice: number
+  quantity: number
+  courseType: string
+  status: 'Ready' | 'Preparing' | 'Served' | 'Remake' | 'Hold'
+  specialInstructions?: string | null
+  isRush?: boolean
   elapsedMinutes: number
 }
 
 export function ExpediterPage() {
-  const [items, setItems] = useState<ExpediterItem[]>([
+  const { data: serverData, isLoading: isLoadingServer } = useTestingOverview()
+  const seedMutation = useSeedSampleData()
+  const serveItemMutation = useServeItem()
+  const remakeItemMutation = useRemakeItem()
+
+  // Local fallback mock items if no orders in database yet
+  const [localItems, setLocalItems] = useState<DisplayItem[]>([
     {
-      id: 'oi_1',
-      orderId: 'ord_101',
+      id: '11111111-2222-3333-4444-555555555551',
+      orderId: '00000000-0000-0000-0000-000000000001',
       tableNumber: 'M01',
       waitstaffName: 'Nguyễn Văn Phục Vụ',
-      menuItemId: 'm1',
       menuItemName: 'Hokkaido Scallop Carpaccio',
       unitPrice: 450000,
       quantity: 2,
@@ -25,24 +50,22 @@ export function ExpediterPage() {
       elapsedMinutes: 8,
     },
     {
-      id: 'oi_2',
-      orderId: 'ord_101',
+      id: '11111111-2222-3333-4444-555555555552',
+      orderId: '00000000-0000-0000-0000-000000000001',
       tableNumber: 'M01',
       waitstaffName: 'Nguyễn Văn Phục Vụ',
-      menuItemId: 'm2',
       menuItemName: 'Foie Gras Poêlé au Truffle',
       unitPrice: 680000,
       quantity: 2,
       courseType: 'Appetizer',
-      status: 'Cooking',
+      status: 'Preparing',
       elapsedMinutes: 12,
     },
     {
-      id: 'oi_3',
-      orderId: 'ord_102',
+      id: '11111111-2222-3333-4444-555555555553',
+      orderId: '00000000-0000-0000-0000-000000000002',
       tableNumber: 'VIP01',
       waitstaffName: 'Nguyễn Văn Phục Vụ',
-      menuItemId: 'm3',
       menuItemName: 'Wagyu A5 Kagoshima Tenderloin',
       unitPrice: 1850000,
       quantity: 4,
@@ -53,30 +76,87 @@ export function ExpediterPage() {
     },
   ])
 
-  const handleServe = (itemId: string) => {
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === itemId
-          ? { ...i, status: 'Served' as OrderItemStatus, servedAtUtc: new Date().toISOString() }
-          : i
-      )
-    )
+  // Extract items from real server orders if available
+  const serverItems: DisplayItem[] = []
+  if (serverData?.recentOrders) {
+    for (const order of serverData.recentOrders) {
+      if (order.items) {
+        for (const item of order.items) {
+          const statusMap: Record<string, DisplayItem['status']> = {
+            Hold: 'Hold',
+            Preparing: 'Preparing',
+            Served: 'Served',
+            Cancelled: 'Hold',
+          }
+          const itemStatus = statusMap[item.status] || (item.isRush ? 'Remake' : 'Preparing')
+
+          serverItems.push({
+            id: item.id,
+            orderId: order.id,
+            tableNumber: order.tableNumber,
+            waitstaffName: 'Nhân viên bàn',
+            menuItemName: item.itemName,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            courseType: 'Fine Dining Course',
+            status: itemStatus,
+            specialInstructions: item.note,
+            isRush: item.isRush,
+            elapsedMinutes: 5,
+          })
+        }
+      }
+    }
   }
 
-  const handleRemake = (itemId: string) => {
+  const items = serverItems.length > 0 ? serverItems : localItems
+
+  const handleServe = async (item: DisplayItem) => {
+    if (serverItems.length > 0) {
+      try {
+        await serveItemMutation.mutateAsync({
+          orderId: item.orderId,
+          itemId: item.id,
+        })
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } } }
+        alert(errorObj.response?.data?.message || 'Lỗi khi xác nhận ra món')
+      }
+    } else {
+      setLocalItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, status: 'Served' } : i))
+      )
+    }
+  }
+
+  const handleRemake = async (item: DisplayItem) => {
     const reason = prompt('Nhập lý do yêu cầu Bếp làm lại khẩn cấp (Remake):')
     if (!reason) return
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === itemId
-          ? { ...i, status: 'Remake' as OrderItemStatus, remakeReason: reason }
-          : i
+
+    if (serverItems.length > 0) {
+      try {
+        await remakeItemMutation.mutateAsync({
+          orderId: item.orderId,
+          itemId: item.id,
+          request: { reason },
+        })
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } } }
+        alert(errorObj.response?.data?.message || 'Lỗi khi yêu cầu làm lại món')
+      }
+    } else {
+      setLocalItems((prev) =>
+        prev.map((i) =>
+          i.id === item.id
+            ? { ...i, status: 'Remake', isRush: true, specialInstructions: `Làm lại khẩn cấp: ${reason}` }
+            : i
+        )
       )
-    )
+    }
   }
 
-  const readyItems = items.filter((i) => i.status === 'Ready')
-  const cookingItems = items.filter((i) => i.status === 'Cooking' || i.status === 'Remake')
+  const readyItems = items.filter((i) => i.status === 'Ready' || i.status === 'Preparing')
+  const cookingItems = items.filter((i) => i.status === 'Hold' || i.status === 'Remake')
 
   return (
     <div className="space-y-6">
@@ -92,9 +172,22 @@ export function ExpediterPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {isLoadingServer && <Loader2 className="w-4 h-4 animate-spin text-gold-400" />}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => seedMutation.mutate()}
+            loading={seedMutation.isPending}
+            className="text-xs text-gold-300 border-gold-500/30"
+          >
+            <Sparkles className="w-3.5 h-3.5 mr-1" />
+            Seed Sample Orders
+          </Button>
+
           <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1.5">
             <BellRing className="w-3.5 h-3.5 animate-bounce" />
-            <span>Đang chờ duyệt ra đĩa: {readyItems.length}</span>
+            <span>Chờ kiểm định: {readyItems.length}</span>
           </span>
         </div>
       </div>
@@ -107,9 +200,9 @@ export function ExpediterPage() {
         </h2>
 
         {readyItems.length === 0 ? (
-          <div className="p-8 rounded-2xl border border-dark-border bg-dark-surface/50 text-center text-xs text-neutral-500">
+          <Card className="p-8 text-center text-xs text-neutral-500">
             Hiện không có món nào đang chờ ở quầy Pass.
-          </div>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {readyItems.map((item) => (
@@ -128,11 +221,18 @@ export function ExpediterPage() {
                     <span className="text-xs font-mono text-neutral-400">{item.elapsedMinutes} phút trước</span>
                   </div>
 
-                  <h3 className="text-base font-bold text-neutral-100 mb-1">
-                    {item.quantity}x {item.menuItemName}
+                  <h3 className="text-base font-bold text-neutral-100 mb-1 flex items-center gap-2">
+                    <span>
+                      {item.quantity}x {item.menuItemName}
+                    </span>
+                    {item.isRush && (
+                      <Badge variant="destructive" className="text-[10px] uppercase">
+                        Rush Remake
+                      </Badge>
+                    )}
                   </h3>
                   <span className="text-[11px] px-2 py-0.5 rounded bg-dark-card text-neutral-400 border border-dark-border">
-                    Course: {item.courseType}
+                    {item.courseType}
                   </span>
 
                   {item.specialInstructions && (
@@ -144,21 +244,24 @@ export function ExpediterPage() {
                 </div>
 
                 <div className="mt-5 pt-3 border-t border-dark-border flex gap-2">
-                  <button
-                    onClick={() => handleServe(item.id)}
-                    className="cursor-pointer flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  <Button
+                    onClick={() => handleServe(item)}
+                    loading={serveItemMutation.isPending}
+                    className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-neutral-950 font-bold text-xs"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4 mr-1.5" />
                     <span>Xác Nhận Đạt Chuẩn & Ra Món</span>
-                  </button>
+                  </Button>
 
-                  <button
-                    onClick={() => handleRemake(item.id)}
-                    className="cursor-pointer px-4 py-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  <Button
+                    onClick={() => handleRemake(item)}
+                    loading={remakeItemMutation.isPending}
+                    variant="outline"
+                    className="px-4 py-2.5 text-red-300 border-red-500/30 hover:bg-red-500/10 text-xs font-bold"
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCcw className="w-4 h-4 mr-1.5" />
                     <span>Làm Lại (Remake)</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -170,7 +273,7 @@ export function ExpediterPage() {
       <div className="space-y-3 pt-4">
         <h2 className="text-sm font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-2">
           <Flame className="w-4 h-4 text-orange-400" />
-          <span>2. Món Đang Chế Biến Tại Nhà Bếp ({cookingItems.length})</span>
+          <span>2. Món Đang Đợi Lệnh / Chế Biến Tại Nhà Bếp ({cookingItems.length})</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -189,12 +292,12 @@ export function ExpediterPage() {
                   </span>
                 </div>
                 <p className="text-[11px] text-neutral-500">
-                  Course: {item.courseType} &bull; Phục vụ: {item.waitstaffName}
+                  {item.courseType} &bull; Phục vụ: {item.waitstaffName}
                 </p>
               </div>
 
               <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                {item.status === 'Remake' ? 'Làm lại khẩn cấp' : 'Đang nấu'}
+                {item.status === 'Remake' ? 'Làm lại khẩn cấp (Rush)' : 'Đang chờ (Hold)'}
               </span>
             </div>
           ))}

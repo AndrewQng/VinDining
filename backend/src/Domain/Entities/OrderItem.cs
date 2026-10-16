@@ -19,6 +19,7 @@ public class OrderItem : BaseEntity
     public OrderItemStatus Status { get; set; } = OrderItemStatus.Hold;
     public string? Note { get; set; }
     public DateTime? FiredAt { get; set; }
+    public bool IsRush { get; set; } = false;
     public Guid? ServedById { get; set; }
     public Staff? ServedBy { get; set; }
     public DateTime? ServedAt { get; set; }

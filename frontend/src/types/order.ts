@@ -45,13 +45,29 @@ export interface Order {
   updatedAtUtc?: string
 }
 
-export interface CourseFiringRequest {
-  orderId: string
-  courseType: CourseType
-  itemIds?: string[]
+export interface CreateOrderItemDto {
+  menuItemId: string
+  quantity: number
+  note?: string
 }
 
-export interface RemakeRequest {
-  orderItemId: string
-  reason: string
+export interface CreateOrderCommand {
+  tableId: string
+  reservationId?: string
+  staffId?: string
+  items: CreateOrderItemDto[]
 }
+
+export interface CourseFiringRequest {
+  courseType: number // 0 = Appetizer, 1 = MainCourse, 2 = Dessert, 3 = Beverage
+  isPriority?: boolean
+}
+
+export interface RemakeItemRequest {
+  reason?: string
+}
+
+export interface CancelItemRequest {
+  reason?: string
+}
+

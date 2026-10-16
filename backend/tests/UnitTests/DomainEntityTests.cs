@@ -206,7 +206,7 @@ public class DomainEntityTests
             MenuItemId = menuItemId,
             Quantity = 2,
             UnitPrice = 450000m,
-            Status = OrderItemStatus.Queued,
+            Status = OrderItemStatus.Hold,
             Note = "No onions"
         };
 
@@ -215,7 +215,7 @@ public class DomainEntityTests
         Assert.Equal(menuItemId, item.MenuItemId);
         Assert.Equal(2, item.Quantity);
         Assert.Equal(450000m, item.UnitPrice);
-        Assert.Equal(OrderItemStatus.Queued, item.Status);
+        Assert.Equal(OrderItemStatus.Hold, item.Status);
         Assert.Equal("No onions", item.Note);
         Assert.Null(item.ServedById);
         Assert.Null(item.ServedAt);
@@ -343,10 +343,10 @@ public class DomainEntityTests
         Assert.Contains("Refunded", depositStatuses);
         Assert.Contains("Forfeited", depositStatuses);
 
-        // OrderItemStatus: queued, preparing, served, cancelled
+        // OrderItemStatus: hold, preparing, served, cancelled
         var orderItemStatuses = Enum.GetNames<OrderItemStatus>();
         Assert.Equal(4, orderItemStatuses.Length);
-        Assert.Contains("Queued", orderItemStatuses);
+        Assert.Contains("Hold", orderItemStatuses);
         Assert.Contains("Preparing", orderItemStatuses);
         Assert.Contains("Served", orderItemStatuses);
         Assert.Contains("Cancelled", orderItemStatuses);

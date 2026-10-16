@@ -28,4 +28,64 @@ public class OrderController : ApiControllerBase
         await Task.CompletedTask;
         return Ok(new { orderId = id, status = "Processing" });
     }
+
+    /// <summary>
+    /// Kích hoạt nấu theo đợt (Course Firing)
+    /// </summary>
+    [HttpPost("{id:guid}/fire-course")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> FireCourse(Guid id, [FromBody] FireCourseRequest request)
+    {
+        var command = new Application.Orders.Commands.FireCourse.FireCourseCommand(id, request.CourseType, request.IsPriority);
+        var firedCount = await Mediator.Send(command);
+        return Ok(new { orderId = id, firedCount, message = $"Đã kích hoạt {firedCount} món thuộc {request.CourseType}." });
+    }
+
+    /// <summary>
+    /// Expediter kiểm đồ và xác nhận ra món (Served)
+    /// </summary>
+    [HttpPatch("{id:guid}/items/{itemId:guid}/serve")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ServeItem(Guid id, Guid itemId)
+    {
+        var command = new Application.Orders.Commands.ServeOrderItem.ServeOrderItemCommand(id, itemId);
+        var result = await Mediator.Send(command);
+        return Ok(new { success = result, message = "Đã xác nhận ra món thành công." });
+    }
+
+    /// <summary>
+    /// Expediter yêu cầu làm lại đĩa món không đạt tiêu chuẩn (Remake - Rush)
+    /// </summary>
+    [HttpPatch("{id:guid}/items/{itemId:guid}/remake")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemakeItem(Guid id, Guid itemId, [FromBody] RemakeItemRequest? request)
+    {
+        var command = new Application.Orders.Commands.RemakeOrderItem.RemakeOrderItemCommand(id, itemId, request?.Reason);
+        var result = await Mediator.Send(command);
+        return Ok(new { success = result, message = "Đã yêu cầu làm lại món ăn với mức độ ưu tiên khẩn cấp." });
+    }
+
+    /// <summary>
+    /// Hủy món ăn trong đơn hàng
+    /// </summary>
+    [HttpPatch("{id:guid}/items/{itemId:guid}/cancel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelItem(Guid id, Guid itemId, [FromBody] CancelItemRequest? request)
+    {
+        var command = new Application.Orders.Commands.CancelOrderItem.CancelOrderItemCommand(id, itemId, request?.Reason);
+        var result = await Mediator.Send(command);
+        return Ok(new { success = result, message = "Đã hủy món ăn trong đơn hàng thành công." });
+    }
 }
+
+public record FireCourseRequest(Domain.Enums.CourseType CourseType, bool IsPriority = false);
+public record RemakeItemRequest(string? Reason);
+public record CancelItemRequest(string? Reason);
