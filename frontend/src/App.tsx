@@ -7,8 +7,12 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { ReservationPage } from '@/pages/guest/ReservationPage'
 import { EMenuPage } from '@/pages/guest/EMenuPage'
+
 import { FloorPlanPage } from '@/pages/staff/FloorPlanPage'
+import { WaitstaffOrderPage } from '@/pages/staff/WaitstaffOrderPage'
+import { KitchenKdsPage } from '@/pages/staff/KitchenKdsPage'
 import { ExpediterPage } from '@/pages/staff/ExpediterPage'
+import { CashierPage } from '@/pages/staff/CashierPage'
 import { ManagerPage } from '@/pages/staff/ManagerPage'
 
 export default function App() {
@@ -32,10 +36,19 @@ export default function App() {
             <Route path="/pos/tables" element={<FloorPlanPage />} />
             <Route path="/pos" element={<Navigate to="/pos/tables" replace />} />
 
+            {/* Waitstaff Mobile POS / Order at Table */}
+            <Route path="/pos/order/:tableId" element={<WaitstaffOrderPage />} />
+
+            {/* Kitchen KDS */}
+            <Route path="/kds" element={<KitchenKdsPage />} />
+
             {/* Expediter & Kitchen Pass */}
             <Route element={<ProtectedRoute allowedRoles={['Expediter', 'Manager', 'Admin']} />}>
               <Route path="/expediter" element={<ExpediterPage />} />
             </Route>
+
+            {/* Cashier & Billing */}
+            <Route path="/cashier" element={<CashierPage />} />
 
             {/* Manager & Admin */}
             <Route element={<ProtectedRoute allowedRoles={['Manager', 'Admin']} />}>

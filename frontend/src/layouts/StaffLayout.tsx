@@ -1,5 +1,15 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { UtensilsCrossed, LayoutGrid, ChefHat, BarChart3, LogOut, Radio, User } from 'lucide-react'
+import {
+  UtensilsCrossed,
+  LayoutGrid,
+  ChefHat,
+  BarChart3,
+  LogOut,
+  Radio,
+  User,
+  Flame,
+  CreditCard,
+} from 'lucide-react'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { cn } from '@/lib/utils'
 
@@ -16,19 +26,31 @@ export function StaffLayout() {
   const staffNav = [
     {
       to: '/pos/tables',
-      label: 'Sơ đồ Bàn (Floor Plan)',
+      label: 'Sơ đồ Bàn',
       icon: LayoutGrid,
       show: true,
     },
     {
+      to: '/kds',
+      label: 'Bếp KDS',
+      icon: Flame,
+      show: hasRole(['Expediter', 'Manager', 'Admin', 'Waitstaff']),
+    },
+    {
       to: '/expediter',
-      label: 'Quầy Pass & Điều phối',
+      label: 'Quầy Pass',
       icon: ChefHat,
       show: hasRole(['Expediter', 'Manager', 'Admin']),
     },
     {
+      to: '/cashier',
+      label: 'Thu Ngân',
+      icon: CreditCard,
+      show: hasRole(['Manager', 'Admin', 'Waitstaff']),
+    },
+    {
       to: '/manager',
-      label: 'Báo cáo Quản trị',
+      label: 'Quản Trị',
       icon: BarChart3,
       show: hasRole(['Manager', 'Admin']),
     },
@@ -98,8 +120,15 @@ export function StaffLayout() {
                 <User className="w-4 h-4" />
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-xs font-semibold text-neutral-200 leading-tight">{user?.fullName || 'Nhân sự'}</p>
-                <span className={cn('inline-block text-[10px] font-mono px-1.5 py-0.2 rounded border', roleBadgeStyle)}>
+                <p className="text-xs font-semibold text-neutral-200 leading-tight">
+                  {user?.fullName || 'Nhân sự'}
+                </p>
+                <span
+                  className={cn(
+                    'inline-block text-[10px] font-mono px-1.5 py-0.2 rounded border',
+                    roleBadgeStyle
+                  )}
+                >
                   {user?.role}
                 </span>
               </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Users,
   CheckCircle2,
@@ -13,6 +14,7 @@ import { useTestingOverview, useSeedSampleData } from '@/hooks'
 import { Button } from '@/components/ui'
 
 export function FloorPlanPage() {
+  const navigate = useNavigate()
   const [selectedZone, setSelectedZone] = useState<TableZone | 'All'>('All')
   const [selectedStatus, setSelectedStatus] = useState<TableStatus | 'All'>('All')
 
@@ -305,12 +307,15 @@ export function FloorPlanPage() {
 
                 {table.status === 'Occupied' && (
                   <>
-                    <button className="cursor-pointer flex-1 py-2 rounded-xl bg-dark-card hover:bg-dark-card-hover border border-dark-border text-neutral-200 text-xs font-medium flex items-center justify-center gap-1.5">
+                    <button
+                      onClick={() => navigate(`/pos/order/${table.tableNumber}`)}
+                      className="cursor-pointer flex-1 py-2 rounded-xl bg-dark-card hover:bg-dark-card-hover border border-dark-border text-neutral-200 text-xs font-medium flex items-center justify-center gap-1.5"
+                    >
                       <FileText className="w-3.5 h-3.5 text-gold-400" />
                       <span>Xem / Thêm Món</span>
                     </button>
                     <button
-                      onClick={() => handleUpdateStatus(table.id, 'Cleaning')}
+                      onClick={() => navigate(`/cashier?tableId=${table.id}`)}
                       className="cursor-pointer px-3 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-medium flex items-center justify-center gap-1"
                     >
                       <span>Tính Tiền</span>
