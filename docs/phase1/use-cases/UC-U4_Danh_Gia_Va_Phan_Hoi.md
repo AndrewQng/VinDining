@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_U4_Submit_Feedback
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Khách hàng" as Guest
-boundary "Giao diện Đánh giá" as UI
+boundary "Giao diện Web" as UI
 control "FeedbackController" as Controller
 participant "FeedbackService" as Service
 participant "FeedbackRepository" as Repo
@@ -35,3 +35,4 @@ Controller --> UI: 201 Created
 UI --> Guest: Hiển thị thông báo cảm ơn
 @enduml
 ```
+

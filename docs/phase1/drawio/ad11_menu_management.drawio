@@ -90,14 +90,14 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Lane 3: E-Menu & Thiết bị Phục vụ -->
-        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="E-Menu &amp;amp; Thiết bị Phục vụ" vertex="1">
+        <!-- Lane 3: QR-Menu & Thiết bị Phục vụ -->
+        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;fillColor=#f8f9fa;strokeColor=#333333;swimlaneLine=1;" value="QR-Menu &amp;amp; Thiết bị Phục vụ" vertex="1">
           <mxGeometry height="880" width="340" x="760" y="40" as="geometry" />
         </mxCell>
         <mxCell id="d_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận sự kiện MenuCatalogUpdated&#xa;từ SignalR Hub thời gian thực" vertex="1">
           <mxGeometry height="65" width="220" x="60" y="655" as="geometry" />
         </mxCell>
-        <mxCell id="d_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Tự động làm mới E-Menu trực tuyến&#xa;&amp;amp; danh mục chọn món của Phục vụ" vertex="1">
+        <mxCell id="d_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Tự động làm mới QR-Menu trực tuyến&#xa;&amp;amp; danh mục chọn món của Phục vụ" vertex="1">
           <mxGeometry height="65" width="220" x="60" y="745" as="geometry" />
         </mxCell>
         <mxCell id="end_d" parent="lane3" style="ellipse;html=1;shape=endState;fillColor=#2e7d32;strokeColor=#1b5e20;" value="" vertex="1">

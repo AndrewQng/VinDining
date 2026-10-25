@@ -1,0 +1,60 @@
+@startuml SD_UC_E6_CheckIn_And_Clean_Table
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Bấm Check-in nhận bàn
+UI -> Controller: POST /api/tables/{id}/check-in
+Controller -> Service: CheckInTable(dto)
+Service -> Repo: GetReservation(code)
+Repo -> DB: SELECT * FROM Reservations
+DB --> Repo: ReservationData
+Service -> Repo: UpdateStatus(dto)
+Repo -> DB: UPDATE Tables, Reservations
+DB --> Repo: OK
+Repo --> Service: OK
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Waitstaff: Check-in thành công
+
+opt Khách vãng lai (Walk-in)
+    Waitstaff -> UI: Chọn bàn & Check-in Walk-in
+    UI -> Controller: POST /api/tables/{id}/walk-in
+    Controller -> Service: CheckInWalkIn(dto)
+    Service -> Repo: SetTableOccupied(dto)
+    Repo -> DB: UPDATE Tables\nSET Status = 'Occupied'
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Check-in thành công
+end
+
+opt Hoàn tất dọn bàn
+    Waitstaff -> UI: Bấm Hoàn tất dọn bàn
+    UI -> Controller: POST /api/tables/{id}/\nclean-complete
+    Controller -> Service: CompleteCleaning(dto)
+    Service -> Repo: SetTableAvailable(dto)
+    Repo -> DB: UPDATE Tables\nSET Status = 'Available'
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Bàn chuyển sang Sẵn sàng
+end
+@enduml

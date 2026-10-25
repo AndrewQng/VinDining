@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_A3_Manual_Refund_Approval
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Quản trị" as UI
+boundary "Giao diện Web" as UI
 control "AdminRefundController" as Controller
 participant "RefundService" as Service
 participant "ReservationRepository" as Repo
@@ -38,3 +38,4 @@ Controller --> UI: 200 OK
 UI --> Manager: Cập nhật trạng thái Đã hoàn ngoại lệ
 @enduml
 ```
+

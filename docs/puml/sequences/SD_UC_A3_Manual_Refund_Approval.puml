@@ -1,4 +1,4 @@
-@startuml SD_UC_A3_Manual_Refund_Approval
+﻿@startuml SD_UC_A3_Manual_Refund_Approval
 autonumber
 skinparam style strictuml
 skinparam sequenceMessageAlign center
@@ -12,27 +12,28 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Quản trị" as UI
+boundary "Giao diện Web" as UI
 control "AdminRefundController" as Controller
 participant "RefundService" as Service
 participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Manager -> UI: Nhập mã BookingCode, lý do & bấm Duyệt hoàn cọc
-UI -> Controller: POST /api/admin/reservations/{id}/manual-refund (Reason, Notes)
-Controller -> Service: OverrideRefund(id, reason, managerId)
-Service -> Repo: GetReservation(id)
-Repo -> DB: SELECT Reservation WHERE Id = id
+Manager -> UI: Nhập BookingCode & duyệt
+UI -> Controller: POST /api/admin/reservations/{id}/\nmanual-refund 
+Controller -> Service: OverrideRefund
+Service -> Repo: GetReservation
+Repo -> DB: SELECT Reservation \nWHERE Id = id
 DB --> Repo: ReservationData
-Repo --> Service: Reservation(PaidDeposit)
-Service -> VNPAY: CallRefundApi(BookingCode, Amount)
+Repo --> Service: Reservation
+Service -> VNPAY: CallRefundApi
 VNPAY --> Service: RefundSuccess (00)
-Service -> Repo: UpdateRefundStatus & InsertAuditLog(id, managerId, reason)
-Repo -> DB: UPDATE ReservationStatus & INSERT AuditLogs
+Service -> Repo: UpdateRefundStatus\n& InsertAuditLog
+Repo -> DB: UPDATE ReservationStatus\n& INSERT AuditLogs
 DB --> Repo: OK
 Repo --> Service: Saved
 Service --> Controller: Result(Success)
 Controller --> UI: 200 OK
-UI --> Manager: Cập nhật trạng thái Đã hoàn ngoại lệ
+UI --> Manager: Cập nhật trạng thái 
 @enduml
+

@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_A4_Manage_Staff_Accounts
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản trị viên" as Admin
-boundary "Giao diện Quản trị" as UI
+boundary "Giao diện Web" as UI
 control "AdminStaffController" as Controller
 participant "StaffService" as Service
 participant "StaffRepository" as Repo
@@ -47,3 +47,4 @@ opt Khóa tài khoản khi nghỉ việc
 end
 @enduml
 ```
+

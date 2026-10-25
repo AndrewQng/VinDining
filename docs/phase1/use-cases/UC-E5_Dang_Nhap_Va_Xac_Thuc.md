@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_E5_Staff_Authentication
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên" as Staff
-boundary "Giao diện Đăng nhập" as UI
+boundary "Giao diện Web" as UI
 control "AuthController" as Controller
 participant "AuthService" as Service
 participant "UserRepository" as Repo
@@ -43,3 +43,4 @@ else Nhập sai mật khẩu >= 5 lần
 end
 @enduml
 ```
+

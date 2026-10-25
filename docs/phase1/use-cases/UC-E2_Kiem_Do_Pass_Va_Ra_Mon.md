@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_E2_Expediter_Serve_CourseFiring
 autonumber
 skinparam style strictuml
@@ -14,7 +14,7 @@ skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên Điều phối" as Expediter
 actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Pass / POS" as UI
+boundary "Giao diện Web" as UI
 control "OrderController" as Controller
 participant "OrderService" as Service
 participant "OrderRepository" as Repo
@@ -45,3 +45,4 @@ opt Kích hoạt Course tiếp theo
 end
 @enduml
 ```
+

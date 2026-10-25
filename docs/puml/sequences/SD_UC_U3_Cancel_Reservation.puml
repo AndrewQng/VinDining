@@ -19,28 +19,32 @@ participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Guest -> UI: Nhập SĐT, BookingCode & bấm Hủy bàn
-UI -> Controller: PATCH /api/reservations/{code}/cancel (Reason)
-Controller -> Service: CancelReservation(code, reason)
+Guest -> UI: Nhập BookingCode để Hủy
+UI -> Controller: POST /api/reservations/cancel
+Controller -> Service: CancelReservation(code)
 Service -> Repo: GetReservation(code)
-Repo -> DB: SELECT Reservation By BookingCode
+Repo -> DB: SELECT * FROM Reservations
 DB --> Repo: ReservationData
-Repo --> Service: Reservation
+Repo --> Service: ReservationData
+Service -> Service: CheckHours(Time)
 
-alt Thời gian hủy >= 4 tiếng (Hoàn 100% tiền cọc)
-    Service -> VNPAY: CallRefundApi(BookingCode, Amount)
+alt Khoảng cách giờ hẹn >= 4 tiếng (Hoàn cọc)
+    Service -> VNPAY: CallRefundApi(100% Cọc)
     VNPAY --> Service: RefundSuccess (00)
-    Service -> Repo: UpdateCancel(Cancelled, Refunded) & FreeTable()
-    Repo -> DB: UPDATE Reservation & Table(Available)
+    Service -> Repo: UpdateReservation(Refunded)
+    Repo -> DB: UPDATE Reservations, Tables
     DB --> Repo: OK
-else Thời gian hủy < 4 tiếng (Phạt giữ 100% tiền cọc)
-    Service -> Repo: UpdateCancel(Cancelled, Forfeited) & FreeTable()
-    Repo -> DB: UPDATE Reservation & Table(Available)
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Guest: Hủy thành công & Hoàn cọc
+else Khoảng cách giờ hẹn < 4 tiếng (Phạt cọc)
+    Service -> Repo: UpdateReservation(NoRefund)
+    Repo -> DB: UPDATE Reservations, Tables
     DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Guest: Hủy thành công (Không hoàn cọc)
 end
-
-Repo --> Service: OK
-Service --> Controller: Result(CancelStatus, RefundInfo)
-Controller --> UI: 200 OK
-UI --> Guest: Hiển thị kết quả hủy bàn & hoàn cọc
 @enduml

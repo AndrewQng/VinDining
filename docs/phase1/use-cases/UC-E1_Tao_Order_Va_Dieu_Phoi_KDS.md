@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_E1_Create_Order_KDS
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web POS" as UI
+boundary "Giao diện Web" as UI
 control "OrderController" as Controller
 participant "OrderService" as Service
 participant "OrderRepository" as Repo
@@ -47,3 +47,4 @@ opt Khách gọi thêm món trong bữa ăn
 end
 @enduml
 ```
+

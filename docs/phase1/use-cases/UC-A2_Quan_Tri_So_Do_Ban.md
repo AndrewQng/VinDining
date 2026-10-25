@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_A2_Floor_Plan_Layout
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Canvas 2D" as UI
+boundary "Giao diện Web" as UI
 control "AdminTableController" as Controller
 participant "TableService" as Service
 participant "TableRepository" as Repo
@@ -31,3 +31,4 @@ Controller --> UI: 200 OK
 UI --> Manager: Hiển thị thông báo lưu sơ đồ thành công
 @enduml
 ```
+

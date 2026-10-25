@@ -1,0 +1,61 @@
+﻿@startuml SD_UC_E1_Create_Order_Course_Firing
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn, thêm món 
+UI -> Controller: POST /api/orders 
+Controller -> Service: CreateOrderWithCourses(dto)
+Service -> Repo: InsertOrder(Processing) & OrderItems
+Repo -> DB: INSERT Orders, OrderItems & CoursePhases
+DB --> Repo: OK
+Service -> Repo: InitializeCourseStatus
+Repo -> DB: UPDATE Courses 
+DB --> Repo: OK
+Repo --> Service: Saved(OrderId)
+Service --> Controller: Result(dto)
+Controller --> UI: 201 Created
+UI --> Waitstaff: Course đang chế biến
+
+opt Kích hoạt lượt món tiếp theo
+    Waitstaff -> UI: Bấm Fire Course 
+    UI -> Controller: POST /api/orders/{id}/fire-course
+    Controller -> Service: FireNextCourse
+    Service -> Repo: UpdateCourseCooking
+    Repo -> DB: UPDATE Courses
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Cập nhật Course tiếp
+end
+
+opt Khách gọi thêm món
+    Waitstaff -> UI: Chọn thêm món, bấm Cập nhật
+    UI -> Controller: POST /api/orders/{id}/items 
+    Controller -> Service: AddOrderItems
+    Service -> Repo: InsertAdditionalItems
+    Repo -> DB: INSERT OrderItems
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Cập nhật đơn hàng thành công
+end
+@enduml
+

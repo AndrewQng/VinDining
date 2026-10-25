@@ -6,7 +6,7 @@
 
 ## 1. Phân hệ Khách hàng (Guest Subsystem)
 * [UC-U1: Đặt bàn trực tuyến & Đặt cọc giữ chỗ](UC-U1_Dat_Ban_Va_Dat_Coc.md)
-* [UC-U2: Xem E-Menu tại bàn](UC-U2_Xem_EMenu_Tai_Ban.md)
+* [UC-U2: Yêu cầu phục vụ thông qua QR menu](UC-U2_Xem_EMenu_Tai_Ban.md)
 * [UC-U3: Hủy đặt bàn trực tuyến & Hoàn cọc tự động](UC-U3_Huy_Dat_Ban_Va_Hoan_Coc.md)
 * [UC-U4: Gửi đánh giá và phản hồi chất lượng dịch vụ](UC-U4_Danh_Gia_Va_Phan_Hoi.md)
 

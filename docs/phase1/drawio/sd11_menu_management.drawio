@@ -43,7 +43,7 @@
         <mxCell id="act_hub" parent="hub" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">
           <mxGeometry height="100" width="10" x="65" y="435" as="geometry" />
         </mxCell>
-        <mxCell id="emenu" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;strokeColor=#333333;" value="Tablet E-Menu" vertex="1">
+        <mxCell id="emenu" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;strokeColor=#333333;" value="Thiết bị QR-Menu" vertex="1">
           <mxGeometry height="960" width="130" x="1490" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_emenu" parent="emenu" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">

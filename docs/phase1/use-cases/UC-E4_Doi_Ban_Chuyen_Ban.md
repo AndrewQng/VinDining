@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_E4_Transfer_Table
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web POS" as UI
+boundary "Giao diện Web" as UI
 control "TableController" as Controller
 participant "TableService" as Service
 participant "TableRepository" as Repo
@@ -48,3 +48,4 @@ opt Ghép nhiều bàn thành một nhóm (Merge Tables)
 end
 @enduml
 ```
+

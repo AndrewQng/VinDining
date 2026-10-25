@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_E3_Settle_Invoice
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web POS" as UI
+boundary "Giao diện Web" as UI
 control "InvoiceController" as Controller
 participant "InvoiceService" as Service
 participant "InvoiceRepository" as Repo
@@ -46,3 +46,4 @@ Controller --> UI: 200 OK
 UI --> Waitstaff: Bàn chuyển sang Chờ dọn dẹp (Cleaning)
 @enduml
 ```
+

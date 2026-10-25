@@ -1,44 +1,49 @@
-@startuml SD_UC_U2_View_Menu
+@startuml SD_UC_U2_Service_Request_QR_Menu
 autonumber
 skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
 
 actor "Khách hàng" as Guest
-boundary "Giao diện E-Menu" as UI
-control "MenuController" as Controller
-participant "MenuService" as Service
-participant "MenuRepository" as Repo
+boundary "QR-Menu" as UI
+control "ServiceCallController" as Controller
+participant "ServiceCallService" as Service
+participant "NotificationHub" as Hub
+participant "ServiceCallRepository" as Repo
 database "SQL Server" as DB
+boundary "Thiết bị phục vụ" as Device
+actor "Nhân viên Phục vụ" as Waitstaff
 
-Guest -> UI: Quét QR tại bàn mở E-Menu
-UI -> Controller: GET /api/menu
-Controller -> Service: GetActiveMenu()
-Service -> Repo: GetActiveMenuItems()
-Repo -> DB: SELECT Categories, Items, SLA, Allergy
-DB --> Repo: MenuData
-Repo --> Service: MenuList
-Service --> Controller: Result(MenuList)
-Controller --> UI: 200 OK
-UI --> Guest: Hiển thị thực đơn hình ảnh & giá món
+Guest -> UI: Quét QR mở menu
+UI -> Controller: GET /api/menu/table/{id}
+Controller --> UI: Menu & Table info
+UI --> Guest: Hiển thị thực đơn & dịch vụ
 
-opt Gọi nhân viên phục vụ tại bàn
-    Guest -> UI: Bấm nút Gọi phục vụ tại bàn
-    UI -> Controller: POST /api/tables/{id}/call-staff (Reason)
-    Controller -> Service: NotifyStaff(TableId, Reason)
-    Service -> Repo: LogStaffCall(TableId, Reason)
-    Repo -> DB: INSERT TableNotifications
+Guest -> UI: Gửi yêu cầu (gọi bàn / nước / thanh toán)
+UI -> Controller: POST /api/tables/{id}/service-requests
+Controller -> Service: CreateRequest(dto)
+Service -> Repo: Insert(Pending)
+Repo -> DB: INSERT ServiceRequests
+DB --> Repo: OK
+Repo --> Service: RequestId
+
+Service -> Hub: SendAlert(tableId, type)
+Hub --> Device: Notify(tableId, type)
+Device --> Waitstaff: Chuông báo & số bàn
+Service --> Controller: Success
+Controller --> UI: 201 Created
+UI --> Guest: Đang xử lý
+
+opt Phục vụ hỗ trợ tại bàn
+    Waitstaff -> Device: Đến bàn & bấm hoàn tất
+    Device -> Controller: PATCH /api/service-requests/{id}/complete
+    Controller -> Service: CompleteRequest(id)
+    Service -> Repo: UpdateStatus(Completed)
+    Repo -> DB: UPDATE ServiceRequests
     DB --> Repo: OK
     Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Guest: Hiển thị thông báo nhân viên đang đến
+    Service --> Controller: Success
+    Controller --> Device: 200 OK
 end
 @enduml

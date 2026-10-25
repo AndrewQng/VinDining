@@ -18,30 +18,30 @@ participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Worker -> Controller: TriggerCleanupJob() [Mỗi 60s]
+Worker -> Controller: Quét định kỳ (Mỗi 60s)
 Controller -> Service: ReleaseExpiredLocks()
-Service -> Repo: GetExpiredPendingReservations(17p)
-Repo -> DB: SELECT * WHERE Status=PendingPayment AND CreatedAt < Now-17p
+Service -> Repo: GetExpiredReservations(17p)
+Repo -> DB: SELECT * WHERE Status = 'Pending'
 DB --> Repo: ExpiredList
 Repo --> Service: List
 
 loop Cho từng đơn quá 17 phút
-    Service -> Repo: UpdateExpiredAndFreeTable(id)
-    Repo -> DB: UPDATE Reservation=Expired_Cancelled, Table=Available
+    Service -> Repo: FreeTable(id)
+    Repo -> DB: UPDATE Reservation, Table
     DB --> Repo: OK
 end
 
-opt Xử lý Late IPN (>17 phút)
-    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late IPN > 17p)
+opt Late IPN (>17 phút)
+    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late)
     Controller -> Service: ProcessLateIpn(vnp_Params)
-    Service -> Repo: CheckTableStatus(TableId)
-    Repo -> DB: SELECT Status FROM Tables WHERE Id=TableId
-    DB --> Repo: Reserved / Occupied
-    Repo --> Service: AlreadyBooked
-    Service -> VNPAY: CallRefundApi(BookingCode, 100% Cọc)
+    Service -> Repo: CheckTable(id)
+    Repo -> DB: SELECT Status FROM Tables
+    DB --> Repo: AlreadyBooked
+    Repo --> Service: Unavailable
+    Service -> VNPAY: CallRefundApi(100% Cọc)
     VNPAY --> Service: RefundSuccess (00)
-    Service -> Repo: UpdateReservation(Expired_AutoRefunded)
-    Repo -> DB: UPDATE ReservationStatus = Expired_AutoRefunded
+    Service -> Repo: UpdateReservation(AutoRefunded)
+    Repo -> DB: UPDATE ReservationStatus
     DB --> Repo: OK
     Repo --> Service: OK
     Service --> Controller: RspCode: 00

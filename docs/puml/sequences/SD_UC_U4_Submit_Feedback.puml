@@ -12,24 +12,20 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Khách hàng" as Guest
-boundary "Giao diện Đánh giá" as UI
+boundary "Giao diện Web" as UI
 control "FeedbackController" as Controller
 participant "FeedbackService" as Service
 participant "FeedbackRepository" as Repo
 database "SQL Server" as DB
 
-Guest -> UI: Chấm sao (1-5) & nhập nhận xét
-UI -> Controller: POST /api/feedbacks (BookingCode, Ratings, Comment)
+Guest -> UI: Chấm điểm, nhận xét & Gửi
+UI -> Controller: POST /api/feedbacks
 Controller -> Service: SubmitFeedback(dto)
-Service -> Repo: ValidateBooking(BookingCode)
-Repo -> DB: SELECT Reservation WHERE Status = Completed
-DB --> Repo: Valid
+Service -> Repo: InsertFeedback(dto)
+Repo -> DB: INSERT Feedbacks
+DB --> Repo: OK(FeedbackId)
 Repo --> Service: OK
-Service -> Repo: SaveFeedback & UpdateCSAT(dto)
-Repo -> DB: INSERT Feedback & UPDATE CSAT
-DB --> Repo: OK
-Repo --> Service: Saved
 Service --> Controller: Result(Success)
 Controller --> UI: 201 Created
-UI --> Guest: Hiển thị thông báo cảm ơn
+UI --> Guest: Gửi đánh giá thành công
 @enduml

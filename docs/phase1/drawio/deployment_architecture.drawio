@@ -20,7 +20,7 @@
           <mxGeometry x="20" y="50" width="240" height="110" as="geometry" />
         </mxCell>
         <!-- Device: Table Digital Display -->
-        <mxCell id="dev_table" value="«device: Tablet»&#xa;Table Digital Display&#xa;──────────────────&#xa;OS: Android / iPadOS&#xa;App: React SPA (View-Only)&#xa;Role: E-Menu tại bàn (BR-02)" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
+        <mxCell id="dev_table" value="«device: Tablet»&#xa;Table Digital Display&#xa;──────────────────&#xa;OS: Android / iPadOS&#xa;App: React SPA&#xa;Role: QR-Menu tại bàn (BR-02)" style="verticalAlign=top;align=center;spacingTop=8;fillColor=#ffffff;strokeColor=#16a34a;rounded=1;fontStyle=1;fontSize=11;" vertex="1" parent="box_clients">
           <mxGeometry x="20" y="200" width="240" height="110" as="geometry" />
         </mxCell>
         <!-- Device: Waitstaff Tablet -->

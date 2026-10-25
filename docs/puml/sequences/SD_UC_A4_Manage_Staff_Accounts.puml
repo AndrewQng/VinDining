@@ -12,36 +12,64 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản trị viên" as Admin
-boundary "Giao diện Quản trị" as UI
+boundary "Giao diện Web" as UI
 control "AdminStaffController" as Controller
 participant "StaffService" as Service
 participant "StaffRepository" as Repo
 database "SQL Server" as DB
 participant "Email Service" as MailService
 
-Admin -> UI: Nhập họ tên, email, vai trò & bấm Tạo tài khoản
-UI -> Controller: POST /api/admin/staff (FullName, Email, Role)
-Controller -> Service: CreateStaffAccount(dto)
-Service -> Repo: InsertUserAndRole(dto)
-Repo -> DB: INSERT Users & UserRoles (ASP.NET Identity)
+Admin -> UI: Tạo tài khoản
+UI -> Controller: POST /api/admin/staff
+Controller -> Service: CreateStaff(dto)
+Service -> Repo: InsertUser(dto)
+Repo -> DB: INSERT Users & Roles
 DB --> Repo: OK(UserId)
-Repo --> Service: Saved(UserId, TempPassword)
-Service -> MailService: SendActivationEmail(Email, TempPassword)
+Repo --> Service: Saved(UserId)
+Service -> MailService: SendEmail(Email)
 MailService --> Service: Sent
-Service --> Controller: Result(Success, UserId)
+Service --> Controller: Result(Success)
 Controller --> UI: 201 Created
-UI --> Admin: Hiển thị thông báo đã gửi email kích hoạt
+UI --> Admin: Tạo thành công
 
-opt Khóa tài khoản khi nghỉ việc
-    Admin -> UI: Chọn nhân sự & bấm Khóa tài khoản
-    UI -> Controller: PATCH /api/admin/staff/{id}/status (IsActive: false)
-    Controller -> Service: LockStaffAccount(id)
-    Service -> Repo: DeactivateUser(id)
-    Repo -> DB: UPDATE Users SET IsActive = false
+opt Cập nhật thông tin
+    Admin -> UI: Sửa thông tin
+    UI -> Controller: PUT /api/admin/staff/{id}
+    Controller -> Service: UpdateStaff(dto)
+    Service -> Repo: UpdateUser(dto)
+    Repo -> DB: UPDATE Users
     DB --> Repo: OK
     Repo --> Service: OK
     Service --> Controller: Result(Success)
     Controller --> UI: 200 OK
-    UI --> Admin: Cập nhật trạng thái tài khoản Đã khóa
+    UI --> Admin: Cập nhật thành công
+end
+
+opt Đặt lại mật khẩu
+    Admin -> UI: Đặt lại mật khẩu
+    UI -> Controller: POST /api/admin/staff/{id}/\nreset-password
+    Controller -> Service: ResetPassword(dto)
+    Service -> Repo: UpdatePasswordHash(dto)
+    Repo -> DB: UPDATE Users \nSET PasswordHash = ...
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service -> MailService: SendEmail(dto)
+    MailService --> Service: Sent
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Admin: Đặt lại thành công
+end
+
+opt Khóa tài khoản
+    Admin -> UI: Chọn & Khóa tài khoản
+    UI -> Controller: PATCH /api/admin/staff/{id}/status
+    Controller -> Service: LockStaff(id)
+    Service -> Repo: DeactivateUser(id)
+    Repo -> DB: UPDATE Users \nSET IsActive = 0
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Admin: Khóa thành công
 end
 @enduml

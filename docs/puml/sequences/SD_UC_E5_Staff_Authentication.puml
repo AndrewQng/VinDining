@@ -12,32 +12,32 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên" as Staff
-boundary "Giao diện Đăng nhập" as UI
+boundary "Giao diện Web" as UI
 control "AuthController" as Controller
 participant "AuthService" as Service
 participant "UserRepository" as Repo
 database "SQL Server" as DB
 
-Staff -> UI: Nhập Username, Password & bấm Đăng nhập
-UI -> Controller: POST /api/auth/login (Username, Password)
+Staff -> UI: Nhập tài khoản & Đăng nhập
+UI -> Controller: POST /api/auth/login
 Controller -> Service: Authenticate(dto)
-Service -> Repo: FindByUsername(Username)
-Repo -> DB: SELECT User, Roles, PasswordHash, IsActive
+Service -> Repo: FindByUsername(user)
+Repo -> DB: SELECT * FROM Users
 DB --> Repo: UserData
 Repo --> Service: User
 
 alt Xác thực thành công
-    Service -> Service: VerifyPassword() & GenerateJwt(UserId, Roles)
-    Service --> Controller: Result(AccessToken, Roles, FullName)
+    Service -> Service: VerifyPassword & GenerateJwt
+    Service --> Controller: Result(Token, Roles)
     Controller --> UI: 200 OK
-    UI --> Staff: Điều hướng vào màn hình làm việc
-else Nhập sai mật khẩu >= 5 lần
-    Service -> Repo: LockAccount(UserId, 15m)
-    Repo -> DB: UPDATE Users SET LockoutEnd = Now + 15m
+    UI --> Staff: Đăng nhập thành công
+else Sai mật khẩu >= 5 lần
+    Service -> Repo: LockAccount(UserId)
+    Repo -> DB: UPDATE Users SET LockoutEnd
     DB --> Repo: OK
     Repo --> Service: Locked
-    Service --> Controller: Fail("Tài khoản tạm khóa 15 phút")
-    Controller --> UI: 423 Locked (Tài khoản bị khóa)
-    UI --> Staff: Cảnh báo tài khoản tạm khóa 15 phút
+    Service --> Controller: Fail(Locked)
+    Controller --> UI: 423 Locked
+    UI --> Staff: Tài khoản tạm khóa 15 phút
 end
 @enduml

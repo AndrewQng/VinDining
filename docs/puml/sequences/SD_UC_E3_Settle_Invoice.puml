@@ -12,36 +12,35 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web POS" as UI
+boundary "Giao diện Web" as UI
 control "InvoiceController" as Controller
 participant "InvoiceService" as Service
 participant "InvoiceRepository" as Repo
 database "SQL Server" as DB
-participant "Máy in Bill" as Printer
+participant "Printer" as Printer
 
-Waitstaff -> UI: Chọn bàn & bấm Xem tạm tính
+Waitstaff -> UI: Chọn bàn & Xem tạm tính
 UI -> Controller: GET /api/invoices/preview/{tableId}
 Controller -> Service: CalculateInvoice(tableId)
-Service -> Repo: GetServedItemsAndDeposit(tableId)
-Repo -> DB: SELECT ServedItems & DepositAmount
-DB --> Repo: InvoiceRawData
-Repo --> Service: InvoiceData
-Service -> Service: Subtotal + 5% Phí + 10% VAT - Cọc
+Service -> Repo: GetOrderAndDeposit(tableId)
+Repo -> DB: SELECT ServedItems & Deposit
+DB --> Repo: RawData
+Repo --> Service: Data
+Service -> Service: Calculate(dto)
 Service --> Controller: InvoicePreviewDto
 Controller --> UI: 200 OK
-UI --> Waitstaff: Hiển thị số tiền khách cần thanh toán thêm
+UI --> Waitstaff: Hiển thị tiền tạm tính
 
-Waitstaff -> UI: Nhận tiền khách & bấm Xác nhận thanh toán
-UI -> Controller: POST /api/invoices/settle (TableId, PaymentMethod)
+Waitstaff -> UI: Xác nhận thanh toán
+UI -> Controller: POST /api/invoices/settle
 Controller -> Service: SettleInvoice(dto)
-Service -> Repo: SaveInvoice(Paid) & SetTableCleaning(tableId)
-Repo -> DB: INSERT Invoices & UPDATE TableStatus = Cleaning
+Service -> Repo: SaveInvoice & SetTableCleaning
+Repo -> DB: INSERT Invoices, UPDATE TableStatus
 DB --> Repo: OK
-Repo --> Service: InvoiceSaved
-Service -> Printer: PrintReceipt(InvoiceDetails)
-Printer --> Service: PrintOK
-Service --> Controller: Result(InvoiceId, Paid)
+Repo --> Service: Saved
+Service -> Printer: PrintReceipt
+Printer --> Service: OK
+Service --> Controller: Result(Success)
 Controller --> UI: 200 OK
-UI --> Waitstaff: Bàn chuyển sang Chờ dọn dẹp (Cleaning)
-
+UI --> Waitstaff: Thanh toán thành công
 @enduml

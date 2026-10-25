@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_A1_Menu_PrepSLA
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Quản trị" as UI
+boundary "Giao diện Web" as UI
 control "AdminMenuController" as Controller
 participant "MenuService" as Service
 participant "MenuRepository" as Repo
@@ -44,3 +44,4 @@ opt Chuyển trạng thái tạm hết món
 end
 @enduml
 ```
+

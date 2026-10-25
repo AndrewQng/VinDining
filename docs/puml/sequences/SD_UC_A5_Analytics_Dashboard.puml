@@ -12,21 +12,20 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Báo cáo" as UI
-control "AdminReportController" as Controller
+boundary "Giao diện Web" as UI
+control "ReportController" as Controller
 participant "ReportService" as Service
 participant "ReportRepository" as Repo
 database "SQL Server" as DB
 
-Manager -> UI: Chọn khoảng thời gian (Ngày/Tuần/Tháng)
-UI -> Controller: GET /api/admin/reports/dashboard?from=...&to=...
-Controller -> Service: GetDashboardMetrics(from, to)
-Service -> Repo: QueryMetrics(from, to)
-Repo -> DB: SELECT SUM(Revenue), COUNT(Reservations), TOP(Dishes)
-DB --> Repo: RawMetrics
-Repo --> Service: MetricsData
-Service -> Service: CalculateGrowthAndRates()
-Service --> Controller: Result(DashboardMetricsDto)
+Manager -> UI: Chọn thời gian \n& Xem báo cáo
+UI -> Controller: GET /api/admin/reports/dashboard
+Controller -> Service: GetMetrics(range)
+Service -> Repo: QueryData(range)
+Repo -> DB: SELECT Metrics FROM Invoices
+DB --> Repo: MetricsData
+Repo --> Service: Data
+Service --> Controller: DashboardDto
 Controller --> UI: 200 OK
-UI --> Manager: Hiển thị biểu đồ doanh thu & tỷ lệ lấp đầy bàn
+UI --> Manager: Hiển thị biểu đồ
 @enduml

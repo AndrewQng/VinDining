@@ -1,0 +1,45 @@
+@startuml SD_UC_U2_Call_Service_QR
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Khách hàng" as Guest
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "ServiceCallController" as Controller
+participant "ServiceCallService" as Service
+participant "ServiceCallRepository" as Repo
+database "SQL Server" as DB
+
+Guest -> UI: Quét QR & Gửi yêu cầu trợ giúp
+UI -> Controller: POST /api/tables/{id}/call-service
+Controller -> Service: CreateRequest(dto)
+Service -> Repo: InsertRequest(Pending)
+Repo -> DB: INSERT ServiceRequests
+DB --> Repo: OK(RequestId)
+Repo --> Service: Saved
+Service --> Controller: Result(Success)
+Controller --> UI: 200 OK
+UI --> Guest: Đã gửi yêu cầu
+
+opt Nhân viên hoàn thành hỗ trợ
+    Waitstaff -> UI: Bấm Hoàn thành hỗ trợ
+    UI -> Controller: PATCH /api/service-calls/{id}/\ncomplete
+    Controller -> Service: CompleteRequest(dto)
+    Service -> Repo: UpdateStatus(dto)
+    Repo -> DB: UPDATE ServiceRequests\nSET Status = 'Completed'
+    DB --> Repo: OK
+    Repo --> Service: OK
+    Service --> Controller: Result(Success)
+    Controller --> UI: 200 OK
+    UI --> Waitstaff: Hoàn thành hỗ trợ
+end
+@enduml

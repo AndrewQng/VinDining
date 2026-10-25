@@ -45,14 +45,14 @@
         <mxCell id="uc_u1_3" value="UC-U1.3: Thanh toán cọc giữ chỗ VNPAY" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
           <mxGeometry x="850" y="45" width="280" height="45" as="geometry"/>
         </mxCell>
-        <!-- Row 2: UC-U2 E-Menu Digital Display -->
-        <mxCell id="uc_u2_1" value="UC-U2.1: Xem EMenuTablet (100% chỉ xem) &amp; TableDisplay (BR-02)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
+        <!-- Row 2: UC-U2 Yêu cầu phục vụ thông qua QR menu -->
+        <mxCell id="uc_u2_1" value="UC-U2.1: Quét QR tại bàn mở QR-Menu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
           <mxGeometry x="40" y="115" width="280" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_u2_2" value="UC-U2.2: Xem chi tiết món &amp; Cảnh báo dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
+        <mxCell id="uc_u2_2" value="UC-U2.2: Xem thực đơn &amp; Cảnh báo dị ứng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
           <mxGeometry x="440" y="115" width="300" height="45" as="geometry"/>
         </mxCell>
-        <mxCell id="uc_u2_3" value="UC-U2.3: Báo Waitstaff tại bàn để đặt món" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
+        <mxCell id="uc_u2_3" value="UC-U2.3: Gửi yêu cầu phục vụ qua QR-Menu (Gọi bàn, nước, thanh toán)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontSize=11;" vertex="1" parent="subsys1">
           <mxGeometry x="850" y="115" width="280" height="45" as="geometry"/>
         </mxCell>
         <!-- Row 3: UC-U3 and UC-U4 -->

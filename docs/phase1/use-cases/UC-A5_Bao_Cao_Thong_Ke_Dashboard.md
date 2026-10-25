@@ -1,4 +1,4 @@
-```plantuml
+﻿```plantuml
 @startuml SD_UC_A5_Analytics_Dashboard
 autonumber
 skinparam style strictuml
@@ -13,7 +13,7 @@ skinparam sequenceGroupFontSize 15
 skinparam sequenceGroupHeaderFontSize 15
 
 actor "Quản lý" as Manager
-boundary "Giao diện Báo cáo" as UI
+boundary "Giao diện Web" as UI
 control "AdminReportController" as Controller
 participant "ReportService" as Service
 participant "ReportRepository" as Repo
@@ -32,3 +32,4 @@ Controller --> UI: 200 OK
 UI --> Manager: Hiển thị biểu đồ doanh thu & tỷ lệ lấp đầy bàn
 @enduml
 ```
+

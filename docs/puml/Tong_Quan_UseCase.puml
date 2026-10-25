@@ -1,0 +1,154 @@
+@startuml Tong_Quan_UseCase_VinDining
+left to right direction
+
+' ========================================================
+' THIẾT LẬP KÍCH THƯỚC & KHOẢNG CÁCH CÂN ĐỐI
+' ========================================================
+skinparam dpi 100
+skinparam nodesep 20
+skinparam ranksep 35
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam actorStyle default
+
+skinparam rectangle {
+    BorderColor #222222
+    BorderThickness 1.5
+    FontSize 14
+    FontStyle bold
+}
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #222222
+    BorderThickness 1.2
+    FontSize 11
+    FontStyle bold
+    ArrowColor #333333
+    ArrowThickness 1.1
+}
+
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #222222
+    FontSize 12
+    FontStyle bold
+}
+
+' ========================================================
+' TÁC NHÂN BÊN TRÁI
+' ========================================================
+actor "Khách hàng\n(Guest)" as Guest
+actor "Nhân viên Phục vụ\n(Waitstaff)" as Waitstaff
+actor "Nhân viên Điều phối\n(Expediter)" as Expediter
+
+Guest -[hidden]down-> Waitstaff
+Waitstaff -[hidden]down-> Expediter
+
+' ========================================================
+' HỆ THỐNG VÀ CÁC USE CASE (CHIA 2 CỘT THẲNG HÀNG)
+' ========================================================
+rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
+
+    ' --- CỘT TRÁI: KHÁCH HÀNG & PHỤC VỤ ---
+    rectangle " " as ColLeft #transparent;line:transparent {
+        usecase "UC-U1: Đặt bàn trực tuyến\n& Đặt cọc giữ chỗ" as UC_U1
+        usecase "UC-U2: Yêu cầu phục vụ\nthông qua QR menu" as UC_U2
+        usecase "UC-U3: Hủy đặt bàn trực tuyến\n& Hoàn cọc tự động" as UC_U3
+        usecase "UC-U4: Gửi đánh giá &\nPhản hồi chất lượng" as UC_U4
+        usecase "UC-E1: Quản lý Order &\nĐiều phối lượt món" as UC_E1
+        usecase "UC-E2: Kiểm đồ quầy Pass,\nPhục vụ & Pacing Course" as UC_E2
+        usecase "UC-E6: Check-in nhận bàn\n& Hoàn tất dọn bàn" as UC_E6
+        usecase "UC-E3: Thanh toán, Cấn trừ\ntiền cọc & Đóng bàn" as UC_E3
+        usecase "UC-E4: Đổi bàn / Chuyển bàn\nphục vụ tại chỗ" as UC_E4
+        usecase "UC-E5: Đăng nhập & Xác thực\nhệ thống nội bộ" as UC_E5
+
+        UC_U1 -[hidden]down-> UC_U2
+        UC_U2 -[hidden]down-> UC_U3
+        UC_U3 -[hidden]down-> UC_U4
+        UC_U4 -[hidden]down-> UC_E1
+        UC_E1 -[hidden]down-> UC_E2
+        UC_E2 -[hidden]down-> UC_E6
+        UC_E6 -[hidden]down-> UC_E3
+        UC_E3 -[hidden]down-> UC_E4
+        UC_E4 -[hidden]down-> UC_E5
+    }
+
+    ' --- CỘT PHẢI: QUẢN LÝ & HỆ THỐNG ---
+    rectangle "  " as ColRight #transparent;line:transparent {
+        usecase "UC-A1: Quản trị Thực đơn &\nCấu hình Prep SLA món ăn" as UC_A1
+        usecase "UC-A2: Quản trị & Cấu hình\nSơ đồ bàn ăn" as UC_A2
+        usecase "UC-A3: Duyệt hoàn tiền cọc\nthủ công ngoại lệ" as UC_A3
+        usecase "UC-A4: Quản trị Tài khoản\n& Phân quyền nhân viên" as UC_A4
+        usecase "UC-A5: Xem Báo cáo Thống kê\n& Dashboard doanh thu" as UC_A5
+        usecase "UC-S1: Tự động giải phóng bàn\nhết hạn giữ cọc" as UC_S1
+
+        UC_A1 -[hidden]down-> UC_A2
+        UC_A2 -[hidden]down-> UC_A3
+        UC_A3 -[hidden]down-> UC_A4
+        UC_A4 -[hidden]down-> UC_A5
+        UC_A5 -[hidden]down-> UC_S1
+    }
+
+    ' Giữ khoảng cách giữa 2 cột song song
+    ColLeft -[hidden]right-> ColRight
+}
+
+' ========================================================
+' TÁC NHÂN BÊN PHẢI
+' ========================================================
+actor "Quản lý Nhà hàng\n(Manager)" as Manager
+actor "Quản trị viên\n(Admin)" as Admin
+actor "Hệ thống\nTự động" as System
+actor "Cổng thanh toán\nVNPAY" as VNPAY
+
+Manager -[hidden]down-> Admin
+Admin -[hidden]down-> System
+System -[hidden]down-> VNPAY
+
+' ========================================================
+' LIÊN KẾT TÁC NHÂN - USE CASE
+' ========================================================
+' Nhóm Khách hàng
+Guest --> UC_U1
+Guest --> UC_U2
+Guest --> UC_U3
+Guest --> UC_U4
+
+' Nhóm Phục vụ
+Waitstaff --> UC_E1
+Waitstaff --> UC_E2
+Waitstaff --> UC_E6
+Waitstaff --> UC_E3
+Waitstaff --> UC_E4
+Waitstaff --> UC_E5
+
+' Nhóm Điều phối
+Expediter --> UC_E2
+Expediter --> UC_E5
+
+' Nhóm Quản lý & Admin
+Manager --> UC_A1
+Manager --> UC_A2
+Manager --> UC_A3
+Manager --> UC_A4
+Manager --> UC_A5
+Manager --> UC_E5
+
+Admin --> UC_A4
+Admin --> UC_A5
+Admin --|> Manager
+
+' Hệ thống tự động
+System --> UC_S1
+UC_S1 ..> UC_U1 : <<extend>>
+
+' VNPAY
+UC_U1 --> VNPAY
+UC_U3 --> VNPAY
+UC_A3 --> VNPAY
+
+@enduml
