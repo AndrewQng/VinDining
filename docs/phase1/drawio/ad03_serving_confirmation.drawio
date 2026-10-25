@@ -1,0 +1,80 @@
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="AD-03 Quầy Pass &amp;amp; Xác nhận phục vụ món" id="ad-03_checkfood_serving">
+    <mxGraphModel dx="1414" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="750" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lane4_1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhà bếp" vertex="1">
+          <mxGeometry height="600" width="300" x="80" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="start4" parent="lane4_1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="k4_act1" parent="lane4_1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Đầu bếp nấu xong&amp;nbsp;&lt;br&gt;&amp;amp; đặt ra quầy chuyển món" vertex="1">
+          <mxGeometry height="100" width="230" x="55" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="lane4_2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhân viên Điều phối" vertex="1">
+          <mxGeometry height="600" width="340" x="380" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_act1" parent="lane4_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Kiểm tra đĩa món trên Pass Tablet,&lt;br&gt;đối chiếu&amp;nbsp;" vertex="1">
+          <mxGeometry height="100" width="230" x="55" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_act2" parent="lane4_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Bấm &#39;Xác nhận ra món&#39;&lt;br&gt;(Served) trên Tablet&amp;nbsp;" vertex="1">
+          <mxGeometry height="110" width="230" x="55" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_act3" parent="lane4_2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Giao đĩa món cho Waitstaff" vertex="1">
+          <mxGeometry height="90" width="230" x="55" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="end_e4" parent="lane4_2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="155" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="end_e4_dot" parent="lane4_2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=19;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="161" y="546" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_7" edge="1" parent="lane4_2" source="e4_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="e4_act3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_8" edge="1" parent="lane4_2" source="e4_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="end_e4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lane4_3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống VinDining (Backend &amp;amp; DB)" vertex="1">
+          <mxGeometry height="600" width="340" x="720" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="s4_act1" parent="lane4_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Cập nhật OrderItem -&amp;gt; Served" vertex="1">
+          <mxGeometry height="130" width="230" x="55" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="s4_act2" parent="lane4_3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=19;align=center;verticalAlign=middle;" value="Đồng bộ tiến độ bàn ăn" vertex="1">
+          <mxGeometry height="80" width="230" x="55" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_1" edge="1" parent="1" source="start4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="k4_act1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_2" edge="1" parent="1" source="k4_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="e4_act1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_3" edge="1" parent="1" source="e4_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="e4_act2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_4" edge="1" parent="1" source="e4_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="s4_act1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="335" />
+              <mxPoint x="700" y="335" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4_5" edge="1" parent="1" source="s4_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;" target="s4_act2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_6" edge="1" parent="1" source="s4_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;fontSize=19;fontColor=#333333;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="end_e4_dot">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="890" y="595" />
+            </Array>
+            <mxPoint x="890" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

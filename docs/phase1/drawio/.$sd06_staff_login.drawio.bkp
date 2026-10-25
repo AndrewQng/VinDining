@@ -1,0 +1,120 @@
+<mxfile host="Electron">
+  <diagram id="sd06_layout" name="SD-06: Đăng nhập hệ thống &amp; Cấp phát JWT Token (UC-E5)">
+    <mxGraphModel dx="1414" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1420" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="staff" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;participant=umlActor;verticalAlign=bottom;spacingBottom=-14;labelBackgroundColor=#ffffff;fontSize=16;fontStyle=1;strokeColor=#333333;" value="Nhân viên (Staff)" vertex="1">
+          <mxGeometry height="980" width="110" x="50" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fe" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=16;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="Web Frontend" vertex="1">
+          <mxGeometry height="980" width="130" x="270" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_fe" parent="fe" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="800" width="10" x="60" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=16;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="AuthController" vertex="1">
+          <mxGeometry height="980" width="130" x="510" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="710" width="10" x="60" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=14;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="LoginCommandHandler" vertex="1">
+          <mxGeometry height="980" width="160" x="750" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="620" width="10" x="75" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="identity" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=16;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="IdentityService" vertex="1">
+          <mxGeometry height="980" width="130" x="1020" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_id1" parent="identity" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="55" width="10" x="60" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="act_id2" parent="identity" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="85" width="10" x="60" y="295" as="geometry" />
+        </mxCell>
+        <mxCell id="act_id3" parent="identity" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="60" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="jwt" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=16;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="JwtTokenService" vertex="1">
+          <mxGeometry height="980" width="130" x="1240" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_jwt" parent="jwt" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
+          <mxGeometry height="55" width="10" x="60" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="m0" edge="1" parent="1" source="staff" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0714;entryX=0;entryY=0.0000;fontSize=16;" target="act_fe" value="1. Nhập Username &amp;amp; Password, bấm Đăng nhập">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0563;entryX=0;entryY=0.0000;fontSize=16;" target="act_ctrl" value="2. POST /api/v1/auth/login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0634;entryX=0;entryY=0.0000;fontSize=16;" target="act_h" value="3. Send(LoginCommand)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0726;entryX=0;entryY=0.0000;fontSize=16;" target="act_id1" value="4. FindByNameAsync(username)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" source="act_id1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.8182;entryX=1;entryY=0.1452;fontSize=16;" target="act_h" value="5. Trả về ApplicationUser &amp;amp; Roles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2177;entryX=0;entryY=0.0000;fontSize=16;" target="act_id2" value="6. CheckPasswordSignInAsync(user, pass)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=50;height=25;fontSize=16;fontStyle=1;strokeColor=#333333;" value="alt" vertex="1">
+          <mxGeometry height="560" width="1340" x="40" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_if" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=16;fontStyle=1;fontColor=#15803d;" value="[Mật khẩu chính xác &amp;amp; Tài khoản Active]" vertex="1">
+          <mxGeometry height="25" width="380" x="100" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="m6a" edge="1" parent="1" source="act_id2" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.8824;entryX=1;entryY=0.3387;fontSize=16;" target="act_h" value="7a. SignInResult (Success)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m7a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4113;entryX=0;entryY=0.0000;fontSize=16;" target="act_jwt" value="8a. GenerateTokens(user, roles)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m8a" edge="1" parent="1" source="act_jwt" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.8182;entryX=1;entryY=0.4839;fontSize=16;" target="act_h" value="9a. AccessToken (JWT) + RefreshToken">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.5565;entryX=1;entryY=0.5493;fontSize=16;" target="act_ctrl" value="10a. AuthResponseDto(AccessToken, Roles, Profile)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m10a" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.6127;entryX=1;entryY=0.6000;fontSize=16;" target="act_fe" value="11a. 200 OK (AuthResponseDto)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m11a" edge="1" parent="1" source="act_fe" style="edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;html=1;exitX=1;exitY=0.6438;entryX=1;entryY=0.6813;strokeColor=#333333;fontColor=#333333;fontSize=16;" target="act_fe" value="12a. Lưu JWT vào Zustand Store &amp;amp; Cookie">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="625" />
+              <mxPoint x="400" y="655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12a" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.7125;entryX=0.5;entryY=0.6939;fontSize=16;" target="staff" value="13a. Điều hướng màn hình theo Role (Waitstaff/Expediter/Manager)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line_alt_div" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontSize=16;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="715" as="sourcePoint" />
+            <mxPoint x="1380" y="715" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_else" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=16;fontStyle=1;fontColor=#b91c1c;" value="[Thông tin đăng nhập không hợp lệ]" vertex="1">
+          <mxGeometry height="25" width="380" x="100" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="m6b" edge="1" parent="1" source="act_id3" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.4286;entryX=1;entryY=0.8952;fontSize=16;" target="act_h" value="7b. SignInResult (Failed / LockedOut)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m7b" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9677;entryX=1;entryY=0.9085;fontSize=16;" target="act_ctrl" value="8b. Result.Failure(&quot;Invalid credentials&quot;)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m8b" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9718;entryX=1;entryY=0.9188;fontSize=16;" target="act_fe" value="9b. 401 Unauthorized (&quot;Tên đăng nhập hoặc mật khẩu không đúng&quot;)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9b" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9750;entryX=0.5;entryY=0.9082;fontSize=16;" target="staff" value="10b. Hiển thị thông báo lỗi màu đỏ &amp;amp; Cho phép nhập lại">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0">
+  <diagram name="Feasibility Study Quadrant Chart" id="feasibility_chart">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1350" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="MA TRẬN ĐÁNH GIÁ TÍNH KHẢ THI DỰ ÁN (PROJECT FEASIBILITY STUDY MATRIX - VINDINING)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=14;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="225" y="15" width="900" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Quadrant 1: Technical -->
+        <mxCell id="q1" value="1. TÍNH KHẢ THI VỀ KỸ THUẬT &amp; CÔNG NGHỆ (TECHNICAL FEASIBILITY)&#xa;Điểm đánh giá: 9.2 / 10 — Mức độ: Rất khả thi" style="swimlane;startSize=40;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;rounded=1;fontSize=12;fontColor=#166534;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="600" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="q1_body" value="• Kiến trúc Clean Architecture + CQRS (MediatR): Đảm bảo tách biệt rõ ràng giữa Business Logic và Framework UI, dễ dàng kiểm thử độc lập (Unit Test &gt; 80%).&#xa;&#xa;• ASP.NET Core (.NET 9) Web API: Hiệu năng xử lý cực cao, tối ưu quản lý đa luồng (async/await), hỗ trợ Dependency Injection chuẩn mực.&#xa;&#xa;• Kết nối thời gian thực SignalR WebSockets: Đồng bộ trạng thái sơ đồ bàn và thông báo bếp tức thời với độ trễ &lt; 100ms mà không gây quá tải HTTP Polling.&#xa;&#xa;• Frontend React 18 + TypeScript + Vite: Single Page Application mượt mà, tối ưu render qua TanStack Query &amp; Zustand, an toàn kiểu dữ liệu Type-safe.&#xa;&#xa;• Tích hợp ngoại vi sẵn sàng: Cổng thanh toán VNPAY Sandbox API đầy đủ tài liệu; giao thức máy in ESC/POS K80 phổ biến và dễ triển khai." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;align=left;spacing=12;fontSize=11;lineHeight=1.4;" vertex="1" parent="q1">
+          <mxGeometry x="20" y="55" width="560" height="320" as="geometry" />
+        </mxCell>
+
+        <!-- Quadrant 2: Operational -->
+        <mxCell id="q2" value="2. TÍNH KHẢ THI VỀ VẬN HÀNH &amp; QUY TRÌNH (OPERATIONAL FEASIBILITY)&#xa;Điểm đánh giá: 9.5 / 10 — Mức độ: Rất khả thi" style="swimlane;startSize=40;fillColor=#eff6ff;strokeColor=#2563eb;fontStyle=1;rounded=1;fontSize=12;fontColor=#1e40af;" vertex="1" parent="1">
+          <mxGeometry x="700" y="80" width="600" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="q2_body" value="• Triệt tiêu nỗi đau No-show: Bắt buộc đặt cọc giữ chỗ (Deposit) qua VNPAY giúp loại bỏ hiện tượng khách đặt ảo, giảm tỷ lệ bùng bàn xuống dưới 2%.&#xa;&#xa;• Đảm bảo an toàn dị ứng tuyệt đối (0% sai sót): Cảnh báo dị ứng được in đậm trên phiếu Bếp và hiển thị màu đỏ trên màn hình điều phối của Checkfood tại quầy Pass.&#xa;&#xa;• Trải nghiệm khách hàng tinh tế (Zero Onboarding): Khách hàng hoàn toàn không cần đăng ký tài khoản; xem menu qua Digital Display tại bàn sang trọng.&#xa;&#xa;• Phân định vai trò nghiệp vụ rõ ràng (RBAC): Waitstaff phục vụ tận bàn, Expediter kiểm soát chất lượng tại quầy Pass, Manager quản lý chiến lược.&#xa;&#xa;• Minh bạch dòng tiền: Hóa đơn tự động cấn trừ cọc theo công thức chuẩn BR-03, loại bỏ hoàn toàn việc thu ngân tính nhầm cọc cuối ca." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2563eb;align=left;spacing=12;fontSize=11;lineHeight=1.4;" vertex="1" parent="q2">
+          <mxGeometry x="20" y="55" width="560" height="320" as="geometry" />
+        </mxCell>
+
+        <!-- Quadrant 3: Economic -->
+        <mxCell id="q3" value="3. TÍNH KHẢ THI VỀ KINH TẾ &amp; CHI PHÍ (ECONOMIC FEASIBILITY)&#xa;Điểm đánh giá: 8.8 / 10 — Mức độ: Khả thi cao" style="swimlane;startSize=40;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=12;fontColor=#9a3412;" vertex="1" parent="1">
+          <mxGeometry x="50" y="510" width="600" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="q3_body" value="• Tiết kiệm chi phí hao hụt nguyên vật liệu: Giảm thiểu 10–15% tổn thất chi phí nguyên liệu cao cấp nhập khẩu (bò Wagyu, gan ngỗng, bào ngư) nhờ chính sách cọc.&#xa;&#xa;• Tăng hiệu suất xoay vòng bàn: Quy trình gọi món và dọn bàn nhanh chóng giúp tăng từ 15% đến 20% công suất phục vụ trong các khung giờ cao điểm.&#xa;&#xa;• Tối ưu chi phí đầu tư phần cứng ban đầu: Tận dụng máy in nhiệt LAN K80 sẵn có của nhà hàng; thiết bị Digital Display sử dụng các dòng tablet Android tầm trung.&#xa;&#xa;• Sử dụng 100% công nghệ mã nguồn mở: .NET 9 Core, React, SQL Server Developer / Linux Container, Tailwind CSS không phát sinh chi phí bản quyền phần mềm.&#xa;&#xa;• Thời gian hoàn vốn dự kiến: Ước tính nhà hàng thu hồi chi phí trang bị phần mềm và tablet trong vòng 3–5 tháng vận hành thực tế." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;align=left;spacing=12;fontSize=11;lineHeight=1.4;" vertex="1" parent="q3">
+          <mxGeometry x="20" y="55" width="560" height="320" as="geometry" />
+        </mxCell>
+
+        <!-- Quadrant 4: Schedule & Resource -->
+        <mxCell id="q4" value="4. TÍNH KHẢ THI VỀ LỘ TRÌNH &amp; NGUỒN LỰC (SCHEDULE &amp; RESOURCE)&#xa;Điểm đánh giá: 9.0 / 10 — Mức độ: Rất khả thi" style="swimlane;startSize=40;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=1;rounded=1;fontSize=12;fontColor=#86198f;" vertex="1" parent="1">
+          <mxGeometry x="700" y="510" width="600" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="q4_body" value="• Lộ trình phát triển 10 tuần chuẩn hóa (Tuần 1 đến Tuần 10):&#xa;  - Tuần 1–2 (Phase 1): BRS, SRS, Nghiên cứu khả thi, Mô hình hóa Use Case &amp; Diagram.&#xa;  - Tuần 3–4 (Phase 2): Thiết kế kiến trúc Clean Architecture, ERD CSDL, Đặc tả API.&#xa;  - Tuần 5–6 (Phase 3): Dựng khung giải pháp, MediatR CQRS, EF Core Migrations, Vite.&#xa;  - Tuần 7–8 (Phase 4): Triển khai nghiệp vụ Gọi món, In bếp, Thanh toán cấn trừ cọc.&#xa;  - Tuần 9–10 (Phase 5): Kiểm thử tích hợp E2E, Tối ưu hiệu năng &amp; Bảo vệ đồ án.&#xa;&#xa;• Phân bổ nhân sự chuyên trách (Nhóm 3 thành viên):&#xa;  - Nguyễn Mạnh Quyền (Trưởng nhóm): Kiến trúc tổng thể, Backend CQRS, SignalR Hub.&#xa;  - Đặng Quốc Khánh: Quản trị CSDL SQL Server, EF Core 9, Tích hợp VNPAY Sandbox.&#xa;  - Nguyễn Hoàng Đạt: Frontend React SPA, Tailwind CSS, Giao diện Digital Display." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#c026d3;align=left;spacing=12;fontSize=11;lineHeight=1.4;" vertex="1" parent="q4">
+          <mxGeometry x="20" y="55" width="560" height="320" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

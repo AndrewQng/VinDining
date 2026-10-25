@@ -1,0 +1,140 @@
+{
+  "title": "SD-11: Quản trị Thực đơn món ăn & Đồng bộ Realtime (UC-A1)",
+  "participants": [
+    {
+      "id": "mgr",
+      "label": "Quản lý (Manager)",
+      "actor": true
+    },
+    {
+      "id": "fe",
+      "label": "Manager Web Portal"
+    },
+    {
+      "id": "api",
+      "label": "MenuController"
+    },
+    {
+      "id": "cqrs",
+      "label": "CreateMenuItemCommandHandler"
+    },
+    {
+      "id": "val",
+      "label": "CreateMenuItemCommandValidator"
+    },
+    {
+      "id": "db",
+      "label": "AppDbContext"
+    },
+    {
+      "id": "hub",
+      "label": "MenuHub (SignalR)"
+    },
+    {
+      "id": "emenu",
+      "label": "Tablet E-Menu"
+    },
+    {
+      "id": "staff",
+      "label": "Tablet Phục vụ"
+    }
+  ],
+  "messages": [
+    {
+      "from": "mgr",
+      "to": "fe",
+      "label": "1. Nhập Tên món, Phân loại Danh mục, Giá bán, Cảnh báo dị ứng"
+    },
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "2. POST /api/v1/menu/items"
+    },
+    {
+      "from": "api",
+      "to": "cqrs",
+      "label": "3. Send(CreateMenuItemCommand)"
+    },
+    {
+      "from": "cqrs",
+      "to": "val",
+      "label": "4. Validate (Tên, Giá > 0, CategoryId)"
+    },
+    {
+      "from": "val",
+      "to": "cqrs",
+      "label": "5. ValidationResult (IsValid / Errors)",
+      "return": true
+    },
+    {
+      "note": "[alt: ValidationResult.IsValid == true]",
+      "over": "cqrs"
+    },
+    {
+      "from": "cqrs",
+      "to": "db",
+      "label": "6a. Insert MenuItem & AllergenTags"
+    },
+    {
+      "from": "db",
+      "to": "cqrs",
+      "label": "7a. SaveChangesAsync()",
+      "return": true
+    },
+    {
+      "from": "cqrs",
+      "to": "hub",
+      "label": "8a. Broadcast MenuCatalogUpdated (kèm xóa Cache)"
+    },
+    {
+      "from": "hub",
+      "to": "emenu",
+      "label": "9a. Sync danh mục món trên Tablet E-Menu",
+      "async": true
+    },
+    {
+      "from": "hub",
+      "to": "staff",
+      "label": "10a. Sync danh mục món & cảnh báo dị ứng trên Tablet phục vụ",
+      "async": true
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "11a. Result.Success(MenuItemDetailDto)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "12a. 201 Created (Chi tiết món mới)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "mgr",
+      "label": "13a. Thông báo lưu món thành công trên Dashboard"
+    },
+    {
+      "note": "[else: Lỗi Validation]",
+      "over": "cqrs"
+    },
+    {
+      "from": "cqrs",
+      "to": "api",
+      "label": "6b. Result.Failure(ValidationErrors)",
+      "return": true
+    },
+    {
+      "from": "api",
+      "to": "fe",
+      "label": "7b. 400 Bad Request (ValidationErrors)",
+      "return": true
+    },
+    {
+      "from": "fe",
+      "to": "mgr",
+      "label": "8b. Hiển thị cảnh báo lỗi nhập liệu để Quản lý chỉnh sửa"
+    }
+  ]
+}
