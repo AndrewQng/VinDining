@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
@@ -19,14 +14,42 @@ participant "TableRepository" as Repo
 database "SQL Server" as DB
 
 Manager -> UI: Chỉnh sửa & bấm Lưu sơ đồ
-UI -> Controller: PUT /api/admin/tables/layout
-Controller -> Service: UpdateFloorPlan
-Service -> Repo: SaveCoordinatesAndZones
-Repo -> DB: UPDATE TableCoordinates, Zones, Capacities
-DB --> Repo: OK
-Repo --> Service: Saved
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Manager: Lưu sơ đồ thành công
-@enduml
+activate UI
 
+UI -> Controller: PUT /api/admin/tables/layout
+activate Controller
+
+Controller -> Service: UpdateFloorPlan(dto)
+activate Service
+
+Service -> Repo: CheckActiveTables(tableIds)
+activate Repo
+Repo -> DB: SELECT Active/Reserved Tables
+activate DB
+DB --> Repo: Empty (Hợp lệ)
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service -> Repo: SaveCoordinatesAndZones(dto)
+activate Repo
+
+Repo -> DB: UPDATE TableCoordinates, Zones, Capacities
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: Saved
+deactivate Repo
+
+Service -> UI: PushSignalR("FloorPlanUpdated")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Lưu sơ đồ thành công
+deactivate UI
+@enduml

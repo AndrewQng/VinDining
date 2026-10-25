@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Nhân viên Điều phối" as Expediter
 boundary "Giao diện Web" as UI
@@ -18,16 +13,33 @@ participant "OrderService" as Service
 participant "OrderRepository" as Repo
 database "SQL Server" as DB
 
-Expediter -> UI: Xác nhận ra món
-UI -> Controller: PATCH /api/orders/{id}/items/{itemId}/serve
-Controller -> Service: ConfirmServed(dto)
-Service -> Repo: UpdateItemServed(itemId)
-Repo -> DB: UPDATE OrderItems SET Status = 'Served'
-DB --> Repo: OK
-Repo --> Service: OK
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Expediter: Hoàn thành món
+Expediter -> UI: Kiểm đồ & Xác nhận ra món
+activate UI
 
+UI -> Controller: PATCH /api/orders/{id}\n/items/{itemId}/serve
+activate Controller
+
+Controller -> Service: ConfirmServed(id, itemId)
+activate Service
+
+Service -> Repo: UpdateItemServed(itemId)
+activate Repo
+Repo -> DB: UPDATE OrderItems \nSET Status = 'Served'
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service -> UI: PushSignalR("ItemServed")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Expediter: Hoàn thành ra món
+deactivate UI
 
 @enduml

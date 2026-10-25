@@ -1,0 +1,76 @@
+@startuml SD_UC_S2_Scheduled_Reminder_Service
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+skinparam sequenceActorFontSize 14
+skinparam sequenceParticipantFontSize 14
+skinparam sequenceArrowFontSize 13
+skinparam sequenceGroupFontSize 13
+skinparam sequenceGroupHeaderFontSize 13
+
+actor "Background Worker" as Worker
+control "ReminderJob" as Job
+participant "ReservationReminderService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "NotificationGateway" as Gateway
+actor "Khách hàng" as Guest
+
+Worker -> Job: Kích hoạt định kỳ
+activate Job
+
+Job -> Service: ScanAndSendReminders()
+activate Service
+
+Service -> Repo: GetUpcomingReservations()
+activate Repo
+
+Repo -> DB: SELECT * FROM Reservations \nWHERE Status = 'Confirmed' \nAND StartTime BETWEEN NOW AND (NOW + 2h) \nAND IsReminderSent = 0
+activate DB
+DB --> Repo: List<Reservation>
+deactivate DB
+
+Repo --> Service: reservationList
+deactivate Repo
+
+loop Cho từng reservation trong reservationList
+    Service -> Service: FormatMessage()
+    
+    Service -> Gateway: SendReminder()
+    activate Gateway
+    Gateway -> Guest: Gửi SMS / Email / Zalo
+    
+    alt Gửi thành công
+        Gateway --> Service: DeliveryResult(Success)
+        Service -> Repo: MarkReminderSent()
+        activate Repo
+        Repo -> DB: UPDATE Reservations \nSET IsReminderSent = 1, ReminderSentAt = NOW \nWHERE Id = reservation.Id
+        activate DB
+        DB --> Repo: 1 row affected
+        deactivate DB
+        Repo --> Service: OK
+        deactivate Repo
+        
+    else Gửi thất bại / Gateway gặp sự cố
+        Gateway --> Service: DeliveryResult(Failed, error)
+        deactivate Gateway
+        Service -> Repo: IncrementReminderRetry()
+        activate Repo
+        Repo -> DB: UPDATE Reservations \nSET RetryCount = RetryCount + 1 \nWHERE Id = reservation.Id
+        activate DB
+        DB --> Repo: 1 row affected
+        deactivate DB
+        Repo --> Service: OK
+        deactivate Repo
+    end
+end
+
+Service --> Job: JobExecutionResult(dto)
+deactivate Service
+
+Job --> Worker: Acknowledge Completed
+deactivate Job
+@enduml

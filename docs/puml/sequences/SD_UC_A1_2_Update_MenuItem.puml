@@ -1,0 +1,47 @@
+@startuml SD_UC_A1_2_Update_MenuItem
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Sửa thông tin món & Lưu
+activate UI
+
+UI -> Controller: PUT /api/admin/menu-items/{id}
+activate Controller
+
+Controller -> Service: Update(id, dto)
+activate Service
+
+Service -> Service: Validate(dto)
+
+Service -> Repo: Update(item)
+activate Repo
+
+Repo -> DB: UPDATE MenuItems \nWHERE Id = @Id
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Báo cập nhật món thành công
+deactivate UI
+
+@enduml

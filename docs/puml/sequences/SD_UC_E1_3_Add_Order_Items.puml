@@ -1,0 +1,47 @@
+@startuml SD_UC_E1_3_Add_Order_Items
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn thêm món & Cập nhật
+activate UI
+
+UI -> Controller: POST /api/orders/{id}/items
+activate Controller
+
+Controller -> Service: AddOrderItems(id, itemsDto)
+activate Service
+
+Service -> Repo: InsertAdditionalItems(id, itemsDto)
+activate Repo
+
+Repo -> DB: INSERT OrderItems
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_AdditionalItems")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Cập nhật đơn hàng thành công
+deactivate UI
+
+@enduml

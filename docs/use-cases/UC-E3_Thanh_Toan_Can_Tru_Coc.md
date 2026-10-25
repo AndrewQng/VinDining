@@ -1,4 +1,4 @@
-﻿# Đặc tả UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn
+# Đặc tả UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn
 
 | Thuộc tính | Chi tiết đặc tả |
 | :--- | :--- |
@@ -23,53 +23,15 @@
 ## Luồng ngoại lệ (Alternative / Exception Flows)
 * 3a. Khi tổng chi phí bữa ăn thực tế nhỏ hơn số tiền cọc đã đóng trước đó, hệ thống áp dụng nguyên tắc tiền cọc là mức chi tiêu tối thiểu không hoàn lại, ghi nhận số tiền khách phải trả thêm là 0 VNĐ và khóa chức năng hoàn tiền cọc thừa.
 
-## Sơ đồ tuần tự (Sequence Diagram)
+## Danh sách Sơ đồ tuần tự (Sequence Diagrams)
+
+### 1. Xem phiếu tạm tính & Cấn trừ cọc
 ```plantuml
-@startuml SD_UC_E3_Settle_Invoice
-autonumber
-skinparam style strictuml
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+!include ../puml/sequences/SD_UC_E3_1_Preview_Invoice.puml
+```
 
-actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web" as UI
-control "InvoiceController" as Controller
-participant "InvoiceService" as Service
-participant "InvoiceRepository" as Repo
-database "SQL Server" as DB
-participant "Printer" as Printer
-
-Waitstaff -> UI: Chọn bàn & Xem tạm tính
-UI -> Controller: GET /api/invoices/preview/{tableId}
-Controller -> Service: CalculateInvoice(tableId)
-Service -> Repo: GetOrderAndDeposit(tableId)
-Repo -> DB: SELECT ServedItems & Deposit
-DB --> Repo: RawData
-Repo --> Service: Data
-Service -> Service: Calculate(Subtotal, Phí, VAT, -Cọc)
-Service --> Controller: InvoicePreviewDto
-Controller --> UI: 200 OK
-UI --> Waitstaff: Hiển thị tiền tạm tính
-
-Waitstaff -> UI: Xác nhận thanh toán
-UI -> Controller: POST /api/invoices/settle
-Controller -> Service: SettleInvoice(dto)
-Service -> Repo: SaveInvoice & SetTableCleaning
-Repo -> DB: INSERT Invoices, UPDATE TableStatus
-DB --> Repo: OK
-Repo --> Service: Saved
-Service -> Printer: PrintReceipt
-Printer --> Service: OK
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Waitstaff: Thanh toán thành công
-@enduml
+### 2. Xác nhận thanh toán & Đóng đơn
+```plantuml
+!include ../puml/sequences/SD_UC_E3_2_Settle_Invoice.puml
 ```
 

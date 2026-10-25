@@ -1,0 +1,45 @@
+@startuml SD_UC_E3_1_Preview_Invoice
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "InvoiceRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn & Xem tạm tính
+activate UI
+
+UI -> Controller: GET /api/invoices/\npreview/{tableId}
+activate Controller
+
+Controller -> Service: CalculateInvoice(tableId)
+activate Service
+
+Service -> Repo: GetOrderAndDeposit(tableId)
+activate Repo
+Repo -> DB: SELECT ServedItems & Deposit
+activate DB
+DB --> Repo: RawData
+deactivate DB
+Repo --> Service: Data
+deactivate Repo
+
+Service -> Service: Calculate & GenerateVietQR(Data)
+
+Service --> Controller: InvoicePreviewDto (Amount, VietQR)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Hiển thị tạm tính & mã VietQR
+deactivate UI
+
+@enduml

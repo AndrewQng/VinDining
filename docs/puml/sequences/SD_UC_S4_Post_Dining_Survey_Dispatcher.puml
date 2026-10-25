@@ -1,0 +1,48 @@
+@startuml SD_UC_S4_Post_Dining_Survey_Dispatcher
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+participant "OrderSettledEventHandler" as Handler
+participant "SurveyDispatcherService" as Service
+participant "SurveyRepository" as Repo
+database "SQL Server" as DB
+participant "EmailGateway" as Gateway
+actor "Khách hàng" as Guest
+
+Handler -> Service: Handle(OrderSettledEvent: OrderId, GuestId, GuestEmail)
+
+alt Khách hàng có thông tin email hợp lệ
+    Service -> Service: GenerateSecureSurveyToken(OrderId, ExpireIn24h)
+    Service -> Repo: CreateSurveyInvitation(OrderId, GuestId, SurveyToken)
+    Repo -> DB: INSERT INTO DiningSurveys (SurveyToken, OrderId, Status, CreatedAt)
+    DB --> Repo: OK(SurveyId)
+    Repo --> Service: SurveyRecordCreated
+    Service -> Service: BuildThankYouEmailContent(GuestName, SurveyUrlWithToken)
+    Service -> Gateway: SendEmail(GuestEmail, Subject, EmailBody)
+    Gateway -> Guest: Thư cảm ơn & Đường link khảo sát CSAT
+    Gateway --> Service: SendSuccess(MessageId)
+    Service -> Repo: UpdateSurveySent(SurveyId, SentTime)
+    Repo -> DB: UPDATE DiningSurveys SET Status = 'Sent', SentAt = NOW
+    DB --> Repo: OK
+else Khách hàng vãng lai không có email
+    Service -> Repo: LogAudit("Walk-in order without email - Survey skipped")
+    Repo -> DB: INSERT INTO AuditLogs
+    DB --> Repo: OK
+end
+
+opt Sự cố gửi Email Gateway
+    Gateway --> Service: SendFailed(ErrorReason)
+    Service -> Repo: ScheduleEmailRetry(SurveyId)
+    Repo -> DB: UPDATE DiningSurveys SET Status = 'RetryScheduled'
+    DB --> Repo: OK
+end
+@enduml

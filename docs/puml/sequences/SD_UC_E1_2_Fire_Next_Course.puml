@@ -1,0 +1,47 @@
+@startuml SD_UC_E1_2_Fire_Next_Course
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Bấm Fire Course
+activate UI
+
+UI -> Controller: POST /api/orders/{id}/fire-course
+activate Controller
+
+Controller -> Service: FireNextCourse(id, courseNo)
+activate Service
+
+Service -> Repo: UpdateCourseStatus(id, "Cooking")
+activate Repo
+
+Repo -> DB: UPDATE Courses
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_FireCourse")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Cập nhật Course tiếp theo
+deactivate UI
+
+@enduml

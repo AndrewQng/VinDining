@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Khách hàng" as Guest
 boundary "Giao diện Web" as UI
@@ -19,44 +14,90 @@ participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Guest -> UI: Nhập thông tin & Đặt bàn
-UI -> Controller: POST /api/reservations
+== Tạo đơn đặt bàn & Giữ chỗ tạm thời ==
+
+Guest -> UI: Nhập thông tin \nchọn Set Menu (tùy chọn) & Đặt bàn
+activate UI
+
+UI -> Controller: POST /api/reservations \n({/PreOrderedSetMenuId})
+activate Controller
+
 Controller -> Service: CreateReservation(dto)
-Service -> Repo: CheckAvailable & LockTable(17p)
-Repo -> DB: SELECT & UPDATE TableStatus
-DB --> Repo: OK
-Repo --> Service: TableLocked
-Service -> VNPAY: CreatePaymentUrl
-VNPAY --> Service: PaymentUrl
-Service --> Controller: Result(dto)
-Controller --> UI: 201 Created
-UI --> Guest: Hiển thị QR thanh toán
+activate Service
 
-Guest -> VNPAY: Quét VietQR thanh toán cọc
-VNPAY -> Controller: POST /api/payments/vnpay-ipn
-Controller -> Service: ProcessIpn(vnp_Params)
-Service -> Repo: UpdateReservation(dto)
-Repo -> DB: UPDATE Reservation & TableStatus
+Service -> Repo: LockTable(tableId, 17m) & SaveReservation(dto)
+activate Repo
+
+Repo -> DB: UPDATE Tables SET Status = 'Hold' \nINSERT Reservations (PreOrderedSetMenuId)
+activate DB
 DB --> Repo: OK
+deactivate DB
+
 Repo --> Service: OK
-Service --> Controller: RspCode: 00
-Controller --> VNPAY: 200 OK
-UI --> Guest: Đặt bàn thành công
+deactivate Repo
 
-opt Late IPN (>17 phút)
-    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late)
-    Controller -> Service: ProcessLateIpn(vnp_Params)
-    Service -> Repo: CheckTableStatus(TableId)
-    Repo -> DB: SELECT Status FROM Tables
-    DB --> Repo: Reserved / Occupied
-    Repo --> Service: AlreadyBooked
-    Service -> VNPAY: CallRefundApi
-    VNPAY --> Service: RefundSuccess (00)
-    Service -> Repo: UpdateReservation
-    Repo -> DB: UPDATE ReservationStatus
+Service -> Service: BuildPaymentUrl(dto)
+Service --> Controller: paymentUrl
+deactivate Service
+
+Controller --> UI: 201 Created (paymentUrl)
+deactivate Controller
+
+UI --> Guest: Hiển thị VietQR thanh toán
+deactivate UI
+
+== Xử lý Webhook IPN từ VNPAY ==
+
+Guest -> VNPAY: Quét QR thanh toán cọc
+activate VNPAY
+
+VNPAY -> Controller: POST /api/payments/vnpay-ipn
+activate Controller
+
+Controller -> Service: ProcessIpn(params)
+activate Service
+
+Service -> Service: ValidateSignature(params)
+
+alt Còn trong thời hạn giữ chỗ (<= 17 phút)
+    Service -> Repo: ConfirmReservation(id)
+    activate Repo
+    Repo -> DB: UPDATE Reservations \n& Tables SET Status = 'Confirmed'
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: OK
-    Service --> Controller: RspCode: 00
-    Controller --> VNPAY: 200 OK
+    deactivate Repo
+
+    Service -> UI: PushSignalR("BookingSuccess")
+    activate UI
+    UI --> Guest: Đặt bàn thành công
+    deactivate UI
+
+else Quá hạn giữ chỗ (> 17 phút) & Bàn đã có người khác
+    Service -> VNPAY: RefundRequest(orderId, amount)
+    VNPAY --> Service: RefundSuccess (00)
+    
+    Service -> Repo: CancelReservation()
+    activate Repo
+    Repo -> DB: UPDATE Reservations \nSET Status = 'Refunded'
+    activate DB
+    DB --> Repo: OK
+    deactivate DB
+    Repo --> Service: OK
+    deactivate Repo
+
+    Service -> UI: PushSignalR("BookingFailed_Refunded")
+    activate UI
+    UI --> Guest: Báo quá hạn \n& Đã hoàn cọc
+    deactivate UI
 end
+
+Service --> Controller: RspCode: 00
+deactivate Service
+
+Controller --> VNPAY: 200 OK (Confirm Success)
+deactivate Controller
+deactivate VNPAY
+
 @enduml

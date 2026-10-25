@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Quản trị viên" as Admin
 boundary "Giao diện Web" as UI
@@ -19,57 +14,134 @@ participant "StaffRepository" as Repo
 database "SQL Server" as DB
 participant "Email Service" as MailService
 
-Admin -> UI: Tạo tài khoản
+== Kịch bản 1: Tạo tài khoản nhân viên ==
+
+Admin -> UI: Nhập thông tin & Tạo tài khoản
+activate UI
+
 UI -> Controller: POST /api/admin/staff
+activate Controller
+
 Controller -> Service: CreateStaff(dto)
+activate Service
+
+Service -> Service: Validate & HashPassword
+
 Service -> Repo: InsertUser(dto)
+activate Repo
 Repo -> DB: INSERT Users & Roles
-DB --> Repo: OK(UserId)
-Repo --> Service: Saved(UserId)
-Service -> MailService: SendEmail(Email)
+activate DB
+DB --> Repo: OK (UserId)
+deactivate DB
+Repo --> Service: Saved (UserId)
+deactivate Repo
+
+Service -> MailService: SendCredentials(Email)
+activate MailService
 MailService --> Service: Sent
+deactivate MailService
+
 Service --> Controller: Result(Success)
+deactivate Service
+
 Controller --> UI: 201 Created
+deactivate Controller
+
 UI --> Admin: Tạo thành công
+deactivate UI
 
-opt Cập nhật thông tin
-    Admin -> UI: Sửa thông tin
-    UI -> Controller: PUT /api/admin/staff/{id}
-    Controller -> Service: UpdateStaff(dto)
-    Service -> Repo: UpdateUser(dto)
-    Repo -> DB: UPDATE Users
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Cập nhật thành công
-end
+== Kịch bản 2: Cập nhật thông tin & Phân quyền ==
 
-opt Đặt lại mật khẩu
-    Admin -> UI: Đặt lại mật khẩu
-    UI -> Controller: POST /api/admin/staff/{id}/\nreset-password
-    Controller -> Service: ResetPassword(dto)
-    Service -> Repo: UpdatePasswordHash(dto)
-    Repo -> DB: UPDATE Users \nSET PasswordHash = ...
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service -> MailService: SendEmail(dto)
-    MailService --> Service: Sent
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Đặt lại thành công
-end
+Admin -> UI: Sửa thông tin & Lưu
+activate UI
 
-opt Khóa tài khoản
-    Admin -> UI: Chọn & Khóa tài khoản
-    UI -> Controller: PATCH /api/admin/staff/{id}/status
-    Controller -> Service: LockStaff(id)
-    Service -> Repo: DeactivateUser(id)
-    Repo -> DB: UPDATE Users \nSET IsActive = 0
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Khóa thành công
-end
+UI -> Controller: PUT /api/admin/staff/{id}
+activate Controller
+
+Controller -> Service: UpdateStaff(id, dto)
+activate Service
+
+Service -> Repo: UpdateUser(id, dto)
+activate Repo
+Repo -> DB: UPDATE Users & Roles
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Admin: Cập nhật thành công
+deactivate UI
+
+== Kịch bản 3: Đặt lại mật khẩu ==
+
+Admin -> UI: Bấm Đặt lại mật khẩu
+activate UI
+
+UI -> Controller: POST /api/admin/staff/{id}/reset-password
+activate Controller
+
+Controller -> Service: ResetPassword(id)
+activate Service
+
+Service -> Service: Generate & HashNewPassword
+
+Service -> Repo: UpdatePasswordHash(id, hash)
+activate Repo
+Repo -> DB: UPDATE Users SET PasswordHash = ...
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service -> MailService: SendNewPassword(Email)
+activate MailService
+MailService --> Service: Sent
+deactivate MailService
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Admin: Đặt lại thành công
+deactivate UI
+
+== Kịch bản 4: Khóa / Mở khóa tài khoản ==
+
+Admin -> UI: Chọn & Khóa tài khoản
+activate UI
+
+UI -> Controller: PATCH /api/admin/staff/{id}/status
+activate Controller
+
+Controller -> Service: UpdateStatus(id, isActive=false)
+activate Service
+
+Service -> Repo: DeactivateUser(id)
+activate Repo
+Repo -> DB: UPDATE Users SET IsActive = 0
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Admin: Khóa thành công
+deactivate UI
+
 @enduml

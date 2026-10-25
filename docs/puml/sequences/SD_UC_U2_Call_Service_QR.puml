@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Khách hàng" as Guest
 actor "Nhân viên Phục vụ" as Waitstaff
@@ -19,27 +14,67 @@ participant "ServiceCallService" as Service
 participant "ServiceCallRepository" as Repo
 database "SQL Server" as DB
 
-Guest -> UI: Quét QR & Gửi yêu cầu trợ giúp
-UI -> Controller: POST /api/tables/{id}/call-service
-Controller -> Service: CreateRequest(dto)
-Service -> Repo: InsertRequest(Pending)
-Repo -> DB: INSERT ServiceRequests
-DB --> Repo: OK(RequestId)
-Repo --> Service: Saved
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Guest: Đã gửi yêu cầu
+Guest -> UI: Quét QR & Gửi yêu cầu
+activate UI
 
-opt Nhân viên hoàn thành hỗ trợ
-    Waitstaff -> UI: Bấm Hoàn thành hỗ trợ
-    UI -> Controller: PATCH /api/service-calls/{id}/\ncomplete
-    Controller -> Service: CompleteRequest(dto)
-    Service -> Repo: UpdateStatus(dto)
-    Repo -> DB: UPDATE ServiceRequests\nSET Status = 'Completed'
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Hoàn thành hỗ trợ
-end
+UI -> Controller: POST /api/tables/{id}/call-service
+activate Controller
+
+Controller -> Service: CreateRequest(dto)
+activate Service
+
+Service -> Repo: Insert(request)
+activate Repo
+
+Repo -> DB: INSERT ServiceRequests
+activate DB
+DB --> Repo: OK (Id)
+deactivate DB
+
+Repo --> Service: request
+deactivate Repo
+
+Service -> UI: PushSignalR("NewServiceCall")
+UI --> Waitstaff: Hiển thị thông báo (kèm nút Xác nhận)
+
+Service --> Controller: dto
+deactivate Service
+
+Controller --> UI: 201 Created
+deactivate Controller
+
+UI --> Guest: Đã gửi yêu cầu
+deactivate UI
+
+... Nhân viên hỗ trợ khách và bấm nút trên thông báo ...
+
+Waitstaff -> UI: Bấm Xác nhận hoàn thành
+activate UI
+
+UI -> Controller: PATCH /api/service-calls/{id}/complete
+activate Controller
+
+Controller -> Service: CompleteRequest(id)
+activate Service
+
+Service -> Repo: UpdateStatus(id, "Completed")
+activate Repo
+
+Repo -> DB: UPDATE ServiceRequests
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: OK
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Ẩn thông báo / Hoàn tất
+deactivate UI
+
 @enduml

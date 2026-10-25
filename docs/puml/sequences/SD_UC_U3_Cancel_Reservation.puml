@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Khách hàng" as Guest
 boundary "Giao diện Web" as UI
@@ -19,32 +14,61 @@ participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Guest -> UI: Nhập BookingCode để Hủy
-UI -> Controller: POST /api/reservations/cancel
-Controller -> Service: CancelReservation(code)
-Service -> Repo: GetReservation(code)
-Repo -> DB: SELECT * FROM Reservations
-DB --> Repo: ReservationData
-Repo --> Service: ReservationData
-Service -> Service: CheckHours(Time)
+Guest -> UI: Nhập BookingCode & Bấm Hủy
+activate UI
 
-alt Khoảng cách giờ hẹn >= 4 tiếng (Hoàn cọc)
-    Service -> VNPAY: CallRefundApi(100% Cọc)
+UI -> Controller: POST /api/reservations/cancel
+activate Controller
+
+Controller -> Service: CancelReservation(code)
+activate Service
+
+Service -> Repo: GetByCode(code)
+activate Repo
+
+Repo -> DB: SELECT Reservations
+activate DB
+DB --> Repo: reservation
+deactivate DB
+
+Repo --> Service: reservation
+deactivate Repo
+
+Service -> Service: CheckCancelPolicy(reservation)
+
+alt Trước giờ hẹn >= 4 tiếng (Hoàn cọc)
+    Service -> VNPAY: RefundRequest(code, amount)
+    activate VNPAY
     VNPAY --> Service: RefundSuccess (00)
-    Service -> Repo: UpdateReservation(Refunded)
+    deactivate VNPAY
+
+    Service -> Repo: CancelAndReleaseTable(id, "Refunded")
+    activate Repo
     Repo -> DB: UPDATE Reservations, Tables
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Guest: Hủy thành công & Hoàn cọc
-else Khoảng cách giờ hẹn < 4 tiếng (Phạt cọc)
-    Service -> Repo: UpdateReservation(NoRefund)
+    deactivate Repo
+
+else Trước giờ hẹn < 4 tiếng (Không hoàn cọc)
+    Service -> Repo: CancelAndReleaseTable(id, "Forfeited")
+    activate Repo
     Repo -> DB: UPDATE Reservations, Tables
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Guest: Hủy thành công (Không hoàn cọc)
+    deactivate Repo
 end
+
+Service --> Controller: CancelResult(status, message)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Guest: Thông báo hủy thành công
+deactivate UI
+
 @enduml

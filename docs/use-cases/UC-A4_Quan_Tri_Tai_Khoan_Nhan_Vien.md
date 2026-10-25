@@ -23,82 +23,25 @@
 * 3a. Khi nhân viên nghỉ việc hoặc có yêu cầu đình chỉ, Quản trị viên chọn Khóa tài khoản; hệ thống lập tức thu hồi toàn bộ quyền truy cập và hủy toàn bộ phiên làm việc của tài khoản trên mọi thiết bị.
 * 3b. Khi nhân viên quên mật khẩu hoặc cần cấp lại, Quản trị viên bấm Đặt lại mật khẩu; hệ thống sinh mật khẩu ngẫu nhiên tạm thời, cập nhật mã băm bảo mật và tự động gửi qua email nhân sự.
 
-## Sơ đồ tuần tự (Sequence Diagram)
+## Danh sách Sơ đồ tuần tự (Sequence Diagrams)
+
+### 1. Tạo tài khoản nhân viên
 ```plantuml
-@startuml SD_UC_A4_Manage_Staff_Accounts
-autonumber
-skinparam style strictuml
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+!include ../puml/sequences/SD_UC_A4_1_Create_Staff.puml
+```
 
-actor "Quản trị viên" as Admin
-boundary "Giao diện Web" as UI
-control "AdminStaffController" as Controller
-participant "StaffService" as Service
-participant "StaffRepository" as Repo
-database "SQL Server" as DB
-participant "Email Service" as MailService
+### 2. Cập nhật thông tin & Phân quyền
+```plantuml
+!include ../puml/sequences/SD_UC_A4_2_Update_Staff.puml
+```
 
-Admin -> UI: Nhập thông tin & Tạo tài khoản
-UI -> Controller: POST /api/admin/staff
-Controller -> Service: CreateStaff(dto)
-Service -> Repo: InsertUser(dto)
-Repo -> DB: INSERT Users & Roles
-DB --> Repo: OK(UserId)
-Repo --> Service: Saved(UserId)
-Service -> MailService: SendEmail(Email)
-MailService --> Service: Sent
-Service --> Controller: Result(Success)
-Controller --> UI: 201 Created
-UI --> Admin: Tạo tài khoản thành công
+### 3. Đặt lại mật khẩu
+```plantuml
+!include ../puml/sequences/SD_UC_A4_3_Reset_Password.puml
+```
 
-opt Cập nhật thông tin & Vai trò
-    Admin -> UI: Sửa thông tin & Đổi vai trò
-    UI -> Controller: PUT /api/admin/staff/{id}
-    Controller -> Service: UpdateStaff(id, dto)
-    Service -> Repo: UpdateUserAndRoles(dto)
-    Repo -> DB: UPDATE Users & UserRoles
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Cập nhật thành công
-end
-
-opt Đặt lại mật khẩu
-    Admin -> UI: Bấm đặt lại mật khẩu
-    UI -> Controller: POST /api/admin/staff/{id}/reset-password
-    Controller -> Service: ResetPassword(id)
-    Service -> Repo: UpdatePasswordHash(id, tempPass)
-    Repo -> DB: UPDATE Users \nSET PasswordHash = ...
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service -> MailService: SendEmail(Email, TempPassword)
-    MailService --> Service: Sent
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Đặt lại thành công
-end
-
-opt Khóa tài khoản
-    Admin -> UI: Chọn & Khóa tài khoản
-    UI -> Controller: PATCH /api/admin/staff/{id}/status
-    Controller -> Service: LockStaff(id)
-    Service -> Repo: DeactivateUser(id)
-    Repo -> DB: UPDATE Users \nSET IsActive = 0
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Admin: Khóa thành công
-end
-@enduml
+### 4. Khóa / Mở khóa tài khoản
+```plantuml
+!include ../puml/sequences/SD_UC_A4_4_Toggle_Staff_Status.puml
 ```
 

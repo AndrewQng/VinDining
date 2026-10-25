@@ -1,0 +1,54 @@
+@startuml SD_UC_A1_7_Delete_SetMenu
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Chọn xóa Set Menu & Xác nhận
+activate UI
+
+UI -> Controller: DELETE /api/admin\n/tasting-menus/{id}
+activate Controller
+
+Controller -> Service: DeleteTastingMenu(id)
+activate Service
+
+Service -> Repo: CheckIsInActiveOrders(id)
+activate Repo
+Repo -> DB: SELECT COUNT(1) FROM OrderItems\nWHERE TastingMenuId = @Id
+activate DB
+DB --> Repo: 0 (Không nằm trong order đang mở)
+deactivate DB
+Repo --> Service: InUse = false
+deactivate Repo
+
+Service -> Repo: SoftDeleteTastingMenu(id)
+activate Repo
+
+Repo -> DB: UPDATE TastingMenus \nSET IsActive = 0\nWHERE Id = @Id
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Xóa Set Menu khỏi danh sách
+deactivate UI
+
+@enduml

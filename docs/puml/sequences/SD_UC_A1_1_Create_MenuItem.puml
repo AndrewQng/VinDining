@@ -1,0 +1,47 @@
+@startuml SD_UC_A1_1_Create_MenuItem
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Nhập thông tin món & Lưu
+activate UI
+
+UI -> Controller: POST /api/admin/menu-items
+activate Controller
+
+Controller -> Service: Create(dto)
+activate Service
+
+Service -> Service: Validate(dto)
+
+Service -> Repo: Insert(item)
+activate Repo
+
+Repo -> DB: INSERT MenuItems
+activate DB
+DB --> Repo: OK (Id)
+deactivate DB
+
+Repo --> Service: item
+deactivate Repo
+
+Service --> Controller: Result.Success(dto)
+deactivate Service
+
+Controller --> UI: 201 Created
+deactivate Controller
+
+UI --> Manager: Báo thêm món thành công
+deactivate UI
+
+@enduml

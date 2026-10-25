@@ -85,12 +85,18 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
         usecase "UC-A4: Quản trị Tài khoản\n& Phân quyền nhân viên" as UC_A4
         usecase "UC-A5: Xem Báo cáo Thống kê\n& Dashboard doanh thu" as UC_A5
         usecase "UC-S1: Tự động giải phóng bàn\nhết hạn giữ cọc" as UC_S1
+        usecase "UC-S2: Tự động gửi thông báo\n& nhắc lịch hẹn" as UC_S2
+        usecase "UC-S3: Tự động kiểm soát &\ncảnh báo trễ SLA món" as UC_S3
+        usecase "UC-S4: Tự động gửi thư cảm ơn\n& link khảo sát CSAT" as UC_S4
 
         UC_A1 -[hidden]down-> UC_A2
         UC_A2 -[hidden]down-> UC_A3
         UC_A3 -[hidden]down-> UC_A4
         UC_A4 -[hidden]down-> UC_A5
         UC_A5 -[hidden]down-> UC_S1
+        UC_S1 -[hidden]down-> UC_S2
+        UC_S2 -[hidden]down-> UC_S3
+        UC_S3 -[hidden]down-> UC_S4
     }
 
     ' Giữ khoảng cách giữa 2 cột song song
@@ -145,6 +151,12 @@ Admin --|> Manager
 ' Hệ thống tự động
 System --> UC_S1
 UC_S1 ..> UC_U1 : <<extend>>
+System --> UC_S2
+UC_S2 ..> UC_U1 : <<extend>>
+System --> UC_S3
+UC_S3 ..> UC_E1 : <<extend>>
+System --> UC_S4
+UC_S4 ..> UC_E3 : <<extend>>
 
 ' VNPAY
 UC_U1 --> VNPAY

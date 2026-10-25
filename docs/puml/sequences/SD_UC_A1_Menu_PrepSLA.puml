@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
@@ -18,28 +13,101 @@ participant "MenuService" as Service
 participant "MenuRepository" as Repo
 database "SQL Server" as DB
 
-Manager -> UI: Nhập thông tin món & Lưu
+== Kịch bản 1: Thêm mới món ==
+
+Manager -> UI: Nhập thông tin & Lưu
+activate UI
+
 UI -> Controller: POST /api/admin/menu-items
-Controller -> Service: UpsertMenuItem(dto)
-Service -> Repo: SaveMenuItem(dto)
-Repo -> DB: INSERT / UPDATE MenuItems
-DB --> Repo: OK(MenuItemId)
-Repo --> Service: Saved
-Service --> Controller: Result(Success)
+activate Controller
+
+Controller -> Service: Create(dto)
+activate Service
+
+Service -> Service: Validate(dto)
+
+Service -> Repo: Insert(item)
+activate Repo
+
+Repo -> DB: INSERT MenuItems
+activate DB
+DB --> Repo: OK (Id)
+deactivate DB
+
+Repo --> Service: item
+deactivate Repo
+
+Service --> Controller: dto
+deactivate Service
+
 Controller --> UI: 201 Created
-UI --> Manager: Cập nhật danh sách
+deactivate Controller
 
-opt Chuyển trạng thái tạm hết cho món
-    Manager -> UI: Đổi trạng thái món ăn
-    UI -> Controller: PATCH /api/admin/menu-items/{id}/availability
-    Controller -> Service: UpdateAvailability
-    Service -> Repo: SetItemOutOfStock
-    Repo -> DB: UPDATE MenuItems
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Manager: Cập nhật Tạm hết hàng
-end
+UI --> Manager: Báo thành công
+deactivate UI
+
+== Kịch bản 2: Bật / Tắt trạng thái phục vụ ==
+
+Manager -> UI: Đổi trạng thái
+activate UI
+
+UI -> Controller: PATCH /api/admin/menu-items/{id}/availability
+activate Controller
+
+Controller -> Service: UpdateAvailability(id, status)
+activate Service
+
+Service -> Repo: UpdateStatus(id, status)
+activate Repo
+
+Repo -> DB: UPDATE MenuItems
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: OK
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Cập nhật giao diện
+deactivate UI
+
+== Kịch bản 3: Thiết lập Set Menu ==
+
+Manager -> UI: Nhập thông tin Set
+activate UI
+
+UI -> Controller: POST /api/admin/tasting-menus
+activate Controller
+
+Controller -> Service: CreateTastingMenu(dto)
+activate Service
+
+Service -> Service: ValidateItems(dto.Items)
+Service -> Repo: InsertTastingMenu(menu, items)
+activate Repo
+
+Repo -> DB: INSERT TastingMenus \n& TastingMenuItems
+activate DB
+DB --> Repo: OK (Id)
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success(dto)
+deactivate Service
+
+Controller --> UI: 201 Created
+deactivate Controller
+
+UI --> Manager: Cập nhật danh sách Set Menu
+deactivate UI
+
+
 @enduml
-

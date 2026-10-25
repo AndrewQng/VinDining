@@ -1,0 +1,69 @@
+@startuml SD_UC_E6_1_CheckIn_Reservation
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Bấm Check-in nhận bàn
+activate UI
+
+UI -> Controller: POST /api/tables/{id}/check-in
+activate Controller
+
+Controller -> Service: CheckInTable(dto)
+activate Service
+
+Service -> Repo: GetReservation(code)
+activate Repo
+
+Repo -> DB: SELECT * FROM Reservations
+activate DB
+DB --> Repo: ReservationData (kèm PreOrderedSetMenuId)
+deactivate DB
+
+Repo --> Service: reservation
+deactivate Repo
+
+Service -> Repo: UpdateStatus(Occupied, Seated)
+activate Repo
+
+Repo -> DB: UPDATE Tables SET Status = 'Occupied'\nUPDATE Reservations SET Status = 'Seated'
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+opt Khách có đặt trước Set Menu (PreOrderedSetMenuId != null)
+    Service -> Repo: CreateOrderFromPreOrder(reservation)
+    activate Repo
+    Repo -> DB: INSERT Orders, OrderItems 
+    activate DB
+    DB --> Repo: OK (OrderId)
+    deactivate DB
+    Repo --> Service: OrderCreated
+    deactivate Repo
+
+    Service -> UI: PushSignalR("Kitchen_NewCourse")
+end
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Check-in thành công
+deactivate UI
+
+@enduml

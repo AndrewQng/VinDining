@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Nhân viên Phục vụ" as Waitstaff
 boundary "Giao diện Web" as UI
@@ -18,43 +13,109 @@ participant "TableService" as Service
 participant "TableRepository" as Repo
 database "SQL Server" as DB
 
+== Kịch bản 1: Check-in nhận bàn ==
+
 Waitstaff -> UI: Bấm Check-in nhận bàn
+activate UI
+
 UI -> Controller: POST /api/tables/{id}/check-in
+activate Controller
+
 Controller -> Service: CheckInTable(dto)
+activate Service
+
 Service -> Repo: GetReservation(code)
+activate Repo
+
 Repo -> DB: SELECT * FROM Reservations
-DB --> Repo: ReservationData
-Service -> Repo: UpdateStatus(dto)
-Repo -> DB: UPDATE Tables, Reservations
+activate DB
+DB --> Repo: ReservationData (kèm PreOrderedSetMenuId)
+deactivate DB
+
+Repo --> Service: reservation
+deactivate Repo
+
+Service -> Repo: UpdateStatus(Occupied, Seated)
+activate Repo
+
+Repo -> DB: UPDATE Tables SET Status = 'Occupied'\nUPDATE Reservations SET Status = 'Seated'
+activate DB
 DB --> Repo: OK
+deactivate DB
+
 Repo --> Service: OK
+deactivate Repo
+
+opt Khách có đặt trước Set Menu (PreOrderedSetMenuId != null)
+    Service -> Repo: CreateOrderFromPreOrder(reservation)
+    activate Repo
+    Repo -> DB: INSERT Orders, OrderItems \n& Courses (Course 1: 'Cooking', Course 2+: 'OnHold')
+    activate DB
+    DB --> Repo: OK (OrderId)
+    deactivate DB
+    Repo --> Service: OrderCreated
+    deactivate Repo
+
+    Service -> UI: PushSignalR("Kitchen_NewCourse")
+end
+
 Service --> Controller: Result(Success)
+deactivate Service
+
 Controller --> UI: 200 OK
+deactivate Controller
+
 UI --> Waitstaff: Check-in thành công
+deactivate UI
+
+== Kịch bản 2: Khách vãng lai (Walk-in) ==
 
 opt Khách vãng lai (Walk-in)
     Waitstaff -> UI: Chọn bàn & Check-in Walk-in
+    activate UI
     UI -> Controller: POST /api/tables/{id}/walk-in
+    activate Controller
     Controller -> Service: CheckInWalkIn(dto)
+    activate Service
     Service -> Repo: SetTableOccupied(dto)
-    Repo -> DB: UPDATE Tables\nSET Status = 'Occupied'
+    activate Repo
+    Repo -> DB: UPDATE Tables \nSET Status = 'Occupied'
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: OK
+    deactivate Repo
     Service --> Controller: Result(Success)
+    deactivate Service
     Controller --> UI: 200 OK
+    deactivate Controller
     UI --> Waitstaff: Check-in thành công
+    deactivate UI
 end
+
+== Kịch bản 3: Hoàn tất dọn bàn ==
 
 opt Hoàn tất dọn bàn
     Waitstaff -> UI: Bấm Hoàn tất dọn bàn
-    UI -> Controller: POST /api/tables/{id}/\nclean-complete
+    activate UI
+    UI -> Controller: POST /api/tables/{id}/clean-complete
+    activate Controller
     Controller -> Service: CompleteCleaning(dto)
+    activate Service
     Service -> Repo: SetTableAvailable(dto)
-    Repo -> DB: UPDATE Tables\nSET Status = 'Available'
+    activate Repo
+    Repo -> DB: UPDATE Tables \nSET Status = 'Available'
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: OK
+    deactivate Repo
     Service --> Controller: Result(Success)
+    deactivate Service
     Controller --> UI: 200 OK
+    deactivate Controller
     UI --> Waitstaff: Bàn chuyển sang Sẵn sàng
+    deactivate UI
 end
+
 @enduml

@@ -1,0 +1,45 @@
+@startuml SD_UC_E6_3_Complete_Cleaning
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Bấm Hoàn tất dọn bàn
+activate UI
+
+UI -> Controller: POST /api/tables/{id}/clean-complete
+activate Controller
+
+Controller -> Service: CompleteCleaning(dto)
+activate Service
+
+Service -> Repo: SetTableAvailable(dto)
+activate Repo
+
+Repo -> DB: UPDATE Tables \nSET Status = 'Available'
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Bàn chuyển sang Sẵn sàng
+deactivate UI
+
+@enduml

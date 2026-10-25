@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Khách hàng" as Guest
 boundary "Giao diện Web" as UI
@@ -19,13 +14,34 @@ participant "FeedbackRepository" as Repo
 database "SQL Server" as DB
 
 Guest -> UI: Chấm điểm, nhận xét & Gửi
+activate UI
+
 UI -> Controller: POST /api/feedbacks
+activate Controller
+
 Controller -> Service: SubmitFeedback(dto)
+activate Service
+
+Service -> Service: Validate(dto)
+
 Service -> Repo: InsertFeedback(dto)
+activate Repo
+
 Repo -> DB: INSERT Feedbacks
-DB --> Repo: OK(FeedbackId)
+activate DB
+DB --> Repo: OK (FeedbackId)
+deactivate DB
+
 Repo --> Service: OK
+deactivate Repo
+
 Service --> Controller: Result(Success)
+deactivate Service
+
 Controller --> UI: 201 Created
+deactivate Controller
+
 UI --> Guest: Gửi đánh giá thành công
+deactivate UI
+
 @enduml

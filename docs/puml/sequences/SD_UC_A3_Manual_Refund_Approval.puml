@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
@@ -19,21 +14,47 @@ participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Manager -> UI: Nhập BookingCode & duyệt
-UI -> Controller: POST /api/admin/reservations/{id}/\nmanual-refund 
-Controller -> Service: OverrideRefund
-Service -> Repo: GetReservation
-Repo -> DB: SELECT Reservation \nWHERE Id = id
-DB --> Repo: ReservationData
-Repo --> Service: Reservation
-Service -> VNPAY: CallRefundApi
-VNPAY --> Service: RefundSuccess (00)
-Service -> Repo: UpdateRefundStatus\n& InsertAuditLog
-Repo -> DB: UPDATE ReservationStatus\n& INSERT AuditLogs
-DB --> Repo: OK
-Repo --> Service: Saved
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Manager: Cập nhật trạng thái 
-@enduml
+Manager -> UI: Chọn đơn, nhập lý do & Duyệt
+activate UI
 
+UI -> Controller: POST /api/admin/reservations/\n{id}/manual-refund
+activate Controller
+
+Controller -> Service: OverrideRefund(id, dto)
+activate Service
+
+Service -> Repo: GetReservation(id)
+activate Repo
+Repo -> DB: SELECT Reservation WHERE Id = id
+activate DB
+DB --> Repo: ReservationData
+deactivate DB
+Repo --> Service: Reservation
+deactivate Repo
+
+Service -> Service: Validate(Reservation)
+
+Service -> VNPAY: CallRefundApi(txnRef, amount)
+activate VNPAY
+VNPAY --> Service: RefundSuccess (00)
+deactivate VNPAY
+
+Service -> Repo: UpdateRefundStatus \n& InsertAuditLog
+activate Repo
+Repo -> DB: UPDATE Reservations \n& INSERT AuditLogs
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Saved
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Cập nhật trạng thái 
+deactivate UI
+
+@enduml

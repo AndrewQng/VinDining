@@ -24,7 +24,7 @@
 ---
 
 ## 3. Phân hệ Quản lý & Quản trị (Manager & Admin Subsystem)
-* [UC-A1: Quản trị Danh mục, Thực đơn & Cấu hình Prep SLA](UC-A1_Quan_Tri_Thuc_Don_Va_SLA.md)
+* [UC-A1: Quản trị thực đơn](UC-A1_Quan_Tri_Thuc_Don_Va_SLA.md)
 * [UC-A2: Quản trị & Cấu hình Sơ đồ bàn ăn](UC-A2_Quan_Tri_So_Do_Ban.md)
 * [UC-A3: Duyệt hoàn tiền cọc thủ công ngoại lệ](UC-A3_Duyet_Hoan_Coc_Ngoai_Le.md)
 * [UC-A4: Quản trị Tài khoản & Phân quyền nhân viên](UC-A4_Quan_Tri_Tai_Khoan_Nhan_Vien.md)
@@ -34,3 +34,6 @@
 
 ## 4. Phân hệ Hệ thống Tự động (Automated Background System)
 * [UC-S1: Tự động giải phóng bàn hết hạn giữ cọc](UC-S1_Tu_Dong_Giai_Phong_Ban.md)
+* [UC-S2: Tự động gửi thông báo nhắc lịch hẹn](UC-S2_Tu_Dong_Gui_Thong_Bao_Nhac_Lich.md)
+* [UC-S3: Tự động kiểm soát & cảnh báo trễ SLA chế biến món ăn](UC-S3_Tu_Dong_Kiem_Soat_Canh_Bao_Tre_SLA.md)
+* [UC-S4: Tự động gửi email cảm ơn & link khảo sát CSAT sau bữa ăn](UC-S4_Tu_Dong_Gui_Email_Cam_On_Khao_Sat_CSAT.md)

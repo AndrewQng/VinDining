@@ -1,0 +1,54 @@
+@startuml SD_UC_A1_4_Delete_MenuItem
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Chọn xóa món & Xác nhận
+activate UI
+
+UI -> Controller: DELETE /api/admin\n/menu-items/{id}
+activate Controller
+
+Controller -> Service: Delete(id)
+activate Service
+
+Service -> Repo: CheckIsInActiveOrders(id)
+activate Repo
+Repo -> DB: SELECT COUNT(1) FROM OrderItems\nWHERE MenuItemId = @Id
+activate DB
+DB --> Repo: 0 (Không nằm trong order đang mở)
+deactivate DB
+Repo --> Service: InUse = false
+deactivate Repo
+
+Service -> Repo: SoftDelete(id)
+activate Repo
+
+Repo -> DB: UPDATE MenuItems \nSET IsDeleted = 1\nWHERE Id = @Id
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Xóa món khỏi danh sách
+deactivate UI
+
+@enduml

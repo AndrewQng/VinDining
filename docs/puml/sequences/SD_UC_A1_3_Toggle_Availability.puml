@@ -1,0 +1,45 @@
+@startuml SD_UC_A1_3_Toggle_Availability
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Bật / Tắt trạng thái món
+activate UI
+
+UI -> Controller: PATCH /api/admin/menu-items\n/{id}/availability
+activate Controller
+
+Controller -> Service: UpdateAvailability(dto)
+activate Service
+
+Service -> Repo: UpdateStatus(dto)
+activate Repo
+
+Repo -> DB: UPDATE MenuItems \nSET Status = @status \nWHERE Id = @Id
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Cập nhật trạng thái
+deactivate UI
+
+@enduml

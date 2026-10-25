@@ -1,4 +1,4 @@
-﻿# Đặc tả UC-E6: Check-in nhận bàn & Hoàn tất dọn bàn
+# Đặc tả UC-E6: Check-in nhận bàn & Hoàn tất dọn bàn
 
 | Thuộc tính | Chi tiết đặc tả |
 | :--- | :--- |
@@ -16,74 +16,27 @@
 2. Nhân viên phục vụ tra cứu thông tin trên ứng dụng Web POS, chọn bàn đang ở trạng thái Đã đặt chỗ *(Reserved)* và đối chiếu thông tin đặt cọc.
 3. Nhân viên phục vụ bấm nút Check-in nhận bàn trên giao diện POS.
 4. Hệ thống kiểm tra hợp lệ, cập nhật trạng thái bàn sang Đang phục vụ *(Occupied)* và trạng thái đặt bàn sang Khách đã nhận bàn *(Seated)*.
-5. Hệ thống gửi sự kiện SignalR tới toàn bộ thiết bị POS và màn hình quản lý sảnh để cập nhật màu sắc sơ đồ bàn (đánh dấu khách đã vào bàn an toàn, ngắt tiến trình tự động giải phóng bàn của UC-S1).
-6. Nhân viên phục vụ dẫn khách vào vị trí bàn và kích hoạt phiên gọi món.
+5. Nếu đơn đặt bàn có chọn trước Set Menu (`PreOrderedSetMenuId != null`), hệ thống tự động khởi tạo Order, tách các món trong Set Menu thành OrderItems và Courses, tự động kích hoạt Course 1 chuyển sang trạng thái Cooking (các Course sau ở trạng thái OnHold) và phát tín hiệu SignalR (`PushSignalR("Kitchen_NewCourse")`) xuống màn hình Bếp KDS ngay lập tức mà nhân viên không cần tạo Order thủ công.
+6. Hệ thống gửi sự kiện SignalR tới toàn bộ thiết bị POS và màn hình quản lý sảnh để cập nhật màu sắc sơ đồ bàn (đánh dấu khách đã vào bàn an toàn, ngắt tiến trình tự động giải phóng bàn của UC-S1); nhân viên phục vụ dẫn khách vào vị trí bàn.
 
 ## Luồng ngoại lệ (Alternative / Exception Flows)
 * 2a. Khi khách vãng lai (Walk-in) vào nhà hàng không đặt trước, nhân viên kiểm tra bàn đang ở trạng thái Sẵn sàng *(Available)*, chọn bàn và bấm Check-in khách vãng lai để chuyển bàn trực tiếp sang Đang phục vụ *(Occupied)*.
 * 3a. Khi bàn ăn vừa được thanh toán xong ở trạng thái Chờ dọn dẹp *(Cleaning)* từ UC-E3, nhân viên phục vụ hoặc tạp vụ sau khi dọn dẹp, thay khăn và setup dao nĩa chuẩn Fine Dining sẽ bấm nút Hoàn tất dọn bàn trên POS; hệ thống chuyển trạng thái bàn từ Chờ dọn dẹp *(Cleaning)* về Sẵn sàng *(Available)* và phát SignalR cập nhật sơ đồ sàn để sẵn sàng đón lượt khách tiếp theo.
 
-## Sơ đồ tuần tự (Sequence Diagram)
+## Danh sách Sơ đồ tuần tự (Sequence Diagrams)
+
+### 1. Check-in nhận bàn & Tự động kích hoạt Pre-order Set Menu
 ```plantuml
-@startuml SD_UC_E6_CheckIn_And_Clean_Table
-autonumber
-skinparam style strictuml
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+!include ../puml/sequences/SD_UC_E6_1_CheckIn_Reservation.puml
+```
 
-actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web" as UI
-control "TableController" as Controller
-participant "TableService" as Service
-participant "TableRepository" as Repo
-database "SQL Server" as DB
+### 2. Check-in khách vãng lai (Walk-in)
+```plantuml
+!include ../puml/sequences/SD_UC_E6_2_CheckIn_WalkIn.puml
+```
 
-Waitstaff -> UI: Bấm Check-in nhận bàn
-UI -> Controller: POST /api/tables/{id}/check-in
-Controller -> Service: CheckInTable(tableId, code)
-Service -> Repo: GetReservation(code)
-Repo -> DB: SELECT * FROM Reservations
-DB --> Repo: ReservationData
-Service -> Repo: UpdateStatus(Occupied, Seated)
-Repo -> DB: UPDATE Tables, Reservations
-DB --> Repo: OK
-Repo --> Service: OK
-Service --> Controller: Result(Success)
-Controller --> UI: 200 OK
-UI --> Waitstaff: Check-in thành công
-
-opt Khách vãng lai (Walk-in)
-    Waitstaff -> UI: Chọn bàn & Check-in Walk-in
-    UI -> Controller: POST /api/tables/{id}/walk-in
-    Controller -> Service: CheckInWalkIn(tableId)
-    Service -> Repo: SetTableOccupied(tableId)
-    Repo -> DB: UPDATE Tables SET Status = 'Occupied'
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Check-in thành công
-end
-
-opt Hoàn tất dọn bàn
-    Waitstaff -> UI: Bấm Hoàn tất dọn bàn
-    UI -> Controller: POST /api/tables/{id}/clean-complete
-    Controller -> Service: CompleteCleaning(tableId)
-    Service -> Repo: SetTableAvailable(tableId)
-    Repo -> DB: UPDATE Tables SET Status = 'Available'
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Bàn chuyển sang Sẵn sàng
-end
-@enduml
+### 3. Hoàn tất dọn bàn
+```plantuml
+!include ../puml/sequences/SD_UC_E6_3_Complete_Cleaning.puml
 ```
 

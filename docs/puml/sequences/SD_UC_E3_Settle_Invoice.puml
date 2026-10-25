@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Nhân viên Phục vụ" as Waitstaff
 boundary "Giao diện Web" as UI
@@ -19,28 +14,71 @@ participant "InvoiceRepository" as Repo
 database "SQL Server" as DB
 participant "Printer" as Printer
 
-Waitstaff -> UI: Chọn bàn & Xem tạm tính
-UI -> Controller: GET /api/invoices/preview/{tableId}
-Controller -> Service: CalculateInvoice(tableId)
-Service -> Repo: GetOrderAndDeposit(tableId)
-Repo -> DB: SELECT ServedItems & Deposit
-DB --> Repo: RawData
-Repo --> Service: Data
-Service -> Service: Calculate(dto)
-Service --> Controller: InvoicePreviewDto
-Controller --> UI: 200 OK
-UI --> Waitstaff: Hiển thị tiền tạm tính
+== Kịch bản 1: Xem tạm tính (kèm mã VietQR ngân hàng) ==
 
-Waitstaff -> UI: Xác nhận thanh toán
-UI -> Controller: POST /api/invoices/settle
-Controller -> Service: SettleInvoice(dto)
-Service -> Repo: SaveInvoice & SetTableCleaning
-Repo -> DB: INSERT Invoices, UPDATE TableStatus
-DB --> Repo: OK
-Repo --> Service: Saved
-Service -> Printer: PrintReceipt
-Printer --> Service: OK
-Service --> Controller: Result(Success)
+Waitstaff -> UI: Chọn bàn & Xem tạm tính
+activate UI
+
+UI -> Controller: GET /api/invoices/\npreview/{tableId}
+activate Controller
+
+Controller -> Service: CalculateInvoice(tableId)
+activate Service
+
+Service -> Repo: GetOrderAndDeposit(tableId)
+activate Repo
+Repo -> DB: SELECT ServedItems & Deposit
+activate DB
+DB --> Repo: RawData
+deactivate DB
+Repo --> Service: Data
+deactivate Repo
+
+Service -> Service: Calculate & GenerateVietQR(Data)
+
+Service --> Controller: InvoicePreviewDto (Amount, VietQR)
+deactivate Service
+
 Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Hiển thị tạm tính & mã VietQR
+deactivate UI
+
+== Kịch bản 2: Xác nhận thanh toán (Tiền mặt / Chuyển khoản / Card) ==
+
+Waitstaff -> UI: Chọn (Cash/Transfer/Card) & Xác nhận
+activate UI
+
+UI -> Controller: POST /api/invoices/{tableId}/settle
+activate Controller
+
+Controller -> Service: SettleInvoice(dto)
+activate Service
+
+Service -> Repo: SaveInvoice & SetTableCleaning(dto)
+activate Repo
+Repo -> DB: INSERT Invoices, UPDATE Orders & Tables
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Saved
+deactivate Repo
+
+Service -> Printer: PrintReceipt(invoice)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service -> UI: PushSignalR("Table_Cleaning")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
 UI --> Waitstaff: Thanh toán thành công
+deactivate UI
+
 @enduml

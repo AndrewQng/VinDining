@@ -1,0 +1,51 @@
+@startuml SD_UC_E3_2_Settle_Invoice
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "InvoiceRepository" as Repo
+database "SQL Server" as DB
+participant "Printer" as Printer
+
+Waitstaff -> UI: Chọn (Cash/Transfer/Card) & Xác nhận
+activate UI
+
+UI -> Controller: POST /api/invoices/{tableId}/settle
+activate Controller
+
+Controller -> Service: SettleInvoice(dto)
+activate Service
+
+Service -> Repo: SaveInvoice & SetTableCleaning(dto)
+activate Repo
+Repo -> DB: INSERT Invoices, UPDATE Orders & Tables
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Saved
+deactivate Repo
+
+Service -> Printer: PrintReceipt(invoice)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service -> UI: PushSignalR("Table_Cleaning")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Thanh toán thành công
+deactivate UI
+
+@enduml

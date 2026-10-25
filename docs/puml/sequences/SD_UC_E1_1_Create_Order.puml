@@ -1,0 +1,47 @@
+@startuml SD_UC_E1_1_Create_Order
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "OrderController" as Controller
+participant "OrderService" as Service
+participant "OrderRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn, thêm món/SetMenu & Lưu
+activate UI
+
+UI -> Controller: POST /api/orders
+activate Controller
+
+Controller -> Service: CreateOrderWithCourses(dto)
+activate Service
+
+Service -> Repo: InsertOrder(dto)
+activate Repo
+
+Repo -> DB: INSERT Orders, OrderItems, Courses
+activate DB
+DB --> Repo: OK (OrderId)
+deactivate DB
+
+Repo --> Service: Saved(OrderId)
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_NewCourse")
+
+Service --> Controller: Result(dto)
+deactivate Service
+
+Controller --> UI: 201 Created
+deactivate Controller
+
+UI --> Waitstaff: Course 1 đang chế biến
+deactivate UI
+
+@enduml

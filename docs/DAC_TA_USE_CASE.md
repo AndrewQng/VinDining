@@ -51,7 +51,7 @@
 
 ---
 
-## 2. DANH MỤC 16 USE CASE HỆ THỐNG
+## 2. DANH MỤC 19 USE CASE HỆ THỐNG
 
 | STT | Mã Use Case | Tên Use Case | Phân hệ | Mức độ ưu tiên |
 | :---: | :--- | :--- | :--- | :--- |
@@ -71,10 +71,13 @@
 | 14 | **UC-A4** | Quản trị Tài khoản & Phân quyền nhân viên | Quản lý & Quản trị *(Admin)* | Quan trọng *(Should Have)* |
 | 15 | **UC-A5** | Xem Báo cáo Thống kê & Dashboard doanh thu | Quản lý & Quản trị *(Admin)* | Bổ sung *(Could Have)* |
 | 16 | **UC-S1** | Tự động giải phóng bàn hết hạn giữ cọc | Hệ thống Tự động *(System)* | Bắt buộc *(Must Have)* |
+| 17 | **UC-S2** | Tự động gửi thông báo nhắc lịch hẹn | Hệ thống Tự động *(System)* | Quan trọng *(Should Have)* |
+| 18 | **UC-S3** | Tự động kiểm soát & cảnh báo trễ SLA chế biến món ăn | Hệ thống Tự động *(System)* | Bắt buộc *(Must Have)* |
+| 19 | **UC-S4** | Tự động gửi email cảm ơn & link khảo sát CSAT sau bữa ăn | Hệ thống Tự động *(System)* | Bổ sung *(Could Have)* |
 
 ---
 
-## 3. ĐẶC TẢ CHI TIẾT 16 USE CASE HỆ THỐNG
+## 3. ĐẶC TẢ CHI TIẾT 19 USE CASE HỆ THỐNG
 
 ### 3.1 Phân hệ Khách hàng (Guest Subsystem)
 
@@ -513,6 +516,81 @@
 ##### Luồng ngoại lệ (Alternative / Exception Flows)
 * 2a. Phản hồi thanh toán trễ (>17 phút) khi bàn đã có khách khác đặt: Hệ thống chuyển đơn sang trạng thái ngoại lệ và hoàn 100% tiền cọc cho khách.
 
+#### Đặc tả UC-S2: Tự động gửi thông báo nhắc lịch hẹn
+
+| Thuộc tính | Chi tiết |
+| :--- | :--- |
+| **Mã Use Case** | UC-S2 |
+| **Tên Use Case** | Tự động gửi thông báo nhắc lịch hẹn |
+| **Tác nhân** | Hệ thống tự động (Chính), Khách hàng (Phụ), Cổng SMS/Email (Phụ) |
+| **Mức độ ưu tiên** | Quan trọng (Should Have) |
+| **Mối quan hệ** | Kết hợp dữ liệu từ đặt bàn trực tuyến UC-U1 |
+| **Mục tiêu** | Quét các đơn đặt bàn trước giờ hẹn 2 tiếng, tự động phát lệnh gửi SMS/Email/Zalo ZNS nhắc khách nhớ giờ đến kèm mã đặt bàn BookingCode. |
+| **Điều kiện tiên quyết** | Đơn đặt bàn Confirmed, thời gian cách thời điểm hiện tại 2 tiếng và chưa gửi nhắc nhở. |
+| **Điều kiện kết thúc** | Thông báo được phát đi; cập nhật trạng thái đã gửi nhắc nhở kèm thời gian gửi. |
+
+##### Luồng sự kiện chính (Main Flow)
+1. Hệ thống tự động kích hoạt tiến trình kiểm tra định kỳ mỗi 5 phút.
+2. Hệ thống quét dữ liệu tìm các đơn đặt bàn Confirmed cách giờ ăn 2 tiếng mà chưa gửi nhắc nhở.
+3. Hệ thống kết xuất nội dung thông báo chứa mã BookingCode, thời gian dùng bữa và chỉ đường.
+4. Hệ thống gọi cổng SMS/Email/Zalo ZNS để gửi tin nhắn đến khách hàng.
+5. Cổng gửi tin phản hồi chuyển phát thành công; hệ thống cập nhật cờ IsReminderSent và lưu thời điểm gửi.
+6. Hệ thống ghi nhật ký kiểm toán phiên gửi tin.
+
+##### Luồng ngoại lệ (Alternative / Exception Flows)
+* 4a. Cổng gửi tin gặp lỗi kết nối: Hệ thống tăng bộ đếm thử lại và lên lịch tái gửi ở chu kỳ tiếp theo.
+
+#### Đặc tả UC-S3: Tự động kiểm soát & cảnh báo trễ SLA chế biến món ăn
+
+| Thuộc tính | Chi tiết |
+| :--- | :--- |
+| **Mã Use Case** | UC-S3 |
+| **Tên Use Case** | Tự động kiểm soát & cảnh báo trễ SLA chế biến món ăn |
+| **Tác nhân** | Hệ thống tự động (Chính), Điều phối viên (Phụ), Đầu bếp KDS (Phụ) |
+| **Mức độ ưu tiên** | Bắt buộc (Must Have) |
+| **Mối quan hệ** | Hỗ trợ điều phối lượt món UC-E1 và kiểm đồ quầy Pass UC-E2 theo quy định thời gian chế biến |
+| **Mục tiêu** | Liên tục đếm ngược thời gian nấu của từng món ăn; kích hoạt cảnh báo đổi màu vé đỏ nhấp nháy và phát chuông âm thanh tới màn hình KDS Bếp và trạm Điều phối khi vượt Prep SLA. |
+| **Điều kiện tiên quyết** | Tồn tại món ăn đang trong trạng thái Cooking. |
+| **Điều kiện kết thúc** | Cờ quá hạn được bật; tín hiệu âm thanh và thị giác được truyền phát qua SignalR tới màn hình Bếp và trạm Pass. |
+
+##### Luồng sự kiện chính (Main Flow)
+1. Hệ thống tự động quét kiểm soát định kỳ mỗi 10 giây một lần.
+2. Hệ thống lấy danh sách các món ăn đang trong trạng thái Cooking.
+3. Hệ thống tính thời gian nấu thực tế so với định mức Prep SLA của từng món.
+4. Khi thời gian chế biến vượt ngưỡng Prep SLA, hệ thống đánh dấu cờ IsOverdue cho món ăn.
+5. Hệ thống gửi sự kiện cảnh báo qua kênh SignalR tới màn hình KDS Bếp và trạm Điều phối Pass.
+6. Màn hình KDS Bếp và trạm Pass đổi màu vé món sang Đỏ nhấp nháy đồng thời kích hoạt chuông âm thanh cảnh báo.
+7. Hệ thống ghi nhật ký sự kiện trễ SLA món ăn.
+
+##### Luồng ngoại lệ (Alternative / Exception Flows)
+* 3a. Bếp bấm hoàn thành món (Ready) trước thời điểm quét: Hệ thống chuyển trạng thái món sang Ready và hủy đếm ngược SLA.
+
+#### Đặc tả UC-S4: Tự động gửi email cảm ơn & link khảo sát CSAT sau bữa ăn
+
+| Thuộc tính | Chi tiết |
+| :--- | :--- |
+| **Mã Use Case** | UC-S4 |
+| **Tên Use Case** | Tự động gửi email cảm ơn & link khảo sát CSAT sau bữa ăn |
+| **Tác nhân** | Hệ thống tự động (Chính), Khách hàng (Phụ), Cổng Email (Phụ) |
+| **Mức độ ưu tiên** | Bổ sung (Could Have) |
+| **Mối quan hệ** | Kích hoạt ngay sau khi đóng bàn UC-E3; cung cấp dữ liệu cho khảo sát UC-U4 |
+| **Mục tiêu** | Tự động tạo mã khảo sát trực tuyến và gửi thư cảm ơn kèm liên kết đánh giá mức độ hài lòng CSAT tới hòm thư của khách hàng ngay sau khi đóng bàn. |
+| **Điều kiện tiên quyết** | Bàn ăn đã hoàn tất thanh toán đóng bàn tại UC-E3 và có địa chỉ email hợp lệ của khách hàng. |
+| **Điều kiện kết thúc** | Bản ghi khảo sát được khởi tạo với token hiệu lực 24 giờ; email cảm ơn kèm liên kết khảo sát được gửi tới khách hàng. |
+
+##### Luồng sự kiện chính (Main Flow)
+1. Hệ thống tiếp nhận sự kiện đóng bàn thành công từ nghiệp vụ thanh toán hóa đơn.
+2. Hệ thống kiểm tra địa chỉ email của khách hàng liên kết với bàn ăn.
+3. Hệ thống tạo mã bảo mật khảo sát gắn liền với bữa ăn có hiệu lực trong 24 giờ.
+4. Hệ thống khởi tạo bản ghi khảo sát trong cơ sở dữ liệu ở trạng thái Pending.
+5. Hệ thống định dạng thư cảm ơn kèm liên kết truy cập trang khảo sát CSAT.
+6. Hệ thống gửi email tới hòm thư của khách hàng qua dịch vụ Email Gateway.
+7. Hệ thống cập nhật bản ghi khảo sát sang Đã gửi và ghi nhận thời điểm hoàn tất.
+
+##### Luồng ngoại lệ (Alternative / Exception Flows)
+* 2a. Khách hàng vãng lai không cung cấp email: Hệ thống bỏ qua bước phát thư khảo sát và kết thúc phiên đóng bàn.
+* 6a. Dịch vụ gửi email gặp lỗi kết nối: Hệ thống chuyển bản ghi sang trạng thái chờ gửi lại để hàng đợi tự động tái phát lệnh sau 5 phút.
+
 ---
 
 ## 4. MA TRẬN QUY TẮC NGHIỆP VỤ BẮT BUỘC (BUSINESS RULES MATRIX)
@@ -520,7 +598,7 @@
 | Mã quy tắc | Tên quy tắc | Nội dung nghiệp vụ chi phối | Áp dụng tại Use Case |
 | :---: | :--- | :--- | :--- |
 | **BR-01** | Thời hạn khóa giữ bàn tạm thời | Khóa giữ bàn tạm 17 phút (15 phút hiệu lực mã QR + 2 phút ân hạn). Quá 17 phút chưa thanh toán thành công, hệ thống tự động hủy phiên và giải phóng bàn về Available. | UC-U1, UC-S1 |
-| **BR-02** | Công thức tính Hóa đơn & Cấn trừ cọc | Subtotal = Tổng tiền món Served; Phí phục vụ = Subtotal × 5%; Thuế VAT = (Subtotal + Phí phục vụ) × 10%; Tổng cộng = Subtotal + Phí phục vụ + Thuế VAT; Tiền thanh toán thêm = MAX(0, Tổng cộng − Tiền cọc). Tiền cọc là mức chi tiêu tối thiểu không hoàn lại. | UC-E3 |
+| **BR-02** | Công thức tính Hóa đơn & Cấn trừ cọc | Subtotal = Tổng tiền món Served; Phí phục vụ = Subtotal × 5%; Thuế VAT = (Subtotal + Phí phục vụ) × 10%; Tổng cộng = Subtotal + Phí phục vụ + Thuế VAT; Tiền thanh toán thêm = MAX(0, Tổng cộng − Tiền cọc). Tiền cọc là mức chi tiêu tối thiểu không hoàn lại. | UC-E3, UC-S4 |
 | **BR-03** | Thẩm quyền xác nhận phục vụ tại quầy Pass | Thao tác xác nhận hoàn thành món (Served) chỉ dành cho Nhân viên Điều phối (Expediter) và Quản lý & Quản trị viên. Đầu bếp và Khách hàng không có quyền thao tác. | UC-E2, UC-E1 |
-| **BR-04** | Chính sách hủy đặt bàn & Hoàn tiền cọc | Hủy trước giờ hẹn từ 4 tiếng: Tự động hoàn 100% cọc qua VNPAY. Hủy dưới 4 tiếng hoặc vắng mặt (No-show): Phạt giữ 100% cọc. Quản lý có quyền duyệt hoàn cọc ngoại lệ kèm lý do lưu nhật ký kiểm toán. | UC-U1, UC-U3, UC-A3 |
-| **BR-05** | Điều phối Course Firing & Prep SLA | Mỗi món có định mức Prep SLA. Gửi đơn thì Course 1 chuyển sang Cooking; các Course sau ở trạng thái On Hold. KDS Bếp đếm ngược SLA và đổi màu (Xanh > 30% $\rightarrow$ Vàng $\le$ 30% $\rightarrow$ Đỏ nhấp nháy < 00:00). Khi khách dùng 60%–70%, Phục vụ bấm Course Firing để kích hoạt Course tiếp theo. | UC-E1, UC-E2, UC-A1 |
+| **BR-04** | Chính sách hủy đặt bàn & Hoàn tiền cọc | Hủy trước giờ hẹn từ 4 tiếng: Tự động hoàn 100% cọc qua VNPAY. Hủy dưới 4 tiếng hoặc vắng mặt (No-show): Phạt giữ 100% cọc. Quản lý có quyền duyệt hoàn cọc ngoại lệ kèm lý do lưu nhật ký kiểm toán. | UC-U1, UC-U3, UC-A3, UC-S2 |
+| **BR-05** | Điều phối Course Firing & Prep SLA | Mỗi món có định mức Prep SLA. Gửi đơn thì Course 1 chuyển sang Cooking; các Course sau ở trạng thái On Hold. KDS Bếp đếm ngược SLA và đổi màu (Xanh > 30% $\rightarrow$ Vàng $\le$ 30% $\rightarrow$ Đỏ nhấp nháy < 00:00). Khi khách dùng 60%–70%, Phục vụ bấm Course Firing để kích hoạt Course tiếp theo. | UC-E1, UC-E2, UC-A1, UC-S3 |

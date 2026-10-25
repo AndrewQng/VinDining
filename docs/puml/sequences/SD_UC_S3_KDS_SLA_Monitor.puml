@@ -1,0 +1,51 @@
+@startuml SD_UC_S3_KDS_SLA_Monitor
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 16
+skinparam sequenceActorFontSize 16
+skinparam sequenceParticipantFontSize 16
+skinparam sequenceArrowFontSize 15
+skinparam sequenceGroupFontSize 15
+skinparam sequenceGroupHeaderFontSize 15
+
+actor "Background Worker" as Worker
+control "KdsSlaMonitorJob" as Job
+participant "KitchenOrderService" as Service
+participant "KitchenRepository" as Repo
+database "SQL Server" as DB
+control "KitchenHub" as Hub
+boundary "Màn hình KDS Bếp" as KdsUI
+boundary "Màn hình Trạm Pass" as PassUI
+
+Worker -> Job: Quét kiểm soát SLA (Mỗi 10s)
+Job -> Service: CheckCookingSlaStatus()
+Service -> Repo: GetActiveCookingItems()
+Repo -> DB: SELECT OrderItemId, MenuItemId, StartedAt, PrepSLA FROM OrderItems WHERE Status = 'Cooking'
+DB --> Repo: CookingItemList
+Repo --> Service: CookingList
+
+loop Cho từng món đang chế biến
+    Service -> Service: CalculateElapsedTime(StartedAt, PrepSLA)
+    opt Thời gian nấu vượt quá PrepSLA
+        Service -> Repo: FlagItemOverdue(OrderItemId)
+        Repo -> DB: UPDATE OrderItems SET IsOverdue = 1
+        DB --> Repo: OK
+        Service -> Hub: BroadcastSlaBreached(OrderItemId, TableName, ItemName, ElapsedMinutes)
+        Hub -> KdsUI: ReceiveSlaAlert(OrderItemId, RedFlash, PlaySound)
+        KdsUI --> KdsUI: Vé món chuyển Đỏ nhấp nháy & phát chuông
+        Hub -> PassUI: ReceiveSlaAlert(OrderItemId, TableName, Urgent)
+        PassUI --> PassUI: Cảnh báo trễ món tới Điều phối viên
+    end
+end
+
+opt Đầu bếp hoàn tất chế biến trước cảnh báo
+    KdsUI -> Hub: MarkItemReady(OrderItemId)
+    Hub -> Service: UpdateItemStatus(OrderItemId, Ready)
+    Service -> Repo: SetItemReady(OrderItemId)
+    Repo -> DB: UPDATE OrderItems SET Status = 'Ready', IsOverdue = 0
+    DB --> Repo: OK
+end
+@enduml

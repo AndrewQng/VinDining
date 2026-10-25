@@ -1,0 +1,45 @@
+@startuml SD_UC_E6_2_CheckIn_WalkIn
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn & Check-in Walk-in
+activate UI
+
+UI -> Controller: POST /api/tables/{id}/walk-in
+activate Controller
+
+Controller -> Service: CheckInWalkIn(dto)
+activate Service
+
+Service -> Repo: SetTableOccupied(dto)
+activate Repo
+
+Repo -> DB: UPDATE Tables \nSET Status = 'Occupied'
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Check-in thành công
+deactivate UI
+
+@enduml

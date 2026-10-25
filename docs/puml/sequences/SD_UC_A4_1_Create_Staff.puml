@@ -1,0 +1,51 @@
+@startuml SD_UC_A4_1_Create_Staff
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản trị viên" as Admin
+boundary "Giao diện Web" as UI
+control "AdminStaffController" as Controller
+participant "StaffService" as Service
+participant "StaffRepository" as Repo
+database "SQL Server" as DB
+participant "Email Service" as MailService
+
+Admin -> UI: Nhập thông tin & Tạo tài khoản
+activate UI
+
+UI -> Controller: POST /api/admin/staff
+activate Controller
+
+Controller -> Service: CreateStaff(dto)
+activate Service
+
+Service -> Service: Validate & HashPassword
+
+Service -> Repo: InsertUser(dto)
+activate Repo
+Repo -> DB: INSERT Users & Roles
+activate DB
+DB --> Repo: OK (UserId)
+deactivate DB
+Repo --> Service: Saved (UserId)
+deactivate Repo
+
+Service -> MailService: SendCredentials(Email)
+activate MailService
+MailService --> Service: Sent
+deactivate MailService
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 201 Created
+deactivate Controller
+
+UI --> Admin: Tạo thành công
+deactivate UI
+
+@enduml

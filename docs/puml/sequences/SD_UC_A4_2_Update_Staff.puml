@@ -1,0 +1,43 @@
+@startuml SD_UC_A4_2_Update_Staff
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản trị viên" as Admin
+boundary "Giao diện Web" as UI
+control "AdminStaffController" as Controller
+participant "StaffService" as Service
+participant "StaffRepository" as Repo
+database "SQL Server" as DB
+
+Admin -> UI: Sửa thông tin & Lưu
+activate UI
+
+UI -> Controller: PUT /api/admin/staff/{id}
+activate Controller
+
+Controller -> Service: UpdateStaff(id, dto)
+activate Service
+
+Service -> Repo: UpdateUser(id, dto)
+activate Repo
+Repo -> DB: UPDATE Users & Roles
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Admin: Cập nhật thành công
+deactivate UI
+
+@enduml

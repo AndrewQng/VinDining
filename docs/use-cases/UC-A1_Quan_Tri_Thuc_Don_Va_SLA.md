@@ -1,72 +1,62 @@
-﻿# Đặc tả UC-A1: Quản trị Danh mục, Thực đơn & Cấu hình Prep SLA món ăn
+# Đặc tả UC-A1: Quản trị thực đơn
 
 | Thuộc tính | Chi tiết đặc tả |
 | :--- | :--- |
 | **Mã Use Case** | UC-A1 |
-| **Tên Use Case** | Quản trị Danh mục, Thực đơn & Cấu hình Prep SLA món ăn *(Menu Engineering, Pricing & Prep SLA Configuration)* |
-| **Tác nhân tham gia** | Quản lý Nhà hàng *(Chính)*, Quản trị viên *(Phụ)* |
-| **Mức độ ưu tiên** | Quan trọng *(Should Have)* |
-| **Mối quan hệ** | Bao gồm Use Case cơ sở Đăng nhập UC-E5 |
-| **Mục tiêu chức năng** | Cung cấp công cụ cho Quản lý thiết lập thực đơn, đơn giá, phân nhóm Course mặc định, cấu hình thời gian chế biến tiêu chuẩn (Prep SLA) và cập nhật trạng thái Còn món hoặc Hết món theo thời gian thực. |
-| **Điều kiện tiên quyết** | Quản lý đã đăng nhập thành công vào hệ thống với quyền hạn phù hợp. |
-| **Điều kiện kết thúc** | Thông tin thực đơn và cấu hình SLA được lưu trữ đồng bộ trong cơ sở dữ liệu, hiển thị tức thời trên E-Menu, TableDisplay, POS và màn hình KDS Bếp. |
+| **Tên Use Case** | Quản trị thực đơn *(Menu Management)* |
+| **Tác nhân** | Quản lý Nhà hàng |
+| **Mục tiêu** | Thiết lập, cập nhật danh mục món lẻ và Set Menu, định mức thời gian chế biến (Prep SLA) và trạng thái phục vụ. |
+| **Điều kiện tiên quyết** | Quản lý đã đăng nhập vào hệ thống với quyền hạn quản trị. |
+| **Điều kiện kết thúc** | Dữ liệu thực đơn được lưu vào cơ sở dữ liệu và đồng bộ tức thời tới E-Menu, POS, KDS Bếp. |
 
-## Luồng sự kiện chính (Main Flow)
-1. Quản lý truy cập mục Quản lý thực đơn trên cổng thông tin quản trị.
-2. Hệ thống hiển thị danh sách món ăn phân loại theo nhóm thực đơn và trạm bếp phụ trách.
-3. Quản lý chọn chức năng Thêm món mới hoặc chọn một món ăn hiện có để Chỉnh sửa.
-4. Quản lý nhập hoặc cập nhật bộ thông số chuẩn cho món ăn, bao gồm: Tên món, Mô tả nghệ thuật, Đơn giá niêm yết, Hình ảnh độ phân giải cao, Nhóm Course mặc định (Khai vị / Món chính / Tráng miệng), Trạm bếp chế biến (Bếp Lạnh / Bếp Nóng / Bếp Bánh) và Thời gian chuẩn bị định mức Prep SLA (tính bằng phút).
-5. Quản lý bấm nút Lưu thay đổi.
-6. Hệ thống kiểm tra tính hợp lệ của dữ liệu, lưu vào cơ sở dữ liệu và phát tín hiệu qua SignalR để đồng bộ tức thời xuống E-Menu, màn hình TableDisplay, thiết bị POS và bộ đếm SLA trên KDS Bếp.
+## Luồng sự kiện chính
 
-## Luồng ngoại lệ (Alternative / Exception Flows)
-* 6a. Khi bếp báo hết nguyên liệu đột xuất trong ca phục vụ, Quản lý (hoặc Nhân viên Điều phối) gạt nhanh công tắc chuyển trạng thái món sang Tạm hết hàng *(Out of Stock)*; hệ thống lập tức làm mờ món ăn trên E-Menu và chặn thao tác chọn món đó trên ứng dụng POS của nhân viên phục vụ.
+1. Quản lý mở màn hình quản trị thực đơn trên giao diện Web.
+2. Quản lý chọn thao tác thêm mới hoặc chỉnh sửa món lẻ: nhập tên món, đơn giá, nhóm Course, định mức Prep SLA và bấm lưu.
+3. Quản lý chọn thao tác thiết lập hoặc cập nhật Set Menu: nhập tên set, đơn giá trọn gói, chọn danh sách món con theo thứ tự Course và bấm lưu.
+4. Quản lý gạt công tắc để chuyển nhanh trạng thái phục vụ (Còn món hoặc Tạm hết hàng) khi ca bếp thay đổi nguyên liệu.
+5. Quản lý chọn xóa món khỏi thực đơn; hệ thống kiểm tra món không nằm trong Order đang phục vụ và thực hiện xóa mềm (Soft Delete).
+6. Hệ thống kiểm tra tính hợp lệ của dữ liệu, lưu vào cơ sở dữ liệu và gửi thông báo cập nhật qua SignalR.
 
-## Sơ đồ tuần tự (Sequence Diagram)
+## Luồng ngoại lệ
+
+* 5a. Khi món ăn đang nằm trong Order chưa hoàn tất, hệ thống từ chối xóa và hiển thị thông báo món đang được phục vụ.
+* 6a. Khi thông tin nhập vào không hợp lệ hoặc trùng lặp, hệ thống thông báo lỗi chi tiết để Quản lý điều chỉnh.
+
+## Danh sách Sơ đồ tuần tự
+
+### 1. Thêm mới món ăn
 ```plantuml
-﻿@startuml SD_UC_A1_Menu_PrepSLA
-autonumber
-skinparam style strictuml
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+!include ../puml/sequences/SD_UC_A1_1_Create_MenuItem.puml
+```
 
-actor "Quản lý" as Manager
-boundary "Giao diện Web" as UI
-control "AdminMenuController" as Controller
-participant "MenuService" as Service
-participant "MenuRepository" as Repo
-database "SQL Server" as DB
+### 2. Chỉnh sửa thông tin món ăn
+```plantuml
+!include ../puml/sequences/SD_UC_A1_2_Update_MenuItem.puml
+```
 
-Manager -> UI: Nhập thông tin món & Lưu
-UI -> Controller: POST /api/admin/menu-items
-Controller -> Service: UpsertMenuItem(dto)
-Service -> Repo: SaveMenuItem(dto)
-Repo -> DB: INSERT / UPDATE MenuItems
-DB --> Repo: OK(MenuItemId)
-Repo --> Service: Saved
-Service --> Controller: Result(Success)
-Controller --> UI: 201 Created
-UI --> Manager: Cập nhật danh sách
+### 3. Bật / Tắt trạng thái phục vụ
+```plantuml
+!include ../puml/sequences/SD_UC_A1_3_Toggle_Availability.puml
+```
 
-opt Chuyển trạng thái tạm hết cho món
-    Manager -> UI: Đổi trạng thái món ăn
-    UI -> Controller: PATCH /api/admin/menu-items/{id}/availability
-    Controller -> Service: UpdateAvailability
-    Service -> Repo: SetItemOutOfStock
-    Repo -> DB: UPDATE MenuItems
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Manager: Cập nhật Tạm hết hàng
-end
-@enduml
+### 4. Xóa món ăn
+```plantuml
+!include ../puml/sequences/SD_UC_A1_4_Delete_MenuItem.puml
+```
+
+### 5. Thiết lập Set Menu
+```plantuml
+!include ../puml/sequences/SD_UC_A1_5_Create_SetMenu.puml
+```
+
+### 6. Cập nhật cấu trúc Set Menu
+```plantuml
+!include ../puml/sequences/SD_UC_A1_6_Update_SetMenu.puml
+```
+
+### 7. Xóa Set Menu
+```plantuml
+!include ../puml/sequences/SD_UC_A1_7_Delete_SetMenu.puml
 ```
 

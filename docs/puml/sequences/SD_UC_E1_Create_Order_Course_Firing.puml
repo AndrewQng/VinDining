@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Nhân viên Phục vụ" as Waitstaff
 boundary "Giao diện Web" as UI
@@ -18,44 +13,103 @@ participant "OrderService" as Service
 participant "OrderRepository" as Repo
 database "SQL Server" as DB
 
-Waitstaff -> UI: Chọn bàn, thêm món 
-UI -> Controller: POST /api/orders 
+== Kịch bản 1: Tạo Order & Khởi chạy Course đầu tiên ==
+
+Waitstaff -> UI: Chọn bàn, thêm món & Lưu
+activate UI
+
+UI -> Controller: POST /api/orders
+activate Controller
+
 Controller -> Service: CreateOrderWithCourses(dto)
-Service -> Repo: InsertOrder(Processing) & OrderItems
-Repo -> DB: INSERT Orders, OrderItems & CoursePhases
-DB --> Repo: OK
-Service -> Repo: InitializeCourseStatus
-Repo -> DB: UPDATE Courses 
-DB --> Repo: OK
+activate Service
+
+Service -> Repo: InsertOrder(dto)
+activate Repo
+
+Repo -> DB: INSERT Orders, OrderItems, Courses
+activate DB
+DB --> Repo: OK (OrderId)
+deactivate DB
+
 Repo --> Service: Saved(OrderId)
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_NewCourse")
+
 Service --> Controller: Result(dto)
+deactivate Service
+
 Controller --> UI: 201 Created
-UI --> Waitstaff: Course đang chế biến
+deactivate Controller
 
-opt Kích hoạt lượt món tiếp theo
-    Waitstaff -> UI: Bấm Fire Course 
-    UI -> Controller: POST /api/orders/{id}/fire-course
-    Controller -> Service: FireNextCourse
-    Service -> Repo: UpdateCourseCooking
-    Repo -> DB: UPDATE Courses
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Cập nhật Course tiếp
-end
+UI --> Waitstaff: Course 1 đang chế biến
+deactivate UI
 
-opt Khách gọi thêm món
-    Waitstaff -> UI: Chọn thêm món, bấm Cập nhật
-    UI -> Controller: POST /api/orders/{id}/items 
-    Controller -> Service: AddOrderItems
-    Service -> Repo: InsertAdditionalItems
-    Repo -> DB: INSERT OrderItems
-    DB --> Repo: OK
-    Repo --> Service: OK
-    Service --> Controller: Result(Success)
-    Controller --> UI: 200 OK
-    UI --> Waitstaff: Cập nhật đơn hàng thành công
-end
+== Kịch bản 2: Kích hoạt lượt món tiếp theo (Fire Course) ==
+
+Waitstaff -> UI: Bấm Fire Course
+activate UI
+
+UI -> Controller: POST /api/orders/{id}/fire-course
+activate Controller
+
+Controller -> Service: FireNextCourse(id, courseNo)
+activate Service
+
+Service -> Repo: UpdateCourseStatus(id, "Cooking")
+activate Repo
+
+Repo -> DB: UPDATE Courses
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_FireCourse")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Cập nhật Course tiếp theo
+deactivate UI
+
+== Kịch bản 3: Khách gọi thêm món ==
+
+Waitstaff -> UI: Chọn thêm món & Cập nhật
+activate UI
+
+UI -> Controller: POST /api/orders/{id}/items
+activate Controller
+
+Controller -> Service: AddOrderItems(id, itemsDto)
+activate Service
+
+Service -> Repo: InsertAdditionalItems(id, itemsDto)
+activate Repo
+
+Repo -> DB: INSERT OrderItems
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service -> UI: PushSignalR("Kitchen_AdditionalItems")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Waitstaff: Cập nhật đơn hàng thành công
+deactivate UI
+
 @enduml
-

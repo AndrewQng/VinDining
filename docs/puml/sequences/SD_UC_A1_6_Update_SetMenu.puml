@@ -1,0 +1,47 @@
+@startuml SD_UC_A1_6_Update_SetMenu
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Quản lý" as Manager
+boundary "Giao diện Web" as UI
+control "AdminMenuController" as Controller
+participant "MenuService" as Service
+participant "MenuRepository" as Repo
+database "SQL Server" as DB
+
+Manager -> UI: Thay đổi thông tin & Lưu
+activate UI
+
+UI -> Controller: PUT /api/admin/tasting-menus/{id}
+activate Controller
+
+Controller -> Service: UpdateTastingMenu(id, dto)
+activate Service
+
+Service -> Service: ValidateItems(dto.Items)
+
+Service -> Repo: SyncTastingMenu(id, menu, items)
+activate Repo
+
+Repo -> DB: UPDATE TastingMenus \n& Sync TastingMenuItems
+activate DB
+DB --> Repo: OK
+deactivate DB
+
+Repo --> Service: OK
+deactivate Repo
+
+Service --> Controller: Result.Success
+deactivate Service
+
+Controller --> UI: 200 OK
+deactivate Controller
+
+UI --> Manager: Cập nhật thông tin 
+deactivate UI
+
+@enduml
