@@ -1,0 +1,51 @@
+@startuml SD_UC_E3_3_Settle_Invoice
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Thu ngân" as Cashier
+boundary "Web POS Quầy" as WebPOS
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "InvoiceRepository" as Repo
+database "SQL Server" as DB
+participant "Printer" as Printer
+
+Cashier -> WebPOS: Chọn bàn, hình thức & Xác nhận
+activate WebPOS
+
+WebPOS -> Controller: POST /api/invoices/{tableId}/settle
+activate Controller
+
+Controller -> Service: SettleInvoice(dto)
+activate Service
+
+Service -> Repo: SaveInvoice & CompleteTableSession(dto)
+activate Repo
+Repo -> DB: INSERT Invoices\nUPDATE Orders SET Status = 'Paid'\nUPDATE Tables SET Status = 'Available'
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Saved
+deactivate Repo
+
+Service -> Printer: PrintOfficialReceipt(invoice)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service -> WebPOS: PushSignalR("Table_Available")
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> WebPOS: 200 OK
+deactivate Controller
+
+WebPOS --> Cashier: Thanh toán thành công & In hóa đơn
+deactivate WebPOS
+
+@enduml

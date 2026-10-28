@@ -1,50 +1,43 @@
-@startuml SD_UC_S1_Auto_Release_Expired_Lock
+@startuml SD_UC_S1_Giai_Phong_Ban_Het_Han_Coc
 autonumber
 skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 14
 
 actor "Background Worker" as Worker
-control "SystemJobController" as Controller
 participant "CleanupLockService" as Service
 participant "ReservationRepository" as Repo
 database "SQL Server" as DB
-participant "VNPAY" as VNPAY
 
-Worker -> Controller: Quét định kỳ (Mỗi 60s)
-Controller -> Service: ReleaseExpiredLocks()
-Service -> Repo: GetExpiredReservations(17p)
-Repo -> DB: SELECT * WHERE Status = 'Pending'
+Worker -> Service: Kích hoạt định kỳ (Mỗi 60s)
+activate Worker
+activate Service
+
+Service -> Repo: GetExpiredReservations()
+activate Repo
+Repo -> DB: SELECT * FROM Reservations WHERE Status = 'Pending' AND LockExpiresAt <= NOW()
+activate DB
 DB --> Repo: ExpiredList
-Repo --> Service: List
+deactivate DB
+Repo --> Service: List<Reservation>
+deactivate Repo
 
-loop Cho từng đơn quá 17 phút
-    Service -> Repo: FreeTable(id)
-    Repo -> DB: UPDATE Reservation, Table
-    DB --> Repo: OK
-end
-
-opt Late IPN (>17 phút)
-    VNPAY -> Controller: POST /api/payments/vnpay-ipn (Late)
-    Controller -> Service: ProcessLateIpn(vnp_Params)
-    Service -> Repo: CheckTable(id)
-    Repo -> DB: SELECT Status FROM Tables
-    DB --> Repo: AlreadyBooked
-    Repo --> Service: Unavailable
-    Service -> VNPAY: CallRefundApi(100% Cọc)
-    VNPAY --> Service: RefundSuccess (00)
-    Service -> Repo: UpdateReservation(AutoRefunded)
-    Repo -> DB: UPDATE ReservationStatus
-    DB --> Repo: OK
+loop Cho từng đơn cọc quá thời hạn
+    Service -> Repo: FreeTableAndExpireReservation(id)
+    activate Repo
+    Repo -> DB: UPDATE Reservations SET Status = 'Expired_Cancelled'\nUPDATE Tables SET Status = 'Available'
+    activate DB
+    DB --> Repo: Success
+    deactivate DB
     Repo --> Service: OK
-    Service --> Controller: RspCode: 00
-    Controller --> VNPAY: 200 OK
+    deactivate Repo
 end
+
+Service --> Worker: Hoàn tất giải phóng (Completed)
+deactivate Service
+deactivate Worker
+@enduml
+
 @enduml

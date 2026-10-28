@@ -1,0 +1,43 @@
+@startuml SD_UC_E4_2_Merge_Table
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+autoactivate on
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn chính & các bàn cần ghép
+UI -> Controller: POST /api/tables/merge
+Controller -> Service: MergeTables(dto)
+
+Service -> Repo: ValidateTables(dto.TableIds)
+Repo -> DB: SELECT Id, Status, GroupId \nFROM Tables WHERE Id IN (@ids)
+DB --> Repo: List<TableInfo>
+Repo --> Service: isValid
+
+alt Các bàn hợp lệ để ghép
+    group Transaction
+        Service -> Repo: LinkTables\n(dto.PrimaryId, dto.SubTableIds)
+        Repo -> DB: UPDATE Tables \nSET GroupId = @primaryId, Status = 'Merged'\nWHERE Id IN (@subTableIds)
+        DB --> Repo: Rows affected
+        Repo --> Service: true
+    end
+    Service --> Controller: Result.Success()
+    Controller --> UI: 200 OK (ApiResponse)
+    UI --> Waitstaff: Hiển thị thông báo thành công
+else Bàn không hợp lệ
+    Service --> Controller: Result.Failure()
+    Controller --> UI: 400 Bad Request (ErrorDetails)
+    UI --> Waitstaff: Cảnh báo "Không thể ghép bàn đã chọn"
+end
+
+@enduml

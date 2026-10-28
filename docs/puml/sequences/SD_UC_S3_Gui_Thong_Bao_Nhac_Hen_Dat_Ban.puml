@@ -1,0 +1,51 @@
+@startuml SD_UC_S3_Gui_Thong_Bao_Nhac_Hen_Dat_Ban
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Background Worker" as Worker
+participant "ReservationReminderService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+participant "NotificationGateway" as Gateway
+actor "Khách hàng" as Guest
+
+Worker -> Service: Kích hoạt định kỳ (Mỗi 15 phút)
+activate Worker
+activate Service
+
+Service -> Repo: GetUpcomingReservations()
+activate Repo
+Repo -> DB: SELECT * FROM Reservations \nWHERE Status = 'Reserved' \nAND StartTime BETWEEN NOW AND (NOW + 2h) \nAND IsReminderSent = 0
+activate DB
+DB --> Repo: UpcomingList
+deactivate DB
+Repo --> Service: List<Reservation>
+deactivate Repo
+
+loop Cho từng đặt bàn sắp đến giờ
+    Service -> Service: FormatReminderMessage(ReservationDetails)
+    Service -> Gateway: SendReminderNotification(GuestPhone/Email, Message)
+    activate Gateway
+    Gateway -> Guest: Gửi tin nhắn / Email nhắc lịch hẹn
+    Gateway --> Service: DeliveryResult(Success)
+    deactivate Gateway
+    
+    Service -> Repo: MarkReminderSent(reservationId)
+    activate Repo
+    Repo -> DB: UPDATE Reservations SET IsReminderSent = 1, ReminderSentAt = NOW() WHERE Id = reservationId
+    activate DB
+    DB --> Repo: Success
+    deactivate DB
+    Repo --> Service: OK
+    deactivate Repo
+end
+
+Service --> Worker: Hoàn tất nhắc lịch (Completed)
+deactivate Service
+deactivate Worker
+@enduml
+

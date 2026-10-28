@@ -1,0 +1,43 @@
+@startuml SD_UC_E4_1_Transfer_Table
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+autoactivate on
+
+actor "Nhân viên Phục vụ" as Waitstaff
+boundary "Giao diện Web" as UI
+control "TableController" as Controller
+participant "TableService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+
+Waitstaff -> UI: Chọn bàn đích cần chuyển
+UI -> Controller: POST /api/tables/{sourceId}/transfer
+Controller -> Service: TransferTable(sourceId, dto)
+
+Service -> Repo: GetTableStatus(dto.TargetTableId)
+Repo -> DB: SELECT Status FROM Tables WHERE Id = @targetId
+DB --> Repo: Status
+Repo --> Service: targetStatus
+
+alt Bàn đích khả dụng 
+    group Transaction 
+        Service -> Repo: MoveOrderAndDeposit\n(sourceId, dto.TargetTableId)
+        Repo -> DB: UPDATE Orders, Deposits \n        SET TableId = @targetId\n        UPDATE Tables \nSET Status (Source = Available, Target = Occupied)
+        DB --> Repo: Rows affected
+        Repo --> Service: true
+    end
+    Service --> Controller: Result.Success()
+    Controller --> UI: 200 OK (ApiResponse)
+    UI --> Waitstaff: Hiển thị thông báo thành công
+else Bàn đích không khả dụng
+    Service --> Controller: Result.Failure()
+    Controller --> UI: 400 Bad Request (ErrorDetails)
+    UI --> Waitstaff: Cảnh báo "Bàn đích không khả dụng"
+end
+
+@enduml

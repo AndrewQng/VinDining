@@ -1,0 +1,57 @@
+@startuml SD_UC_E3_1_Request_Checkout
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Phục vụ" as Waitstaff
+boundary "App Phục vụ" as MobileUI
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "TableRepository" as Repo
+database "SQL Server" as DB
+boundary "Web POS Quầy" as WebPOS
+actor "Thu ngân" as Cashier
+
+Waitstaff -> MobileUI: Chọn bàn \n& Bấm "Yêu cầu tính tiền"
+activate MobileUI
+
+MobileUI -> Controller: POST /api/tables/{tableId}/request-checkout
+activate Controller
+
+Controller -> Service: RequestCheckout(tableId)
+activate Service
+
+Service -> Repo: GetTableWithActiveOrder(tableId)
+activate Repo
+Repo -> DB: SELECT TableStatus, ActiveOrderId
+activate DB
+DB --> Repo: Table (Status = Occupied)
+deactivate DB
+Repo --> Service: TableData
+deactivate Repo
+
+Service -> Repo: SetTablePaymentPending(tableId)
+activate Repo
+Repo -> DB: UPDATE Tables \nSET Status = 'PaymentPending'
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Updated
+deactivate Repo
+
+Service -> WebPOS: PushSignalR("BillRequested", tableId)
+WebPOS --> Cashier: Thông báo bàn yêu cầu tính tiền
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> MobileUI: 200 OK
+deactivate Controller
+
+MobileUI --> Waitstaff: Đã gửi yêu cầu 
+deactivate MobileUI
+
+@enduml

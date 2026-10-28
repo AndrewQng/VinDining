@@ -6,20 +6,61 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web" as UI
+actor "Phục vụ" as Waitstaff
+boundary "App Phục vụ" as MobileUI
 control "InvoiceController" as Controller
 participant "InvoiceService" as Service
 participant "InvoiceRepository" as Repo
 database "SQL Server" as DB
+boundary "Web POS Quầy" as WebPOS
+actor "Thu ngân" as Cashier
 participant "Printer" as Printer
 
-== Kịch bản 1: Xem tạm tính (kèm mã VietQR ngân hàng) ==
+== Kịch bản 1: Phục vụ yêu cầu & Thu ngân in phiếu tạm tính ==
 
-Waitstaff -> UI: Chọn bàn & Xem tạm tính
-activate UI
+Waitstaff -> MobileUI: Chọn bàn & Bấm "Yêu cầu tính tiền"
+activate MobileUI
 
-UI -> Controller: GET /api/invoices/\npreview/{tableId}
+MobileUI -> Controller: POST /api/tables/\n{tableId}/request-checkout
+activate Controller
+
+Controller -> Service: RequestCheckout(tableId)
+activate Service
+
+Service -> Repo: GetTableWithActiveOrder(tableId)
+activate Repo
+Repo -> DB: SELECT TableStatus, ActiveOrderId
+activate DB
+DB --> Repo: Table (Status = Occupied)
+deactivate DB
+Repo --> Service: TableData
+deactivate Repo
+
+Service -> Repo: SetTablePaymentPending(tableId)
+activate Repo
+Repo -> DB: UPDATE Tables SET Status = 'PaymentPending'
+activate DB
+DB --> Repo: OK
+deactivate DB
+Repo --> Service: Updated
+deactivate Repo
+
+Service -> WebPOS: PushSignalR("BillRequested", tableId)
+WebPOS --> Cashier: Chuông báo & Thông báo bàn yêu cầu tính tiền
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> MobileUI: 200 OK
+deactivate Controller
+
+MobileUI --> Waitstaff: Đã gửi yêu cầu đến quầy thu ngân
+deactivate MobileUI
+
+Cashier -> WebPOS: Chọn bàn & Bấm "Xem tạm tính"
+activate WebPOS
+
+WebPOS -> Controller: GET /api/invoices/\npreview/{tableId}
 activate Controller
 
 Controller -> Service: CalculateInvoice(tableId)
@@ -39,46 +80,75 @@ Service -> Service: Calculate & GenerateVietQR(Data)
 Service --> Controller: InvoicePreviewDto (Amount, VietQR)
 deactivate Service
 
-Controller --> UI: 200 OK
+Controller --> WebPOS: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Hiển thị tạm tính & mã VietQR
-deactivate UI
+WebPOS --> Cashier: Hiển thị màn hình chi tiết tạm tính & VietQR
+deactivate WebPOS
 
-== Kịch bản 2: Xác nhận thanh toán (Tiền mặt / Chuyển khoản / Card) ==
+Cashier -> WebPOS: Bấm "In phiếu tạm tính"
+activate WebPOS
 
-Waitstaff -> UI: Chọn (Cash/Transfer/Card) & Xác nhận
-activate UI
+WebPOS -> Controller: POST /api/invoices/\n{tableId}/print-preview
+activate Controller
 
-UI -> Controller: POST /api/invoices/{tableId}/settle
+Controller -> Service: PrintPreBill(tableId)
+activate Service
+
+Service -> Printer: PrintReceipt(previewDto)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> WebPOS: 200 OK
+deactivate Controller
+
+WebPOS --> Cashier: Thông báo đã in thành công
+deactivate WebPOS
+
+Cashier -> Waitstaff: Kẹp phiếu tạm tính vào sổ da
+Waitstaff -> Waitstaff: Trình sổ da gửi khách đối soát tại bàn
+
+== Kịch bản 2: Thu ngân xác nhận thanh toán & Đóng đơn ==
+
+Cashier -> WebPOS: Chọn bàn, hình thức (Cash/Transfer/Card) & Xác nhận
+activate WebPOS
+
+WebPOS -> Controller: POST /api/invoices/{tableId}/settle
 activate Controller
 
 Controller -> Service: SettleInvoice(dto)
 activate Service
 
-Service -> Repo: SaveInvoice & SetTableCleaning(dto)
+Service -> Repo: SaveInvoice & CompleteTableSession(dto)
 activate Repo
-Repo -> DB: INSERT Invoices, UPDATE Orders & Tables
+Repo -> DB: INSERT Invoices\nUPDATE Orders SET Status = 'Paid'\nUPDATE Tables SET Status = 'Available'
 activate DB
 DB --> Repo: OK
 deactivate DB
 Repo --> Service: Saved
 deactivate Repo
 
-Service -> Printer: PrintReceipt(invoice)
+Service -> Printer: PrintOfficialReceipt(invoice)
 activate Printer
 Printer --> Service: OK
 deactivate Printer
 
-Service -> UI: PushSignalR("Table_Cleaning")
+Service -> WebPOS: PushSignalR("Table_Available")
 
 Service --> Controller: Result(Success)
 deactivate Service
 
-Controller --> UI: 200 OK
+Controller --> WebPOS: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Thanh toán thành công
-deactivate UI
+WebPOS --> Cashier: Thanh toán thành công
+deactivate WebPOS
+
+Cashier -> Waitstaff: Giao sổ da kèm hóa đơn chính thức
+Waitstaff -> Waitstaff: Trình sổ da gửi khách tại bàn
 
 @enduml

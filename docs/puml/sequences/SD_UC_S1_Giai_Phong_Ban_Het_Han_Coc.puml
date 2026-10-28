@@ -1,0 +1,41 @@
+@startuml SD_UC_S1_Giai_Phong_Ban_Het_Han_Coc
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Background Worker" as Worker
+participant "CleanupLockService" as Service
+participant "ReservationRepository" as Repo
+database "SQL Server" as DB
+
+Worker -> Service: Kích hoạt định kỳ (Mỗi 60s)
+activate Worker
+activate Service
+
+Service -> Repo: GetExpiredReservations()
+activate Repo
+Repo -> DB: SELECT * FROM Reservations WHERE Status = 'Pending' AND LockExpiresAt <= NOW()
+activate DB
+DB --> Repo: ExpiredList
+deactivate DB
+Repo --> Service: List<Reservation>
+deactivate Repo
+
+loop Cho từng đơn cọc quá thời hạn
+    Service -> Repo: FreeTableAndExpireReservation(id)
+    activate Repo
+    Repo -> DB: UPDATE Reservations SET Status = 'Expired_Cancelled'\nUPDATE Tables SET Status = 'Available'
+    activate DB
+    DB --> Repo: Success
+    deactivate DB
+    Repo --> Service: OK
+    deactivate Repo
+end
+
+Service --> Worker: Hoàn tất giải phóng (Completed)
+deactivate Service
+deactivate Worker
+@enduml

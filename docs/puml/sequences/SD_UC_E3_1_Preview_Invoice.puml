@@ -6,17 +6,18 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web" as UI
+actor "Thu ngân" as Cashier
+boundary "Web POS Quầy" as WebPOS
 control "InvoiceController" as Controller
 participant "InvoiceService" as Service
 participant "InvoiceRepository" as Repo
 database "SQL Server" as DB
+participant "Printer" as Printer
 
-Waitstaff -> UI: Chọn bàn & Xem tạm tính
-activate UI
+Cashier -> WebPOS: Chọn bàn & Bấm "Xem tạm tính"
+activate WebPOS
 
-UI -> Controller: GET /api/invoices/\npreview/{tableId}
+WebPOS -> Controller: GET /api/invoices/\npreview/{tableId}
 activate Controller
 
 Controller -> Service: CalculateInvoice(tableId)
@@ -36,10 +37,33 @@ Service -> Service: Calculate & GenerateVietQR(Data)
 Service --> Controller: InvoicePreviewDto (Amount, VietQR)
 deactivate Service
 
-Controller --> UI: 200 OK
+Controller --> WebPOS: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Hiển thị tạm tính & mã VietQR
-deactivate UI
+WebPOS --> Cashier: Hiển thị màn hình chi tiết tạm tính & VietQR
+deactivate WebPOS
+
+Cashier -> WebPOS: Bấm "In phiếu tạm tính"
+activate WebPOS
+
+WebPOS -> Controller: POST /api/invoices/\n{tableId}/print-preview
+activate Controller
+
+Controller -> Service: PrintPreBill(tableId)
+activate Service
+
+Service -> Printer: PrintReceipt(previewDto)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> WebPOS: 200 OK
+deactivate Controller
+
+WebPOS --> Cashier: Thông báo đã in thành công
+deactivate WebPOS
 
 @enduml

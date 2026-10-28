@@ -6,14 +6,14 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Nhân viên Phục vụ" as Waitstaff
+actor "Nhân viên Phục vụ / Thu ngân" as Staff
 boundary "Giao diện Web" as UI
 control "TableController" as Controller
 participant "TableService" as Service
 participant "TableRepository" as Repo
 database "SQL Server" as DB
 
-Waitstaff -> UI: Bấm Check-in nhận bàn
+Staff -> UI: Bấm Check-in nhận bàn
 activate UI
 
 UI -> Controller: POST /api/tables/{id}/check-in
@@ -63,7 +63,7 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Check-in thành công
+UI --> Staff: Check-in thành công
 deactivate UI
 
 @enduml

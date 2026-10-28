@@ -1,4 +1,4 @@
-@startuml SD_UC_E6_CheckIn_And_Clean_Table
+@startuml SD_UC_E6_CheckIn_Table
 autonumber
 skinparam style strictuml
 skinparam sequenceMessageAlign center
@@ -6,16 +6,16 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Nhân viên Phục vụ" as Waitstaff
+actor "Nhân viên Phục vụ / Thu ngân" as Staff
 boundary "Giao diện Web" as UI
 control "TableController" as Controller
 participant "TableService" as Service
 participant "TableRepository" as Repo
 database "SQL Server" as DB
 
-== Kịch bản 1: Check-in nhận bàn ==
+== Kịch bản 1: Check-in nhận bàn khách đặt trước ==
 
-Waitstaff -> UI: Bấm Check-in nhận bàn
+Staff -> UI: Bấm Check-in nhận bàn
 activate UI
 
 UI -> Controller: POST /api/tables/{id}/check-in
@@ -65,13 +65,13 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Check-in thành công
+UI --> Staff: Check-in thành công
 deactivate UI
 
 == Kịch bản 2: Khách vãng lai (Walk-in) ==
 
 opt Khách vãng lai (Walk-in)
-    Waitstaff -> UI: Chọn bàn & Check-in Walk-in
+    Staff -> UI: Chọn bàn & Check-in Walk-in
     activate UI
     UI -> Controller: POST /api/tables/{id}/walk-in
     activate Controller
@@ -89,33 +89,9 @@ opt Khách vãng lai (Walk-in)
     deactivate Service
     Controller --> UI: 200 OK
     deactivate Controller
-    UI --> Waitstaff: Check-in thành công
-    deactivate UI
-end
-
-== Kịch bản 3: Hoàn tất dọn bàn ==
-
-opt Hoàn tất dọn bàn
-    Waitstaff -> UI: Bấm Hoàn tất dọn bàn
-    activate UI
-    UI -> Controller: POST /api/tables/{id}/clean-complete
-    activate Controller
-    Controller -> Service: CompleteCleaning(dto)
-    activate Service
-    Service -> Repo: SetTableAvailable(dto)
-    activate Repo
-    Repo -> DB: UPDATE Tables \nSET Status = 'Available'
-    activate DB
-    DB --> Repo: OK
-    deactivate DB
-    Repo --> Service: OK
-    deactivate Repo
-    Service --> Controller: Result(Success)
-    deactivate Service
-    Controller --> UI: 200 OK
-    deactivate Controller
-    UI --> Waitstaff: Bàn chuyển sang Sẵn sàng
+    UI --> Staff: Check-in thành công
     deactivate UI
 end
 
 @enduml
+

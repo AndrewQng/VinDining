@@ -6,18 +6,18 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Nhân viên Phục vụ" as Waitstaff
-boundary "Giao diện Web" as UI
+actor "Thu ngân" as Cashier
+boundary "Web POS Quầy" as WebPOS
 control "InvoiceController" as Controller
 participant "InvoiceService" as Service
 participant "InvoiceRepository" as Repo
 database "SQL Server" as DB
 participant "Printer" as Printer
 
-Waitstaff -> UI: Chọn (Cash/Transfer/Card) & Xác nhận
-activate UI
+Cashier -> WebPOS: Chọn bàn, hình thức (Cash/Transfer/Card) & Xác nhận
+activate WebPOS
 
-UI -> Controller: POST /api/invoices/{tableId}/settle
+WebPOS -> Controller: POST /api/invoices/{tableId}/settle
 activate Controller
 
 Controller -> Service: SettleInvoice(dto)
@@ -32,20 +32,20 @@ deactivate DB
 Repo --> Service: Saved
 deactivate Repo
 
-Service -> Printer: PrintReceipt(invoice)
+Service -> Printer: PrintOfficialReceipt(invoice)
 activate Printer
 Printer --> Service: OK
 deactivate Printer
 
-Service -> UI: PushSignalR("Table_Cleaning")
+Service -> WebPOS: PushSignalR("Table_Cleaning")
 
 Service --> Controller: Result(Success)
 deactivate Service
 
-Controller --> UI: 200 OK
+Controller --> WebPOS: 200 OK
 deactivate Controller
 
-UI --> Waitstaff: Thanh toán thành công
-deactivate UI
+WebPOS --> Cashier: Thanh toán thành công & In hóa đơn
+deactivate WebPOS
 
 @enduml

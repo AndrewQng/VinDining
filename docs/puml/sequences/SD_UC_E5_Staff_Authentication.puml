@@ -4,12 +4,7 @@ skinparam style strictuml
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 16
-skinparam sequenceActorFontSize 16
-skinparam sequenceParticipantFontSize 16
-skinparam sequenceArrowFontSize 15
-skinparam sequenceGroupFontSize 15
-skinparam sequenceGroupHeaderFontSize 15
+skinparam defaultFontSize 15
 
 actor "Nhân viên" as Staff
 boundary "Giao diện Web" as UI
@@ -19,25 +14,55 @@ participant "UserRepository" as Repo
 database "SQL Server" as DB
 
 Staff -> UI: Nhập tài khoản & Đăng nhập
-UI -> Controller: POST /api/auth/login
+activate UI
+UI -> Controller: POST /api/auth/login (dto)
+activate Controller
 Controller -> Service: Authenticate(dto)
-Service -> Repo: FindByUsername(user)
-Repo -> DB: SELECT * FROM Users
-DB --> Repo: UserData
-Repo --> Service: User
+activate Service
 
-alt Xác thực thành công
-    Service -> Service: VerifyPassword & GenerateJwt
-    Service --> Controller: Result(Token, Roles)
+Service -> Repo: FindByUsername(dto.Username)
+activate Repo
+Repo -> DB: SELECT * FROM Users WHERE Username = @user
+activate DB
+DB --> Repo: UserData
+deactivate DB
+Repo --> Service: user
+deactivate Repo
+
+Service -> Service: VerifyPassword(dto.Password, user.PasswordHash)
+
+alt Mật khẩu đúng & Tài khoản không bị khóa
+    Service -> Service: GenerateJwt(user)
+    Service --> Controller: Result.Success(Token, Roles)
     Controller --> UI: 200 OK
     UI --> Staff: Đăng nhập thành công
 else Sai mật khẩu >= 5 lần
-    Service -> Repo: LockAccount(UserId)
-    Repo -> DB: UPDATE Users SET LockoutEnd
+    Service -> Repo: LockAccount(user.Id)
+    activate Repo
+    Repo -> DB: UPDATE Users SET LockoutEnd = DATEADD(mi, 15, NOW())
+    activate DB
     DB --> Repo: OK
+    deactivate DB
     Repo --> Service: Locked
-    Service --> Controller: Fail(Locked)
+    deactivate Repo
+    Service --> Controller: Result.Fail("Locked")
     Controller --> UI: 423 Locked
     UI --> Staff: Tài khoản tạm khóa 15 phút
+else Sai mật khẩu < 5 lần
+    Service -> Repo: IncrementFailedCount(user.Id)
+    activate Repo
+    Repo -> DB: UPDATE Users SET FailedCount = FailedCount + 1
+    activate DB
+    DB --> Repo: OK
+    deactivate DB
+    Repo --> Service: Updated
+    deactivate Repo
+    Service --> Controller: Result.Fail("Invalid")
+    Controller --> UI: 401 Unauthorized
+    UI --> Staff: Sai tài khoản hoặc mật khẩu
 end
+
+deactivate Service
+deactivate Controller
+deactivate UI
 @enduml

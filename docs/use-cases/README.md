@@ -16,10 +16,11 @@
 ## 2. Phân hệ Nhân viên Nội bộ (Staff Subsystem)
 * [UC-E1: Quản lý Order & Điều phối lượt món (Course Firing & Priority)](UC-E1_Quan_Ly_Order_Va_Dieu_Phoi_Course_Firing.md)
 * [UC-E2: Kiểm đồ tại quầy Pass, Phục vụ món & Pacing Course](UC-E2_Kiem_Do_Pass_Va_Ra_Mon.md)
-* [UC-E3: Thanh toán, Cấn trừ tiền cọc & Đóng bàn](UC-E3_Thanh_Toan_Can_Tru_Coc.md)
+* [UC-E3: Yêu cầu thanh toán](UC-E3_Yeu_Cau_Thanh_Toan.md)
 * [UC-E4: Đổi bàn / Chuyển bàn phục vụ](UC-E4_Doi_Ban_Chuyen_Ban.md)
 * [UC-E5: Đăng nhập & Xác thực hệ thống nội bộ](UC-E5_Dang_Nhap_Va_Xac_Thuc.md)
 * [UC-E6: Check-in nhận bàn & Hoàn tất dọn bàn](UC-E6_CheckIn_Nhan_Ban_Va_Don_Ban.md)
+* [UC-E8: Thanh toán hóa đơn & Cấn trừ cọc](UC-E8_Thanh_Toan_Hoa_Don.md)
 
 ---
 
@@ -32,8 +33,8 @@
 
 ---
 
-## 4. Phân hệ Hệ thống Tự động (Automated Background System)
-* [UC-S1: Tự động giải phóng bàn hết hạn giữ cọc](UC-S1_Tu_Dong_Giai_Phong_Ban.md)
-* [UC-S2: Tự động gửi thông báo nhắc lịch hẹn](UC-S2_Tu_Dong_Gui_Thong_Bao_Nhac_Lich.md)
-* [UC-S3: Tự động kiểm soát & cảnh báo trễ SLA chế biến món ăn](UC-S3_Tu_Dong_Kiem_Soat_Canh_Bao_Tre_SLA.md)
-* [UC-S4: Tự động gửi email cảm ơn & link khảo sát CSAT sau bữa ăn](UC-S4_Tu_Dong_Gui_Email_Cam_On_Khao_Sat_CSAT.md)
+## 4. Phân hệ Hệ thống Tự động (Background Worker)
+* [UC-S1: Giải phóng bàn hết hạn cọc](UC-S1_Giai_Phong_Ban_Het_Han_Coc.md)
+* [UC-S2: Gửi biểu mẫu đánh giá chất lượng sau phục vụ](UC-S2_Gui_Bieu_Mau_Danh_Gia_Chat_Luong.md)
+* [UC-S3: Gửi thông báo nhắc hẹn đặt bàn](UC-S3_Gui_Thong_Bao_Nhac_Hen_Dat_Ban.md)
+* [UC-S4: Theo dõi & cảnh báo thời gian order](UC-S4_Theo_Doi_Canh_Bao_Thoi_Gian_Order.md)

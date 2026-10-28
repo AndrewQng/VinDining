@@ -41,10 +41,12 @@ skinparam actor {
 ' ========================================================
 ' TÁC NHÂN BÊN TRÁI
 ' ========================================================
+actor "Nhân viên Thu ngân\n(Cashier)" as Cashier
 actor "Khách hàng\n(Guest)" as Guest
 actor "Nhân viên Phục vụ\n(Waitstaff)" as Waitstaff
 actor "Nhân viên Điều phối\n(Expediter)" as Expediter
 
+Cashier -[hidden]down-> Guest
 Guest -[hidden]down-> Waitstaff
 Waitstaff -[hidden]down-> Expediter
 
@@ -62,7 +64,8 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
         usecase "UC-E1: Quản lý Order &\nĐiều phối lượt món" as UC_E1
         usecase "UC-E2: Kiểm đồ quầy Pass,\nPhục vụ & Pacing Course" as UC_E2
         usecase "UC-E6: Check-in nhận bàn\n& Hoàn tất dọn bàn" as UC_E6
-        usecase "UC-E3: Thanh toán, Cấn trừ\ntiền cọc & Đóng bàn" as UC_E3
+        usecase "UC-E3: Yêu cầu thanh toán\n& Đổi trạng thái bàn" as UC_E3
+        usecase "UC-E8: Thanh toán hóa đơn\n& Cấn trừ tiền cọc" as UC_E8
         usecase "UC-E4: Đổi bàn / Chuyển bàn\nphục vụ tại chỗ" as UC_E4
         usecase "UC-E5: Đăng nhập & Xác thực\nhệ thống nội bộ" as UC_E5
 
@@ -73,7 +76,8 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
         UC_E1 -[hidden]down-> UC_E2
         UC_E2 -[hidden]down-> UC_E6
         UC_E6 -[hidden]down-> UC_E3
-        UC_E3 -[hidden]down-> UC_E4
+        UC_E3 -[hidden]down-> UC_E8
+        UC_E8 -[hidden]down-> UC_E4
         UC_E4 -[hidden]down-> UC_E5
     }
 
@@ -84,10 +88,10 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
         usecase "UC-A3: Duyệt hoàn tiền cọc\nthủ công ngoại lệ" as UC_A3
         usecase "UC-A4: Quản trị Tài khoản\n& Phân quyền nhân viên" as UC_A4
         usecase "UC-A5: Xem Báo cáo Thống kê\n& Dashboard doanh thu" as UC_A5
-        usecase "UC-S1: Tự động giải phóng bàn\nhết hạn giữ cọc" as UC_S1
-        usecase "UC-S2: Tự động gửi thông báo\n& nhắc lịch hẹn" as UC_S2
-        usecase "UC-S3: Tự động kiểm soát &\ncảnh báo trễ SLA món" as UC_S3
-        usecase "UC-S4: Tự động gửi thư cảm ơn\n& link khảo sát CSAT" as UC_S4
+        usecase "UC-S1: Giải phóng bàn\nhết hạn cọc" as UC_S1
+        usecase "UC-S2: Gửi biểu mẫu đánh giá\nchất lượng sau phục vụ" as UC_S2
+        usecase "UC-S3: Gửi thông báo\nnhắc hẹn đặt bàn" as UC_S3
+        usecase "UC-S4: Theo dõi & cảnh báo\nthời gian order" as UC_S4
 
         UC_A1 -[hidden]down-> UC_A2
         UC_A2 -[hidden]down-> UC_A3
@@ -108,12 +112,12 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
 ' ========================================================
 actor "Quản lý Nhà hàng\n(Manager)" as Manager
 actor "Quản trị viên\n(Admin)" as Admin
-actor "Hệ thống\nTự động" as System
+actor "Background Worker" as Worker
 actor "Cổng thanh toán\nVNPAY" as VNPAY
 
 Manager -[hidden]down-> Admin
-Admin -[hidden]down-> System
-System -[hidden]down-> VNPAY
+Admin -[hidden]down-> Worker
+Worker -[hidden]down-> VNPAY
 
 ' ========================================================
 ' LIÊN KẾT TÁC NHÂN - USE CASE
@@ -123,6 +127,10 @@ Guest --> UC_U1
 Guest --> UC_U2
 Guest --> UC_U3
 Guest --> UC_U4
+
+' Nhóm Thu ngân
+Cashier --> UC_E8
+Cashier --> UC_E5
 
 ' Nhóm Phục vụ
 Waitstaff --> UC_E1
@@ -148,15 +156,11 @@ Admin --> UC_A4
 Admin --> UC_A5
 Admin --|> Manager
 
-' Hệ thống tự động
-System --> UC_S1
-UC_S1 ..> UC_U1 : <<extend>>
-System --> UC_S2
-UC_S2 ..> UC_U1 : <<extend>>
-System --> UC_S3
-UC_S3 ..> UC_E1 : <<extend>>
-System --> UC_S4
-UC_S4 ..> UC_E3 : <<extend>>
+' Hệ thống chạy ngầm (Background Worker)
+Worker --> UC_S1
+Worker --> UC_S2
+Worker --> UC_S3
+Worker --> UC_S4
 
 ' VNPAY
 UC_U1 --> VNPAY

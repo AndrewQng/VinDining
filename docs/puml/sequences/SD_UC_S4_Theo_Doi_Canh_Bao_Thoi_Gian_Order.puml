@@ -1,0 +1,46 @@
+@startuml SD_UC_S4_Theo_Doi_Canh_Bao_Thoi_Gian_Order
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Background Worker" as Worker
+participant "KitchenOrderService" as Service
+participant "KitchenRepository" as Repo
+database "SQL Server" as DB
+control "KitchenHub" as Hub
+boundary "Màn hình KDS Bếp" as KdsUI
+boundary "Màn hình Trạm Pass" as PassUI
+
+Worker -> Service: Quét kiểm soát SLA (Mỗi 15s)
+activate Worker
+activate Service
+
+Service -> Repo: GetActiveCookingItems()
+activate Repo
+Repo -> DB: SELECT OrderItemId, MenuItemId, StartedAt, PrepSLA FROM OrderItems WHERE Status = 'Cooking'
+activate DB
+DB --> Repo: CookingList
+deactivate DB
+Repo --> Service: List<OrderItem>
+deactivate Repo
+
+loop Cho từng món đang chế biến
+    Service -> Service: CalculateRemainingTime(StartedAt, PrepSLA)
+    
+    alt Thời gian chế biến vượt ngưỡng (>= 80% SLA hoặc Quá hạn)
+        Service -> Hub: BroadcastSlaWarning(OrderItemId, DelayLevel)
+        activate Hub
+        Hub -> KdsUI: Đổi màu thẻ món (Vàng / Đỏ nhấp nháy)
+        Hub -> PassUI: Hiển thị cảnh báo trễ món tại trạm điều phối
+        deactivate Hub
+    end
+end
+
+Service --> Worker: Hoàn tất kiểm soát (Completed)
+deactivate Service
+deactivate Worker
+@enduml
+

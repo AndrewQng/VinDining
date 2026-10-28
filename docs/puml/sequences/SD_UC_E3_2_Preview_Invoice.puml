@@ -1,0 +1,69 @@
+@startuml SD_UC_E3_2_Preview_Invoice
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Thu ngân" as Cashier
+boundary "Web POS Quầy" as WebPOS
+control "InvoiceController" as Controller
+participant "InvoiceService" as Service
+participant "InvoiceRepository" as Repo
+database "SQL Server" as DB
+participant "Printer" as Printer
+
+Cashier -> WebPOS: Chọn bàn & Bấm "Xem tạm tính"
+activate WebPOS
+
+WebPOS -> Controller: GET /api/invoices/\npreview/{tableId}
+activate Controller
+
+Controller -> Service: CalculateInvoice(tableId)
+activate Service
+
+Service -> Repo: GetOrderAndDeposit(tableId)
+activate Repo
+Repo -> DB: SELECT ServedItems & Deposit
+activate DB
+DB --> Repo: RawData
+deactivate DB
+Repo --> Service: Data
+deactivate Repo
+
+Service -> Service: Calculate & GenerateVietQR(Data)
+
+Service --> Controller: InvoicePreviewDto (Amount, VietQR)
+deactivate Service
+
+Controller --> WebPOS: 200 OK
+deactivate Controller
+
+WebPOS --> Cashier: Hiển thị thông tin đơn 
+deactivate WebPOS
+
+Cashier -> WebPOS: Bấm "In phiếu tạm tính"
+activate WebPOS
+
+WebPOS -> Controller: POST /api/invoices/\n{tableId}/print-preview
+activate Controller
+
+Controller -> Service: PrintPreBill(tableId)
+activate Service
+
+Service -> Printer: PrintReceipt(previewDto)
+activate Printer
+Printer --> Service: OK
+deactivate Printer
+
+Service --> Controller: Result(Success)
+deactivate Service
+
+Controller --> WebPOS: 200 OK
+deactivate Controller
+
+WebPOS --> Cashier: Thông báo đã in thành công
+deactivate WebPOS
+
+@enduml

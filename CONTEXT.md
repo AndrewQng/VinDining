@@ -86,6 +86,7 @@ _Tránh dùng_: Nấu lại, Sửa món, Trả đĩa
 - Một **Course** tiếp theo chỉ chuyển sang trạng thái chế biến tại **KitchenKDS** khi nhận được tín hiệu **CourseFiring** từ nhân viên phục vụ phát đi từ thiết bị cầm tay. Lệnh này được kích hoạt linh hoạt khi khách dùng khoảng 60-70% Course hiện tại và không bị chặn cứng bởi trạng thái chế biến của các món thuộc Course trước đó để đón đầu thời gian nấu món chính.
 - Khi **Expediter** kích hoạt lệnh **Remake**, món ăn lập tức được đẩy về đầu hàng đợi **KitchenKDS** với trạng thái ưu tiên khẩn cấp (`Rush`), đồng thời gửi thông báo kín tới điện thoại **Waitstaff** phụ trách bàn để chủ động chăm sóc thực khách.
 - Một **Order** kết thúc bằng một **Invoice** tự động cấn trừ khoản **Deposit** đã nộp. Phí dịch vụ tính bằng 5% Subtotal, thuế VAT 10% tính trên tổng (Subtotal + Phí dịch vụ), và tổng tiền phải trả bằng (Subtotal + Phí dịch vụ + VAT - Deposit). Hệ thống yêu cầu toàn bộ món trong đơn phải được phân định rõ ràng (hoàn tất `Served` hoặc hủy `Cancelled`), tuyệt đối chặn xuất hóa đơn khi còn món dở dang ở trạng thái `Hold` hoặc `Preparing`.
+- Sau khi **Invoice** được xác nhận thanh toán thành công trong **UC-E7**, **Table** chuyển trạng thái sang `Cleaning` và tự động chuyển về `Available` sẵn sàng phục vụ lượt khách kế tiếp theo quy trình đóng đơn (tích hợp trọn gói, không yêu cầu thao tác dọn bàn thủ công tách biệt).
 
 ## Example Dialogue
 

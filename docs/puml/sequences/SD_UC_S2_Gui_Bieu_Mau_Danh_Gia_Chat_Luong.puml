@@ -1,0 +1,50 @@
+@startuml SD_UC_S2_Gui_Bieu_Mau_Danh_Gia_Chat_Luong
+autonumber
+skinparam style strictuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam defaultFontSize 14
+
+actor "Background Worker" as Worker
+participant "SurveyDispatcherService" as Service
+participant "SurveyRepository" as Repo
+database "SQL Server" as DB
+participant "NotificationGateway" as Gateway
+actor "Khách hàng" as Guest
+
+Worker -> Service: Kích hoạt định kỳ (Mỗi 5 phút)
+activate Worker
+activate Service
+
+Service -> Repo: GetSettledInvoicesWithoutSurvey()
+activate Repo
+Repo -> DB: SELECT * FROM Invoices WHERE Status = 'Paid' AND IsSurveySent = 0
+activate DB
+DB --> Repo: SettledInvoiceList
+deactivate DB
+Repo --> Service: List<Invoice>
+deactivate Repo
+
+loop Cho từng hóa đơn cần khảo sát CSAT
+    Service -> Service: GenerateSecureSurveyToken(invoiceId)
+    Service -> Gateway: SendSurveyInvitation(GuestEmail, SurveyLink)
+    activate Gateway
+    Gateway -> Guest: Gửi email / tin nhắn link khảo sát
+    Gateway --> Service: DeliveryResult(Success)
+    deactivate Gateway
+    
+    Service -> Repo: MarkSurveySent(invoiceId)
+    activate Repo
+    Repo -> DB: UPDATE Invoices SET IsSurveySent = 1, SurveySentAt = NOW() WHERE Id = invoiceId
+    activate DB
+    DB --> Repo: Success
+    deactivate DB
+    Repo --> Service: OK
+    deactivate Repo
+end
+
+Service --> Worker: Hoàn tất phân phối (Completed)
+deactivate Service
+deactivate Worker
+@enduml
