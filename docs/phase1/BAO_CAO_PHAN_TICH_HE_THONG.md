@@ -124,7 +124,7 @@ Hệ thống phân định 5 tác nhân chính và 1 tác nhân phụ tích hợ
 1. Khách hàng chọn ngày, giờ dùng bữa, số lượng khách và khu vực ngồi trên giao diện web.
 2. Hệ thống hiển thị danh sách bàn còn trống trên sơ đồ mặt bằng.
 3. Khách hàng chọn bàn, nhập thông tin liên hệ và xác nhận đặt cọc.
-4. Hệ thống khóa giữ bàn tạm thời 17 phút và chuyển hướng đến cổng thanh toán VNPAY.
+4. Hệ thống tính số tiền cọc theo BR-06, khóa giữ bàn tạm thời 17 phút và chuyển hướng đến cổng thanh toán VNPAY.
 5. Khách hàng thực hiện thanh toán tiền cọc qua mã VietQR hoặc thẻ ngân hàng.
 6. Cổng VNPAY phản hồi giao dịch thành công; hệ thống chuyển trạng thái bàn sang Reserved và gửi thông tin xác nhận qua SMS/Email.
 
@@ -598,6 +598,7 @@ Hệ thống phân định 5 tác nhân chính và 1 tác nhân phụ tích hợ
 | BR-03 | Thẩm quyền xác nhận đi món tại quầy Pass | Thao tác xác nhận đi món (Served) tại quầy Pass chỉ dành riêng cho Nhân viên Điều phối (Expediter) và Quản lý Nhà hàng. Đầu bếp và Khách hàng không có quyền thực hiện. | UC-E3 |
 | BR-04 | Chính sách hủy đặt bàn & Hoàn tiền cọc | Hủy trước giờ hẹn từ 4 tiếng trở lên: Tự động hoàn trả 100% tiền cọc qua cổng thanh toán VNPAY. Hủy dưới 4 tiếng hoặc vắng mặt: Phạt giữ 100% tiền cọc. Quản lý có quyền xem xét duyệt hoàn cọc ngoại lệ trong trường hợp bất khả kháng. | UC-U3, UC-A3 |
 | BR-05 | Điều phối Course Firing & Prep SLA | Mỗi món ăn có định mức thời gian chế biến Prep SLA. Khi gửi đơn, Course 1 chuyển sang Cooking; các Course tiếp theo ở trạng thái On Hold. Khi khách dùng khoảng 60%–70% Course hiện tại, phục vụ bấm nút Course Firing để kích hoạt bếp nấu Course tiếp theo. | UC-E1, UC-E2, UC-A1 |
+| BR-06 | Mức tiền cọc giữ chỗ | Đặt bàn có chọn trước Set Menu: Tiền cọc = 30% × Giá Set Menu × Số khách. Đặt bàn không chọn trước Set Menu (gọi món tại nhà hàng): Tiền cọc = 500.000 VNĐ × Số khách. Khách vãng lai không đặt trước không phải đặt cọc. | UC-U1, UC-U3, UC-E7 |
 
 
 ---

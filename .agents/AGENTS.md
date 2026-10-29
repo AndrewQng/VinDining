@@ -23,6 +23,11 @@
 * **Direct List Phrasing (No Artificial Prefixes)**: Do not prepend artificial bold summary labels or lead-in phrases at the start of numbered steps or bullet points (e.g., avoid `1. **Chọn thông tin:** Khách hàng...` or `* **2a. Hết chỗ:** Khi...`). Write steps and list items directly and naturally starting with the actor, action, or condition (e.g., `1. Khách hàng truy cập...`, `* 2a. Khi khung giờ...`).
 * **Concise & Fluff-Free (Lean Writing)**: Keep descriptions, specifications, and responses ultra-concise. Always summarize information directly into 3-5 focal bullet points. Strictly eliminate filler words, decorative adjectives, redundant phrasing, and unrequested background info. State facts, actors, triggers, and outcomes directly with minimal words.
 
+### No Fabrication (applies to docs, prototypes, and code)
+* **Only what the docs say**: Never invent features, fields, roles, statuses, or business rules. If it is not in the source-of-truth docs, leave it out and log it in `docs/prototype/OPEN_QUESTIONS.md`.
+* **Source of truth order**: `docs/phase1/BAO_CAO_PHAN_TICH_HE_THONG.md` > ADR 0004 > `CONTEXT.md` > `docs/use-cases/*`. Older docs (and the product description in section 1 of this file) are stale where they disagree.
+* **Banned — never include**: (1) drinks bar / Bar station / bartender; (2) allergy tags, allergen fields, or allergy alerts of any kind; (3) TableDisplay screens at tables; (4) Guest self-ordering from QR E-Menu. Full list and rationale: `docs/prototype/PROTOTYPE_RULES.md` section 3. Add new rows there when a hallucination is caught.
+
 ### High-Performance Coding Standards
 * **Data Locality**: Store related data accessed together in close proximity in memory/storage.
 * **Batching & Pre-computation**: Execute tasks in bulk and ahead of time; avoid N+1 queries or repeated lookups.

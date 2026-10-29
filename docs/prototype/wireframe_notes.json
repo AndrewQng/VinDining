@@ -1,0 +1,543 @@
+{
+  "cover": {
+    "title": "Wireframe — VinDining",
+    "subtitle": "Low-fidelity · bố cục & luồng màn hình",
+    "legend": [
+      "Khung xám nhạt: phân vùng nội dung và các khối thông tin bố cục.",
+      "Khung xám đậm: nút bấm và các hành động chính trong luồng.",
+      "Ảnh minh họa trong bản prototype được thay bằng khung xám có nhãn.",
+      "Ghi chú chú thích: luồng nghiệp vụ và quy tắc vận hành liên quan."
+    ]
+  },
+  "flows": [
+    {
+      "flow": "Khách · Website (điện thoại)",
+      "use_cases": [
+        "UC-U1",
+        "UC-S1"
+      ],
+      "actor": "Khách hàng",
+      "device": "Điện thoại (Mobile Web)",
+      "screens": [
+        "G0 — Trang chủ",
+        "G1.1 — Chọn thời gian & khu vực",
+        "G1.2 — Chọn bàn",
+        "G1.2s — Chọn Set Menu (tùy chọn)",
+        "G1.3 — Thông tin liên hệ",
+        "G1.4 — Giữ chỗ tạm thời",
+        "G1.5 — Cổng thanh toán VNPAY (mô phỏng)",
+        "G1.6 — Xác nhận đặt bàn",
+        "G1.1x — Hết bàn",
+        "G1.4x — Hết thời gian giữ chỗ"
+      ],
+      "main_flow": [
+        "Trang chủ ưu tiên Set Menu, khách bấm chọn đặt bàn.",
+        "Khách chọn ngày giờ, khu vực và vị trí bàn trống.",
+        "UC-U1 bước 3: chọn Set Menu tùy chọn và nhập liên hệ.",
+        "Hệ thống khóa giữ bàn 17 phút và mở cổng VNPAY.",
+        "Khách quét mã VietQR hoặc thẻ ngân hàng để đặt cọc.",
+        "Bàn chuyển Reserved, hệ thống gửi mã đặt bàn qua tin nhắn."
+      ],
+      "exceptions": [
+        "Hết bàn: gợi ý chọn khung giờ hoặc khu vực khác.",
+        "Quá 17 phút chưa thanh toán: hủy phiên, mở lại bàn trống."
+      ],
+      "rules": [
+        "BR-01: Khóa giữ bàn tối đa 17 phút để thanh toán cọc.",
+        "Quá 17 phút: tự động hủy đơn và giải phóng bàn.",
+        "Khách không cần tạo tài khoản hay đăng nhập khi đặt bàn."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U1 Đặt bàn & Đặt cọc trực tuyến",
+        "docs/use-cases/UC-U1_Dat_Ban_Va_Dat_Coc.md: Bước 3 chọn Set Menu đặt trước",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S1 Giải phóng bàn hết hạn cọc",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-01 Thời hạn khóa giữ bàn tạm thời"
+      ]
+    },
+    {
+      "flow": "Khách · Tra cứu & hủy đặt bàn",
+      "use_cases": [
+        "UC-U3"
+      ],
+      "actor": "Khách hàng",
+      "device": "Điện thoại (Mobile Web)",
+      "screens": [
+        "G2.1 — Tra cứu đặt bàn",
+        "G2.2 — Chi tiết đặt bàn",
+        "G2.3 — Xác nhận hủy",
+        "G2.4 — Đã hủy & hoàn cọc",
+        "G2.2x — Hủy dưới 4 tiếng",
+        "G2.4x — Đã hủy (không hoàn cọc)"
+      ],
+      "main_flow": [
+        "Khách nhập mã đặt bàn và số điện thoại tra cứu.",
+        "Hệ thống hiển thị chi tiết đặt bàn kèm chính sách hủy.",
+        "Khách nhập lý do hủy và bấm xác nhận hủy bàn.",
+        "Hệ thống kiểm tra: hủy trước giờ hẹn từ 4 tiếng.",
+        "Hệ thống gửi yêu cầu hoàn 100% tiền cọc qua VNPAY.",
+        "Đơn chuyển Đã hủy, bàn mở lại trạng thái sẵn sàng."
+      ],
+      "exceptions": [
+        "Hủy dưới 4 tiếng: cảnh báo phạt không hoàn tiền cọc.",
+        "Khách đồng ý mất cọc: hủy giữ chỗ và không hoàn tiền."
+      ],
+      "rules": [
+        "BR-04: Hủy trước giờ hẹn từ 4 tiếng hoàn 100% tiền cọc.",
+        "Hủy dưới 4 tiếng hoặc vắng mặt: phạt giữ 100% tiền cọc."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U3 Hủy đặt bàn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-04 Chính sách hủy đặt bàn & Hoàn tiền cọc"
+      ]
+    },
+    {
+      "flow": "Khách · Quét QR tại bàn",
+      "use_cases": [
+        "UC-U2"
+      ],
+      "actor": "Khách hàng",
+      "device": "Điện thoại (Mobile Web)",
+      "screens": [
+        "G3.1 — E-Menu",
+        "G3.2 — Đã gửi yêu cầu",
+        "G3.1x — QR không hợp lệ"
+      ],
+      "main_flow": [
+        "Khách quét mã QR tại bàn để mở thực đơn điện tử.",
+        "Hệ thống hiển thị E-Menu xem món và 3 nút yêu cầu.",
+        "Khách xem thông tin món ăn theo từng Course danh mục.",
+        "Khách chọn Gọi phục vụ, Châm nước hoặc Đổi dụng cụ.",
+        "Hệ thống gửi thông báo tức thời đến nhân viên phục vụ.",
+        "Nhân viên đến bàn hỗ trợ và xác nhận hoàn tất."
+      ],
+      "exceptions": [
+        "QR sai hoặc bàn chưa check-in: báo lỗi liên hệ nhân viên."
+      ],
+      "rules": [
+        "E-Menu chỉ xem món, khách không tự đặt món trên mạng.",
+        "Nhân viên phục vụ trực tiếp ghi nhận order tại bàn.",
+        "Gồm 3 nút: Gọi phục vụ, Châm nước và Đổi dụng cụ."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U2 Yêu cầu phục vụ thông qua QR menu",
+        "docs/adr/0004-retire-table-display-and-adopt-leather-folder-cashier-printing.md"
+      ]
+    },
+    {
+      "flow": "Khách · Đánh giá (điện thoại)",
+      "use_cases": [
+        "UC-U4",
+        "UC-S2"
+      ],
+      "actor": "Khách hàng",
+      "device": "Điện thoại (Mobile Web)",
+      "screens": [
+        "G4.1 — Đánh giá",
+        "G4.2 — Cảm ơn"
+      ],
+      "main_flow": [
+        "Khách mở liên kết đánh giá từ tin nhắn hoặc phiếu in.",
+        "Hệ thống hiển thị biểu mẫu khảo sát chất lượng dịch vụ.",
+        "Khách chấm sao cho Món ăn, Không gian, Thái độ phục vụ.",
+        "Khách nhập ý kiến đóng góp và bấm gửi đánh giá.",
+        "Hệ thống lưu kết quả đánh giá vào cơ sở dữ liệu.",
+        "Hệ thống hiển thị thông điệp cảm ơn khách hàng."
+      ],
+      "exceptions": [],
+      "rules": [
+        "Đánh giá 3 tiêu chí: Món ăn, Không gian và Thái độ.",
+        "UC-S2: Hệ thống tự động gửi link khảo sát sau thanh toán.",
+        "Mỗi hóa đơn thanh toán chỉ được gửi khảo sát một lần."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U4 Gửi đánh giá dịch vụ",
+        "docs/use-cases/UC-U4_Danh_Gia_Va_Phan_Hoi.md",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S2 Gửi biểu mẫu đánh giá chất lượng sau phục vụ"
+      ]
+    },
+    {
+      "flow": "Nhân viên · Đăng nhập",
+      "use_cases": [
+        "UC-E8",
+        "UC-E5"
+      ],
+      "actor": "Nhân viên Nội bộ",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "S1 — Đăng nhập nhân viên",
+        "S1x — Sai thông tin",
+        "S1y — Tạm khóa"
+      ],
+      "main_flow": [
+        "Nhân viên truy cập một trang đăng nhập duy nhất.",
+        "Nhân viên nhập tên đăng nhập và mật khẩu tài khoản.",
+        "Hệ thống xác thực tài khoản qua ASP.NET Core Identity.",
+        "UC-E5 bước 5: cấp JWT và điều hướng theo vai trò.",
+        "Phục vụ vào W1, Điều phối vào E1, Thu ngân vào C1.",
+        "Quản lý được điều hướng vào màn hình làm việc M1."
+      ],
+      "exceptions": [
+        "Đăng nhập sai thông tin: hệ thống báo lỗi nhập lại.",
+        "Nhập sai quá 5 lần: tạm khóa tài khoản 15 phút."
+      ],
+      "rules": [
+        "Tất cả nhân viên dùng chung một trang đăng nhập duy nhất.",
+        "Tài khoản bị khóa 15 phút nếu sai mật khẩu 5 lần.",
+        "Màn hình KDS Bếp là thiết bị hiển thị, không đăng nhập."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E8 Đăng nhập & Xác thực",
+        "docs/use-cases/UC-E5_Dang_Nhap_Va_Xac_Thuc.md: Bước 5 điều hướng theo vai trò",
+        "docs/prototype/PROTOTYPE_RULES.md: §5 S1 Đăng nhập"
+      ]
+    },
+    {
+      "flow": "Phục vụ (sau đăng nhập)",
+      "use_cases": [
+        "UC-E6",
+        "UC-E1",
+        "UC-E2",
+        "UC-E5",
+        "UC-E4"
+      ],
+      "actor": "Nhân viên Phục vụ",
+      "device": "Điện thoại (Mobile Web)",
+      "screens": [
+        "W1 — Sơ đồ bàn",
+        "W2 — Check-in khách đặt trước",
+        "W2w — Check-in khách vãng lai",
+        "W2b — Chi tiết check-in B05",
+        "W3 — Tạo Order",
+        "W5 — Order đang phục vụ",
+        "W5f — Xác nhận kích hoạt Course",
+        "W5b — Order sau khi kích hoạt",
+        "W6 — Gọi thêm món",
+        "W7 — Đổi bàn",
+        "W7b — Đổi bàn thành công",
+        "W8b — Đã gửi yêu cầu tính tiền",
+        "W8 — Xác nhận yêu cầu tính tiền",
+        "W9 — Thông báo",
+        "W8x — Chưa thể yêu cầu tính tiền",
+        "W9b — Thông báo (đã xử lý)",
+        "W3x — Món tạm hết",
+        "W7x — Bàn đích không còn trống"
+      ],
+      "main_flow": [
+        "Phục vụ đăng nhập qua S1 và xem sơ đồ bàn W1.",
+        "Check-in khách đặt trước theo mã hoặc check-in vãng lai.",
+        "UC-E6 bước 5: check-in set tự tạo Order gửi Course 1.",
+        "Khách chưa đặt trước: phục vụ tạo Order theo Course.",
+        "Bấm Course Firing kích hoạt bếp nấu Course tiếp theo.",
+        "Hỗ trợ đổi bàn hoặc gửi yêu cầu tính tiền thu ngân."
+      ],
+      "exceptions": [
+        "Món tạm hết: khóa chọn món, tư vấn món khác cho khách.",
+        "Đổi bàn thất bại: báo lỗi nếu bàn đích không trống.",
+        "Bàn chưa có món ra: không thể gửi yêu cầu tính tiền."
+      ],
+      "rules": [
+        "BR-05: Kích hoạt Course tiếp theo khi khách dùng 60%–70%.",
+        "Ghi chú gọi món là trường văn bản tự do.",
+        "Bàn Chờ thanh toán sẽ bị khóa chức năng cập nhật order."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E6 Check in nhận bàn",
+        "docs/use-cases/UC-E6_CheckIn_Nhan_Ban.md: Bước 5 tự động gửi Course 1 sang KDS",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E1 Tạo Order",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E2 Cập nhật Order",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E5 Đổi bàn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E4 Yêu cầu thanh toán",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-05 Điều phối Course Firing & Prep SLA"
+      ]
+    },
+    {
+      "flow": "Điều phối · Quầy Pass",
+      "use_cases": [
+        "UC-E3",
+        "UC-S4"
+      ],
+      "actor": "Nhân viên Điều phối",
+      "device": "Máy tính bảng",
+      "screens": [
+        "E1 — Quầy Pass",
+        "E1r — Yêu cầu làm lại",
+        "E1b — Đã xác nhận đi món",
+        "E1c — Đã gửi làm lại"
+      ],
+      "main_flow": [
+        "Điều phối đăng nhập từ S1 và truy cập trạm quầy Pass.",
+        "Đầu bếp đặt đĩa món hoàn chỉnh lên quầy Pass.",
+        "Điều phối kiểm tra món ăn đối chiếu đơn trên màn hình.",
+        "Điều phối theo dõi thanh màu cảnh báo định mức Prep SLA.",
+        "Bấm Xác nhận đi món để chuyển trạng thái sang Served.",
+        "Hệ thống gửi thông báo đến phục vụ mang ra bàn."
+      ],
+      "exceptions": [
+        "Món không đạt: bấm Yêu cầu làm lại kèm lý do.",
+        "Đơn làm lại được ghim lên đầu màn hình KDS Bếp."
+      ],
+      "rules": [
+        "BR-03: Thao tác Xác nhận đi món chỉ dành cho Điều phối.",
+        "UC-S4: Cảnh báo đổi màu khi thời gian chế biến vượt 80%.",
+        "Đầu bếp và khách không có quyền bấm xác nhận đi món."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E3 Xác nhận đi món",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-03 Thẩm quyền xác nhận đi món tại quầy Pass",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S4 Theo dõi & cảnh báo thời gian order",
+        "docs/adr/0004-retire-table-display-and-adopt-leather-folder-cashier-printing.md"
+      ]
+    },
+    {
+      "flow": "KDS Bếp",
+      "use_cases": [
+        "UC-E1",
+        "UC-E2",
+        "UC-S4"
+      ],
+      "actor": "Đầu bếp",
+      "device": "Màn hình treo tường",
+      "screens": [
+        "K1 — KDS Bếp",
+        "K1b — KDS sau khi kích hoạt Course 2"
+      ],
+      "main_flow": [
+        "Màn hình KDS tự nhận món khi phục vụ gửi order.",
+        "Món thuộc Course 1 hiển thị trạng thái Đang nấu Cooking.",
+        "Các món Course tiếp theo hiển thị Chờ On Hold.",
+        "Đồng hồ hiển thị đếm ngược thời gian định mức Prep SLA.",
+        "Vé làm lại từ quầy Pass được ghim ưu tiên trên đầu.",
+        "Khi phục vụ kích hoạt, Course tiếp theo chuyển sang Đang nấu."
+      ],
+      "exceptions": [
+        "Quá hạn thời gian chế biến: hiển thị cảnh báo đỏ."
+      ],
+      "rules": [
+        "KDS là màn hình hiển thị chỉ đọc, không nút bấm.",
+        "Không sử dụng máy in giấy trong khu vực nhà bếp.",
+        "Toàn bộ khu bếp dùng chung một màn hình KDS duy nhất."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E1 Tạo Order",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E2 Cập nhật Order",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S4 Theo dõi & cảnh báo thời gian order",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-05 Điều phối Course Firing & Prep SLA",
+        "docs/adr/0004-retire-table-display-and-adopt-leather-folder-cashier-printing.md"
+      ]
+    },
+    {
+      "flow": "Thu ngân",
+      "use_cases": [
+        "UC-E7",
+        "UC-E6"
+      ],
+      "actor": "Nhân viên Thu ngân",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "C1 — Hàng chờ thanh toán",
+        "C2 — Tạm tính B05",
+        "C2p — Phiếu tạm tính (80mm)",
+        "C3 — Xác nhận thanh toán B05",
+        "C3b — Thanh toán thành công",
+        "C1b — Hàng chờ (sau thanh toán)",
+        "C2x — Tạm tính B04 (tiền ăn < tiền cọc)",
+        "C4 — Check-in",
+        "C4b — Đã check-in"
+      ],
+      "main_flow": [
+        "Thu ngân đăng nhập từ S1, nhận yêu cầu tại hàng chờ.",
+        "Xem tạm tính gồm Subtotal, phí 5%, VAT 10% và trừ cọc.",
+        "In phiếu tạm tính nhiệt 80mm kèm mã VietQR thanh toán.",
+        "Phục vụ kẹp phiếu vào sổ da mang ra cho khách.",
+        "Khách thanh toán bằng VietQR, thẻ hoặc tiền mặt tại bàn.",
+        "Thu ngân bấm Xác nhận thanh toán, in hóa đơn đóng bàn."
+      ],
+      "exceptions": [
+        "Tổng tiền dưới cọc: tiền còn phải trả là 0 đồng.",
+        "Tiền cọc là mức chi tiêu tối thiểu, không hoàn chênh lệch."
+      ],
+      "rules": [
+        "BR-02: Phí phục vụ 5%, thuế VAT 10% trên tổng sau phí.",
+        "Còn phải trả = MAX(0, Tổng cộng − Tiền cọc).",
+        "Hóa đơn in từ máy in nhiệt 80mm tại quầy thu ngân."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E7 Thanh toán hóa đơn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-02 Công thức tính Hóa đơn & Cấn trừ cọc",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-E6 Check in nhận bàn",
+        "docs/adr/0004-retire-table-display-and-adopt-leather-folder-cashier-printing.md"
+      ]
+    },
+    {
+      "flow": "Quản lý",
+      "use_cases": [
+        "UC-A1",
+        "UC-A2",
+        "UC-A3",
+        "UC-A4",
+        "UC-A5"
+      ],
+      "actor": "Quản lý Nhà hàng",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "M5 — Báo cáo",
+        "M5x — Báo cáo (không có dữ liệu)",
+        "M1 — Thực đơn",
+        "M1a — Thêm / sửa món",
+        "M1ax — Trùng tên món",
+        "M1s — Set Menu",
+        "M2 — Sơ đồ bàn",
+        "M2x — Không thể xóa bàn",
+        "M3 — Duyệt hoàn cọc",
+        "M3d — Chi tiết yêu cầu hoàn cọc",
+        "M3a — Đã chấp thuận",
+        "M3r — Đã từ chối",
+        "M4 — Tài khoản nhân viên",
+        "M4a — Tạo tài khoản",
+        "M4ax — Trùng email",
+        "M4p — Đặt lại mật khẩu"
+      ],
+      "main_flow": [
+        "Quản lý đăng nhập từ S1, mở trang quản trị hệ thống.",
+        "Xem báo cáo chỉ số doanh thu, công suất và hủy bàn.",
+        "Quản trị thực đơn món ăn, Prep SLA và Tasting Set Menu.",
+        "Cấu hình sơ đồ bàn ăn và tự sinh mã QR.",
+        "Xem xét lý do và duyệt hoàn cọc ngoại lệ qua VNPAY.",
+        "Quản lý tài khoản nhân viên, phân quyền và đổi mật khẩu."
+      ],
+      "exceptions": [
+        "Không thể xóa bàn đang có khách hoặc đã đặt trước.",
+        "Trùng tên món hoặc trùng email nhân viên: báo lỗi đổi lại.",
+        "Từ chối hoàn cọc: nhập lý do và gửi thông báo khách."
+      ],
+      "rules": [
+        "Quản lý có quyền duyệt hoàn cọc ngoại lệ bất khả kháng.",
+        "Mỗi bàn mới tạo được hệ thống tự sinh mã QR.",
+        "Các chức vụ: Phục vụ, Điều phối, Thu ngân và Quản lý."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-A1 Quản trị Danh mục & Thực đơn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-A2 Cấu hình sơ đồ bàn ăn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-A3 Duyệt hoàn cọc thủ công",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-A4 Quản trị Tài khoản",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-A5 Báo cáo Thống kê & Doanh thu",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-04 Chính sách hủy đặt bàn & Hoàn tiền cọc"
+      ]
+    },
+    {
+      "flow": "Khách · Website (máy tính)",
+      "use_cases": [
+        "UC-U1",
+        "UC-S1"
+      ],
+      "actor": "Khách hàng",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "G0.D — Trang chủ",
+        "G1.1.D — Chọn thời gian & khu vực",
+        "G1.2.D — Chọn bàn",
+        "G1.2s.D — Chọn Set Menu (tùy chọn)",
+        "G1.3.D — Thông tin liên hệ",
+        "G1.4.D — Giữ chỗ tạm thời",
+        "G1.5.D — Cổng thanh toán VNPAY (mô phỏng)",
+        "G1.6.D — Xác nhận đặt bàn",
+        "G1.1x.D — Hết bàn",
+        "G1.4x.D — Hết thời gian giữ chỗ"
+      ],
+      "main_flow": [
+        "Cùng luồng bản điện thoại; bố cục 2 cột màn hình lớn.",
+        "Trang chủ ưu tiên Set Menu, khách bấm chọn đặt bàn.",
+        "Khách chọn ngày giờ, khu vực và vị trí bàn trống.",
+        "UC-U1 bước 3: chọn Set Menu tùy chọn và nhập liên hệ.",
+        "Hệ thống khóa giữ bàn 17 phút và mở cổng VNPAY.",
+        "Khách quét VietQR hoặc thanh toán thẻ để đặt cọc."
+      ],
+      "exceptions": [
+        "Hết bàn: gợi ý chọn khung giờ hoặc khu vực khác.",
+        "Quá 17 phút chưa thanh toán: hủy phiên, mở lại bàn trống."
+      ],
+      "rules": [
+        "BR-01: Khóa giữ bàn tối đa 17 phút để thanh toán cọc.",
+        "Quá 17 phút: tự động hủy đơn và giải phóng bàn.",
+        "Bố cục chia 2 cột tận dụng không gian màn hình lớn."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U1 Đặt bàn & Đặt cọc trực tuyến",
+        "docs/use-cases/UC-U1_Dat_Ban_Va_Dat_Coc.md: Bước 3 chọn Set Menu đặt trước",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S1 Giải phóng bàn hết hạn cọc",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-01 Thời hạn khóa giữ bàn tạm thời"
+      ]
+    },
+    {
+      "flow": "Khách · Tra cứu & hủy (máy tính)",
+      "use_cases": [
+        "UC-U3"
+      ],
+      "actor": "Khách hàng",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "G2.1.D — Tra cứu đặt bàn",
+        "G2.2.D — Chi tiết đặt bàn",
+        "G2.3.D — Xác nhận hủy",
+        "G2.4.D — Đã hủy & hoàn cọc",
+        "G2.2x.D — Hủy dưới 4 tiếng",
+        "G2.4x.D — Đã hủy (không hoàn cọc)"
+      ],
+      "main_flow": [
+        "Cùng luồng bản điện thoại; bố cục 2 cột màn hình lớn.",
+        "Khách nhập mã đặt bàn và số điện thoại tra cứu.",
+        "Hệ thống hiển thị chi tiết đặt bàn và thông tin set.",
+        "Khách nhập lý do hủy và bấm xác nhận hủy bàn.",
+        "Hủy trước 4 tiếng: hệ thống hoàn 100% tiền cọc qua VNPAY.",
+        "Đơn chuyển Đã hủy, bàn mở lại trạng thái sẵn sàng."
+      ],
+      "exceptions": [
+        "Hủy dưới 4 tiếng: cảnh báo phạt không hoàn tiền cọc.",
+        "Khách đồng ý mất cọc: hủy giữ chỗ và không hoàn tiền."
+      ],
+      "rules": [
+        "BR-04: Hủy trước giờ hẹn từ 4 tiếng hoàn 100% tiền cọc.",
+        "Hủy dưới 4 tiếng hoặc vắng mặt: phạt giữ 100% tiền cọc.",
+        "Giao diện máy tính mở rộng hiển thị bảng biểu rõ ràng."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U3 Hủy đặt bàn",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: BR-04 Chính sách hủy đặt bàn & Hoàn tiền cọc"
+      ]
+    },
+    {
+      "flow": "Khách · Đánh giá (máy tính)",
+      "use_cases": [
+        "UC-U4",
+        "UC-S2"
+      ],
+      "actor": "Khách hàng",
+      "device": "Máy tính (Desktop Web)",
+      "screens": [
+        "G4.1.D — Đánh giá",
+        "G4.2.D — Cảm ơn"
+      ],
+      "main_flow": [
+        "Cùng luồng bản điện thoại; bố cục 2 cột màn hình lớn.",
+        "Khách mở liên kết đánh giá nhận qua email sau bữa ăn.",
+        "Hệ thống hiển thị biểu mẫu khảo sát chất lượng dịch vụ.",
+        "Khách chấm sao cho Món ăn, Không gian, Thái độ phục vụ.",
+        "Khách nhập nhận xét và bấm gửi đánh giá lên hệ thống.",
+        "Hệ thống lưu kết quả đánh giá vào cơ sở dữ liệu."
+      ],
+      "exceptions": [
+        "Liên kết quá 48 tiếng: báo phiên kết thúc và cảm ơn."
+      ],
+      "rules": [
+        "Đánh giá 3 tiêu chí: Món ăn, Không gian và Thái độ.",
+        "UC-S2: Hệ thống tự động gửi link khảo sát sau thanh toán.",
+        "Mỗi hóa đơn thanh toán chỉ được gửi khảo sát một lần."
+      ],
+      "sources": [
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-U4 Gửi đánh giá dịch vụ",
+        "docs/use-cases/UC-U4_Danh_Gia_Va_Phan_Hoi.md",
+        "BAO_CAO_PHAN_TICH_HE_THONG.md: UC-S2 Gửi biểu mẫu đánh giá chất lượng sau phục vụ"
+      ]
+    }
+  ]
+}
