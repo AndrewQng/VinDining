@@ -1,5 +1,5 @@
 using API.Hubs;
-using Application.Common.Interfaces;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
 namespace API.Services;
@@ -26,7 +26,7 @@ public class KitchenNotifier : IKitchenNotifier
             cancellationToken);
     }
 
-    public async Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, Domain.Enums.CourseType courseType, CancellationToken cancellationToken = default)
+    public async Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, CourseType courseType, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
             "CourseFired",

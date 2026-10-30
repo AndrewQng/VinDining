@@ -1,6 +1,6 @@
-using Application.Common.Interfaces;
-using Domain.Entities;
-using Domain.Enums;
+using API.Services.Interfaces;
+using API.Models.Entities;
+using API.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

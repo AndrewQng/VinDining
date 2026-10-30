@@ -1,6 +1,6 @@
 using System.Reflection;
-using Domain.Entities;
-using Domain.Enums;
+using API.Models.Entities;
+using API.Models.Enums;
 using Xunit;
 
 namespace UnitTests;
@@ -431,9 +431,9 @@ public class DomainEntityTests
         AssertNoProperty(typeof(Feedback), "Guest");
 
         // BaseEntity should NOT have CreatedAtUtc, UpdatedAtUtc, UpdatedAt, IsDeleted
-        AssertNoProperty(typeof(Domain.Common.BaseEntity), "CreatedAtUtc");
-        AssertNoProperty(typeof(Domain.Common.BaseEntity), "UpdatedAtUtc");
-        AssertNoProperty(typeof(Domain.Common.BaseEntity), "UpdatedAt");
-        AssertNoProperty(typeof(Domain.Common.BaseEntity), "IsDeleted");
+        AssertNoProperty(typeof(API.Models.Common.BaseEntity), "CreatedAtUtc");
+        AssertNoProperty(typeof(API.Models.Common.BaseEntity), "UpdatedAtUtc");
+        AssertNoProperty(typeof(API.Models.Common.BaseEntity), "UpdatedAt");
+        AssertNoProperty(typeof(API.Models.Common.BaseEntity), "IsDeleted");
     }
 }

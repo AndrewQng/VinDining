@@ -1,6 +1,6 @@
-using Domain.Entities;
-using Domain.Enums;
-using Infrastructure.Persistence;
+using API.Models.Entities;
+using API.Models.Enums;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

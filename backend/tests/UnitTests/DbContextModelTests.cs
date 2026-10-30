@@ -1,6 +1,6 @@
-using Domain.Entities;
-using Infrastructure.Identity;
-using Infrastructure.Persistence;
+using API.Models.Entities;
+using API.Models.Identity;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

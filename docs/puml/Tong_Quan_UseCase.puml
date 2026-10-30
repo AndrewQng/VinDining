@@ -111,12 +111,10 @@ rectangle "TỔNG QUAN USE-CASE TOÀN HỆ THỐNG" {
 ' TÁC NHÂN BÊN PHẢI
 ' ========================================================
 actor "Quản lý Nhà hàng\n(Manager)" as Manager
-actor "Quản trị viên\n(Admin)" as Admin
 actor "Background Worker" as Worker
 actor "Cổng thanh toán\nVNPAY" as VNPAY
 
-Manager -[hidden]down-> Admin
-Admin -[hidden]down-> Worker
+Manager -[hidden]down-> Worker
 Worker -[hidden]down-> VNPAY
 
 ' ========================================================
@@ -144,17 +142,13 @@ Waitstaff --> UC_E5
 Expediter --> UC_E2
 Expediter --> UC_E5
 
-' Nhóm Quản lý & Admin
+' Nhóm Quản lý
 Manager --> UC_A1
 Manager --> UC_A2
 Manager --> UC_A3
 Manager --> UC_A4
 Manager --> UC_A5
 Manager --> UC_E5
-
-Admin --> UC_A4
-Admin --> UC_A5
-Admin --|> Manager
 
 ' Hệ thống chạy ngầm (Background Worker)
 Worker --> UC_S1

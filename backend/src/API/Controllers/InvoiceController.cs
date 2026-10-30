@@ -1,38 +1,54 @@
-using Application.Invoices.Commands.SettleInvoice;
-using Application.Invoices.Queries.GetInvoicePreview;
-using Microsoft.AspNetCore.Mvc;
-
 namespace API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/invoices")]
 public class InvoiceController : ApiControllerBase
 {
-    /// <summary>
-    /// Xem trước thông tin hóa đơn tạm tính và tiền cọc cấn trừ
-    /// </summary>
-    /// <param name="tableId">Mã bàn ăn</param>
-    /// <returns>Chi tiết tính toán hóa đơn</returns>
-    [HttpGet("preview/{tableId:guid}")]
-    [ProducesResponseType(typeof(InvoicePreviewDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPreview(Guid tableId)
+    private readonly IInvoiceService _invoiceService;
+
+    public InvoiceController(IInvoiceService invoiceService)
     {
-        var result = await Mediator.Send(new GetInvoicePreviewQuery(tableId));
+        _invoiceService = invoiceService;
+    }
+
+    [HttpPost("/api/tables/{tableId}/request-checkout")]
+    public async Task<IActionResult> RequestCheckoutAsync(Guid tableId, CancellationToken ct)
+    {
+        var result = await _invoiceService.RequestCheckoutAsync(tableId, ct);
+        return Ok(new { success = result, message = "Đã gửi yêu cầu thanh toán bàn ăn." });
+    }
+
+    [HttpGet("preview/{tableId}")]
+    public async Task<IActionResult> GetInvoicePreviewAsync(Guid tableId, CancellationToken ct)
+    {
+        var result = await _invoiceService.CalculateInvoiceAsync(tableId, ct);
         return Ok(result);
     }
 
-    /// <summary>
-    /// Quyết toán hóa đơn, cấn trừ tiền cọc và chuyển bàn sang chờ dọn dẹp
-    /// </summary>
-    /// <param name="command">Thông tin quyết toán đơn hàng</param>
-    /// <returns>Mã hóa đơn vừa khởi tạo</returns>
-    [HttpPost("settle")]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SettleInvoice([FromBody] SettleInvoiceCommand command)
+    [HttpPost("{tableId}/print-preview")]
+    public async Task<IActionResult> PrintPreBillAsync(Guid tableId, CancellationToken ct)
     {
-        var invoiceId = await Mediator.Send(command);
-        return Ok(new { invoiceId, message = "Thanh toán thành công. Bàn đã chuyển sang trạng thái chờ dọn dẹp (Cleaning)." });
+        var result = await _invoiceService.PrintPreBillAsync(tableId, ct);
+        return Ok(new { success = result, message = "Lệnh in phiếu tạm tính đã được gửi." });
+    }
+
+    [HttpPost("{tableId}/settle")]
+    public async Task<IActionResult> SettleInvoiceAsync(Guid tableId, [FromBody] SettleInvoiceDto dto, CancellationToken ct)
+    {
+        var invoiceId = await _invoiceService.SettleInvoiceAsync(tableId, dto, ct);
+        return Ok(new { success = true, invoiceId, message = "Quyết toán hóa đơn thành công." });
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetInvoiceByIdAsync(Guid id, CancellationToken ct)
+    {
+        var result = await _invoiceService.GetInvoiceByIdAsync(id, ct);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetInvoicesAsync([FromQuery] DateTime? date, CancellationToken ct)
+    {
+        var result = await _invoiceService.GetInvoicesAsync(date, ct);
+        return Ok(result);
     }
 }

@@ -1,4 +1,3 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -7,7 +6,4 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public abstract class ApiControllerBase : ControllerBase
 {
-    private ISender? _sender;
-
-    protected ISender Mediator => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 }

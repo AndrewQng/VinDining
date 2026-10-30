@@ -1,0 +1,15 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using API.Models.Common;
+global using API.Models.Entities;
+global using API.Models.Enums;
+global using API.Models.Identity;
+global using API.Data;
+global using API.DTOs;
+global using API.Services;
+global using API.Services.Interfaces;

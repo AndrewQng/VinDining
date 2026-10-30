@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using Application.Common.Exceptions;
+using API.Models.Common;
 
 namespace API.Middlewares;
 

@@ -1,6 +1,6 @@
 using API.Hubs;
-using Application.Common.Interfaces;
-using Domain.Enums;
+using API.Services.Interfaces;
+using API.Models.Enums;
 using Microsoft.AspNetCore.SignalR;
 
 namespace API.Services;

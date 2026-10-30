@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net">
+<mxfile host="Electron">
   <diagram name="Page-1" id="O3G74-t8hshP7c1RBjiX">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="858" dy="522" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -258,7 +258,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-84" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=15;" value="FeedbackController" vertex="1">
-          <mxGeometry height="104" width="140" x="1685.5" y="450" as="geometry" />
+          <mxGeometry height="104" width="140" x="1500" y="442" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-212" parent="HPupjo9R_jcxcSeU1yY6-84" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=15;" value="+ create() : void" vertex="1">
           <mxGeometry height="26" width="140" y="26" as="geometry" />
@@ -375,7 +375,7 @@
           <mxGeometry height="26" width="177" y="104" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-125" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=15;" value="FeedbackService" vertex="1">
-          <mxGeometry height="104" width="140" x="1685.5" y="615" as="geometry" />
+          <mxGeometry height="104" width="140" x="1500" y="607" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-218" parent="HPupjo9R_jcxcSeU1yY6-125" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=15;" value="+ creare() : void" vertex="1">
           <mxGeometry height="26" width="140" y="26" as="geometry" />
@@ -396,7 +396,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-220" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=15;" value="AdminController" vertex="1">
-          <mxGeometry height="156" width="177" x="1475.5" y="442" as="geometry" />
+          <mxGeometry height="156" width="177" x="1490" y="26" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-221" parent="HPupjo9R_jcxcSeU1yY6-220" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=15;" value="+ getDashBoard() : void" vertex="1">
           <mxGeometry height="26" width="177" y="26" as="geometry" />
@@ -414,7 +414,7 @@
           <mxGeometry height="26" width="177" y="130" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-225" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=15;" value="AdminService" vertex="1">
-          <mxGeometry height="156" width="177" x="1475.5" y="660" as="geometry" />
+          <mxGeometry height="156" width="177" x="1490" y="244" as="geometry" />
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-235" parent="HPupjo9R_jcxcSeU1yY6-225" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=15;" value="+ getDashBoard() : void" vertex="1">
           <mxGeometry height="26" width="177" y="26" as="geometry" />
@@ -803,8 +803,7 @@
             <Array as="points">
               <mxPoint x="960" y="1532.3" />
               <mxPoint x="955" y="1532.3" />
-              <mxPoint x="955" y="1490" />
-              <mxPoint x="1019.8" y="1490" />
+              <mxPoint x="955" y="1423.9" />
             </Array>
             <mxPoint x="790" y="1260" as="sourcePoint" />
             <mxPoint x="940" y="1260" as="targetPoint" />
@@ -817,7 +816,7 @@
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-384" connectable="0" parent="HPupjo9R_jcxcSeU1yY6-382" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=15;" value="0..*" vertex="1">
           <mxGeometry relative="1" x="0.928" as="geometry">
-            <mxPoint x="25" y="14" as="offset" />
+            <mxPoint x="-33" y="17" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="HPupjo9R_jcxcSeU1yY6-385" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=15;" value="Category" vertex="1">

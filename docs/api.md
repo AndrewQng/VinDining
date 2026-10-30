@@ -1,134 +1,86 @@
-# VinDining — Danh mục Đặc tả Hợp đồng API RESTful
+# VinDining — Danh mục API & Controller
 
-Tài liệu đặc tả toàn bộ hợp đồng API RESTful thuộc backend VinDining phục vụ các ứng dụng Client (Web Khách hàng, Mobile POS Phục vụ, Tablet quầy Pass và Web Quản trị).
+## Bảng 1: Danh mục API Hệ thống
 
-> **Lưu ý Kiến trúc Hệ thống Tự động**: Các tác vụ chạy ngầm (`UC-S1: Giải phóng bàn hết hạn cọc`, `UC-S2: Gửi biểu mẫu đánh giá chất lượng sau phục vụ`, `UC-S3: Gửi thông báo nhắc hẹn đặt bàn`, `UC-S4: Theo dõi & cảnh báo thời gian order`) được triển khai nội bộ máy chủ bằng cơ chế **In-Process Background Worker** (`IHostedService` trong .NET 9), kích hoạt trực tiếp vào tầng Application Service mà không mở endpoint HTTP/Controller ra bên ngoài. Do đó, các tác vụ này không thuộc phạm vi hợp đồng REST API của Client.
-
-## Bảng 1: Tổng hợp Danh mục Toàn bộ API Hệ thống VinDining
-
-| STT | Phân hệ | Tên chức năng / API | Method | Endpoint | Quyền truy cập | Nguồn Sequence Diagram |
-| :---: | :--- | :--- | :---: | :--- | :--- | :--- |
-| 1 | Xác thực & Nhân sự | Đăng nhập hệ thống nội bộ | `POST` | `/api/auth/login` | Public (Nhân viên) | [SD_UC_E5_Staff_Authentication.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E5_Staff_Authentication.puml) |
-| 2 | Đặt bàn & Đặt cọc | Tạo yêu cầu đặt bàn & lấy liên kết cọc VNPAY | `POST` | `/api/reservations` | Public (Khách hàng) | [SD_UC_U1_Reservation_Deposit.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U1_Reservation_Deposit.puml) |
-| 3 | Đặt bàn & Đặt cọc | Webhook xử lý kết quả thanh toán cọc VNPAY | `POST` | `/api/payments/vnpay-ipn` | Public (VNPAY IPN) | [SD_UC_U1_Reservation_Deposit.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U1_Reservation_Deposit.puml) |
-| 4 | Đặt bàn & Đặt cọc | Hủy đặt bàn trước giờ & Tự động hoàn cọc | `POST` | `/api/reservations/cancel` | Public (Khách hàng) | [SD_UC_U3_Cancel_Reservation.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U3_Cancel_Reservation.puml) |
-| 5 | Sơ đồ bàn & Đón tiếp | Check-in khách có đặt trước | `POST` | `/api/tables/{id}/check-in` | Hostess, Waiter, Manager | [SD_UC_E6_1_CheckIn_Reservation.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E6_1_CheckIn_Reservation.puml) |
-| 6 | Sơ đồ bàn & Đón tiếp | Check-in khách vãng lai (Walk-in) | `POST` | `/api/tables/{id}/walk-in` | Hostess, Waiter, Manager | [SD_UC_E6_2_CheckIn_WalkIn.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E6_2_CheckIn_WalkIn.puml) |
-| 7 | Sơ đồ bàn & Đón tiếp | Chuyển bàn phục vụ | `POST` | `/api/tables/{id}/transfer` | Waiter, Manager | [SD_UC_E4_1_Transfer_Table.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E4_1_Transfer_Table.puml) |
-| 8 | Sơ đồ bàn & Đón tiếp | Gộp nhiều bàn phục vụ | `POST` | `/api/tables/merge` | Waiter, Manager | [SD_UC_E4_2_Merge_Table.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E4_2_Merge_Table.puml) |
-| 9 | Sơ đồ bàn & Đón tiếp | Yêu cầu thanh toán từ bàn ăn | `POST` | `/api/tables/{tableId}/request-checkout` | Waiter, Hostess, Manager | [SD_UC_E3_1_Request_Checkout.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_1_Request_Checkout.puml) |
-| 10 | Gọi món & Điều phối Bếp | Tạo đơn gọi món mới theo đợt Course | `POST` | `/api/orders` | Waiter, Manager | [SD_UC_E1_1_Create_Order.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_1_Create_Order.puml) |
-| 11 | Gọi món & Điều phối Bếp | Bắn lệnh nấu đợt món tiếp theo (Fire Course) | `POST` | `/api/orders/{id}/fire-course` | Waiter, Expediter, Manager | [SD_UC_E1_2_Fire_Next_Course.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_2_Fire_Next_Course.puml) |
-| 12 | Gọi món & Điều phối Bếp | Gọi thêm món vào đơn đang phục vụ | `POST` | `/api/orders/{id}/items` | Waiter, Manager | [SD_UC_E1_3_Add_Order_Items.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_3_Add_Order_Items.puml) |
-| 13 | Gọi món & Điều phối Bếp | Expediter xác nhận ra món phục vụ bàn | `PATCH` | `/api/orders/{id}/items/{itemId}/serve` | Expediter, Chef, Waiter | [SD_UC_E2_Expediter_Serve_CourseFiring.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E2_Expediter_Serve_CourseFiring.puml) |
-| 14 | Hóa đơn & Quyết toán | Xem trước bảng kê hóa đơn & VietQR động | `GET` | `/api/invoices/preview/{tableId}` | Cashier, Manager | [SD_UC_E3_2_Preview_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_2_Preview_Invoice.puml) |
-| 15 | Hóa đơn & Quyết toán | In phiếu tạm tính (Pre-bill) | `POST` | `/api/invoices/{tableId}/print-preview` | Cashier, Manager | [SD_UC_E3_2_Preview_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_2_Preview_Invoice.puml) |
-| 16 | Hóa đơn & Quyết toán | Quyết toán hóa đơn & Cấn trừ tiền cọc | `POST` | `/api/invoices/{tableId}/settle` | Cashier, Manager | [SD_UC_E3_3_Settle_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_3_Settle_Invoice.puml) |
-| 17 | Khách hàng tại bàn | Xem thực đơn điện tử E-Menu qua mã QR | `GET` | `/api/menu/table/{id}` | Public (Khách tại bàn) | [SD_UC_U2_View_Menu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_View_Menu.puml) |
-| 18 | Khách hàng tại bàn | Gửi yêu cầu gọi phục vụ từ QR E-Menu | `POST` | `/api/tables/{id}/call-service` | Public (Khách tại bàn) | [SD_UC_U2_Call_Service_QR.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_Call_Service_QR.puml) |
-| 19 | Khách hàng tại bàn | Nhân viên xác nhận hoàn tất yêu cầu phục vụ | `PATCH` | `/api/service-calls/{id}/complete` | Waiter, Hostess, Manager | [SD_UC_U2_Call_Service_QR.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_Call_Service_QR.puml) |
-| 20 | Khách hàng tại bàn | Gửi đánh giá phản hồi chất lượng dịch vụ | `POST` | `/api/feedbacks` | Public (Khách sau ăn) | [SD_UC_U4_Submit_Feedback.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U4_Submit_Feedback.puml) |
-| 21 | Quản trị Thực đơn | Thêm món ăn mới vào thực đơn A La Carte | `POST` | `/api/admin/menu-items` | Admin, Manager | [SD_UC_A1_1_Create_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_1_Create_MenuItem.puml) |
-| 22 | Quản trị Thực đơn | Cập nhật thông tin món ăn | `PUT` | `/api/admin/menu-items/{id}` | Admin, Manager | [SD_UC_A1_2_Update_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_2_Update_MenuItem.puml) |
-| 23 | Quản trị Thực đơn | Bật / tắt khả dụng của món (Còn/Hết) | `PATCH` | `/api/admin/menu-items/{id}/availability` | Admin, Manager, Chef | [SD_UC_A1_3_Toggle_MenuItem_Status.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_3_Toggle_MenuItem_Status.puml) |
-| 24 | Quản trị Thực đơn | Xóa món ăn khỏi thực đơn | `DELETE` | `/api/admin/menu-items/{id}` | Admin, Manager | [SD_UC_A1_4_Delete_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_4_Delete_MenuItem.puml) |
-| 25 | Quản trị Thực đơn | Tạo thực đơn Tasting Menu mới | `POST` | `/api/admin/tasting-menus` | Admin, Manager, Chef | [SD_UC_A1_5_Create_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_5_Create_TastingMenu.puml) |
-| 26 | Quản trị Thực đơn | Cập nhật thực đơn Tasting Menu | `PUT` | `/api/admin/tasting-menus/{id}` | Admin, Manager, Chef | [SD_UC_A1_6_Update_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_6_Update_TastingMenu.puml) |
-| 27 | Quản trị Thực đơn | Xóa thực đơn Tasting Menu | `DELETE` | `/api/admin/tasting-menus/{id}` | Admin, Manager, Chef | [SD_UC_A1_7_Delete_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_7_Delete_TastingMenu.puml) |
-| 28 | Quản trị Sơ đồ bàn | Lưu cấu hình sơ đồ bàn & Tọa độ 2D | `PUT` | `/api/admin/tables/layout` | Admin, Manager | [SD_UC_A2_Floor_Plan_Layout.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A2_Floor_Plan_Layout.puml) |
-| 29 | Quản trị Đặt bàn | Phê duyệt hoàn tiền cọc thủ công | `POST` | `/api/admin/reservations/{id}/manual-refund` | Manager, Admin | [SD_UC_A3_Manual_Refund_Approval.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A3_Manual_Refund_Approval.puml) |
-| 30 | Quản trị Nhân sự | Tạo tài khoản nhân viên mới | `POST` | `/api/admin/staff` | Admin | [SD_UC_A4_1_Create_Staff.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_1_Create_Staff.puml) |
-| 31 | Quản trị Nhân sự | Cập nhật thông tin hồ sơ nhân viên | `PUT` | `/api/admin/staff/{id}` | Admin | [SD_UC_A4_2_Update_Staff.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_2_Update_Staff.puml) |
-| 32 | Quản trị Nhân sự | Cấp lại mật khẩu nhân viên | `POST` | `/api/admin/staff/{id}/reset-password` | Admin | [SD_UC_A4_3_Reset_Staff_Password.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_3_Reset_Staff_Password.puml) |
-| 33 | Quản trị Nhân sự | Bật / tắt kích hoạt tài khoản nhân viên | `PATCH` | `/api/admin/staff/{id}/status` | Admin | [SD_UC_A4_4_Toggle_Staff_Status.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_4_Toggle_Staff_Status.puml) |
-| 34 | Báo cáo & Thống kê | Truy vấn báo cáo & Thống kê Dashboard | `GET` | `/api/admin/reports/dashboard` | Admin, Manager, Director | [SD_UC_A5_Analytics_Dashboard.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A5_Analytics_Dashboard.puml) |
-
----
-
-## Bảng 2: Đặc tả Chi tiết Phân hệ Xác thực & Nhân sự (Authentication & Staff)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Đăng nhập hệ thống nội bộ | `POST` | `/api/auth/login` | Public (Nhân viên) | `{ "username": "string", "password": "string" }` | **200 OK**: `{ "token": "string", "refreshToken": "string", "staffInfo": { "id": 1, "fullName": "string", "role": "string", "username": "string" } }`<br>**Lỗi**: `401 Unauthorized`, `403 Forbidden` | [SD_UC_E5_Staff_Authentication.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E5_Staff_Authentication.puml) |
-
----
-
-## Bảng 3: Đặc tả Chi tiết Phân hệ Đặt bàn & Đặt cọc (Reservation & Deposit)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Tạo yêu cầu đặt bàn & lấy liên kết cọc VNPAY | `POST` | `/api/reservations` | Public (Khách hàng) | `{ "guestName": "string", "phone": "string", "email": "string", "shiftId": 2, "partySize": 4, "zoneId": 1, "note": "string" }` | **201 Created**: `{ "reservationId": 105, "reservationCode": "RES-xxx", "depositAmount": 500000, "paymentUrl": "https://...", "expireAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `409 Conflict` | [SD_UC_U1_Reservation_Deposit.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U1_Reservation_Deposit.puml) |
-| 2 | Webhook tiếp nhận kết quả thanh toán cọc VNPAY | `POST` | `/api/payments/vnpay-ipn` | Public (VNPAY IPN) | `{ "vnp_TxnRef": "string", "vnp_Amount": "string", "vnp_ResponseCode": "00", "vnp_TransactionNo": "string", "vnp_BankCode": "string", "vnp_SecureHash": "string" }` | **200 OK**: `{ "RspCode": "00", "Message": "Confirm Success" }`<br>**Lỗi**: `400 Bad Request` (Sai chữ ký bảo mật checksum) | [SD_UC_U1_Reservation_Deposit.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U1_Reservation_Deposit.puml) |
-| 3 | Hủy đặt bàn trước giờ & Tự động hoàn cọc | `POST` | `/api/reservations/cancel` | Public (Khách hàng) | `{ "reservationCode": "string", "phone": "string", "cancelReason": "string" }` | **200 OK**: `{ "success": true, "reservationCode": "string", "refundStatus": "PROCESSED", "refundAmount": 500000, "message": "string" }`<br>**Lỗi**: `400 Bad Request` (Quá hạn 4h), `404 Not Found` | [SD_UC_U3_Cancel_Reservation.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U3_Cancel_Reservation.puml) |
-
----
-
-## Bảng 4: Đặc tả Chi tiết Phân hệ Sơ đồ bàn & Đón tiếp (Table & Floor Management)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Check-in khách có đặt trước | `POST` | `/api/tables/{id}/check-in` | Hostess, Waiter, Manager | `{ "reservationCode": "RES-xxx", "assignedTableId": 12 }` | **200 OK**: `{ "success": true, "tableId": 12, "status": "OCCUPIED", "reservationId": 105, "occupiedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_E6_1_CheckIn_Reservation.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E6_1_CheckIn_Reservation.puml) |
-| 2 | Check-in khách vãng lai (Walk-in) | `POST` | `/api/tables/{id}/walk-in` | Hostess, Waiter, Manager | `{ "partySize": 2, "guestName": "string", "phone": "string", "note": "string" }` | **200 OK**: `{ "success": true, "tableId": 14, "status": "OCCUPIED", "orderId": 201, "occupiedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `409 Conflict` | [SD_UC_E6_2_CheckIn_WalkIn.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E6_2_CheckIn_WalkIn.puml) |
-| 3 | Chuyển bàn phục vụ | `POST` | `/api/tables/{id}/transfer` | Waiter, Manager | `{ "sourceTableId": 12, "targetTableId": 15, "reason": "string" }` | **200 OK**: `{ "success": true, "sourceTableId": 12, "targetTableId": 15, "orderId": 201, "message": "string" }`<br>**Lỗi**: `400 Bad Request`, `409 Conflict` (Bàn đích bận) | [SD_UC_E4_1_Transfer_Table.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E4_1_Transfer_Table.puml) |
-| 4 | Gộp nhiều bàn phục vụ | `POST` | `/api/tables/merge` | Waiter, Manager | `{ "sourceTableIds": [12, 13], "targetTableId": 12, "reason": "string" }` | **200 OK**: `{ "success": true, "mergedOrderId": 201, "primaryTableId": 12, "associatedTableIds": [12, 13] }`<br>**Lỗi**: `400 Bad Request` | [SD_UC_E4_2_Merge_Table.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E4_2_Merge_Table.puml) |
-| 5 | Yêu cầu thanh toán từ bàn ăn | `POST` | `/api/tables/{tableId}/request-checkout` | Waiter, Hostess, Manager | `{ "tableId": 12, "staffNote": "string" }` | **200 OK**: `{ "success": true, "tableId": 12, "orderId": 201, "message": "string", "requestedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request` (Bàn chưa có order) | [SD_UC_E3_1_Request_Checkout.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_1_Request_Checkout.puml) |
+| STT | Phương thức | Endpoint (Route) | Chức năng / Nghiệp vụ | Quyền truy cập |
+| :---: | :---: | :--- | :--- | :--- |
+| 1 | `POST` | `/api/auth/login` | Đăng nhập tài khoản nhân viên & nhận JWT | Public |
+| 2 | `GET` | `/api/auth/me` | Lấy thông tin tài khoản đang đăng nhập | Nhân viên |
+| 3 | `POST` | `/api/auth/logout` | Đăng xuất & hủy phiên làm việc | Nhân viên |
+| 4 | `POST` | `/api/reservations` | Đặt bàn trực tuyến & tạo link cọc VNPAY | Khách hàng |
+| 5 | `POST` | `/api/payments/vnpay-ipn` | Tiếp nhận Webhook IPN xử lý cọc thành công | Cổng VNPAY |
+| 6 | `POST` | `/api/reservations/cancel` | Hủy đặt bàn và tự động hoàn cọc theo mốc | Khách hàng |
+| 7 | `GET` | `/api/reservations` | Tra cứu danh sách đặt bàn theo ngày / trạng thái | Thu ngân, Quản lý |
+| 8 | `GET` | `/api/reservations/{code}` | Xem chi tiết thông tin đơn đặt bàn | Khách hàng, Thu ngân |
+| 9 | `GET` | `/api/reservations/available-slots` | Kiểm tra các khung giờ còn bàn trống | Public |
+| 10 | `POST` | `/api/tables/{id}/check-in` | Check-in nhận bàn cho khách có đặt trước | Thu ngân, Phục vụ |
+| 11 | `POST` | `/api/tables/{id}/walk-in` | Xếp bàn trực tiếp cho khách vãng lai | Thu ngân, Phục vụ |
+| 12 | `POST` | `/api/tables/{sourceId}/transfer` | Điều chuyển bàn ăn sang bàn trống mới | Phục vụ, Quản lý |
+| 13 | `POST` | `/api/tables/merge` | Gộp 2 hoặc nhiều bàn ăn phục vụ cùng đoàn | Phục vụ, Quản lý |
+| 14 | `GET` | `/api/tables` | Lấy sơ đồ bàn ăn và trạng thái thời gian thực | Toàn bộ nhân viên |
+| 15 | `GET` | `/api/tables/{id}` | Xem chi tiết bàn ăn và đơn order hiện tại | Toàn bộ nhân viên |
+| 16 | `PATCH` | `/api/tables/{id}/status` | Đổi trạng thái bàn (Dọn dẹp xong sang Trống) | Phục vụ, Thu ngân |
+| 17 | `POST` | `/api/orders` | Tạo đơn gọi món mới theo từng Course | Phục vụ |
+| 18 | `POST` | `/api/orders/{id}/fire-course` | Kích hoạt bếp nấu đợt món tiếp theo (Fire) | Phục vụ, Quầy Pass |
+| 19 | `POST` | `/api/orders/{id}/items` | Gọi thêm món phát sinh vào đơn đang mở | Phục vụ |
+| 20 | `PATCH` | `/api/orders/{id}/items/{itemId}/serve` | Xác nhận đã hoàn tất ra món tại quầy Pass | Bếp trưởng, Quầy Pass |
+| 21 | `GET` | `/api/orders/table/{tableId}` | Lấy đơn order đang hoạt động của một bàn | Phục vụ, Thu ngân |
+| 22 | `GET` | `/api/orders/{id}` | Lấy thông tin chi tiết một đơn order | Phục vụ, Thu ngân |
+| 23 | `DELETE` | `/api/orders/{id}/items/{itemId}` | Hủy món chưa qua chế biến khỏi đơn | Phục vụ, Quản lý |
+| 24 | `GET` | `/api/orders/kitchen/pending` | Lấy danh sách món đang chờ nấu trên KDS | Bếp, Quầy Pass |
+| 25 | `POST` | `/api/tables/{tableId}/request-checkout` | Gửi yêu cầu xin thanh toán từ bàn ăn | Phục vụ, Khách hàng |
+| 26 | `GET` | `/api/invoices/preview/{tableId}` | Xem trước hóa đơn, tự cấn trừ cọc & thuế | Thu ngân, Quản lý |
+| 27 | `POST` | `/api/invoices/{tableId}/print-preview` | In phiếu tạm tính bàn ăn gửi khách xem | Thu ngân |
+| 28 | `POST` | `/api/invoices/{tableId}/settle` | Quyết toán hóa đơn, đóng bàn & in biên lai | Thu ngân |
+| 29 | `GET` | `/api/invoices/{id}` | Tra cứu chi tiết hóa đơn đã quyết toán | Thu ngân, Quản lý |
+| 30 | `GET` | `/api/invoices` | Danh sách lịch sử hóa đơn trong ca | Thu ngân, Quản lý |
+| 31 | `GET` | `/api/menu/table/{id}` | Khách quét mã QR xem thực đơn tại bàn | Khách hàng |
+| 32 | `GET` | `/api/menu/categories` | Lấy danh mục nhóm món phục vụ hiển thị | Public |
+| 33 | `GET` | `/api/menu/items/{id}` | Xem chi tiết thông tin món ăn và dị ứng | Public |
+| 34 | `POST` | `/api/tables/{id}/call-service` | Khách gửi tín hiệu gọi nhân viên phục vụ | Khách hàng |
+| 35 | `PATCH` | `/api/service-calls/{id}/complete` | Xác nhận đã hỗ trợ xong yêu cầu tại bàn | Phục vụ |
+| 36 | `GET` | `/api/service-calls/active` | Danh sách yêu cầu phục vụ đang chờ xử lý | Phục vụ |
+| 37 | `POST` | `/api/feedbacks` | Gửi phiếu đánh giá chất lượng trải nghiệm | Khách hàng |
+| 38 | `GET` | `/api/admin/feedbacks` | Tra cứu danh sách phản hồi từ thực khách | Quản lý |
+| 39 | `POST` | `/api/admin/menu-items` | Tạo mới món ăn A La Carte | Quản lý |
+| 40 | `PUT` | `/api/admin/menu-items/{id}` | Chỉnh sửa thông tin món ăn A La Carte | Quản lý |
+| 41 | `PATCH` | `/api/admin/menu-items/{id}/availability` | Bật/tắt trạng thái hết món tạm thời | Quản lý, Bếp |
+| 42 | `DELETE` | `/api/admin/menu-items/{id}` | Xóa món ăn khỏi danh mục phục vụ | Quản lý |
+| 43 | `GET` | `/api/admin/menu-items` | Danh sách toàn bộ món ăn trong trang quản trị | Quản lý |
+| 44 | `POST` | `/api/admin/tasting-menus` | Tạo Set Menu / Tasting Menu theo trình tự món | Quản lý |
+| 45 | `PUT` | `/api/admin/tasting-menus/{id}` | Cập nhật thông tin Set Menu | Quản lý |
+| 46 | `DELETE` | `/api/admin/tasting-menus/{id}` | Xóa Set Menu khỏi hệ thống | Quản lý |
+| 47 | `GET` | `/api/admin/tasting-menus` | Danh sách toàn bộ Set Menu trong quản trị | Quản lý |
+| 48 | `PUT` | `/api/admin/tables/layout` | Cập nhật tọa độ sơ đồ bàn ăn 2D | Quản lý |
+| 49 | `POST` | `/api/admin/tables` | Tạo mới bàn ăn trong khu vực | Quản lý |
+| 50 | `DELETE` | `/api/admin/tables/{id}` | Xóa bàn ăn khỏi sơ đồ | Quản lý |
+| 51 | `POST` | `/api/admin/reservations/{id}/manual-refund` | Duyệt hoàn cọc thủ công ngoài chính sách | Quản lý |
+| 52 | `GET` | `/api/admin/refunds` | Lấy danh sách yêu cầu hoàn cọc chờ xử lý | Quản lý |
+| 53 | `POST` | `/api/admin/staff` | Tạo mới tài khoản nhân viên nội bộ | Quản lý |
+| 54 | `PUT` | `/api/admin/staff/{id}` | Cập nhật hồ sơ, phân quyền nhân viên | Quản lý |
+| 55 | `POST` | `/api/admin/staff/{id}/reset-password` | Khởi tạo lại mật khẩu tài khoản | Quản lý |
+| 56 | `PATCH` | `/api/admin/staff/{id}/status` | Khóa hoặc kích hoạt tài khoản nhân viên | Quản lý |
+| 57 | `GET` | `/api/admin/staff` | Lấy danh sách tất cả nhân viên nội bộ | Quản lý |
+| 58 | `GET` | `/api/admin/staff/{id}` | Xem chi tiết hồ sơ một nhân viên | Quản lý |
+| 59 | `GET` | `/api/admin/reports/dashboard` | Thống kê số liệu doanh thu, tỷ lệ lấp đầy | Quản lý |
+| 60 | `GET` | `/api/admin/reports/export` | Xuất dữ liệu báo cáo sang file Excel / PDF | Quản lý |
 
 ---
 
-## Bảng 5: Đặc tả Chi tiết Phân hệ Gọi món & Điều phối Bếp (Ordering & Course Firing)
+## Bảng 2: Danh sách Controller & Các hàm (Action Methods)
 
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Tạo đơn gọi món mới theo Course | `POST` | `/api/orders` | Waiter, Manager | `{ "tableId": 12, "guestCount": 4, "courses": [ { "courseType": "STARTER", "items": [ { "menuItemId": 1, "quantity": 2, "note": "string" } ] }, { "courseType": "MAIN", "items": [...] } ] }` | **201 Created**: `{ "orderId": 201, "tableId": 12, "status": "ACTIVE", "ticketIds": [1001, 1002], "createdAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_E1_1_Create_Order.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_1_Create_Order.puml) |
-| 2 | Bắn lệnh nấu đợt tiếp theo (Fire Course) | `POST` | `/api/orders/{id}/fire-course` | Waiter, Expediter, Manager | `{ "courseType": "MAIN" }` | **200 OK**: `{ "orderId": 201, "courseType": "MAIN", "status": "FIRED", "firedAt": "ISO8601", "ticketId": 1002 }`<br>**Lỗi**: `400 Bad Request` (Sai thứ tự Course) | [SD_UC_E1_2_Fire_Next_Course.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_2_Fire_Next_Course.puml) |
-| 3 | Gọi thêm món vào đơn đang phục vụ | `POST` | `/api/orders/{id}/items` | Waiter, Manager | `{ "items": [ { "menuItemId": 20, "quantity": 1, "courseType": "BEVERAGE", "note": "string" } ] }` | **200 OK**: `{ "orderId": 201, "addedItemCount": 1, "ticketId": 1004, "updatedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_E1_3_Add_Order_Items.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E1_3_Add_Order_Items.puml) |
-| 4 | Expediter xác nhận ra món phục vụ bàn | `PATCH` | `/api/orders/{id}/items/{itemId}/serve` | Expediter, Chef, Waiter | `{ "status": "SERVED" }` | **200 OK**: `{ "itemId": 501, "orderId": 201, "menuItemName": "string", "status": "SERVED", "servedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_E2_Expediter_Serve_CourseFiring.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E2_Expediter_Serve_CourseFiring.puml) |
-
----
-
-## Bảng 6: Đặc tả Chi tiết Phân hệ Hóa đơn & Quyết toán (Billing & Settlement)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Xem trước bảng kê hóa đơn & VietQR | `GET` | `/api/invoices/preview/{tableId}` | Cashier, Manager | Tham số đường dẫn: `{tableId}` | **200 OK**: `{ "tableId": 12, "tableName": "string", "orderId": 201, "items": [...], "subTotal": 5900000, "serviceFee": 295000, "vat": 619500, "depositAmount": 500000, "finalTotal": 6314500, "vietQrPayload": "string" }`<br>**Lỗi**: `404 Not Found` | [SD_UC_E3_2_Preview_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_2_Preview_Invoice.puml) |
-| 2 | In phiếu tạm tính (Pre-bill) | `POST` | `/api/invoices/{tableId}/print-preview` | Cashier, Manager | `{ "printerIp": "string", "copies": 1 }` | **200 OK**: `{ "success": true, "tableId": 12, "printedAt": "ISO8601" }`<br>**Lỗi**: `500 Internal Error` (Mất kết nối máy in) | [SD_UC_E3_2_Preview_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_2_Preview_Invoice.puml) |
-| 3 | Quyết toán hóa đơn & Cấn trừ cọc | `POST` | `/api/invoices/{tableId}/settle` | Cashier, Manager | `{ "paymentMethod": "VIETQR", "amountPaid": 6314500, "note": "string" }` | **200 OK**: `{ "invoiceId": 501, "invoiceNumber": "INV-xxx", "subTotal": 5900000, "serviceFee": 295000, "vat": 619500, "depositDeducted": 500000, "finalTotal": 6314500, "amountPaid": 6314500, "changeAmount": 0, "paymentMethod": "VIETQR", "tableStatus": "AVAILABLE", "closedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request` | [SD_UC_E3_3_Settle_Invoice.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_E3_3_Settle_Invoice.puml) |
-
----
-
-## Bảng 7: Đặc tả Chi tiết Phân hệ Khách hàng tại bàn (Guest E-Menu & Feedback)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Xem thực đơn E-Menu qua mã QR | `GET` | `/api/menu/table/{id}` | Public (Khách tại bàn) | Tham số đường dẫn: `{id}` (TableId) | **200 OK**: `{ "tableId": 12, "tableName": "string", "categories": [ { "id": 1, "name": "Khai vị", "items": [ { "id": 1, "name": "string", "price": 380000, "description": "string", "imageUrl": "url", "isAvailable": true } ] } ] }`<br>**Lỗi**: `404 Not Found` | [SD_UC_U2_View_Menu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_View_Menu.puml) |
-| 2 | Gửi yêu cầu gọi phục vụ từ QR | `POST` | `/api/tables/{id}/call-service` | Public (Khách tại bàn) | `{ "requestType": "WATER", "note": "string" }` | **200 OK**: `{ "requestId": 88, "tableId": 12, "requestType": "WATER", "status": "PENDING", "createdAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_U2_Call_Service_QR.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_Call_Service_QR.puml) |
-| 3 | Nhân viên xác nhận xong yêu cầu phục vụ | `PATCH` | `/api/service-calls/{id}/complete` | Waiter, Hostess, Manager | Không yêu cầu Body | **200 OK**: `{ "requestId": 88, "status": "COMPLETED", "completedAt": "ISO8601" }`<br>**Lỗi**: `404 Not Found` | [SD_UC_U2_Call_Service_QR.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U2_Call_Service_QR.puml) |
-| 4 | Gửi đánh giá phản hồi sau bữa ăn | `POST` | `/api/feedbacks` | Public (Khách sau ăn) | `{ "invoiceId": 501, "rating": 5, "foodQuality": 5, "serviceQuality": 5, "comment": "string" }` | **201 Created**: `{ "feedbackId": 32, "invoiceId": 501, "submittedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_U4_Submit_Feedback.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_U4_Submit_Feedback.puml) |
-
----
-
-## Bảng 8: Đặc tả Chi tiết Phân hệ Quản trị Thực đơn & Cấu hình (Admin Menu & Floor Setup)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Thêm món ăn mới vào thực đơn | `POST` | `/api/admin/menu-items` | Admin, Manager | `{ "name": "string", "categoryId": 1, "price": 650000, "description": "string", "imageUrl": "url", "isAvailable": true }` | **201 Created**: `{ "menuItemId": 55, "name": "string", "price": 650000 }`<br>**Lỗi**: `400 Bad Request` | [SD_UC_A1_1_Create_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_1_Create_MenuItem.puml) |
-| 2 | Cập nhật thông tin món ăn | `PUT` | `/api/admin/menu-items/{id}` | Admin, Manager | `{ "name": "string", "categoryId": 1, "price": 720000, "description": "string", "imageUrl": "url" }` | **200 OK**: `{ "success": true, "menuItemId": 55, "updatedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A1_2_Update_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_2_Update_MenuItem.puml) |
-| 3 | Bật / tắt khả dụng của món (Còn/Hết) | `PATCH` | `/api/admin/menu-items/{id}/availability` | Admin, Manager, Chef | `{ "isAvailable": false, "reason": "string" }` | **200 OK**: `{ "menuItemId": 55, "isAvailable": false, "updatedAt": "ISO8601" }`<br>**Lỗi**: `404 Not Found` | [SD_UC_A1_3_Toggle_MenuItem_Status.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_3_Toggle_MenuItem_Status.puml) |
-| 4 | Xóa món ăn khỏi thực đơn | `DELETE` | `/api/admin/menu-items/{id}` | Admin, Manager | Không yêu cầu Body | **200 OK**: `{ "success": true, "message": "string" }`<br>**Lỗi**: `400 Bad Request` (Món đang có trong order hoạt động), `404 Not Found` | [SD_UC_A1_4_Delete_MenuItem.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_4_Delete_MenuItem.puml) |
-| 5 | Tạo thực đơn Tasting Menu mới | `POST` | `/api/admin/tasting-menus` | Admin, Manager, Chef | `{ "name": "string", "price": 2800000, "description": "string", "courses": [ { "courseType": "STARTER", "itemIds": [1, 2] } ] }` | **201 Created**: `{ "menuId": 10, "name": "string", "totalCourses": 4 }`<br>**Lỗi**: `400 Bad Request` | [SD_UC_A1_5_Create_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_5_Create_TastingMenu.puml) |
-| 6 | Cập nhật thực đơn Tasting Menu | `PUT` | `/api/admin/tasting-menus/{id}` | Admin, Manager, Chef | `{ "name": "string", "price": 2800000, "description": "string", "courses": [...] }` | **200 OK**: `{ "success": true, "menuId": 10 }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A1_6_Update_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_6_Update_TastingMenu.puml) |
-| 7 | Xóa thực đơn Tasting Menu | `DELETE` | `/api/admin/tasting-menus/{id}` | Admin, Manager, Chef | Không yêu cầu Body | **200 OK**: `{ "success": true }`<br>**Lỗi**: `404 Not Found` | [SD_UC_A1_7_Delete_TastingMenu.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A1_7_Delete_TastingMenu.puml) |
-| 8 | Lưu cấu hình sơ đồ bàn & Tọa độ 2D | `PUT` | `/api/admin/tables/layout` | Admin, Manager | `{ "zones": [ { "id": 1, "name": "Khu VIP", "colorCode": "#D4AF37" } ], "tables": [ { "id": 12, "name": "Bàn VIP 01", "capacity": 4, "posX": 120, "posY": 350, "zoneId": 1 } ] }` | **200 OK**: `{ "success": true, "updatedCount": 2, "updatedAt": "ISO8601" }`<br>**Lỗi**: `400 Bad Request` | [SD_UC_A2_Floor_Plan_Layout.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A2_Floor_Plan_Layout.puml) |
-| 9 | Phê duyệt hoàn tiền cọc thủ công | `POST` | `/api/admin/reservations/{id}/manual-refund` | Manager, Admin | `{ "approvalNote": "string", "refundPercentage": 100 }` | **200 OK**: `{ "refundTxnId": "REF-xxx", "reservationId": 105, "status": "SUCCESS", "refundAmount": 500000, "approvedBy": "string" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A3_Manual_Refund_Approval.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A3_Manual_Refund_Approval.puml) |
-
----
-
-## Bảng 9: Đặc tả Chi tiết Phân hệ Quản trị Tài khoản & Báo cáo (Admin Staff & Analytics)
-
-| STT | Tên API | Method | Endpoint | Quyền hạn | Tham số Request (Body / Query) | Dữ liệu Response (Success / Error) | Nguồn Diagram |
-| :---: | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| 1 | Tạo tài khoản nhân viên mới | `POST` | `/api/admin/staff` | Admin | `{ "fullName": "string", "username": "string", "password": "string", "email": "string", "role": "Waiter", "phone": "string" }` | **201 Created**: `{ "staffId": 25, "username": "string", "role": "Waiter" }`<br>**Lỗi**: `400 Bad Request`, `409 Conflict` (Trùng username/email) | [SD_UC_A4_1_Create_Staff.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_1_Create_Staff.puml) |
-| 2 | Cập nhật hồ sơ nhân viên | `PUT` | `/api/admin/staff/{id}` | Admin | `{ "fullName": "string", "email": "string", "role": "string", "phone": "string" }` | **200 OK**: `{ "success": true, "staffId": 25 }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A4_2_Update_Staff.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_2_Update_Staff.puml) |
-| 3 | Cấp lại mật khẩu nhân viên | `POST` | `/api/admin/staff/{id}/reset-password` | Admin | `{ "newPassword": "string" }` | **200 OK**: `{ "success": true, "message": "string" }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A4_3_Reset_Staff_Password.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_3_Reset_Staff_Password.puml) |
-| 4 | Bật / tắt kích hoạt tài khoản nhân viên | `PATCH` | `/api/admin/staff/{id}/status` | Admin | `{ "isActive": false }` | **200 OK**: `{ "staffId": 25, "isActive": false }`<br>**Lỗi**: `400 Bad Request`, `404 Not Found` | [SD_UC_A4_4_Toggle_Staff_Status.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A4_4_Toggle_Staff_Status.puml) |
-| 5 | Truy vấn báo cáo & Thống kê Dashboard | `GET` | `/api/admin/reports/dashboard` | Admin, Manager, Director | Query parameters: `?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | **200 OK**: `{ "summary": { "totalRevenue": 485000000, "totalOrders": 320, "totalReservations": 280, "averageRevenuePerTable": 1515625 }, "topSellingItems": [...], "hourlyOccupancyRate": [...] }`<br>**Lỗi**: `400 Bad Request` (Khoảng thời gian không hợp lệ) | [SD_UC_A5_Analytics_Dashboard.puml](file:///d:/Doanandroid/Đồ án CDTH/VinDining/docs/puml/sequences/SD_UC_A5_Analytics_Dashboard.puml) |
+| Tên Controller | Các hàm trong Controller (Action Methods) |
+| :--- | :--- |
+| `AuthController` | • `LoginAsync(LoginDto dto)`<br>• `GetCurrentUserAsync()`<br>• `LogoutAsync()` |
+| `ReservationController` | • `CreateReservationAsync(CreateReservationDto dto)`<br>• `ProcessVnPayIpnAsync(VnPayIpnDto params)`<br>• `CancelReservationAsync(CancelReservationDto dto)`<br>• `GetReservationsAsync(ReservationFilterDto filter)`<br>• `GetReservationByCodeAsync(string code)`<br>• `GetAvailableTimeSlotsAsync(DateTime date, int partySize)` |
+| `TableController` | • `CheckInReservationAsync(int id, CheckInDto dto)`<br>• `CheckInWalkInAsync(int id, WalkInDto dto)`<br>• `TransferTableAsync(int sourceId, TransferTableDto dto)`<br>• `MergeTablesAsync(MergeTablesDto dto)`<br>• `GetFloorPlanAsync()`<br>• `GetTableByIdAsync(int id)`<br>• `UpdateTableStatusAsync(int id, UpdateTableStatusDto dto)` |
+| `OrderController` | • `CreateOrderWithCoursesAsync(CreateOrderDto dto)`<br>• `FireNextCourseAsync(int id, FireCourseDto dto)`<br>• `AddOrderItemsAsync(int id, AddItemsDto itemsDto)`<br>• `ConfirmServedAsync(int id, int itemId)`<br>• `GetActiveOrderByTableAsync(int tableId)`<br>• `GetOrderDetailsAsync(int id)`<br>• `CancelOrderItemAsync(int id, int itemId)`<br>• `GetKitchenPendingOrdersAsync()` |
+| `InvoiceController` | • `RequestCheckoutAsync(int tableId)`<br>• `GetInvoicePreviewAsync(int tableId)`<br>• `PrintPreBillAsync(int tableId)`<br>• `SettleInvoiceAsync(int tableId, SettleInvoiceDto dto)`<br>• `GetInvoiceByIdAsync(int id)`<br>• `GetInvoicesAsync(InvoiceFilterDto filter)` |
+| `MenuController` | • `GetTableMenuAsync(int id)`<br>• `GetCategoriesAsync()`<br>• `GetMenuItemByIdAsync(int id)` |
+| `ServiceCallController` | • `CreateServiceCallAsync(int id, ServiceCallDto dto)`<br>• `CompleteServiceCallAsync(int id)`<br>• `GetActiveServiceCallsAsync()` |
+| `FeedbackController` | • `SubmitFeedbackAsync(SubmitFeedbackDto dto)`<br>• `GetFeedbacksAsync(FeedbackFilterDto filter)` |
+| `AdminMenuController` | • `CreateMenuItemAsync(CreateMenuItemDto dto)`<br>• `UpdateMenuItemAsync(int id, UpdateMenuItemDto dto)`<br>• `UpdateAvailabilityAsync(int id, ToggleAvailabilityDto dto)`<br>• `DeleteMenuItemAsync(int id)`<br>• `GetAllMenuItemsAsync(MenuFilterDto filter)`<br>• `CreateTastingMenuAsync(CreateTastingMenuDto dto)`<br>• `UpdateTastingMenuAsync(int id, UpdateTastingMenuDto dto)`<br>• `DeleteTastingMenuAsync(int id)`<br>• `GetAllTastingMenusAsync()` |
+| `AdminTableController` | • `UpdateFloorPlanLayoutAsync(UpdateFloorPlanDto dto)`<br>• `CreateTableAsync(CreateTableDto dto)`<br>• `DeleteTableAsync(int id)` |
+| `AdminRefundController` | • `OverrideRefundAsync(int id, ManualRefundDto dto)`<br>• `GetRefundRequestsAsync(RefundFilterDto filter)` |
+| `AdminStaffController` | • `CreateStaffAsync(CreateStaffDto dto)`<br>• `UpdateStaffAsync(int id, UpdateStaffDto dto)`<br>• `ResetPasswordAsync(int id, ResetPasswordDto dto)`<br>• `UpdateStatusAsync(int id, ToggleStatusDto dto)`<br>• `GetStaffListAsync(StaffFilterDto filter)`<br>• `GetStaffByIdAsync(int id)` |
+| `ReportController` | • `GetMetricsAsync(DateRangeDto range)`<br>• `ExportRevenueReportAsync(DateRangeDto range)` |
