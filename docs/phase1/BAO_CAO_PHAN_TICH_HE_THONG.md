@@ -75,30 +75,24 @@ Hệ thống phân định 5 tác nhân chính và 1 tác nhân phụ tích hợ
 
 ## 2.2 Danh mục Use Case hệ thống
 
-
 | STT | Mã Use Case | Tên Use Case | Phân hệ | Mức độ ưu tiên |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | UC-U1 | Đặt bàn & Đặt cọc trực tuyến | Khách hàng (Guest) | Bắt buộc (Must Have) |
-| 2 | UC-U2 | Yêu cầu phục vụ thông qua QR menu | Khách hàng (Guest) | Bắt buộc (Must Have) |
-| 3 | UC-U3 | Hủy đặt bàn | Khách hàng (Guest) | Bắt buộc (Must Have) |
-| 4 | UC-U4 | Gửi đánh giá dịch vụ | Khách hàng (Guest) | Bổ sung (Could Have) |
-| 5 | UC-E1 | Tạo Order | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 6 | UC-E2 | Cập nhật Order | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 7 | UC-E3 | Xác nhận đi món | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 8 | UC-E4 | Yêu cầu thanh toán | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 9 | UC-E5 | Đổi bàn | Nhân viên Nội bộ (Staff) | Quan trọng (Should Have) |
-| 10 | UC-E6 | Check in nhận bàn | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 11 | UC-E7 | Thanh toán hóa đơn | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 12 | UC-E8 | Đăng nhập & Xác thực | Nhân viên Nội bộ (Staff) | Bắt buộc (Must Have) |
-| 13 | UC-A1 | Quản trị Danh mục & Thực đơn | Quản lý & Quản trị (Admin) | Quan trọng (Should Have) |
-| 14 | UC-A2 | Cấu hình sơ đồ bàn ăn | Quản lý & Quản trị (Admin) | Quan trọng (Should Have) |
-| 15 | UC-A3 | Duyệt hoàn cọc thủ công | Quản lý & Quản trị (Admin) | Quan trọng (Should Have) |
-| 16 | UC-A4 | Quản trị Tài khoản | Quản lý & Quản trị (Admin) | Quan trọng (Should Have) |
-| 17 | UC-A5 | Báo cáo Thống kê & Doanh thu | Quản lý & Quản trị (Admin) | Bổ sung (Could Have) |
-| 18 | UC-S1 | Giải phóng bàn hết hạn cọc | Background Worker | Bắt buộc (Must Have) |
-| 19 | UC-S2 | Gửi biểu mẫu đánh giá chất lượng sau phục vụ | Background Worker | Bổ sung (Could Have) |
-| 20 | UC-S3 | Gửi thông báo nhắc hẹn đặt bàn | Background Worker | Quan trọng (Should Have) |
-| 21 | UC-S4 | Theo dõi & cảnh báo thời gian order | Background Worker | Quan trọng (Should Have) |
+| 1 | UC-U1 | Đặt bàn & Đặt cọc trực tuyến | Khách hàng | Bắt buộc |
+| 2 | UC-U2 | Xem thực đơn & Yêu cầu phục vụ qua QR | Khách hàng | Bắt buộc |
+| 3 | UC-U3 | Hủy đặt bàn & Hoàn cọc tự động | Khách hàng | Bắt buộc |
+| 4 | UC-U4 | Gửi đánh giá dịch vụ | Khách hàng | Bổ sung |
+| 5 | UC-E1 | Đăng nhập & Xác thực hệ thống | Nhân viên | Bắt buộc |
+| 6 | UC-E2 | Check-in nhận bàn | Nhân viên | Bắt buộc |
+| 7 | UC-E3 | Tạo đơn gọi món tại bàn | Nhân viên | Bắt buộc |
+| 8 | UC-E4 | Cập nhật đơn gọi món | Nhân viên | Bắt buộc |
+| 9 | UC-E5 | Xác nhận ra món | Nhân viên | Bắt buộc |
+| 10 | UC-E6 | Đổi bàn | Nhân viên | Quan trọng |
+| 11 | UC-E7 | Thanh toán hóa đơn & Cấn trừ cọc | Nhân viên | Bắt buộc |
+| 12 | UC-A1 | Quản trị danh mục & Thực đơn | Quản lý | Quan trọng |
+| 13 | UC-A2 | Cấu hình sơ đồ bàn | Quản lý | Quan trọng |
+| 14 | UC-A3 | Duyệt hoàn cọc thủ công ngoại lệ | Quản lý | Quan trọng |
+| 15 | UC-A4 | Quản trị tài khoản & Phân quyền | Quản lý | Quan trọng |
+| 16 | UC-A5 | Báo cáo thống kê & Doanh thu | Quản lý | Bổ sung |
 
 
 ## 2.3 Đặc tả chi tiết từng Use Case
@@ -109,497 +103,373 @@ Hệ thống phân định 5 tác nhân chính và 1 tác nhân phụ tích hợ
 
 ### Đặc tả UC-U1: Đặt bàn & Đặt cọc trực tuyến
 
-
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-U1 |
 | Tên Use Case | Đặt bàn & Đặt cọc trực tuyến |
-| Tác nhân | Khách hàng (Chính), Cổng thanh toán VNPAY (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Khách hàng truy cập website đặt bàn và chọn khung giờ nhà hàng mở phục vụ. |
-| Điều kiện kết thúc | Bàn chuyển sang trạng thái Đã đặt (Reserved), cọc được ghi nhận và mã đặt bàn được gửi cho khách. |
-
+| Tác nhân | Khách hàng (Chính), Cổng thanh toán (Phụ) |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Khách hàng truy cập trang đặt bàn và chọn khung giờ phục vụ. |
+| Điều kiện kết thúc | Bàn chuyển sang trạng thái Đã đặt (Reserved), tiền cọc ghi nhận vào CSDL, mã đặt bàn gửi cho khách hàng. |
 
 **Luồng sự kiện chính:**
-1. Khách hàng chọn ngày, giờ dùng bữa, số lượng khách và khu vực ngồi trên giao diện web.
+1. Khách hàng chọn ngày, giờ dùng bữa, số lượng khách và khu vực bàn.
 2. Hệ thống hiển thị danh sách bàn còn trống trên sơ đồ mặt bằng.
 3. Khách hàng chọn bàn, nhập thông tin liên hệ và xác nhận đặt cọc.
-4. Hệ thống tính số tiền cọc theo BR-06, khóa giữ bàn tạm thời 17 phút và chuyển hướng đến cổng thanh toán VNPAY.
-5. Khách hàng thực hiện thanh toán tiền cọc qua mã VietQR hoặc thẻ ngân hàng.
-6. Cổng VNPAY phản hồi giao dịch thành công; hệ thống chuyển trạng thái bàn sang Reserved và gửi thông tin xác nhận qua SMS/Email.
+4. Hệ thống khóa giữ bàn 15 phút và chuyển hướng đến cổng thanh toán.
+5. Khách hàng thanh toán tiền cọc qua mã QR hoặc thẻ ngân hàng.
+6. Cổng thanh toán phản hồi thành công; hệ thống chuyển trạng thái bàn sang Đã đặt (Reserved), lưu vào CSDL và gửi thông tin xác nhận cho khách hàng.
 
 **Luồng ngoại lệ:**
-* 2a. Khung giờ hết bàn: Hệ thống gợi ý chuyển sang ca phục vụ hoặc khu vực khác.
-* 5a. Quá 17 phút chưa hoàn tất thanh toán: Hệ thống tự động hủy phiên và mở lại bàn về trạng thái sẵn sàng.
+* 2a. Khung giờ hết bàn: Hệ thống thông báo hết bàn và gợi ý chọn khung giờ khác.
+* 5a. Quá 15 phút chưa thanh toán: Hệ thống tự động hủy đơn và mở lại bàn về trạng thái Trống (Available).
 
-### Đặc tả UC-U2: Yêu cầu phục vụ thông qua QR menu
 
+### Đặc tả UC-U2: Xem thực đơn & Yêu cầu phục vụ qua QR
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-U2 |
-| Tên Use Case | Yêu cầu phục vụ thông qua QR menu |
-| Tác nhân | Khách hàng (Chính), Nhân viên Phục vụ (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Khách hàng đang ngồi tại bàn ăn đã hoàn tất thủ tục check-in. |
-| Điều kiện kết thúc | Yêu cầu được ghi nhận vào hệ thống và hiển thị lên thiết bị phục vụ phụ trách. |
-
+| Tên Use Case | Xem thực đơn & Yêu cầu phục vụ qua QR |
+| Tác nhân | Khách hàng |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái Đang phục vụ (Occupied). |
+| Điều kiện kết thúc | Hệ thống ghi nhận yêu cầu phục vụ từ khách hàng. |
 
 **Luồng sự kiện chính:**
-1. Khách hàng quét mã QR tại bàn để truy cập E-Menu trên điện thoại cá nhân.
-2. Hệ thống hiển thị giao diện thực đơn cùng danh mục các nút yêu cầu dịch vụ (gọi phục vụ, châm nước, đổi dụng cụ).
-3. Khách hàng chọn yêu cầu dịch vụ cần hỗ trợ và bấm gửi.
-4. Hệ thống ghi nhận yêu cầu vào cơ sở dữ liệu và gửi thông báo tức thời đến thiết bị của nhân viên phục vụ bàn.
-5. Nhân viên phục vụ đến hỗ trợ khách và bấm xác nhận hoàn tất trên thiết bị.
+1. Khách hàng quét mã QR tại bàn để mở thực đơn điện tử.
+2. Hệ thống hiển thị danh mục món ăn, hình ảnh và giá niêm yết.
+3. Khách hàng xem thực đơn và bấm gửi yêu cầu phục vụ.
+4. Hệ thống lưu yêu cầu vào CSDL và hiển thị thông báo đến nhân viên phục vụ phụ trách bàn.
+5. Màn hình của khách hàng hiển thị thông báo đã gửi yêu cầu thành công.
 
 **Luồng ngoại lệ:**
-* 1a. Mã QR không hợp lệ hoặc bàn chưa check-in: Hệ thống thông báo lỗi và yêu cầu liên hệ nhân viên.
+* 1a. Mã QR không hợp lệ hoặc bàn chưa check-in: Hệ thống thông báo lỗi.
 
-### Đặc tả UC-U3: Hủy đặt bàn
 
+### Đặc tả UC-U3: Hủy đặt bàn & Hoàn cọc tự động
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-U3 |
-| Tên Use Case | Hủy đặt bàn |
-| Tác nhân | Khách hàng (Chính), Cổng thanh toán VNPAY (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Đơn đặt bàn đang ở trạng thái Reserved và chưa đến giờ phục vụ. |
-| Điều kiện kết thúc | Đơn hủy thành công, bàn giải phóng về Available, tiền cọc hoàn lại theo quy định. |
-
+| Tên Use Case | Hủy đặt bàn & Hoàn cọc tự động |
+| Tác nhân | Khách hàng (Chính), Cổng thanh toán (Phụ) |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Đơn đặt bàn đang ở trạng thái Đã đặt (Reserved). |
+| Điều kiện kết thúc | Đơn đặt bàn được hủy, bàn trở về trạng thái Trống (Available), tiền cọc được hoàn theo quy định. |
 
 **Luồng sự kiện chính:**
-1. Khách hàng nhập mã đặt bàn và số điện thoại để tra cứu thông tin đặt bàn.
-2. Hệ thống hiển thị chi tiết đặt bàn kèm chính sách hoàn cọc.
-3. Khách hàng chọn lý do và bấm xác nhận hủy đặt bàn.
-4. Hệ thống kiểm tra thời gian hủy: nếu trước giờ hẹn từ 4 tiếng trở lên, gửi yêu cầu hoàn 100% tiền cọc sang cổng VNPAY.
-5. Cổng VNPAY xác nhận giao dịch hoàn tiền thành công.
-6. Hệ thống chuyển đơn sang trạng thái Đã hủy, chuyển bàn về trạng thái sẵn sàng và gửi thông báo hoàn tất cho khách.
+1. Khách hàng truy cập liên kết quản lý đặt bàn và chọn hủy bàn.
+2. Hệ thống kiểm tra thời gian hủy so với giờ hẹn dùng bữa.
+3. Nếu thời gian hủy trước giờ hẹn từ 4 tiếng trở lên: Hệ thống gửi lệnh hoàn 100% tiền cọc qua cổng thanh toán.
+4. Cổng thanh toán xử lý hoàn tiền thành công.
+5. Hệ thống cập nhật trạng thái đơn sang Đã hủy (Cancelled), chuyển bàn về trạng thái Trống (Available), lưu vào CSDL và gửi thông báo xác nhận hoàn cọc cho khách hàng.
 
 **Luồng ngoại lệ:**
-* 4a. Hủy trước giờ hẹn dưới 4 tiếng: Hệ thống thông báo chính sách phạt không hoàn cọc và chỉ hủy giữ chỗ nếu khách đồng ý.
+* 2a. Thời gian hủy trước giờ hẹn dưới 4 tiếng: Hệ thống thông báo không hoàn lại tiền cọc. Khách hàng xác nhận đồng ý hủy, hệ thống hủy đơn, giữ 100% tiền cọc và giải phóng bàn.
+
 
 ### Đặc tả UC-U4: Gửi đánh giá dịch vụ
-
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-U4 |
 | Tên Use Case | Gửi đánh giá dịch vụ |
-| Tác nhân | Khách hàng (Chính) |
-| Mức độ ưu tiên | Bổ sung (Could Have) |
+| Tác nhân | Khách hàng |
+| Mức độ ưu tiên | Bổ sung |
 | Điều kiện tiên quyết | Bàn ăn đã hoàn tất thanh toán hóa đơn. |
-| Điều kiện kết thúc | Đánh giá được lưu vào cơ sở dữ liệu và tổng hợp vào báo cáo chất lượng dịch vụ. |
-
+| Điều kiện kết thúc | Đánh giá được lưu vào CSDL và thống kê cho quản lý. |
 
 **Luồng sự kiện chính:**
-1. Khách hàng truy cập liên kết đánh giá nhận được qua tin nhắn hoặc quét mã QR trên phiếu thanh toán.
-2. Hệ thống hiển thị biểu mẫu khảo sát chất lượng món ăn, không gian và thái độ phục vụ.
-3. Khách hàng chấm điểm sao, nhập ý kiến đóng góp và bấm gửi đánh giá.
-4. Hệ thống lưu kết quả đánh giá và hiển thị thông điệp cảm ơn khách hàng.
+1. Khách hàng quét mã QR trên hóa đơn hoặc mở liên kết khảo sát gửi qua email.
+2. Hệ thống hiển thị biểu mẫu đánh giá mức độ hài lòng.
+3. Khách hàng chấm điểm số sao, nhập ý kiến phản hồi và bấm gửi đánh giá.
+4. Hệ thống lưu đánh giá vào CSDL.
+5. Hệ thống hiển thị thông báo cảm ơn khách hàng đã đóng góp ý kiến.
 
-**Luồng ngoại lệ:** Không có.
+**Luồng ngoại lệ:**
+* 1a. Hóa đơn chưa thanh toán hoặc liên kết không hợp lệ: Hệ thống thông báo lỗi từ chối tiếp nhận.
 
-### 2.3.2 Phân hệ Nhân viên Nội bộ
+
+### 2.3.2 Phân hệ Nhân viên
 
 
-### Đặc tả UC-E1: Tạo Order
-
+### Đặc tả UC-E1: Đăng nhập & Xác thực hệ thống
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E1 |
-| Tên Use Case | Tạo Order |
-| Tác nhân | Nhân viên Phục vụ (Chính), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái Đang phục vụ (Occupied) sau khi check-in. |
-| Điều kiện kết thúc | Order được tạo thành công và chuyển thông tin món vào bếp. |
-
+| Tên Use Case | Đăng nhập & Xác thực hệ thống |
+| Tác nhân | Nhân viên |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Nhân viên có tài khoản được cấp trong CSDL. |
+| Điều kiện kết thúc | Nhân viên đăng nhập thành công vào giao diện làm việc theo phân quyền. |
 
 **Luồng sự kiện chính:**
-1. Nhân viên phục vụ chọn bàn đang phục vụ trên ứng dụng và chọn Tạo Order.
-2. Nhân viên nhập số lượng khách và thêm các món ăn theo từng Course (Khai vị, Món chính, Tráng miệng).
-3. Nhân viên kiểm tra danh mục món, nhập ghi chú nếu có và bấm Gửi đơn.
-4. Hệ thống lưu Order và chuyển thông tin món vào bếp theo từng đợt phục vụ.
+1. Nhân viên nhập mã nhân viên và mật khẩu vào màn hình đăng nhập.
+2. Hệ thống kiểm tra thông tin tài khoản với CSDL.
+3. Hệ thống xác thực danh tính, tạo phiên đăng nhập và phân quyền truy cập chức năng.
+4. Hệ thống chuyển hướng nhân viên đến giao diện làm việc tương ứng.
 
 **Luồng ngoại lệ:**
-* 2a. Món ăn trong thực đơn tạm thời hết nguyên liệu: Hệ thống khóa nút chọn món và cảnh báo nhân viên phục vụ tư vấn món khác.
+* 2a. Sai mật khẩu hoặc tài khoản bị khóa: Hệ thống hiển thị thông báo lỗi và yêu cầu nhập lại.
 
-### Đặc tả UC-E2: Cập nhật Order
 
+### Đặc tả UC-E2: Check-in nhận bàn
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E2 |
-| Tên Use Case | Cập nhật Order |
-| Tác nhân | Nhân viên Phục vụ (Chính), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn đã có Order đang hoạt động (Active). |
-| Điều kiện kết thúc | Các món gọi thêm hoặc lệnh nấu đợt tiếp theo được ghi nhận vào Order. |
-
+| Tên Use Case | Check-in nhận bàn |
+| Tác nhân | Nhân viên phục vụ |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Bàn ăn ở trạng thái Đã đặt (Reserved) hoặc Trống (Available). |
+| Điều kiện kết thúc | Bàn chuyển sang trạng thái Đang phục vụ (Occupied) và sẵn sàng gọi món. |
 
 **Luồng sự kiện chính:**
-1. Nhân viên phục vụ mở Order đang hoạt động của bàn trên ứng dụng.
-2. Khi khách gọi thêm món hoặc đồ uống, nhân viên chọn Gọi thêm món và chọn mặt hàng cần bổ sung.
-3. Nhân viên phục vụ bấm kích hoạt nấu đợt món tiếp theo khi khách có nhu cầu.
-4. Hệ thống cập nhật Order và chuyển lệnh nấu đợt tiếp theo vào bếp.
+1. Khách hàng đến nhà hàng, cung cấp mã đặt bàn hoặc số điện thoại.
+2. Nhân viên phục vụ tìm kiếm thông tin đặt bàn trên hệ thống.
+3. Hệ thống đối chiếu dữ liệu đặt bàn và hiển thị thông tin bàn tương ứng.
+4. Nhân viên phục vụ bấm xác nhận Check-in và dẫn khách vào bàn.
+5. Hệ thống cập nhật trạng thái bàn sang Đang phục vụ (Occupied) và lưu vào CSDL.
 
 **Luồng ngoại lệ:**
-* 1a. Bàn đã chuyển sang trạng thái Chờ thanh toán: Hệ thống khóa chức năng cập nhật và yêu cầu mở lại trạng thái phục vụ trước khi thêm món.
+* 2a. Khách vãng lai chưa đặt trước: Nhân viên phục vụ chọn bàn trống phù hợp trên sơ đồ, nhập số lượng khách và mở bàn sang trạng thái Đang phục vụ.
 
-### Đặc tả UC-E3: Xác nhận đi món
 
+### Đặc tả UC-E3: Tạo đơn gọi món tại bàn
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E3 |
-| Tên Use Case | Xác nhận đi món |
-| Tác nhân | Nhân viên Điều phối (Expediter - Chính), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bếp đã chế biến xong món ăn và đặt lên quầy Pass. |
-| Điều kiện kết thúc | Món ăn được chuyển trạng thái sang Đã ra món (Served). |
-
+| Tên Use Case | Tạo đơn gọi món tại bàn |
+| Tác nhân | Nhân viên phục vụ |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái Đang phục vụ (Occupied). |
+| Điều kiện kết thúc | Đơn gọi món được tạo thành công và lưu vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Đầu bếp đặt đĩa món hoàn chỉnh lên quầy Pass.
-2. Nhân viên điều phối kiểm tra đĩa món so với thông tin đơn hàng trên màn hình quầy Pass.
-3. Nhân viên điều phối bấm nút Xác nhận đi món (Served) trên màn hình.
-4. Hệ thống cập nhật trạng thái món ăn sang Đã ra món (Served).
-5. Đĩa món được chuyển đi phục vụ tại bàn cho khách.
+1. Nhân viên phục vụ chọn bàn trên giao diện ứng dụng.
+2. Nhân viên phục vụ chọn các món ăn, số lượng và đợt phục vụ theo yêu cầu của khách hàng.
+3. Nhân viên phục vụ kiểm tra lại danh sách món và bấm gửi đơn gọi món.
+4. Hệ thống lưu đơn gọi món vào CSDL, cập nhật trạng thái món và phân bổ theo từng đợt phục vụ.
+5. Ứng dụng hiển thị thông báo gửi đơn thành công.
 
 **Luồng ngoại lệ:**
-* 2a. Món không đạt yêu cầu: Nhân viên điều phối yêu cầu bếp chế biến lại.
+* 2a. Món ăn đã hết: Hệ thống khóa không cho chọn và thông báo để nhân viên tư vấn món khác.
 
-### Đặc tả UC-E4: Yêu cầu thanh toán
 
+### Đặc tả UC-E4: Cập nhật đơn gọi món
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E4 |
-| Tên Use Case | Yêu cầu thanh toán |
-| Tác nhân | Nhân viên Phục vụ (Chính), Nhân viên Thu ngân (Phụ), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái Đang phục vụ (Occupied) và có đơn hàng hoạt động. |
-| Điều kiện kết thúc | Bàn chuyển sang trạng thái Chờ thanh toán (PaymentPending); màn hình POS thu ngân nhận cảnh báo. |
-
+| Tên Use Case | Cập nhật đơn gọi món |
+| Tác nhân | Nhân viên phục vụ |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Đơn gọi món của bàn đang hoạt động. |
+| Điều kiện kết thúc | Đơn gọi món được cập nhật thông tin mới vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Khách hàng thông báo yêu cầu tính tiền tại bàn ăn.
-2. Nhân viên phục vụ chọn bàn trên ứng dụng di động và bấm nút Yêu cầu tính tiền.
-3. Hệ thống xác thực trạng thái bàn và cập nhật sang Chờ thanh toán (PaymentPending) trong cơ sở dữ liệu.
-4. Hệ thống gửi chuông báo và thông tin bàn cần thanh toán sang màn hình Web POS của Thu ngân.
-5. Ứng dụng di động của phục vụ hiển thị xác nhận đã gửi yêu cầu về quầy thành công.
+1. Nhân viên phục vụ mở đơn gọi món của bàn ăn.
+2. Nhân viên phục vụ thêm món mới hoặc hủy món chưa phục vụ theo yêu cầu của khách hàng.
+3. Nhân viên phục vụ bấm xác nhận cập nhật đơn.
+4. Hệ thống cập nhật dữ liệu món vào CSDL và điều chỉnh lại danh sách món phục vụ của bàn.
+5. Ứng dụng hiển thị thông báo cập nhật đơn thành công.
 
 **Luồng ngoại lệ:**
-* 3a. Bàn ăn chưa có món nào được phục vụ: Hệ thống báo lỗi và không gửi yêu cầu về quầy.
+* 2a. Món đã hoàn thành ra bàn: Hệ thống từ chối cho phép hủy món.
 
-### Đặc tả UC-E5: Đổi bàn
 
+### Đặc tả UC-E5: Xác nhận ra món
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E5 |
-| Tên Use Case | Đổi bàn |
-| Tác nhân | Nhân viên Phục vụ (Chính), Nhân viên Thu ngân (Phụ), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Bàn nguồn đang Occupied và bàn đích đang ở trạng thái Available. |
-| Điều kiện kết thúc | Toàn bộ dữ liệu đơn hàng và tiền cọc được chuyển sang bàn mới; bàn cũ chuyển sang Cleaning. |
-
+| Tên Use Case | Xác nhận ra món |
+| Tác nhân | Nhân viên điều phối, Nhân viên phục vụ |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Món ăn đã sẵn sàng tại quầy điều phối. |
+| Điều kiện kết thúc | Món ăn được chuyển trạng thái Đã phục vụ (Served), bưng ra bàn cho khách và lưu vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Nhân viên phục vụ chọn bàn đang phục vụ và chọn chức năng Đổi bàn.
-2. Hệ thống hiển thị danh sách các bàn còn trống phù hợp với số lượng khách.
-3. Nhân viên chọn bàn đích và xác nhận đổi bàn.
-4. Hệ thống cập nhật toàn bộ món ăn, lịch sử gọi món và thông tin cọc sang mã bàn đích.
-5. Hệ thống đổi trạng thái bàn đích sang Occupied và bàn nguồn sang Cleaning.
+1. Nhân viên điều phối kiểm tra chất lượng và tiêu chuẩn món ăn tại quầy điều phối.
+2. Nhân viên điều phối đối chiếu mã bàn, tên món và bấm xác nhận ra món trên màn hình điều phối.
+3. Hệ thống cập nhật trạng thái món ăn sang Đã phục vụ (Served) và lưu vào CSDL.
+4. Nhân viên phục vụ tiếp nhận món từ quầy điều phối và bưng ra bàn cho khách hàng.
+5. Màn hình hiển thị danh sách các món cần phục vụ tiếp theo của bàn.
 
 **Luồng ngoại lệ:**
-* 3a. Bàn đích vừa có khách khác ngồi: Hệ thống khóa thao tác và yêu cầu chọn vị trí bàn khác.
+* 1a. Món không đạt tiêu chuẩn: Nhân viên điều phối yêu cầu làm lại trước khi xác nhận.
 
-### Đặc tả UC-E6: Check in nhận bàn
 
+### Đặc tả UC-E6: Đổi bàn
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E6 |
-| Tên Use Case | Check in nhận bàn |
-| Tác nhân | Nhân viên Phục vụ (Chính), Nhân viên Thu ngân (Chính), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn ở trạng thái Reserved (khách đặt trước) hoặc Available (khách vãng lai). |
-| Điều kiện kết thúc | Bàn chuyển sang Occupied và sẵn sàng cho quy trình gọi món. |
-
+| Tên Use Case | Đổi bàn |
+| Tác nhân | Nhân viên phục vụ |
+| Mức độ ưu tiên | Quan trọng |
+| Điều kiện tiên quyết | Bàn nguồn đang phục vụ khách; bàn đích đang ở trạng thái Trống (Available). |
+| Điều kiện kết thúc | Dữ liệu đơn gọi món và tiền cọc được chuyển sang bàn đích; bàn nguồn chuyển sang trạng thái Cần dọn (Cleaning). |
 
 **Luồng sự kiện chính:**
-1. Khách hàng đến nhà hàng và đọc mã đặt bàn hoặc số điện thoại cho nhân viên lễ tân / phục vụ.
-2. Nhân viên tra cứu đơn đặt bàn, đối chiếu số lượng khách và dẫn khách vào vị trí bàn.
-3. Nhân viên bấm nút Check-in trên ứng dụng di động hoặc máy POS; hệ thống chuyển trạng thái bàn sang Occupied.
+1. Khách hàng yêu cầu đổi sang vị trí bàn khác.
+2. Nhân viên phục vụ mở giao diện đổi bàn và chọn bàn đích từ danh sách bàn trống.
+3. Nhân viên phục vụ nhập lý do đổi bàn và bấm xác nhận chuyển bàn.
+4. Hệ thống chuyển toàn bộ đơn gọi món, trạng thái món và tiền cọc từ bàn nguồn sang bàn đích.
+5. Hệ thống chuyển trạng thái bàn đích sang Đang phục vụ (Occupied) và bàn nguồn sang Cần dọn (Cleaning), lưu vào CSDL.
+6. Ứng dụng thông báo đổi bàn thành công.
 
 **Luồng ngoại lệ:**
-* 1a. Khách vãng lai không đặt trước (Walk-in): Nhân viên chọn bàn trống trên sơ đồ và bấm Check-in vãng lai trực tiếp.
+* 2a. Bàn đích đã có người đặt hoặc không đủ chỗ: Hệ thống cảnh báo lỗi và không cho thực hiện.
 
-### Đặc tả UC-E7: Thanh toán hóa đơn
 
+### Đặc tả UC-E7: Thanh toán hóa đơn & Cấn trừ cọc
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-E7 |
-| Tên Use Case | Thanh toán hóa đơn |
-| Tác nhân | Nhân viên Thu ngân (Chính), Nhân viên Phục vụ (Phụ), Quản lý Nhà hàng (Phụ) |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái PaymentPending hoặc Occupied. |
-| Điều kiện kết thúc | Đơn hàng chuyển Paid; hóa đơn được lưu; bàn chuyển sang Cleaning và tự động chuyển về Available sau khi dọn dẹp; in hóa đơn thành công. |
-
-
-**Luồng sự kiện chính:**
-1. Thu ngân nhận thông báo yêu cầu tính tiền trên màn hình Web POS quầy, chọn bàn và bấm Xem chi tiết tạm tính.
-2. Hệ thống tính toán tổng tiền các món đã dùng, cộng 5% phí phục vụ, 10% thuế VAT và cấn trừ 100% tiền cọc đã thu trước đó.
-3. Thu ngân kiểm tra số liệu rồi bấm nút In phiếu tạm tính; máy in nhiệt tại quầy in phiếu chi tiết kèm mã VietQR.
-4. Thu ngân kẹp phiếu vào sổ da giao cho phục vụ mang ra bàn cho khách đối soát.
-5. Khách hàng thực hiện thanh toán tại bàn (quét VietQR, trả tiền mặt hoặc cà thẻ POS không dây).
-6. Thu ngân kiểm tra kết quả thanh toán trên màn hình POS quầy, chọn phương thức thanh toán và bấm Xác nhận thanh toán.
-7. Máy in xuất hóa đơn chính thức; phục vụ mang hóa đơn kẹp sổ da gửi lại khách; hệ thống chuyển trạng thái bàn sang Cleaning và tự động chuyển về Available khi hoàn tất quy trình phục vụ bàn.
-
-**Luồng ngoại lệ:**
-* 2a. Tổng tiền bữa ăn nhỏ hơn tiền cọc đã đóng: Hệ thống ghi nhận số tiền khách phải trả thêm là 0 VNĐ theo nguyên tắc tiền cọc là mức chi tiêu tối thiểu không hoàn lại.
-
-### Đặc tả UC-E8: Đăng nhập & Xác thực
-
-
-| Thuộc tính | Chi tiết |
-| :--- | :--- |
-| Mã Use Case | UC-E8 |
-| Tên Use Case | Đăng nhập & Xác thực |
-| Tác nhân | Toàn bộ nhân viên nội bộ (Phục vụ, Thu ngân, Điều phối), Quản lý Nhà hàng |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Nhân viên đã được cấp tài khoản hoạt động trong hệ thống. |
-| Điều kiện kết thúc | Nhân viên đăng nhập thành công và truy cập đúng giao diện theo vai trò phân quyền. |
-
+| Tên Use Case | Thanh toán hóa đơn & Cấn trừ cọc |
+| Tác nhân | Nhân viên phục vụ, Quản lý |
+| Mức độ ưu tiên | Bắt buộc |
+| Điều kiện tiên quyết | Bàn ăn đang ở trạng thái Đang phục vụ (Occupied) và có các món đã phục vụ. |
+| Điều kiện kết thúc | Hóa đơn được thanh toán đầy đủ, bàn đóng và chuyển sang trạng thái Cần dọn (Cleaning). |
 
 **Luồng sự kiện chính:**
-1. Nhân viên truy cập hệ thống và nhập tên đăng nhập cùng mật khẩu.
-2. Hệ thống mã hóa thông tin và đối soát với cơ sở dữ liệu người dùng.
-3. Hệ thống tạo phiên làm việc bảo mật (JWT Token) và điều hướng nhân viên đến giao diện tương ứng theo vai trò.
+1. Nhân viên phục vụ chọn bàn và bấm yêu cầu tính tiền.
+2. Hệ thống tính tổng tiền các món đã phục vụ, cộng 5% phí phục vụ, 10% thuế VAT và cấn trừ 100% tiền cọc đã nộp.
+3. Nhân viên phục vụ in phiếu tạm tính kèm mã thanh toán để khách hàng đối soát.
+4. Khách hàng thực hiện thanh toán phần chênh lệch còn lại qua tiền mặt, thẻ ngân hàng hoặc chuyển khoản.
+5. Nhân viên phục vụ bấm xác nhận thanh toán thành công.
+6. Hệ thống xuất hóa đơn, đóng đơn, cập nhật trạng thái bàn sang Cần dọn (Cleaning) và lưu vào CSDL.
 
 **Luồng ngoại lệ:**
-* 2a. Sai tên đăng nhập hoặc mật khẩu: Hệ thống thông báo lỗi; nếu sai quá 5 lần liên tiếp sẽ khóa tài khoản tạm thời 15 phút.
-
-### 2.3.3 Phân hệ Quản lý & Quản trị
+* 2a. Tổng tiền bữa ăn nhỏ hơn hoặc bằng số tiền cọc: Số tiền khách phải trả thêm là 0 đồng; hệ thống ghi nhận cấn trừ tối đa bằng tổng tiền món và không hoàn lại phần cọc thừa.
 
 
-### Đặc tả UC-A1: Quản trị Danh mục & Thực đơn
+### 2.3.3 Phân hệ Quản lý
 
+
+### Đặc tả UC-A1: Quản trị danh mục & Thực đơn
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-A1 |
-| Tên Use Case | Quản trị Danh mục & Thực đơn |
-| Tác nhân | Quản lý Nhà hàng (Chính) |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Quản lý đăng nhập thành công với quyền hạn quản trị danh mục. |
-| Điều kiện kết thúc | Thông tin món ăn, giá bán và định mức thời gian chế biến được cập nhật vào hệ thống. |
-
+| Tên Use Case | Quản trị danh mục & Thực đơn |
+| Tác nhân | Quản lý |
+| Mức độ ưu tiên | Quan trọng |
+| Điều kiện tiên quyết | Quản lý đăng nhập vào hệ thống với quyền quản trị. |
+| Điều kiện kết thúc | Thông tin danh mục, món ăn, đơn giá và trạng thái phục vụ được cập nhật vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Quản lý mở danh mục thực đơn trên giao diện quản trị.
-2. Quản lý thực hiện thêm mới, chỉnh sửa thông tin món ăn (tên, mô tả, đơn giá, nhóm danh mục, định mức thời gian Prep SLA).
-3. Quản lý thiết lập trạng thái còn món hoặc tạm hết món cho từng mặt hàng.
-4. Quản lý bấm Lưu; hệ thống cập nhật thực đơn và áp dụng ngay lập tức cho các giao diện đặt món.
+1. Quản lý mở phân hệ quản trị thực đơn.
+2. Quản lý thêm mới, chỉnh sửa thông tin món ăn, hình ảnh, đơn giá hoặc bật/tắt trạng thái Còn món/Hết món.
+3. Quản lý bấm lưu thay đổi.
+4. Hệ thống kiểm tra tính hợp lệ của dữ liệu và lưu vào CSDL.
+5. Hệ thống hiển thị thông báo cập nhật thực đơn thành công.
 
 **Luồng ngoại lệ:**
-* 2a. Trùng tên món ăn hoặc đơn giá không hợp lệ: Hệ thống hiển thị cảnh báo và yêu cầu chỉnh sửa thông tin.
+* 2a. Thông tin thiếu hoặc giá không hợp lệ: Hệ thống hiển thị lỗi cảnh báo và không lưu.
 
-### Đặc tả UC-A2: Cấu hình sơ đồ bàn ăn
 
+### Đặc tả UC-A2: Cấu hình sơ đồ bàn
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-A2 |
-| Tên Use Case | Cấu hình sơ đồ bàn ăn |
-| Tác nhân | Quản lý Nhà hàng (Chính) |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Quản lý đăng nhập tài khoản có thẩm quyền quản trị mặt bằng. |
-| Điều kiện kết thúc | Sơ đồ vị trí, số hiệu bàn và mã QR bàn ăn được lưu vào hệ thống. |
-
+| Tên Use Case | Cấu hình sơ đồ bàn |
+| Tác nhân | Quản lý |
+| Mức độ ưu tiên | Quan trọng |
+| Điều kiện tiên quyết | Quản lý đăng nhập với quyền quản trị. |
+| Điều kiện kết thúc | Sơ đồ mặt bằng, danh sách bàn, khu vực và sức chứa được lưu vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Quản lý truy cập giao diện thiết kế sơ đồ mặt bằng nhà hàng.
-2. Quản lý thực hiện thêm bàn, xóa bàn, kéo thả định vị tọa độ và cấu hình số lượng ghế ngồi cho từng khu vực (Sảnh chính, VIP, Ban công).
-3. Hệ thống tự động sinh mã QR định danh duy nhất cho từng bàn ăn mới.
-4. Quản lý bấm Lưu cấu hình; hệ thống cập nhật sơ đồ bàn cho toàn bộ ứng dụng đặt bàn và phục vụ.
+1. Quản lý mở giao diện cấu hình sơ đồ bàn.
+2. Quản lý thêm bàn mới, chỉnh sửa sức chứa, khu vực hoặc vô hiệu hóa bàn tạm thời không sử dụng.
+3. Quản lý bấm lưu cấu hình sơ đồ bàn.
+4. Hệ thống xác thực tính hợp lệ của mã bàn và lưu vào CSDL.
+5. Hệ thống hiển thị thông báo cập nhật sơ đồ bàn thành công.
 
 **Luồng ngoại lệ:**
-* 2a. Xóa bàn đang có khách ngồi hoặc đã được đặt trước: Hệ thống từ chối thao tác và yêu cầu chuyển khách trước khi xóa.
+* 2a. Bàn đang có khách phục vụ: Hệ thống không cho phép xóa hoặc sửa kích thước của bàn.
 
-### Đặc tả UC-A3: Duyệt hoàn cọc thủ công
 
+### Đặc tả UC-A3: Duyệt hoàn cọc thủ công ngoại lệ
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-A3 |
-| Tên Use Case | Duyệt hoàn cọc thủ công |
-| Tác nhân | Quản lý Nhà hàng (Chính), Cổng thanh toán VNPAY (Phụ) |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Đơn đặt bàn bị phạt cọc do hủy trễ hoặc sự cố đột xuất từ phía nhà hàng. |
-| Điều kiện kết thúc | Lệnh hoàn tiền được gửi sang VNPAY và ghi nhật ký kiểm toán. |
-
+| Tên Use Case | Duyệt hoàn cọc thủ công ngoại lệ |
+| Tác nhân | Quản lý, Cổng thanh toán (Phụ) |
+| Mức độ ưu tiên | Quan trọng |
+| Điều kiện tiên quyết | Đơn đặt bàn bị hủy dưới 4 tiếng hoặc vắng mặt có yêu cầu xem xét hoàn cọc vì lý do bất khả kháng. |
+| Điều kiện kết thúc | Tiền cọc được hoàn lại qua cổng thanh toán và lý do phê duyệt được ghi nhận vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Quản lý mở danh sách các yêu cầu hoàn cọc ngoại lệ cần xem xét.
-2. Quản lý kiểm tra thông tin chi tiết đơn đặt bàn và lý do hủy bàn của khách.
-3. Quản lý nhập lý do phê duyệt và bấm nút Chấp thuận hoàn cọc.
-4. Hệ thống kích hoạt lệnh hoàn tiền sang cổng thanh toán VNPAY và ghi nhận nhật ký kiểm toán quản trị.
-5. Cổng VNPAY phản hồi thành công; hệ thống cập nhật trạng thái đơn và gửi thông báo cho khách.
+1. Quản lý mở danh sách các yêu cầu hoàn cọc ngoại lệ.
+2. Quản lý kiểm tra thông tin đơn đặt bàn, số tiền cọc và lý do khiếu nại.
+3. Quản lý nhập lý do duyệt và bấm xác nhận hoàn cọc.
+4. Hệ thống gửi lệnh hoàn cọc sang cổng thanh toán.
+5. Cổng thanh toán xử lý hoàn tiền thành công; hệ thống cập nhật trạng thái đơn sang Đã hoàn cọc ngoại lệ và lưu nhật ký vào CSDL.
 
 **Luồng ngoại lệ:**
-* 3a. Quản lý từ chối hoàn cọc: Nhập lý do từ chối; hệ thống chuyển trạng thái đơn sang Bác bỏ hoàn cọc và gửi thông báo đến khách.
+* 3a. Quản lý từ chối yêu cầu hoàn cọc: Hệ thống cập nhật trạng thái từ chối, giữ nguyên tiền phạt cọc và lưu lý do từ chối vào CSDL.
 
-### Đặc tả UC-A4: Quản trị Tài khoản
 
+### Đặc tả UC-A4: Quản trị tài khoản & Phân quyền
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-A4 |
-| Tên Use Case | Quản trị Tài khoản |
-| Tác nhân | Quản trị viên / Quản lý Nhà hàng (Chính) |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Đăng nhập tài khoản có thẩm quyền Quản trị cao nhất (Admin). |
-| Điều kiện kết thúc | Hồ sơ tài khoản nhân viên được tạo, chỉnh sửa quyền hạn hoặc khóa hoạt động. |
-
+| Tên Use Case | Quản trị tài khoản & Phân quyền |
+| Tác nhân | Quản lý |
+| Mức độ ưu tiên | Quan trọng |
+| Điều kiện tiên quyết | Quản lý đăng nhập với vai trò Quản trị viên. |
+| Điều kiện kết thúc | Thông tin tài khoản nhân viên, mật khẩu và vai trò phân quyền được lưu vào CSDL. |
 
 **Luồng sự kiện chính:**
-1. Quản trị viên truy cập danh mục quản lý người dùng và phân quyền.
-2. Quản trị viên thực hiện tạo tài khoản mới (họ tên, email, chức vụ: Phục vụ, Điều phối, Thu ngân, Quản lý).
-3. Quản trị viên gán vai trò quyền hạn tương ứng cho tài khoản.
-4. Hệ thống tạo tài khoản bảo mật và gửi thông tin đăng nhập ban đầu về email nhân viên.
+1. Quản lý mở phân hệ quản trị tài khoản nhân viên.
+2. Quản lý thêm tài khoản mới, cập nhật thông tin cá nhân, đặt lại mật khẩu hoặc cấp vai trò (Nhân viên phục vụ, Nhân viên điều phối, Quản lý).
+3. Quản lý bấm lưu dữ liệu.
+4. Hệ thống kiểm tra tính duy nhất của tên đăng nhập/mã nhân viên và lưu vào CSDL.
+5. Hệ thống hiển thị thông báo cập nhật tài khoản thành công.
 
 **Luồng ngoại lệ:**
-* 2a. Trùng địa chỉ email hoặc tên đăng nhập: Hệ thống hiển thị thông báo lỗi và yêu cầu đổi thông tin.
+* 2a. Tên đăng nhập đã tồn tại: Hệ thống thông báo lỗi trùng lặp và yêu cầu nhập lại.
 
-### Đặc tả UC-A5: Báo cáo Thống kê & Doanh thu
 
+### Đặc tả UC-A5: Báo cáo thống kê & Doanh thu
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | Mã Use Case | UC-A5 |
-| Tên Use Case | Báo cáo Thống kê & Doanh thu |
-| Tác nhân | Quản lý Nhà hàng (Chính) |
-| Mức độ ưu tiên | Bổ sung (Could Have) |
-| Điều kiện tiên quyết | Quản lý đăng nhập thành công vào hệ thống. |
-| Điều kiện kết thúc | Báo cáo số liệu kinh doanh được tổng hợp và hiển thị trực quan dưới dạng biểu đồ. |
-
+| Tên Use Case | Báo cáo thống kê & Doanh thu |
+| Tác nhân | Quản lý |
+| Mức độ ưu tiên | Bổ sung |
+| Điều kiện tiên quyết | Quản lý đăng nhập vào hệ thống. |
+| Điều kiện kết thúc | Báo cáo thống kê theo các tiêu chí được tổng hợp và hiển thị trên màn hình. |
 
 **Luồng sự kiện chính:**
-1. Quản lý mở phân hệ Báo cáo & Thống kê.
-2. Quản lý chọn khoảng thời gian (ngày, tuần, tháng, quý) và bộ lọc khu vực/ca phục vụ.
-3. Hệ thống truy vấn cơ sở dữ liệu và hiển thị các chỉ số kinh doanh chính: tổng doanh thu, số lượt khách, tỷ lệ lấp đầy bàn, món ăn bán chạy nhất và tỷ lệ hủy cọc.
-4. Quản lý có thể chọn xuất dữ liệu báo cáo ra file Excel hoặc PDF.
+1. Quản lý mở phân hệ báo cáo thống kê.
+2. Quản lý chọn khoảng thời gian cần tra cứu (theo ngày, tuần, tháng) và loại báo cáo (doanh thu, lượt khách, hiệu suất bàn, đánh giá dịch vụ).
+3. Hệ thống truy vấn CSDL, tính toán các chỉ số tổng hợp và hiển thị biểu đồ trực quan.
+4. Quản lý xem số liệu và có thể bấm xuất báo cáo ra file định dạng Excel hoặc PDF.
 
 **Luồng ngoại lệ:**
-* 2a. Khoảng thời gian lọc không có dữ liệu phát sinh: Hệ thống hiển thị bảng trống cùng thông báo không có số liệu.
+* 2a. Không có dữ liệu trong khoảng thời gian đã chọn: Hệ thống hiển thị thông báo không có số liệu.
 
-### 2.3.4 Phân hệ Tác vụ Nền (Background Worker)
-
-
-### Đặc tả UC-S1: Giải phóng bàn hết hạn cọc
-
-
-| Thuộc tính | Chi tiết |
-| :--- | :--- |
-| Mã Use Case | UC-S1 |
-| Tên Use Case | Giải phóng bàn hết hạn cọc |
-| Tác nhân | Background Worker |
-| Mức độ ưu tiên | Bắt buộc (Must Have) |
-| Điều kiện tiên quyết | Bàn ăn ở trạng thái Khóa tạm thời (Locked) trong quá trình thanh toán cọc. |
-| Điều kiện kết thúc | Bàn hết hạn thanh toán được giải phóng về trạng thái Trống (Available); đơn cọc bị hủy. |
-
-
-**Luồng sự kiện chính:**
-1. Background Worker kích hoạt tiến trình quét định kỳ mỗi 60 giây.
-2. Hệ thống kiểm tra các đơn đặt bàn có trạng thái Chờ thanh toán đã vượt quá thời hạn giữ chỗ (17 phút).
-3. Hệ thống cập nhật trạng thái các đơn này sang Hết hạn hủy (Expired_Cancelled).
-4. Hệ thống mở khóa bàn ăn, chuyển trạng thái bàn từ Locked về Available trên sơ đồ mặt bằng.
-5. Hệ thống hoàn tất lượt quét và ghi nhật ký xử lý.
-
-**Luồng ngoại lệ:** Không có.
-
-### Đặc tả UC-S2: Gửi biểu mẫu đánh giá chất lượng sau phục vụ
-
-
-| Thuộc tính | Chi tiết |
-| :--- | :--- |
-| Mã Use Case | UC-S2 |
-| Tên Use Case | Gửi biểu mẫu đánh giá chất lượng sau phục vụ |
-| Tác nhân | Background Worker |
-| Mức độ ưu tiên | Bổ sung (Could Have) |
-| Điều kiện tiên quyết | Bàn ăn đã hoàn tất thanh toán hóa đơn (Paid). |
-| Điều kiện kết thúc | Lời mời khảo sát chất lượng dịch vụ được gửi đến email của khách hàng. |
-
-
-**Luồng sự kiện chính:**
-1. Background Worker kích hoạt tiến trình quét định kỳ mỗi 5 phút.
-2. Hệ thống kiểm tra các hóa đơn đã thanh toán thành công nhưng chưa được gửi link đánh giá.
-3. Hệ thống tạo mã khảo sát bảo mật gắn liền với đơn dùng bữa.
-4. Hệ thống gửi tin nhắn/email chứa liên kết đánh giá đến khách hàng.
-5. Hệ thống đánh dấu hóa đơn đã gửi khảo sát để tránh gửi lặp lại.
-
-**Luồng ngoại lệ:** Không có.
-
-### Đặc tả UC-S3: Gửi thông báo nhắc hẹn đặt bàn
-
-
-| Thuộc tính | Chi tiết |
-| :--- | :--- |
-| Mã Use Case | UC-S3 |
-| Tên Use Case | Gửi thông báo nhắc hẹn đặt bàn |
-| Tác nhân | Background Worker |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Đơn đặt bàn đã xác nhận đặt cọc (Reserved) và sắp đến giờ dùng bữa. |
-| Điều kiện kết thúc | Thông báo nhắc lịch được gửi tới khách hàng; ghi nhận trạng thái đã nhắc. |
-
-
-**Luồng sự kiện chính:**
-1. Background Worker kích hoạt tiến trình quét định kỳ mỗi 15 phút.
-2. Hệ thống kiểm tra các đơn đặt bàn có giờ hẹn trong khoảng 2 tiếng sắp tới và chưa được gửi thông báo nhắc.
-3. Hệ thống tạo nội dung thông báo kèm thông tin bàn, thời gian và địa chỉ nhà hàng.
-4. Hệ thống gửi tin nhắn/email nhắc hẹn đến khách hàng.
-5. Hệ thống đánh dấu đơn đặt bàn đã được gửi thông báo nhắc.
-
-**Luồng ngoại lệ:** Không có.
-
-### Đặc tả UC-S4: Theo dõi & cảnh báo thời gian order
-
-
-| Thuộc tính | Chi tiết |
-| :--- | :--- |
-| Mã Use Case | UC-S4 |
-| Tên Use Case | Theo dõi & cảnh báo thời gian order |
-| Tác nhân | Background Worker |
-| Mức độ ưu tiên | Quan trọng (Should Have) |
-| Điều kiện tiên quyết | Bếp đang chế biến các món ăn thuộc đơn hàng đang phục vụ (Cooking). |
-| Điều kiện kết thúc | Trạng thái trễ hạn SLA của các món ăn được phát hiện và cảnh báo kịp thời lên màn hình Bếp và Trạm Pass. |
-
-
-**Luồng sự kiện chính:**
-1. Background Worker kích hoạt tiến trình kiểm soát SLA định kỳ mỗi 15 giây.
-2. Hệ thống truy vấn danh sách các món ăn đang trong trạng thái Chế biến (Cooking).
-3. Hệ thống tính toán thời gian chế biến thực tế so với định mức thời gian Prep SLA của từng món.
-4. Khi thời gian chế biến vượt ngưỡng 80% hoặc quá hạn định mức, hệ thống phát tín hiệu đổi màu cảnh báo lên màn hình KDS Bếp và trạm Pass.
-5. Hệ thống hoàn tất chu kỳ kiểm soát.
-
-**Luồng ngoại lệ:** Không có.
 
 ## 2.4 Quy tắc nghiệp vụ bắt buộc
 
-
 | Mã quy tắc | Tên quy tắc | Nội dung nghiệp vụ chi phối | Áp dụng tại |
 | :--- | :--- | :--- | :--- |
-| BR-01 | Thời hạn khóa giữ bàn tạm thời | Khóa giữ bàn tối đa 17 phút (15 phút thanh toán mã QR và 2 phút ân hạn). Quá thời hạn chưa có phản hồi thanh toán thành công, hệ thống tự động hủy đơn và giải phóng bàn về Available. | UC-U1, UC-S1 |
-| BR-02 | Công thức tính Hóa đơn & Cấn trừ cọc | Subtotal = Tổng tiền món Served; Phí phục vụ = Subtotal × 5%; Thuế VAT = (Subtotal + Phí phục vụ) × 10%; Tổng cộng = Subtotal + Phí phục vụ + Thuế VAT; Số tiền thanh toán thêm = MAX(0, Tổng cộng − Tiền cọc). Tiền cọc là mức chi tiêu tối thiểu không hoàn lại. | UC-E7 |
-| BR-03 | Thẩm quyền xác nhận đi món tại quầy Pass | Thao tác xác nhận đi món (Served) tại quầy Pass chỉ dành riêng cho Nhân viên Điều phối (Expediter) và Quản lý Nhà hàng. Đầu bếp và Khách hàng không có quyền thực hiện. | UC-E3 |
-| BR-04 | Chính sách hủy đặt bàn & Hoàn tiền cọc | Hủy trước giờ hẹn từ 4 tiếng trở lên: Tự động hoàn trả 100% tiền cọc qua cổng thanh toán VNPAY. Hủy dưới 4 tiếng hoặc vắng mặt: Phạt giữ 100% tiền cọc. Quản lý có quyền xem xét duyệt hoàn cọc ngoại lệ trong trường hợp bất khả kháng. | UC-U3, UC-A3 |
-| BR-05 | Điều phối Course Firing & Prep SLA | Mỗi món ăn có định mức thời gian chế biến Prep SLA. Khi gửi đơn, Course 1 chuyển sang Cooking; các Course tiếp theo ở trạng thái On Hold. Khi khách dùng khoảng 60%–70% Course hiện tại, phục vụ bấm nút Course Firing để kích hoạt bếp nấu Course tiếp theo. | UC-E1, UC-E2, UC-A1 |
-| BR-06 | Mức tiền cọc giữ chỗ | Đặt bàn có chọn trước Set Menu: Tiền cọc = 30% × Giá Set Menu × Số khách. Đặt bàn không chọn trước Set Menu (gọi món tại nhà hàng): Tiền cọc = 500.000 VNĐ × Số khách. Khách vãng lai không đặt trước không phải đặt cọc. | UC-U1, UC-U3, UC-E7 |
-
+| BR-01 | Thời hạn khóa giữ bàn tạm thời | Khóa giữ bàn tối đa 15 phút để khách thực hiện thanh toán tiền cọc. Quá thời hạn chưa nhận được kết quả thanh toán, hệ thống tự động hủy đơn và giải phóng bàn về trạng thái Trống (Available). | UC-U1 |
+| BR-02 | Công thức tính Hóa đơn & Cấn trừ cọc | Tổng tiền món = Tổng tiền các món đã phục vụ (Served); Phí phục vụ = Tổng tiền món × 5%; Thuế VAT = (Tổng tiền món + Phí phục vụ) × 10%; Tổng cộng = Tổng tiền món + Phí phục vụ + Thuế VAT; Số tiền thanh toán thêm = MAX(0, Tổng cộng − Tiền cọc). Tiền cọc là mức chi tiêu tối thiểu không hoàn lại. | UC-E7 |
+| BR-03 | Thẩm quyền xác nhận ra món | Thao tác xác nhận ra món (Served) tại quầy điều phối chỉ dành riêng cho Nhân viên điều phối và Quản lý. Nhân viên phục vụ chỉ tiếp nhận món đã xác nhận để bưng ra bàn cho khách. | UC-E5 |
+| BR-04 | Chính sách hủy đặt bàn & Hoàn tiền cọc | Hủy trước giờ hẹn từ 4 tiếng trở lên: Tự động hoàn trả 100% tiền cọc qua cổng thanh toán. Hủy dưới 4 tiếng hoặc vắng mặt: Phạt giữ 100% tiền cọc. Quản lý có quyền xem xét duyệt hoàn cọc ngoại lệ trong trường hợp bất khả kháng. | UC-U3, UC-A3 |
+| BR-05 | Mức tiền cọc giữ chỗ | Đặt bàn có chọn trước thực đơn: Tiền cọc = 30% × Giá thực đơn × Số khách. Đặt bàn không chọn trước thực đơn (gọi món tại nhà hàng): Tiền cọc = 500.000 VNĐ × Số khách. Khách vãng lai không đặt trước không phải nộp tiền cọc. | UC-U1, UC-U3, UC-E7 |
 
 ---
 
