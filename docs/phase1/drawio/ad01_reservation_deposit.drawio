@@ -1,7 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="AD-01 Đặt bàn &amp; Thanh toán cọc" id="ad-01_reservation_deposit">
-    <mxGraphModel dx="1571" dy="934" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1400" math="0" shadow="0">
+    <mxGraphModel dx="1262" dy="1066" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1400" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -57,7 +56,7 @@
           <mxGeometry height="70" width="160" x="140" y="215" as="geometry" />
         </mxCell>
         <mxCell id="s1_act_alt" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Gợi ý khung giờ khác" vertex="1">
-          <mxGeometry height="70" width="120" x="310" y="217.5" as="geometry" />
+          <mxGeometry height="70" width="120" x="310" y="340" as="geometry" />
         </mxCell>
         <mxCell id="s1_act2" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Khóa giữ bàn 15 phút" vertex="1">
           <mxGeometry height="70" width="220" x="110" y="430" as="geometry" />
@@ -75,7 +74,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_sdec_alt" edge="1" parent="lane2" source="s1_dec1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=16;fontStyle=1;" target="s1_act_alt" value="Hết bàn">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" x="-1" y="-54" as="geometry">
+            <mxPoint x="-20" y="-4" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="e_dec2_late" edge="1" parent="lane2" source="s1_dec2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=0.5;entryY=0;fontSize=16;fontStyle=1;" target="s1_act_alert" value="Quá hạn">
           <mxGeometry relative="1" as="geometry">
@@ -113,10 +114,11 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="e_sdec_g2" edge="1" parent="1" source="s1_dec1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;fontSize=16;fontStyle=1;" target="g1_act2" value="Còn bàn">
-          <mxGeometry relative="1" as="geometry">
+          <mxGeometry relative="1" x="-0.259" as="geometry">
             <Array as="points">
-              <mxPoint x="450" y="250" />
+              <mxPoint x="450" y="290" />
               <mxPoint x="450" y="352.5" />
+              <mxPoint x="320" y="352.5" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -129,24 +131,24 @@
         <mxCell id="e_v1_g4" edge="1" parent="1" source="v1_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=16;fontStyle=1;" target="g1_act4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="990" y="520" />
-              <mxPoint x="210" y="520" />
+              <mxPoint x="990" y="570" />
+              <mxPoint x="210" y="570" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="e_g4_v2" edge="1" parent="1" source="g1_act4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=16;fontStyle=1;" target="v1_act2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="210" y="650" />
-              <mxPoint x="990" y="650" />
+              <mxPoint x="210" y="690" />
+              <mxPoint x="990" y="690" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e_v2_dec2" edge="1" parent="1" source="v1_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;fontSize=16;fontStyle=1;" target="s1_dec2">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e_v2_dec2" edge="1" parent="1" source="v1_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;exitX=0;exitY=0.5;" target="s1_dec2">
+          <mxGeometry relative="1" x="-0.0016" as="geometry">
             <Array as="points">
-              <mxPoint x="750" y="712.5" />
-              <mxPoint x="750" y="835" />
+              <mxPoint x="880" y="760" />
+              <mxPoint x="680" y="760" />
             </Array>
           </mxGeometry>
         </mxCell>
