@@ -1,35 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="AD-11 Quản lý thực đơn" id="ad-11_menu_management">
     <mxGraphModel dx="2020" dy="1201" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1140" pageHeight="960" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Quản lý" vertex="1">
+        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Quản lý" vertex="1">
           <mxGeometry height="880" width="340" x="40" y="40" as="geometry" />
         </mxCell>
         <mxCell id="start1" parent="lane1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="m1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Mở chức năng quản lý thực đơn" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="125" as="geometry" />
+        <mxCell id="m1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Mở chức năng quản lý thực đơn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="125" as="geometry" />
         </mxCell>
-        <mxCell id="m1_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhập tên món, phân loại, giá &amp;amp; ảnh" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="225" as="geometry" />
+        <mxCell id="m1_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhập tên món, phân loại, giá &amp;amp; ảnh" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="225" as="geometry" />
         </mxCell>
-        <mxCell id="m1_act3" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Bấm lưu món ăn" vertex="1">
-          <mxGeometry height="55" width="220" x="60" y="325" as="geometry" />
+        <mxCell id="m1_act3" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Bấm lưu món ăn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="325" as="geometry" />
         </mxCell>
-        <mxCell id="m1_fail" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Xem thông báo lỗi dữ liệu" vertex="1">
-          <mxGeometry height="60" width="220" x="60" y="415" as="geometry" />
+        <mxCell id="m1_fail" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Xem thông báo lỗi dữ liệu" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="415" as="geometry" />
         </mxCell>
-        <mxCell id="m1_choice" parent="lane1" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=15;align=center;verticalAlign=middle;" value="Sửa lại?" vertex="1">
-          <mxGeometry height="60" width="130" x="105" y="505" as="geometry" />
+        <mxCell id="m1_choice" parent="lane1" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Sửa lại?" vertex="1">
+          <mxGeometry height="70" width="130" x="105" y="505" as="geometry" />
         </mxCell>
         <mxCell id="end_cancel" parent="lane1" style="ellipse;html=1;shape=endState;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="595" as="geometry" />
         </mxCell>
-        <mxCell id="m1_succ" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo lưu thành công" vertex="1">
-          <mxGeometry height="55" width="220" x="60" y="665" as="geometry" />
+        <mxCell id="m1_succ" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo lưu thành công" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="665" as="geometry" />
         </mxCell>
         <mxCell id="end_m" parent="lane1" style="ellipse;html=1;shape=endState;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="755" as="geometry" />
@@ -46,10 +47,10 @@
         <mxCell id="e_fail_to_choice" edge="1" parent="lane1" source="m1_fail" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="m1_choice">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_fail_end" edge="1" parent="lane1" source="m1_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=14;labelBackgroundColor=#ffffff;" target="end_cancel" value="Không">
+        <mxCell id="e_fail_end" edge="1" parent="lane1" source="m1_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;" target="end_cancel" value="Không">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_retry" edge="1" parent="lane1" source="m1_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=14;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="m1_act2" value="Có">
+        <mxCell id="e_retry" edge="1" parent="lane1" source="m1_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="m1_act2" value="Có">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="30" y="535" />
@@ -60,38 +61,38 @@
         <mxCell id="e_m_end" edge="1" parent="lane1" source="m1_succ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="end_m">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
+        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
           <mxGeometry height="880" width="340" x="400" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="api_val" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kiểm tra thông tin món ăn" vertex="1">
-          <mxGeometry height="55" width="220" x="60" y="325" as="geometry" />
+        <mxCell id="api_val" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Kiểm tra thông tin món ăn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="325" as="geometry" />
         </mxCell>
-        <mxCell id="api_dec" parent="lane2" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=15;align=center;verticalAlign=middle;" value="Hợp lệ?" vertex="1">
-          <mxGeometry height="60" width="130" x="105" y="415" as="geometry" />
+        <mxCell id="api_dec" parent="lane2" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Hợp lệ?" vertex="1">
+          <mxGeometry height="70" width="130" x="105" y="415" as="geometry" />
         </mxCell>
-        <mxCell id="api_save" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Lưu thông tin món vào CSDL" vertex="1">
-          <mxGeometry height="60" width="220" x="60" y="555" as="geometry" />
+        <mxCell id="api_save" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Lưu thông tin món vào CSDL" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="555" as="geometry" />
         </mxCell>
-        <mxCell id="api_cache" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật danh mục thực đơn" vertex="1">
-          <mxGeometry height="60" width="220" x="60" y="660" as="geometry" />
+        <mxCell id="api_cache" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Cập nhật danh mục thực đơn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="660" as="geometry" />
         </mxCell>
         <mxCell id="e5" edge="1" parent="lane2" source="api_val" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="api_dec">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6_yes" edge="1" parent="lane2" source="api_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=14;labelBackgroundColor=#ffffff;" target="api_save" value="Đúng">
+        <mxCell id="e6_yes" edge="1" parent="lane2" source="api_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;" target="api_save" value="Đúng">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e7" edge="1" parent="lane2" source="api_save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="api_cache">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhân viên phục vụ" vertex="1">
+        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhân viên phục vụ" vertex="1">
           <mxGeometry height="880" width="340" x="760" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="d_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Tải lại danh mục thực đơn" vertex="1">
-          <mxGeometry height="60" width="220" x="60" y="660" as="geometry" />
+        <mxCell id="d_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Tải lại danh mục thực đơn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="660" as="geometry" />
         </mxCell>
-        <mxCell id="d_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Hiển thị thực đơn mới trên ứng dụng" vertex="1">
-          <mxGeometry height="60" width="230" x="55" y="750" as="geometry" />
+        <mxCell id="d_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Hiển thị thực đơn mới trên ứng dụng" vertex="1">
+          <mxGeometry height="70" width="230" x="55" y="750" as="geometry" />
         </mxCell>
         <mxCell id="end_d" parent="lane3" style="ellipse;html=1;shape=endState;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="835" as="geometry" />
@@ -105,7 +106,7 @@
         <mxCell id="e4" edge="1" parent="1" source="m1_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="api_val">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6_no" edge="1" parent="1" source="api_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=14;labelBackgroundColor=#ffffff;" target="m1_fail" value="Sai">
+        <mxCell id="e6_no" edge="1" parent="1" source="api_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;" target="m1_fail" value="Sai">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e8_m" edge="1" parent="1" source="api_cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="m1_succ">

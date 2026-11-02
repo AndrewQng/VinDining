@@ -1,26 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="AD-09 Duyệt hoàn cọc thủ công" id="ad-09_manual_refund">
     <mxGraphModel dx="1664" dy="989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="960" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
+        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
           <mxGeometry height="860" width="340" x="40" y="40" as="geometry" />
         </mxCell>
         <mxCell id="start1" parent="lane1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="g1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Gửi yêu cầu hoàn tiền" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="125" as="geometry" />
+        <mxCell id="g1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Gửi yêu cầu hoàn tiền" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="125" as="geometry" />
         </mxCell>
-        <mxCell id="g1_fail" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo từ chối hoàn cọc" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="235" as="geometry" />
+        <mxCell id="g1_fail" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo từ chối hoàn cọc" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="235" as="geometry" />
         </mxCell>
         <mxCell id="end_fail" parent="lane1" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="g1_succ" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo hoàn tiền thành công" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="635" as="geometry" />
+        <mxCell id="g1_succ" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo hoàn tiền thành công" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="635" as="geometry" />
         </mxCell>
         <mxCell id="end_succ" parent="lane1" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="760" as="geometry" />
@@ -34,17 +35,17 @@
         <mxCell id="e10" edge="1" parent="lane1" source="g1_succ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;" target="end_succ">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Quản lý" vertex="1">
+        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Quản lý" vertex="1">
           <mxGeometry height="860" width="340" x="380" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="m1_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Tra cứu mã đặt bàn &amp;amp; kiểm tra lý do" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="125" as="geometry" />
+        <mxCell id="m1_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Tra cứu mã đặt bàn &amp;amp; kiểm tra lý do" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="125" as="geometry" />
         </mxCell>
-        <mxCell id="m1_dec" parent="lane2" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Chấp thuận?" vertex="1">
-          <mxGeometry height="65" width="150" x="95" y="235" as="geometry" />
+        <mxCell id="m1_dec" parent="lane2" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Chấp thuận?" vertex="1">
+          <mxGeometry height="70" width="150" x="95" y="235" as="geometry" />
         </mxCell>
-        <mxCell id="m1_act_yes" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Bấm duyệt hoàn cọc" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="345" as="geometry" />
+        <mxCell id="m1_act_yes" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Bấm duyệt hoàn cọc" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="345" as="geometry" />
         </mxCell>
         <mxCell id="e_m1_m2" edge="1" parent="lane2" source="m1_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;" target="m1_dec">
           <mxGeometry relative="1" as="geometry" />
@@ -52,17 +53,17 @@
         <mxCell id="e4_yes" edge="1" parent="lane2" source="m1_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;" target="m1_act_yes" value="Đồng ý">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
+        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
           <mxGeometry height="860" width="340" x="720" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="s1_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Gửi yêu cầu hoàn tiền sang VNPAY" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="345" as="geometry" />
+        <mxCell id="s1_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Gửi yêu cầu hoàn tiền sang VNPAY" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="345" as="geometry" />
         </mxCell>
-        <mxCell id="s1_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận kết quả từ VNPAY" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="455" as="geometry" />
+        <mxCell id="s1_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận kết quả từ VNPAY" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="455" as="geometry" />
         </mxCell>
-        <mxCell id="s1_act3" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật trạng thái hoàn cọc vào CSDL" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="565" as="geometry" />
+        <mxCell id="s1_act3" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Cập nhật trạng thái hoàn cọc vào CSDL" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="565" as="geometry" />
         </mxCell>
         <mxCell id="PNTqUUg82d99KC1_1On7-1" edge="1" parent="lane3" source="s1_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;" target="s1_act2">
           <mxGeometry relative="1" as="geometry" />

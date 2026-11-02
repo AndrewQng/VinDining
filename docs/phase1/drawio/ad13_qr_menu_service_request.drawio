@@ -1,23 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="AD-13 Xem thực đơn QR &amp; Yêu cầu phục vụ" id="ad-13_qr_menu_service_request">
     <mxGraphModel dx="1571" dy="934" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
+        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
           <mxGeometry height="700" width="340" x="40" y="40" as="geometry" />
         </mxCell>
         <mxCell id="start1" parent="lane1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="g_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Quét mã QR tại bàn" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="120" as="geometry" />
+        <mxCell id="g_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Quét mã QR tại bàn" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="120" as="geometry" />
         </mxCell>
-        <mxCell id="g_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Xem danh mục món &amp;amp;&lt;br&gt;chọn gửi yêu cầu hỗ trợ" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="240" as="geometry" />
+        <mxCell id="g_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Xem danh mục món &amp;amp;&lt;br&gt;chọn gửi yêu cầu hỗ trợ" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="240" as="geometry" />
         </mxCell>
-        <mxCell id="g_act3" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo ghi nhận thành công" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="450" as="geometry" />
+        <mxCell id="g_act3" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo ghi nhận thành công" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="450" as="geometry" />
         </mxCell>
         <mxCell id="end_g" parent="lane1" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="580" as="geometry" />
@@ -28,29 +29,29 @@
         <mxCell id="e_g3_end" edge="1" parent="lane1" source="g_act3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="end_g">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
+        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
           <mxGeometry height="700" width="340" x="380" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="s_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Xác thực mã bàn &amp;amp;&lt;br&gt;truy vấn thực đơn từ CSDL" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="120" as="geometry" />
+        <mxCell id="s_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Xác thực mã bàn &amp;amp;&lt;br&gt;truy vấn thực đơn từ CSDL" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="120" as="geometry" />
         </mxCell>
-        <mxCell id="s_act2" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Lưu yêu cầu phục vụ vào CSDL" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="340" as="geometry" />
+        <mxCell id="s_act2" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Lưu yêu cầu phục vụ vào CSDL" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="s_act3" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Phản hồi kết quả tiếp nhận" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="450" as="geometry" />
+        <mxCell id="s_act3" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Phản hồi kết quả tiếp nhận" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="450" as="geometry" />
         </mxCell>
         <mxCell id="e_s2_s3" edge="1" parent="lane2" source="s_act2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;" target="s_act3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhân viên phục vụ" vertex="1">
+        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Nhân viên phục vụ" vertex="1">
           <mxGeometry height="700" width="340" x="720" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="w_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo yêu cầu phục vụ" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="340" as="geometry" />
+        <mxCell id="w_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo yêu cầu phục vụ" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="w_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Đến bàn hỗ trợ khách hàng" vertex="1">
-          <mxGeometry height="65" width="220" x="60" y="450" as="geometry" />
+        <mxCell id="w_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Đến bàn hỗ trợ khách hàng" vertex="1">
+          <mxGeometry height="70" width="220" x="60" y="450" as="geometry" />
         </mxCell>
         <mxCell id="end_w" parent="lane3" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="155" y="580" as="geometry" />

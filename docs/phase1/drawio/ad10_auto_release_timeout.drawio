@@ -1,32 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="AD-10 Giải phóng bàn quá hạn giữ cọc" id="ad-10_auto_release_timeout">
     <mxGraphModel dx="2614" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1400" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
+        <mxCell id="lane1" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Hệ thống" vertex="1">
           <mxGeometry height="860" width="360" x="40" y="40" as="geometry" />
         </mxCell>
         <mxCell id="start1" parent="lane1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="165" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="b1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Quét định kỳ mỗi 60 giây" vertex="1">
-          <mxGeometry height="65" width="240" x="60" y="125" as="geometry" />
+        <mxCell id="b1_act1" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Quét định kỳ mỗi 60 giây" vertex="1">
+          <mxGeometry height="70" width="240" x="60" y="125" as="geometry" />
         </mxCell>
-        <mxCell id="b1_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kiểm tra đơn quá hạn 15 phút" vertex="1">
-          <mxGeometry height="65" width="240" x="60" y="225" as="geometry" />
+        <mxCell id="b1_act2" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Kiểm tra đơn quá hạn 15 phút" vertex="1">
+          <mxGeometry height="70" width="240" x="60" y="225" as="geometry" />
         </mxCell>
-        <mxCell id="b1_dec" parent="lane1" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Có đơn quá hạn?" vertex="1">
-          <mxGeometry height="65" width="170" x="95" y="325" as="geometry" />
+        <mxCell id="b1_dec" parent="lane1" style="rhombus;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Có đơn quá hạn?" vertex="1">
+          <mxGeometry height="70" width="170" x="95" y="325" as="geometry" />
         </mxCell>
-        <mxCell id="b1_act_no" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kết thúc chu kỳ quét" vertex="1">
-          <mxGeometry height="55" width="220" x="70" y="425" as="geometry" />
+        <mxCell id="b1_act_no" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Kết thúc chu kỳ quét" vertex="1">
+          <mxGeometry height="70" width="220" x="70" y="425" as="geometry" />
         </mxCell>
         <mxCell id="end_no" parent="lane1" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="165" y="515" as="geometry" />
         </mxCell>
-        <mxCell id="b1_act_yes" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Kích hoạt hủy giữ bàn" vertex="1">
-          <mxGeometry height="65" width="240" x="60" y="580" as="geometry" />
+        <mxCell id="b1_act_yes" parent="lane1" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Kích hoạt hủy giữ bàn" vertex="1">
+          <mxGeometry height="70" width="240" x="60" y="580" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="lane1" source="start1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;" target="b1_act1">
           <mxGeometry relative="1" as="geometry" />
@@ -46,26 +47,26 @@
         <mxCell id="e4_yes" edge="1" parent="lane1" source="b1_dec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="b1_act_yes" value="Có">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="CSDL" vertex="1">
+        <mxCell id="lane2" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="CSDL" vertex="1">
           <mxGeometry height="860" width="360" x="400" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="db_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật trạng thái hủy đặt bàn" vertex="1">
-          <mxGeometry height="65" width="240" x="60" y="580" as="geometry" />
+        <mxCell id="db_act1" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Cập nhật trạng thái hủy đặt bàn" vertex="1">
+          <mxGeometry height="70" width="240" x="60" y="580" as="geometry" />
         </mxCell>
-        <mxCell id="db_act2" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Cập nhật bàn sang sẵn sàng" vertex="1">
-          <mxGeometry height="65" width="240" x="60" y="680" as="geometry" />
+        <mxCell id="db_act2" parent="lane2" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Cập nhật bàn sang sẵn sàng" vertex="1">
+          <mxGeometry height="70" width="240" x="60" y="680" as="geometry" />
         </mxCell>
         <mxCell id="e6" edge="1" parent="lane2" source="db_act1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeWidth=1.5;html=1;fontSize=16;" target="db_act2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
+        <mxCell id="lane3" parent="1" style="swimlane;html=1;startSize=40;horizontal=1;collapsible=0;fontStyle=1;fontSize=22;align=center;verticalAlign=middle;swimlaneLine=1;" value="Khách hàng" vertex="1">
           <mxGeometry height="860" width="380" x="760" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="hub_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Gửi thông báo hết hạn đặt cọc" vertex="1">
-          <mxGeometry height="65" width="240" x="70" y="580" as="geometry" />
+        <mxCell id="hub_act1" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Gửi thông báo hết hạn đặt cọc" vertex="1">
+          <mxGeometry height="70" width="240" x="70" y="580" as="geometry" />
         </mxCell>
-        <mxCell id="hub_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Nhận thông báo hủy giữ bàn" vertex="1">
-          <mxGeometry height="65" width="240" x="70" y="680" as="geometry" />
+        <mxCell id="hub_act2" parent="lane3" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fontStyle=1;fontSize=18;align=center;verticalAlign=middle;" value="Nhận thông báo hủy giữ bàn" vertex="1">
+          <mxGeometry height="70" width="240" x="70" y="680" as="geometry" />
         </mxCell>
         <mxCell id="end_s" parent="lane3" style="ellipse;html=1;shape=endState;fontSize=18;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="175" y="780" as="geometry" />
