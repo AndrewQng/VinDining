@@ -41,6 +41,23 @@ public class TestingController : ApiControllerBase
             await _dbContext.Staffs.AddAsync(staffWait);
         }
 
+        var staffAdmin = await _dbContext.Staffs.FirstOrDefaultAsync(s => s.Username == "admin_test");
+        if (staffAdmin == null)
+        {
+            staffAdmin = new Staff
+            {
+                Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                FullName = "Nguyễn Quản Trị",
+                PhoneNumber = "0909999888",
+                Username = "admin_test",
+                Email = "admin@vindining.vn",
+                PasswordHash = "hash123",
+                Role = StaffRole.Admin,
+                IsActive = true
+            };
+            await _dbContext.Staffs.AddAsync(staffAdmin);
+        }
+
         var staffExpediter = await _dbContext.Staffs.FirstOrDefaultAsync(s => s.Username == "expediter_test");
         if (staffExpediter == null)
         {

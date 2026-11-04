@@ -77,6 +77,7 @@ builder.Services.AddAuthentication(options =>
 
 // 4. Register MVC Services & Notifiers (Dependency Injection)
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPasswordHasher<Staff>, PasswordHasher<Staff>>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPaymentGateway, MockPaymentGateway>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();

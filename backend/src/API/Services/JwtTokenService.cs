@@ -22,7 +22,7 @@ public class JwtTokenService : IJwtTokenService
         var secret = _configuration["Jwt:Secret"] ?? "FineDiningSuperSecretKeyForDevelopment2026_Minimum32Chars!";
         var issuer = _configuration["Jwt:Issuer"] ?? "VinDining";
         var audience = _configuration["Jwt:Audience"] ?? "VinDiningClient";
-        var expiryMinutes = int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var min) ? min : 60;
+        var expiryMinutes = int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var min) ? min : 120;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -30,15 +30,19 @@ public class JwtTokenService : IJwtTokenService
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(JwtRegisteredClaimNames.Email, email),
+            new(ClaimTypes.Email, email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new("name", fullName),
+            new(ClaimTypes.Name, fullName),
             new("userId", userId.ToString())
         };
 
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim("role", role));
         }
 
         if (customClaims != null)

@@ -42,6 +42,13 @@ public class StaffConfiguration : IEntityTypeConfiguration<Staff>
         builder.Property(s => s.IsActive)
             .HasDefaultValue(true);
 
+        builder.Property(s => s.RefreshToken)
+            .HasMaxLength(256)
+            .IsRequired(false);
+
+        builder.Property(s => s.RefreshTokenExpiryTime)
+            .IsRequired(false);
+
         builder.Property(s => s.CreatedAt)
             .IsRequired();
 

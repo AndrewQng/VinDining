@@ -12,6 +12,8 @@ public class Staff : BaseEntity, IHasCreatedAt
     public string PasswordHash { get; set; } = string.Empty;
     public StaffRole Role { get; set; } = StaffRole.Waitstaff;
     public bool IsActive { get; set; } = true;
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<Order> OrdersCreated { get; set; } = new List<Order>();
