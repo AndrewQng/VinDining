@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/admin/staff")]
+[Authorize(Roles = "Admin,Manager")]
 public class AdminStaffController : ApiControllerBase
 {
     private readonly IStaffService _staffService;
@@ -16,7 +17,7 @@ public class AdminStaffController : ApiControllerBase
     public async Task<IActionResult> CreateStaffAsync([FromBody] CreateStaffDto dto, CancellationToken ct)
     {
         var id = await _staffService.CreateStaffAsync(dto, ct);
-        return CreatedAtAction(nameof(GetStaffByIdAsync), new { id }, new { id });
+        return StatusCode(StatusCodes.Status201Created, new { id, success = true });
     }
 
     [HttpPut("{id}")]

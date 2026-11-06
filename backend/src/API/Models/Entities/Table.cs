@@ -12,10 +12,7 @@ public class Table : BaseEntity, IHasCreatedAt
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int PosX { get; set; } = 0;
-
-    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int PosY { get; set; } = 0;
 
     public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();

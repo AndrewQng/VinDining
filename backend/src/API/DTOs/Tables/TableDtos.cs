@@ -7,8 +7,15 @@ public record TableDto(
     TableZone Zone,
     TableStatus Status,
     int PosX = 0,
-    int PosY = 0
-);
+    int PosY = 0,
+    Guid? CurrentOrderId = null,
+    bool IsActive = true
+)
+{
+    public int PositionX => PosX;
+    public int PositionY => PosY;
+    public string QrMenuUrl => $"/emenu/{Id}";
+}
 
 public record CheckInDto(
     string? BookingCode = null,
@@ -17,8 +24,8 @@ public record CheckInDto(
 
 public record WalkInDto(
     string GuestName,
-    string PhoneNumber,
-    int PartySize,
+    string PhoneNumber = "",
+    int PartySize = 2,
     string? Note = null
 );
 
@@ -35,4 +42,13 @@ public record MergeTablesDto(
 
 public record UpdateTableStatusDto(
     TableStatus Status
+);
+
+public record UpdateTableDto(
+    string TableNumber,
+    int Capacity,
+    TableZone Zone,
+    int PosX = 0,
+    int PosY = 0,
+    bool IsActive = true
 );

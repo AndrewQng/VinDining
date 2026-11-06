@@ -10,7 +10,13 @@ public record DashboardMetricsDto(
     int TotalOrders,
     int TotalReservations,
     double OccupancyRate,
-    List<TopSellingItemDto> TopSellingItems
+    List<TopSellingItemDto> TopSellingItems,
+    decimal LunchShiftRevenue = 0m,
+    decimal DinnerShiftRevenue = 0m,
+    decimal DeductedDepositTotal = 0m,
+    decimal ForfeitedDepositRevenue = 0m,
+    int CancelledReservationsCount = 0,
+    double AverageRating = 0.0
 );
 
 public record TopSellingItemDto(

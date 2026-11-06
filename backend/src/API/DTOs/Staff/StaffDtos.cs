@@ -6,7 +6,8 @@ public record StaffDto(
     string Username,
     string Email,
     StaffRole Role,
-    bool IsActive
+    bool IsActive,
+    string PhoneNumber = ""
 );
 
 public record CreateStaffDto(
@@ -14,13 +15,15 @@ public record CreateStaffDto(
     string Username,
     string Password,
     string Email,
-    StaffRole Role
+    StaffRole Role,
+    string PhoneNumber = "0900000000"
 );
 
 public record UpdateStaffDto(
     string FullName,
     string Email,
-    StaffRole Role
+    StaffRole Role,
+    string? PhoneNumber = null
 );
 
 public record ResetPasswordDto(

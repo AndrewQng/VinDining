@@ -10,6 +10,10 @@ namespace API.Services;
 
 public class JwtTokenService : IJwtTokenService
 {
+    public const string DefaultDevSecret = "VinDiningFineDiningUltraSecretKeyForLocalDev2026_Minimum32CharsLength!";
+    public const string DefaultIssuer = "VinDining";
+    public const string DefaultAudience = "VinDiningClient";
+
     private readonly IConfiguration _configuration;
 
     public JwtTokenService(IConfiguration configuration)
@@ -19,10 +23,11 @@ public class JwtTokenService : IJwtTokenService
 
     public string GenerateAccessToken(Guid userId, string email, string fullName, IEnumerable<string> roles, IEnumerable<Claim>? customClaims = null)
     {
-        var secret = _configuration["Jwt:Secret"] ?? "FineDiningSuperSecretKeyForDevelopment2026_Minimum32Chars!";
-        var issuer = _configuration["Jwt:Issuer"] ?? "VinDining";
-        var audience = _configuration["Jwt:Audience"] ?? "VinDiningClient";
-        var expiryMinutes = int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var min) ? min : 120;
+        var secret = ResolveSecret();
+        var issuer = ResolveIssuer();
+        var audience = ResolveAudience();
+        var expiryRaw = _configuration["Jwt:ExpiryMinutes"] ?? Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES");
+        var expiryMinutes = int.TryParse(expiryRaw, out var min) ? min : 120;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -70,7 +75,7 @@ public class JwtTokenService : IJwtTokenService
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
     {
-        var secret = _configuration["Jwt:Secret"] ?? "FineDiningSuperSecretKeyForDevelopment2026_Minimum32Chars!";
+        var secret = ResolveSecret();
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
@@ -91,4 +96,19 @@ public class JwtTokenService : IJwtTokenService
 
         return principal;
     }
+
+    private string ResolveSecret()
+        => _configuration["Jwt:Secret"]
+            ?? Environment.GetEnvironmentVariable("JWT_SECRET")
+            ?? DefaultDevSecret;
+
+    private string ResolveIssuer()
+        => _configuration["Jwt:Issuer"]
+            ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+            ?? DefaultIssuer;
+
+    private string ResolveAudience()
+        => _configuration["Jwt:Audience"]
+            ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+            ?? DefaultAudience;
 }

@@ -3,7 +3,8 @@ namespace API.DTOs;
 public record SubmitFeedbackDto(
     Guid InvoiceId,
     int Rating,
-    string? Comment = null
+    string? Comment = null,
+    Guid? ReservationId = null
 );
 
 public record FeedbackDto(
@@ -11,5 +12,6 @@ public record FeedbackDto(
     Guid InvoiceId,
     int Rating,
     string? Comment,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid ReservationId = default
 );

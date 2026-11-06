@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace API.Controllers;
 
 [Route("api/service-calls")]
@@ -10,7 +12,16 @@ public class ServiceCallController : ApiControllerBase
         _serviceCallService = serviceCallService;
     }
 
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateFromBodyAsync([FromBody] ServiceCallDto dto, CancellationToken ct)
+    {
+        var requestId = await _serviceCallService.CreateServiceCallAsync(dto.TableId, dto, ct);
+        return Ok(new { success = true, requestId, message = "Đã gửi yêu cầu gọi phục vụ." });
+    }
+
     [HttpPost("/api/tables/{id}/call-service")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateServiceCallAsync(Guid id, [FromBody] ServiceCallDto dto, CancellationToken ct)
     {
         var requestId = await _serviceCallService.CreateServiceCallAsync(id, dto, ct);

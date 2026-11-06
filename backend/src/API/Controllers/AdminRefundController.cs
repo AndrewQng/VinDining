@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/admin/reservations")]
+[Authorize(Roles = "Admin,Manager")]
 public class AdminRefundController : ApiControllerBase
 {
     private readonly IRefundService _refundService;
@@ -16,7 +17,10 @@ public class AdminRefundController : ApiControllerBase
     public async Task<IActionResult> OverrideRefundAsync(Guid id, [FromBody] ManualRefundDto dto, CancellationToken ct)
     {
         var result = await _refundService.OverrideRefundAsync(id, dto, ct);
-        return Ok(new { success = result, message = "Đã duyệt hoàn tiền cọc thủ công." });
+        var message = dto.IsApproved
+            ? "Đã phê duyệt hoàn tiền cọc ngoại lệ thành công."
+            : "Đã ghi nhận quyết định từ chối hoàn tiền cọc ngoại lệ.";
+        return Ok(new { success = result, message });
     }
 
     [HttpGet("/api/admin/refunds")]

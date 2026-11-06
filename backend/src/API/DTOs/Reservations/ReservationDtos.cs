@@ -7,7 +7,8 @@ public record CreateReservationDto(
     Guid TableId,
     DateTime ReservationTime,
     int PartySize,
-    string? Note = null
+    string? Note = null,
+    Guid? TastingMenuId = null
 );
 
 public record CreateReservationResultDto(
@@ -15,8 +16,12 @@ public record CreateReservationResultDto(
     string BookingCode,
     decimal DepositAmount,
     string PaymentUrl,
-    DateTime ExpireAt
-);
+    DateTime ExpireAt,
+    string TableNumber = ""
+)
+{
+    public DateTime ExpiresAt => ExpireAt;
+}
 
 public record AvailableTableDto(
     Guid Id,
@@ -24,7 +29,10 @@ public record AvailableTableDto(
     int Capacity,
     TableZone Zone,
     TableStatus Status
-);
+)
+{
+    public string ZoneName => Zone.ToString();
+}
 
 public record ReservationDetailDto(
     Guid Id,
@@ -39,12 +47,41 @@ public record ReservationDetailDto(
     ReservationStatus Status,
     string? Note,
     decimal? DepositAmount,
-    DepositStatus? DepositStatus
-);
+    DepositStatus? DepositStatus,
+    string TableZone = "MainHall",
+    DateTime CreatedAt = default
+)
+{
+    public string GuestPhone => PhoneNumber;
+    public string GuestEmail => Email ?? string.Empty;
+}
 
 public record CancelReservationDto(
     string BookingCode,
-    string Reason
+    string Reason = "Khách hàng yêu cầu hủy"
+);
+
+public record CancelReservationBodyDto(
+    string Reason = "Khách hàng yêu cầu hủy"
+);
+
+public record CancelReservationResultDto(
+    bool Success,
+    string BookingCode,
+    string Status,
+    bool IsRefunded,
+    decimal RefundAmount,
+    string Message
+);
+
+public record ConfirmDepositDto(
+    string BookingCode,
+    string TransactionId,
+    PaymentMethod PaymentMethod = PaymentMethod.BankTransfer
+);
+
+public record NoShowReservationDto(
+    string? Reason = "Khách không đến sau thời gian giữ chỗ 15 phút"
 );
 
 public record VnPayIpnDto(

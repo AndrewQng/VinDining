@@ -1,4 +1,5 @@
 using API.Hubs;
+using API.Models.Enums;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
@@ -69,6 +70,40 @@ public class KitchenNotifier : IKitchenNotifier
                 MenuItemName = menuItemName,
                 ServedById = servedById,
                 ServedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifyItemCancelledAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+    {
+        await _kitchenHub.Clients.All.SendAsync(
+            "ItemCancelled",
+            new
+            {
+                OrderId = orderId,
+                TableNumber = tableNumber,
+                OrderItemId = orderItemId,
+                MenuItemName = menuItemName,
+                Reason = reason,
+                CancelledAt = DateTime.UtcNow
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifySlaAlertAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string slaStatus, int elapsedSeconds, int prepTimeMinutes, CancellationToken cancellationToken = default)
+    {
+        await _kitchenHub.Clients.All.SendAsync(
+            "SlaAlert",
+            new
+            {
+                OrderId = orderId,
+                TableNumber = tableNumber,
+                OrderItemId = orderItemId,
+                MenuItemName = menuItemName,
+                SlaStatus = slaStatus,
+                ElapsedSeconds = elapsedSeconds,
+                PrepTimeMinutes = prepTimeMinutes,
+                AlertedAt = DateTime.UtcNow
             },
             cancellationToken);
     }

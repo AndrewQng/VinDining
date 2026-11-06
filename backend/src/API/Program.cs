@@ -2,11 +2,14 @@ using System.Text;
 using API.Data;
 using API.Hubs;
 using API.Middlewares;
+using API.Models.Common;
 using API.Models.Identity;
 using API.Services;
 using API.Services.Interfaces;
+using API.Workers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -22,8 +25,11 @@ var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Server=.\\SQLEXPRESS;Database=VinDiningDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+}
 
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
@@ -40,23 +46,25 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 3. Configure JWT Authentication
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
-    ?? builder.Configuration["Jwt:Secret"]
-    ?? "VinDiningFineDiningUltraSecretKeyForLocalDev2026_Minimum32CharsLength!";
+// 3. Configure JWT Authentication (with SignalR WebSocket query token support)
+var jwtSecret = builder.Configuration["Jwt:Secret"]
+    ?? Environment.GetEnvironmentVariable("JWT_SECRET")
+    ?? JwtTokenService.DefaultDevSecret;
 
-var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
-    ?? builder.Configuration["Jwt:Issuer"]
-    ?? "VinDining";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+    ?? JwtTokenService.DefaultIssuer;
 
-var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
-    ?? builder.Configuration["Jwt:Audience"]
-    ?? "VinDiningClient";
+var jwtAudience = builder.Configuration["Jwt:Audience"]
+    ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+    ?? JwtTokenService.DefaultAudience;
 
 builder.Services.AddAuthentication(options =>
 {
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
@@ -73,20 +81,38 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
         ClockSkew = TimeSpan.Zero
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
-// 4. Register MVC Services & Notifiers (Dependency Injection)
+// 4. Register Caching, Concurrency & MVC Domain Services
+builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPasswordHasher<Staff>, PasswordHasher<Staff>>();
+builder.Services.AddSingleton<ITableConcurrencyLock, TableConcurrencyLock>();
+builder.Services.AddSingleton<IServiceCallStore, InMemoryServiceCallStore>();
+builder.Services.AddScoped<IPasswordHasher<Staff>, PasswordHasher<Staff>>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-builder.Services.AddScoped<IPaymentGateway, MockPaymentGateway>();
+builder.Services.AddScoped<IPaymentGateway, VnPayPaymentGateway>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IKitchenNotifier, KitchenNotifier>();
 builder.Services.AddScoped<ITableNotifier, TableNotifier>();
 
-// Domain / Business Services (Matching Draw.io Class Diagram)
+// Domain / Business Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IExpiredReservationLockService, ExpiredReservationLockService>();
+builder.Services.AddScoped<IOrderSlaMonitorService, OrderSlaMonitorService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
@@ -99,9 +125,45 @@ builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IRefundService, RefundService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
-builder.Services.AddControllers();
+// Background Workers (Skip infinite timers in Testing environment so integration tests control ticks deterministically)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<ReleaseExpiredLocksWorker>();
+    builder.Services.AddHostedService<OrderSlaMonitorWorker>();
+    builder.Services.AddHostedService<ReservationReminderWorker>();
+    builder.Services.AddHostedService<DiningSurveyWorker>();
+}
+
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(kvp => kvp.Value?.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Giá trị không hợp lệ." : e.ErrorMessage).ToArray());
+
+            var payload = new ApiErrorResponse(
+                Success: false,
+                StatusCode: StatusCodes.Status400BadRequest,
+                Message: "Dữ liệu đầu vào không hợp lệ.",
+                Errors: errors,
+                TraceId: context.HttpContext.TraceIdentifier,
+                Timestamp: DateTime.UtcNow);
+
+            return new BadRequestObjectResult(payload);
+        };
+    });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+});
 
 // 5. Configure Swagger with JWT Support
 builder.Services.AddSwaggerGen(c =>
@@ -173,6 +235,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<TableHub>("/hubs/table");
+app.MapHub<TableHub>("/hubs/tables");
 app.MapHub<KitchenHub>("/hubs/kitchen");
 
 app.Run();
+
+public partial class Program { }

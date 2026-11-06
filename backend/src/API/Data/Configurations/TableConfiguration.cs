@@ -35,6 +35,14 @@ public class TableConfiguration : IEntityTypeConfiguration<Table>
         builder.Property(t => t.IsActive)
             .HasDefaultValue(true);
 
+        builder.Property(t => t.PosX)
+            .HasDefaultValue(0)
+            .IsRequired();
+
+        builder.Property(t => t.PosY)
+            .HasDefaultValue(0)
+            .IsRequired();
+
         builder.Property(t => t.CreatedAt)
             .IsRequired();
 

@@ -1,11 +1,21 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace API.Hubs;
 
-// We can add [Authorize(Roles = "Expediter,Manager")] later
 public class KitchenHub : Hub
 {
-    // Backend triggers this when Waitstaff submits order: NotifyNewOrder(OrderDto order)
-    // Expediter triggers this when marking as served: MarkDishAsServed(Guid orderItemId)
+    public async Task JoinKitchenGroup()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "kds:kitchen");
+    }
+
+    public async Task JoinExpediterGroup()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "kds:expediter");
+    }
+
+    public async Task LeaveKitchenGroup()
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "kds:kitchen");
+    }
 }

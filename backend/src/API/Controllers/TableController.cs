@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace API.Controllers;
 
 [Route("api/tables")]
@@ -14,14 +16,14 @@ public class TableController : ApiControllerBase
     public async Task<IActionResult> CheckInReservationAsync(Guid id, [FromBody] CheckInDto dto, CancellationToken ct)
     {
         var result = await _tableService.CheckInReservationAsync(id, dto, ct);
-        return Ok(new { success = result, message = "Check-in bàn thành công." });
+        return Ok(new { success = result, message = "Check-in nhận bàn thành công." });
     }
 
     [HttpPost("{id}/walk-in")]
     public async Task<IActionResult> CheckInWalkInAsync(Guid id, [FromBody] WalkInDto dto, CancellationToken ct)
     {
         var result = await _tableService.CheckInWalkInAsync(id, dto, ct);
-        return Ok(new { success = true, tableId = result, message = "Xếp bàn vãng lai thành công." });
+        return Ok(new { success = true, tableId = result, message = "Xếp bàn khách vãng lai thành công." });
     }
 
     [HttpPost("{sourceId}/transfer")]
@@ -39,6 +41,7 @@ public class TableController : ApiControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetFloorPlanAsync(CancellationToken ct)
     {
         var result = await _tableService.GetFloorPlanAsync(ct);
@@ -46,6 +49,7 @@ public class TableController : ApiControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetTableByIdAsync(Guid id, CancellationToken ct)
     {
         var result = await _tableService.GetTableByIdAsync(id, ct);

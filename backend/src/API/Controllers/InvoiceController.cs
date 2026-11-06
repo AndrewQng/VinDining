@@ -1,6 +1,7 @@
 namespace API.Controllers;
 
 [Route("api/invoices")]
+[Route("api/invoice")]
 public class InvoiceController : ApiControllerBase
 {
     private readonly IInvoiceService _invoiceService;
@@ -14,7 +15,7 @@ public class InvoiceController : ApiControllerBase
     public async Task<IActionResult> RequestCheckoutAsync(Guid tableId, CancellationToken ct)
     {
         var result = await _invoiceService.RequestCheckoutAsync(tableId, ct);
-        return Ok(new { success = result, message = "Đã gửi yêu cầu thanh toán bàn ăn." });
+        return Ok(new { success = result, message = "Đã gửi yêu cầu thanh toán bàn ăn về quầy thu ngân." });
     }
 
     [HttpGet("preview/{tableId}")]
@@ -27,15 +28,41 @@ public class InvoiceController : ApiControllerBase
     [HttpPost("{tableId}/print-preview")]
     public async Task<IActionResult> PrintPreBillAsync(Guid tableId, CancellationToken ct)
     {
-        var result = await _invoiceService.PrintPreBillAsync(tableId, ct);
-        return Ok(new { success = result, message = "Lệnh in phiếu tạm tính đã được gửi." });
+        var preBill = await _invoiceService.PrintPreBillAsync(tableId, ct);
+        return Ok(new
+        {
+            success = true,
+            message = "Lệnh in phiếu tạm tính kèm mã VietQR đã được khởi tạo.",
+            preBill
+        });
+    }
+
+    [HttpPost("settle")]
+    public async Task<IActionResult> SettleInvoiceByOrderAsync([FromBody] SettleInvoiceDto dto, CancellationToken ct)
+    {
+        var invoiceId = await _invoiceService.SettleInvoiceByOrderAsync(dto, ct);
+        var invoice = await _invoiceService.GetInvoiceByIdAsync(invoiceId, ct);
+        return Ok(new
+        {
+            success = true,
+            invoiceId,
+            message = "Quyết toán hóa đơn và đóng bàn thành công.",
+            invoice
+        });
     }
 
     [HttpPost("{tableId}/settle")]
     public async Task<IActionResult> SettleInvoiceAsync(Guid tableId, [FromBody] SettleInvoiceDto dto, CancellationToken ct)
     {
         var invoiceId = await _invoiceService.SettleInvoiceAsync(tableId, dto, ct);
-        return Ok(new { success = true, invoiceId, message = "Quyết toán hóa đơn thành công." });
+        var invoice = await _invoiceService.GetInvoiceByIdAsync(invoiceId, ct);
+        return Ok(new
+        {
+            success = true,
+            invoiceId,
+            message = "Quyết toán hóa đơn và đóng bàn thành công.",
+            invoice
+        });
     }
 
     [HttpGet("{id}")]

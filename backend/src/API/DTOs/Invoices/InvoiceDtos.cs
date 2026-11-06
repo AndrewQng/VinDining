@@ -9,15 +9,28 @@ public record InvoicePreviewDto(
     decimal ServiceCharge,
     decimal VatAmount,
     decimal DeductedDeposit,
-    decimal FinalAmount
-);
+    decimal FinalAmount,
+    bool HasUnservedItems = false,
+    int UnservedItemCount = 0,
+    string? VietQrUrl = null
+)
+{
+    public decimal TotalAmount => FinalAmount;
+    public decimal GrossTotal => Subtotal + ServiceCharge + VatAmount;
+}
 
 public record InvoicePreviewItemDto(
     string MenuItemName,
     int Quantity,
     decimal UnitPrice,
-    decimal TotalPrice
-);
+    decimal TotalPrice,
+    Guid OrderItemId = default,
+    string Status = "Served"
+)
+{
+    public string ItemName => MenuItemName;
+    public decimal LineTotal => TotalPrice;
+}
 
 public record SettleInvoiceDto(
     Guid OrderId,
@@ -36,4 +49,7 @@ public record InvoiceDto(
     decimal FinalTotal,
     PaymentMethod PaymentMethod,
     DateTime CreatedAt
-);
+)
+{
+    public decimal TotalAmount => FinalTotal;
+}

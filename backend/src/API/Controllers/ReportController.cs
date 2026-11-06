@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/admin/reports")]
+[Authorize(Roles = "Admin,Manager")]
 public class ReportController : ApiControllerBase
 {
     private readonly IReportService _reportService;
@@ -23,6 +24,6 @@ public class ReportController : ApiControllerBase
     public async Task<IActionResult> ExportRevenueReportAsync([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, CancellationToken ct)
     {
         var bytes = await _reportService.ExportRevenueReportAsync(new DateRangeDto(fromDate, toDate), ct);
-        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"BaoCao_{DateTime.UtcNow:yyyyMMdd}.xlsx");
+        return File(bytes, "text/csv; charset=utf-8", $"BaoCao_DoanhThu_{DateTime.UtcNow:yyyyMMdd}.csv");
     }
 }

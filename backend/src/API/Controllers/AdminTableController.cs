@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/admin/tables")]
+[Authorize(Roles = "Admin,Manager")]
 public class AdminTableController : ApiControllerBase
 {
     private readonly IAdminTableService _adminTableService;
@@ -23,7 +24,20 @@ public class AdminTableController : ApiControllerBase
     public async Task<IActionResult> CreateTableAsync([FromBody] CreateTableDto dto, CancellationToken ct)
     {
         var id = await _adminTableService.CreateTableAsync(dto, ct);
-        return Ok(new { success = true, tableId = id, message = "Tạo bàn mới thành công." });
+        return StatusCode(StatusCodes.Status201Created, new
+        {
+            success = true,
+            tableId = id,
+            qrMenuUrl = $"/emenu/{id}",
+            message = "Tạo bàn mới thành công."
+        });
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTableAsync(Guid id, [FromBody] UpdateTableDto dto, CancellationToken ct)
+    {
+        var updated = await _adminTableService.UpdateTableAsync(id, dto, ct);
+        return Ok(updated);
     }
 
     [HttpDelete("{id}")]

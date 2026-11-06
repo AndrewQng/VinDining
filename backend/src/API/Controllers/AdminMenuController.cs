@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/admin/menu-items")]
+[Authorize(Roles = "Admin,Manager")]
 public class AdminMenuController : ApiControllerBase
 {
     private readonly IAdminMenuService _adminMenuService;
@@ -12,11 +13,25 @@ public class AdminMenuController : ApiControllerBase
         _adminMenuService = adminMenuService;
     }
 
+    [HttpPost("/api/admin/categories")]
+    public async Task<IActionResult> CreateCategoryAsync([FromBody] CreateCategoryDto dto, CancellationToken ct)
+    {
+        var id = await _adminMenuService.CreateCategoryAsync(dto, ct);
+        return StatusCode(StatusCodes.Status201Created, new { id, success = true, message = "Tạo danh mục thực đơn thành công." });
+    }
+
+    [HttpGet("/api/admin/categories")]
+    public async Task<IActionResult> GetAllCategoriesAsync(CancellationToken ct)
+    {
+        var result = await _adminMenuService.GetAllCategoriesAsync(ct);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateMenuItemAsync([FromBody] CreateMenuItemDto dto, CancellationToken ct)
     {
         var id = await _adminMenuService.CreateMenuItemAsync(dto, ct);
-        return CreatedAtAction(nameof(GetAllMenuItemsAsync), new { id }, new { id });
+        return StatusCode(StatusCodes.Status201Created, new { id, success = true });
     }
 
     [HttpPut("{id}")]
@@ -51,7 +66,7 @@ public class AdminMenuController : ApiControllerBase
     public async Task<IActionResult> CreateTastingMenuAsync([FromBody] CreateTastingMenuDto dto, CancellationToken ct)
     {
         var id = await _adminMenuService.CreateTastingMenuAsync(dto, ct);
-        return CreatedAtAction(nameof(GetAllTastingMenusAsync), new { id }, new { id });
+        return StatusCode(StatusCodes.Status201Created, new { id, success = true });
     }
 
     [HttpPut("/api/admin/tasting-menus/{id}")]

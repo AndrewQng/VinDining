@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace API.Controllers;
 
 [Route("api/menu")]
+[AllowAnonymous]
 public class MenuController : ApiControllerBase
 {
     private readonly IMenuService _menuService;
@@ -21,6 +24,13 @@ public class MenuController : ApiControllerBase
     public async Task<IActionResult> GetCategoriesAsync(CancellationToken ct)
     {
         var result = await _menuService.GetCategoriesAsync(ct);
+        return Ok(result);
+    }
+
+    [HttpGet("tasting-menus")]
+    public async Task<IActionResult> GetActiveTastingMenusAsync(CancellationToken ct)
+    {
+        var result = await _menuService.GetActiveTastingMenusAsync(ct);
         return Ok(result);
     }
 

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace API.Controllers;
 
 [Route("api/feedbacks")]
@@ -11,10 +13,11 @@ public class FeedbackController : ApiControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> SubmitFeedbackAsync([FromBody] SubmitFeedbackDto dto, CancellationToken ct)
     {
         var feedbackId = await _feedbackService.SubmitFeedbackAsync(dto, ct);
-        return CreatedAtAction(nameof(GetFeedbacksAsync), new { id = feedbackId }, new { feedbackId });
+        return StatusCode(StatusCodes.Status201Created, new { feedbackId, id = feedbackId });
     }
 
     [HttpGet]

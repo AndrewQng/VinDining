@@ -9,14 +9,23 @@ public record MenuItemDto(
     bool IsAvailable,
     CourseType CourseType,
     Guid CategoryId,
-    string CategoryName
-);
+    string CategoryName,
+    int PrepTimeMinutes = 15
+)
+{
+    public int PreparationTimeMinutes => PrepTimeMinutes;
+}
 
 public record CategoryDto(
     Guid Id,
     string Name,
     string? Description,
     List<MenuItemDto> Items
+);
+
+public record CreateCategoryDto(
+    string Name,
+    string? Description = null
 );
 
 public record CreateMenuItemDto(
@@ -26,7 +35,8 @@ public record CreateMenuItemDto(
     string? ImageUrl,
     bool IsAvailable,
     CourseType CourseType,
-    Guid CategoryId
+    Guid CategoryId,
+    int PrepTimeMinutes = 15
 );
 
 public record UpdateMenuItemDto(
@@ -36,7 +46,8 @@ public record UpdateMenuItemDto(
     string? ImageUrl,
     bool IsAvailable,
     CourseType CourseType,
-    Guid CategoryId
+    Guid CategoryId,
+    int PrepTimeMinutes = 15
 );
 
 public record ToggleAvailabilityDto(
@@ -51,7 +62,12 @@ public record TastingMenuDto(
     string? Description,
     bool IsActive,
     List<TastingMenuItemDto> Items
-);
+)
+{
+    public decimal TotalPrice => Price;
+    public int CourseCount => Items.Count;
+    public bool IsAvailable => IsActive;
+}
 
 public record TastingMenuItemDto(
     Guid MenuItemId,
@@ -64,7 +80,8 @@ public record CreateTastingMenuDto(
     string Name,
     decimal Price,
     string? Description,
-    List<CreateTastingMenuItemDto> Items
+    List<CreateTastingMenuItemDto> Items,
+    bool IsActive = true
 );
 
 public record CreateTastingMenuItemDto(
@@ -77,5 +94,6 @@ public record UpdateTastingMenuDto(
     string Name,
     decimal Price,
     string? Description,
-    List<CreateTastingMenuItemDto> Items
+    List<CreateTastingMenuItemDto> Items,
+    bool IsActive = true
 );

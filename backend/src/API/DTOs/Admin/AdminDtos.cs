@@ -20,7 +20,8 @@ public record CreateTableDto(
 
 public record ManualRefundDto(
     string ApprovalNote,
-    decimal RefundAmount
+    decimal RefundAmount,
+    bool IsApproved = true
 );
 
 public record RefundRequestDto(
@@ -29,5 +30,7 @@ public record RefundRequestDto(
     string GuestName,
     decimal DepositAmount,
     string Reason,
-    string Status
+    string Status,
+    string DepositStatus = "Forfeited",
+    DateTime? CancelledAt = null
 );
