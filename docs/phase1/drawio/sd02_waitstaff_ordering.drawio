@@ -31,7 +31,7 @@
         <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
           <mxGeometry height="390" width="10" x="65" y="310" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="CreateOrderHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=15;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="OrderService" vertex="1">
           <mxGeometry height="860" width="150" x="970" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
@@ -49,7 +49,7 @@
         <mxCell id="act4" parent="prn" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=14;" value="" vertex="1">
           <mxGeometry height="130" width="10" x="65" y="540" as="geometry" />
         </mxCell>
-        <mxCell id="m0" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0930;entryX=0;entryY=0.1667;fontSize=14;" target="act1" value="1. Xem thực đơn qua EMenuTablet">
+        <mxCell id="m0" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.0930;entryX=0;entryY=0.1667;fontSize=14;" target="act1" value="1. Xem thực đơn qua QR E-Menu">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m1" edge="1" parent="1" source="g" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0.5;exitY=0.1512;entryX=0;entryY=0.0299;fontSize=14;" target="act2" value="2. Gọi nhân viên để đặt món">
@@ -67,10 +67,10 @@
         <mxCell id="m5" edge="1" parent="1" source="act3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2881;entryX=0;entryY=0.0513;fontSize=14;" target="act_ctrl" value="6. POST /api/orders">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m6" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1795;entryX=0;entryY=0.0690;fontSize=14;" target="act_h" value="7. Send(CreateOrderCommand)">
+        <mxCell id="m6" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1795;entryX=0;entryY=0.0690;fontSize=14;" target="act_h" value="7. CreateOrderWithCourses(dto)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m7" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2414;entryX=0;entryY=0.1818;fontSize=14;" target="act_db" value="8. Add(order) (Status: Preparing)">
+        <mxCell id="m7" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2414;entryX=0;entryY=0.1818;fontSize=14;" target="act_db" value="8. Add(order) (Course 1: Cooking, Course sau: OnHold)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m8" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.3793;entryX=0;entryY=0.5455;fontSize=14;" target="act_db" value="9. SaveChangesAsync()">

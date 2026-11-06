@@ -43,7 +43,7 @@
         <mxCell id="act_ctrl2" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fontSize=17;" value="" vertex="1">
           <mxGeometry height="350" width="10" x="60" y="415" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;" value="ChangeTableCommandHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;" value="TableService" vertex="1">
           <mxGeometry height="1080" width="170" x="910" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fontSize=17;" value="" vertex="1">
@@ -108,7 +108,7 @@
             <mxPoint x="740" y="480.0010000000002" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m8a" edge="1" parent="1" source="act_ctrl2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1286;entryX=0;entryY=0.0000;fontSize=17;" target="act_h" value="9a. Send(ChangeTableCommand)">
+        <mxCell id="m8a" edge="1" parent="1" source="act_ctrl2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1286;entryX=0;entryY=0.0000;fontSize=17;" target="act_h" value="9a. TransferTable(sourceId, dto)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m9a" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1636;entryX=0;entryY=0.0000;fontSize=17;" target="act_db2" value="10a. Cập nhật Order.Table &amp;amp; SaveChangesAsync()">

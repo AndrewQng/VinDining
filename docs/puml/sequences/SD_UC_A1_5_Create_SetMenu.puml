@@ -8,7 +8,7 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminMenuController" as Controller
+control "ManagerMenuController" as Controller
 participant "MenuService" as Service
 participant "MenuRepository" as Repo
 database "SQL Server" as DB
@@ -16,7 +16,7 @@ database "SQL Server" as DB
 Manager -> UI: Nhập thông tin Set \n& chọn món
 activate UI
 
-UI -> Controller: POST /api/admin/tasting-menus
+UI -> Controller: POST /api/manager/tasting-menus
 activate Controller
 
 Controller -> Service: CreateTastingMenu(dto)

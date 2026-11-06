@@ -6,9 +6,9 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Quản trị viên" as Admin
+actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminStaffController" as Controller
+control "ManagerStaffController" as Controller
 participant "StaffService" as Service
 participant "StaffRepository" as Repo
 database "SQL Server" as DB
@@ -16,10 +16,10 @@ participant "Email Service" as MailService
 
 == Kịch bản 1: Tạo tài khoản nhân viên ==
 
-Admin -> UI: Nhập thông tin & Tạo tài khoản
+Manager -> UI: Nhập thông tin & Tạo tài khoản
 activate UI
 
-UI -> Controller: POST /api/admin/staff
+UI -> Controller: POST /api/manager/staff
 activate Controller
 
 Controller -> Service: CreateStaff(dto)
@@ -47,15 +47,15 @@ deactivate Service
 Controller --> UI: 201 Created
 deactivate Controller
 
-UI --> Admin: Tạo thành công
+UI --> Manager: Tạo thành công
 deactivate UI
 
 == Kịch bản 2: Cập nhật thông tin & Phân quyền ==
 
-Admin -> UI: Sửa thông tin & Lưu
+Manager -> UI: Sửa thông tin & Lưu
 activate UI
 
-UI -> Controller: PUT /api/admin/staff/{id}
+UI -> Controller: PUT /api/manager/staff/{id}
 activate Controller
 
 Controller -> Service: UpdateStaff(id, dto)
@@ -76,15 +76,15 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Admin: Cập nhật thành công
+UI --> Manager: Cập nhật thành công
 deactivate UI
 
 == Kịch bản 3: Đặt lại mật khẩu ==
 
-Admin -> UI: Bấm Đặt lại mật khẩu
+Manager -> UI: Bấm Đặt lại mật khẩu
 activate UI
 
-UI -> Controller: POST /api/admin/staff/{id}/reset-password
+UI -> Controller: POST /api/manager/staff/{id}/reset-password
 activate Controller
 
 Controller -> Service: ResetPassword(id)
@@ -112,15 +112,15 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Admin: Đặt lại thành công
+UI --> Manager: Đặt lại thành công
 deactivate UI
 
 == Kịch bản 4: Khóa / Mở khóa tài khoản ==
 
-Admin -> UI: Chọn & Khóa tài khoản
+Manager -> UI: Chọn & Khóa tài khoản
 activate UI
 
-UI -> Controller: PATCH /api/admin/staff/{id}/status
+UI -> Controller: PATCH /api/manager/staff/{id}/status
 activate Controller
 
 Controller -> Service: UpdateStatus(id, isActive=false)
@@ -141,7 +141,7 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Admin: Khóa thành công
+UI --> Manager: Khóa thành công
 deactivate UI
 
 @enduml

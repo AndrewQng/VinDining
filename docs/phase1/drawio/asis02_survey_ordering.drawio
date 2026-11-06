@@ -24,7 +24,7 @@
         <mxCell id="g_act1" value="Xem Menu giấy bìa da truyền thống&#xa;&amp; gọi Phục vụ lại bàn" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
           <mxGeometry x="55" y="120" width="210" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="g_act2" value="Đọc tên món, set Tasting Menu&#xa;&amp; dặn dò dị ứng bằng miệng" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
+        <mxCell id="g_act2" value="Đọc tên món, set Tasting Menu &amp; dặn dò yêu cầu đặc biệt bằng miệng" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
           <mxGeometry x="55" y="210" width="210" height="55" as="geometry"/>
         </mxCell>
         <mxCell id="g_act3" value="Khách nhận món ăn tại bàn&#xa;&amp; bắt đầu thưởng thức" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_guest">
@@ -38,7 +38,7 @@
         </mxCell>
 
         <!-- Lane 2 (Waitstaff) -->
-        <mxCell id="w_act1" value="Dùng bút bi ghi chép món ăn &amp;&#xa;ghi chú dị ứng vào Order Pad giấy" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
+        <mxCell id="w_act1" value="Dùng bút bi ghi chép món ăn &amp; ghi chú đặc biệt vào Order Pad giấy" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
           <mxGeometry x="75" y="210" width="210" height="55" as="geometry"/>
         </mxCell>
         <mxCell id="w_act2" value="Di chuyển bộ xuống quầy Bếp&#xa;để gửi tờ phiếu order giấy" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#5b40ff;strokeColor=#4527a0;fontColor=#ffffff;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="lane_staff">
@@ -69,7 +69,7 @@
         </mxCell>
 
         <!-- Pain Point Callouts -->
-        <mxCell id="callout1" value="⚠️ NGUY CƠ TỬ VONG / DỊ ỨNG:&#xa;Chữ viết tay vội dễ sót lưu ý&#xa;dị ứng nghiêm trọng của khách" style="shape=note;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#c00000;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="lane_staff">
+        <mxCell id="callout1" value="⚠️ NGUY CƠ SAI SÓT:&#xa;Chữ viết tay vội dễ sót ghi chú&#xa;đặc biệt của khách" style="shape=note;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#c00000;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="lane_staff">
           <mxGeometry x="180" y="130" width="160" height="65" as="geometry"/>
         </mxCell>
         <mxCell id="callout2" value="⚠️ ĐIỂM NGHẼN VẬN HÀNH:&#xa;Truyền tin thủ công làm đĩa món&#xa;bị nguội lạnh 3-5 phút ở Pass" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#b45f06;fontSize=10;fontStyle=1;size=12;" vertex="1" parent="lane_kitchen">

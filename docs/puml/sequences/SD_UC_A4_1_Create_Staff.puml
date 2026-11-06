@@ -6,18 +6,18 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Quản trị viên" as Admin
+actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminStaffController" as Controller
+control "ManagerStaffController" as Controller
 participant "StaffService" as Service
 participant "StaffRepository" as Repo
 database "SQL Server" as DB
 participant "Email Service" as MailService
 
-Admin -> UI: Nhập thông tin & Tạo tài khoản
+Manager -> UI: Nhập thông tin & Tạo tài khoản
 activate UI
 
-UI -> Controller: POST /api/admin/staff
+UI -> Controller: POST /api/manager/staff
 activate Controller
 
 Controller -> Service: CreateStaff(dto)
@@ -45,7 +45,7 @@ deactivate Service
 Controller --> UI: 201 Created
 deactivate Controller
 
-UI --> Admin: Tạo thành công
+UI --> Manager: Tạo thành công
 deactivate UI
 
 @enduml

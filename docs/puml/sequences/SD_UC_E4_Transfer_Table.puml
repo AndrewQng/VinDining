@@ -27,13 +27,13 @@ Repo --> Service: targetStatus
 alt Bàn đích khả dụng (targetStatus == Available)
     group Transaction [Đảm bảo toàn vẹn dữ liệu]
         Service -> Repo: MoveOrderAndDeposit(sourceId, dto.TargetTableId)
-        Repo -> DB: UPDATE Orders, Deposits SET TableId = @targetId\nUPDATE Tables SET Status (Source = Available, Target = Occupied)
+        Repo -> DB: UPDATE Orders, Deposits SET TableId = @targetId\nUPDATE Tables SET Status (Source = Cleaning, Target = Occupied)
         DB --> Repo: Rows affected
         Repo --> Service: true
     end
     Service --> Controller: Result.Success()
     Controller --> UI: 200 OK (ApiResponse)
-    UI --> Waitstaff: Hiển thị thông báo "Chuyển bàn thành công"
+    UI --> Waitstaff: Hiển thị thông báo "Đổi bàn thành công"
 else Bàn đích không khả dụng
     Service --> Controller: Result.Failure("Bàn đích không khả dụng")
     Controller --> UI: 400 Bad Request (ErrorDetails)

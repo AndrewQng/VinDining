@@ -8,7 +8,7 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminTableController" as Controller
+control "ManagerTableController" as Controller
 participant "TableService" as Service
 participant "TableRepository" as Repo
 database "SQL Server" as DB
@@ -16,7 +16,7 @@ database "SQL Server" as DB
 Manager -> UI: Chỉnh sửa & bấm Lưu sơ đồ
 activate UI
 
-UI -> Controller: PUT /api/admin/tables/layout
+UI -> Controller: PUT /api/manager/tables/layout
 activate Controller
 
 Controller -> Service: UpdateFloorPlan(dto)
@@ -24,17 +24,23 @@ activate Service
 
 Service -> Repo: CheckActiveTables(tableIds)
 activate Repo
-Repo -> DB: SELECT Active/Reserved Tables
+Repo -> DB: SELECT bàn bị xóa đang Occupied/Reserved
 activate DB
-DB --> Repo: Empty (Hợp lệ)
+DB --> Repo: busyTables
 deactivate DB
-Repo --> Service: OK
+Repo --> Service: busyTables
 deactivate Repo
 
+alt Xóa bàn đang có khách hoặc đã được đặt (UC-A2, 2a)
+    Service --> Controller: Result.Fail("Chuyển khách trước khi xóa")
+    Controller --> UI: 409 Conflict
+    UI --> Manager: Từ chối, yêu cầu chuyển khách trước
+else Hợp lệ
+Service -> Service: GenerateQrCode(bàn mới)
 Service -> Repo: SaveCoordinatesAndZones(dto)
 activate Repo
 
-Repo -> DB: UPDATE TableCoordinates, Zones, Capacities
+Repo -> DB: INSERT/UPDATE/DELETE Tables\n(PosX, PosY, Zone, Capacity, QrCode)
 activate DB
 DB --> Repo: OK
 deactivate DB
@@ -45,11 +51,11 @@ deactivate Repo
 Service -> UI: PushSignalR("FloorPlanUpdated")
 
 Service --> Controller: Result(Success)
-deactivate Service
-
 Controller --> UI: 200 OK
-deactivate Controller
 
 UI --> Manager: Lưu sơ đồ thành công
+end
+deactivate Service
+deactivate Controller
 deactivate UI
 @enduml

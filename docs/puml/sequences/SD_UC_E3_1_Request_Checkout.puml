@@ -33,6 +33,12 @@ deactivate DB
 Repo --> Service: TableData
 deactivate Repo
 
+alt Bàn chưa có món nào được phục vụ (UC-E4, 3a)
+    Service --> Controller: Result.Fail("Chưa có món được phục vụ")
+    Controller --> MobileUI: 400 Bad Request
+    MobileUI --> Waitstaff: Báo lỗi, không gửi yêu cầu về quầy
+else Đã có món Served
+
 Service -> Repo: SetTablePaymentPending(tableId)
 activate Repo
 Repo -> DB: UPDATE Tables \nSET Status = 'PaymentPending'
@@ -46,12 +52,12 @@ Service -> WebPOS: PushSignalR("BillRequested", tableId)
 WebPOS --> Cashier: Thông báo bàn yêu cầu tính tiền
 
 Service --> Controller: Result(Success)
-deactivate Service
-
 Controller --> MobileUI: 200 OK
-deactivate Controller
 
-MobileUI --> Waitstaff: Đã gửi yêu cầu 
+MobileUI --> Waitstaff: Đã gửi yêu cầu
+end
+deactivate Service
+deactivate Controller
 deactivate MobileUI
 
 @enduml

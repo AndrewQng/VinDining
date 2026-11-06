@@ -8,7 +8,7 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminMenuController" as Controller
+control "ManagerMenuController" as Controller
 participant "MenuService" as Service
 participant "MenuRepository" as Repo
 database "SQL Server" as DB
@@ -16,7 +16,7 @@ database "SQL Server" as DB
 Manager -> UI: Chọn xóa món & Xác nhận
 activate UI
 
-UI -> Controller: DELETE /api/admin\n/menu-items/{id}
+UI -> Controller: DELETE /api/manager\n/menu-items/{id}
 activate Controller
 
 Controller -> Service: Delete(id)

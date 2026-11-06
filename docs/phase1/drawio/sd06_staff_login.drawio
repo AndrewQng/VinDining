@@ -19,7 +19,7 @@
         <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">
           <mxGeometry height="710" width="10" x="60" y="115" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="LoginCommandHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="AuthService" vertex="1">
           <mxGeometry height="980" width="160" x="750" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">
@@ -53,7 +53,7 @@
         <mxCell id="m1" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0563;entryX=0;entryY=0.0000;fontSize=17;" target="act_ctrl" value="2. POST /api/v1/auth/login">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m2" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0634;entryX=0;entryY=0.0000;fontSize=17;" value="3. Send(LoginCommand)">
+        <mxCell id="m2" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0634;entryX=0;entryY=0.0000;fontSize=17;" value="3. Authenticate(dto)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="580" y="210.01399999999978" as="sourcePoint" />
             <mxPoint x="825" y="210" as="targetPoint" />

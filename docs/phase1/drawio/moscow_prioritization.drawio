@@ -15,19 +15,19 @@
         <mxCell id="col_m" value="M - MUST HAVE (BẮT BUỘC CÓ — 60% NỖ LỰC)&#xa;Cốt lõi duy trì vận hành Fine Dining không thể thiếu" style="swimlane;startSize=50;fillColor=#fee2e2;strokeColor=#dc2626;fontStyle=1;rounded=1;fontSize=11;fontColor=#991b1b;" vertex="1" parent="1">
           <mxGeometry x="30" y="80" width="300" height="720" as="geometry" />
         </mxCell>
-        <mxCell id="m_c1" value="REQ-01: Đặt bàn trực tuyến &amp; Cọc VNPAY&#xa;────────────────────────────────&#xa;• Chọn ngày, ca, khu vực bàn&#xa;• Khóa giữ bàn tạm 17 phút (BR-01)&#xa;• Thanh toán cọc giữ chỗ qua VNPAY QR&#xa;• Sinh BookingCode gửi SMS/Email" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
+        <mxCell id="m_c1" value="REQ-01: Đặt bàn trực tuyến &amp; Cọc VNPAY&#xa;────────────────────────────────&#xa;• Chọn ngày, giờ, khu vực, bàn &amp; Set Menu&#xa;• Khóa giữ bàn tạm 17 phút (BR-01)&#xa;• Thanh toán cọc qua VNPAY (BR-06)&#xa;• Gửi mã đặt bàn qua SMS/Email" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
           <mxGeometry x="15" y="65" width="270" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="m_c2" value="REQ-02: Yêu cầu phục vụ qua QR-Menu&#xa;────────────────────────────────&#xa;• Quét QR tại bàn mở QR-Menu&#xa;• Tra cứu thực đơn &amp; Cảnh báo dị ứng&#xa;• Gửi yêu cầu phục vụ tức thời tới POS&#xa;• Gọi nước, dao nĩa &amp; Yêu cầu thanh toán" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
+        <mxCell id="m_c2" value="REQ-02: Yêu cầu phục vụ qua QR-Menu&#xa;────────────────────────────────&#xa;• Quét QR tại bàn đã check-in&#xa;• Xem thực đơn trên điện thoại&#xa;• Gọi phục vụ, châm nước, đổi dụng cụ&#xa;• Phục vụ nhận thông báo &amp; xác nhận" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
           <mxGeometry x="15" y="195" width="270" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="m_c3" value="REQ-03: Tra cứu QR-Menu &amp; TableDisplay&#xa;────────────────────────────────&#xa;• Trải nghiệm xem thực đơn qua QR-Menu&#xa;• Màn hình TableDisplay hiển thị số bàn &amp; món&#xa;• Hiển thị thành phần &amp; cảnh báo dị ứng&#xa;• Waitstaff tư vấn và nhận order tại bàn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
+        <mxCell id="m_c3" value="REQ-03: Check-in nhận bàn&#xa;────────────────────────────────&#xa;• Tra cứu mã đặt bàn hoặc số điện thoại&#xa;• Đối chiếu số khách &amp; dẫn vào bàn&#xa;• Check-in khách vãng lai&#xa;• Bàn chuyển Occupied" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
           <mxGeometry x="15" y="325" width="270" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="m_c4" value="REQ-04: Waitstaff Order &amp; Expediter Pass&#xa;────────────────────────────────&#xa;• Phục vụ nhận order trực tiếp trên tablet&#xa;• Điều phối KDS Bếp qua SignalR WebSockets&#xa;• Expediter kiểm QC &amp; bấm Served (BR-04)&#xa;• Waitstaff dọn món ra bàn 2 tay (Zero-touch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
+        <mxCell id="m_c4" value="REQ-04: Waitstaff Order &amp; Expediter Pass&#xa;────────────────────────────────&#xa;• Phục vụ tạo Order trên điện thoại&#xa;• Gửi món vào bếp theo Course (BR-05)&#xa;• Expediter kiểm đĩa &amp; bấm Served (BR-03)&#xa;• Món không đạt: yêu cầu bếp làm lại" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
           <mxGeometry x="15" y="455" width="270" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="m_c5" value="REQ-05: Hóa đơn &amp; Cấn trừ tiền cọc&#xa;────────────────────────────────&#xa;• Tự động tính 5% Phí phục vụ, 10% VAT&#xa;• Tự động cấn trừ 100% Deposit (BR-03)&#xa;• Xuất hóa đơn VAT &amp; đóng bàn Cleaning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
+        <mxCell id="m_c5" value="REQ-05: Hóa đơn &amp; Cấn trừ tiền cọc&#xa;────────────────────────────────&#xa;• Tự động tính 5% Phí phục vụ, 10% VAT&#xa;• Tự động cấn trừ 100% tiền cọc (BR-02)&#xa;• Thu ngân xác nhận, bàn chuyển Cleaning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dc2626;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_m">
           <mxGeometry x="15" y="585" width="270" height="105" as="geometry" />
         </mxCell>
 
@@ -35,13 +35,13 @@
         <mxCell id="col_s" value="S - SHOULD HAVE (NÊN CÓ — 20% NỖ LỰC)&#xa;Tối ưu hóa vận hành và tự động hóa quản trị" style="swimlane;startSize=50;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;rounded=1;fontSize=11;fontColor=#92400e;" vertex="1" parent="1">
           <mxGeometry x="360" y="80" width="300" height="720" as="geometry" />
         </mxCell>
-        <mxCell id="s_c1" value="REQ-06: Quản trị Thực đơn động&#xa;────────────────────────────────&#xa;• Tùy biến danh mục món &amp; Course&#xa;• Thiết lập cấu hình cảnh báo dị ứng&#xa;• Cập nhật đơn giá &amp; trạng thái món&#xa;• Đồng bộ tức thời tới Digital Display" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
+        <mxCell id="s_c1" value="REQ-06: Quản trị Thực đơn động&#xa;────────────────────────────────&#xa;• Tùy biến danh mục món &amp; Course&#xa;• Thiết lập định mức Prep SLA&#xa;• Cập nhật đơn giá &amp; còn / tạm hết món&#xa;• Áp dụng ngay cho giao diện gọi món" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
           <mxGeometry x="15" y="65" width="270" height="135" as="geometry" />
         </mxCell>
-        <mxCell id="s_c2" value="REQ-07: Phân quyền nội bộ RBAC (JWT)&#xa;────────────────────────────────&#xa;• Xác thực bảo mật JWT Token&#xa;• 4 vai trò rõ ràng: Admin, Manager,&#xa;  Waitstaff, Expediter&#xa;• Bảo vệ Endpoint API qua Policies&#xa;• Khách hàng không cần đăng ký tài khoản" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
+        <mxCell id="s_c2" value="REQ-07: Phân quyền nội bộ RBAC (JWT)&#xa;────────────────────────────────&#xa;• Xác thực bảo mật JWT Token&#xa;• 4 vai trò: Phục vụ, Điều phối,&#xa;  Thu ngân, Quản lý&#xa;• Bảo vệ Endpoint API qua Policies&#xa;• Khách hàng không cần đăng ký tài khoản" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
           <mxGeometry x="15" y="225" width="270" height="145" as="geometry" />
         </mxCell>
-        <mxCell id="s_c3" value="REQ-08: Duyệt hoàn cọc thủ công (Override)&#xa;────────────────────────────────&#xa;• Dành riêng cho Quản lý / Admin (BR-05)&#xa;• Xử lý ngoại lệ sự cố bất khả kháng&#xa;• Nhập lý do bắt buộc &amp; ghi Audit Log&#xa;• Kích hoạt API hoàn tiền VNPAY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
+        <mxCell id="s_c3" value="REQ-08: Duyệt hoàn cọc thủ công (Override)&#xa;────────────────────────────────&#xa;• Dành riêng cho Quản lý (BR-04)&#xa;• Xử lý ngoại lệ sự cố bất khả kháng&#xa;• Nhập lý do bắt buộc &amp; ghi Audit Log&#xa;• Kích hoạt API hoàn tiền VNPAY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_s">
           <mxGeometry x="15" y="395" width="270" height="145" as="geometry" />
         </mxCell>
 
@@ -49,10 +49,10 @@
         <mxCell id="col_c" value="C - COULD HAVE (KHUYẾN KHÍCH — 15% NỖ LỰC)&#xa;Nâng cao trải nghiệm thực khách &amp; báo cáo" style="swimlane;startSize=50;fillColor=#eff6ff;strokeColor=#2563eb;fontStyle=1;rounded=1;fontSize=11;fontColor=#1e40af;" vertex="1" parent="1">
           <mxGeometry x="690" y="80" width="300" height="720" as="geometry" />
         </mxCell>
-        <mxCell id="c_c1" value="REQ-09: Khách gửi Đánh giá dịch vụ&#xa;────────────────────────────────&#xa;• Quét mã QR hóa đơn hoặc mở link Email&#xa;• Đánh giá sao (1–5 sao) &amp; nhận xét bữa tiệc&#xa;• Gắn cờ cảnh báo tức thời nếu &lt; 3 sao&#xa;• Đo lường chỉ số hài lòng khách hàng (CSAT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2563eb;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_c">
+        <mxCell id="c_c1" value="REQ-09: Khách gửi Đánh giá dịch vụ&#xa;────────────────────────────────&#xa;• Quét QR trên phiếu hoặc mở link tin nhắn&#xa;• Đánh giá sao món ăn, không gian, phục vụ&#xa;• Nhập ý kiến đóng góp&#xa;• Tổng hợp vào báo cáo chất lượng dịch vụ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2563eb;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_c">
           <mxGeometry x="15" y="65" width="270" height="145" as="geometry" />
         </mxCell>
-        <mxCell id="c_c2" value="REQ-10: Dashboard Báo cáo Thống kê&#xa;────────────────────────────────&#xa;• Biểu đồ doanh thu theo ca/ngày/tháng&#xa;• Thống kê tỷ lệ lấp đầy bàn ăn thời gian thực&#xa;• Báo cáo danh sách món ăn bán chạy nhất&#xa;• Xuất dữ liệu thống kê ra file Excel/PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2563eb;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_c">
+        <mxCell id="c_c2" value="REQ-10: Dashboard Báo cáo Thống kê&#xa;────────────────────────────────&#xa;• Doanh thu theo ngày, tuần, tháng, quý&#xa;• Lượt khách, tỷ lệ lấp đầy &amp; hủy cọc&#xa;• Danh sách món ăn bán chạy nhất&#xa;• Xuất dữ liệu thống kê ra file Excel/PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2563eb;align=left;spacing=8;fontSize=11;" vertex="1" parent="col_c">
           <mxGeometry x="15" y="245" width="270" height="145" as="geometry" />
         </mxCell>
 

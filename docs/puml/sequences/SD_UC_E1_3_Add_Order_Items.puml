@@ -22,6 +22,21 @@ activate Controller
 Controller -> Service: AddOrderItems(id, itemsDto)
 activate Service
 
+Service -> Repo: GetTableStatus(id)
+activate Repo
+Repo -> DB: SELECT Tables.Status
+activate DB
+DB --> Repo: status
+deactivate DB
+Repo --> Service: status
+deactivate Repo
+
+alt Bàn đang Chờ thanh toán (PaymentPending)
+    Service --> Controller: Result.Fail("Bàn đang chờ thanh toán")
+    Controller --> UI: 409 Conflict
+    UI --> Waitstaff: Khóa cập nhật, yêu cầu mở lại\ntrạng thái phục vụ
+else Bàn đang phục vụ (Occupied)
+
 Service -> Repo: InsertAdditionalItems(id, itemsDto)
 activate Repo
 
@@ -36,12 +51,12 @@ deactivate Repo
 Service -> UI: PushSignalR("Kitchen_AdditionalItems")
 
 Service --> Controller: Result(Success)
-deactivate Service
-
 Controller --> UI: 200 OK
-deactivate Controller
 
 UI --> Waitstaff: Cập nhật đơn hàng thành công
+end
+deactivate Service
+deactivate Controller
 deactivate UI
 
 @enduml

@@ -28,7 +28,7 @@
         <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=18;" value="" vertex="1">
           <mxGeometry height="500" width="10" x="65" y="205" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=11;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="ManualRefundCommandHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=11;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="RefundService" vertex="1">
           <mxGeometry height="900" width="170" x="930" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=18;" value="" vertex="1">
@@ -64,10 +64,10 @@
         <mxCell id="m2" edge="1" parent="1" source="act_mgr1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.9474;entryX=0;entryY=0.0709;fontSize=18;" target="act_fe" value="3. Nhập lý do giải trình">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m3" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1417;entryX=0;entryY=0.0000;fontSize=18;" target="act_ctrl" value="4. POST /api/admin/reservations/{id}/manual-refund">
+        <mxCell id="m3" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1417;entryX=0;entryY=0.0000;fontSize=18;" target="act_ctrl" value="4. POST /api/manager/reservations/{id}/manual-refund">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m4" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0900;entryX=0;entryY=0.0000;fontSize=18;" target="act_h" value="5. Send(ManualRefundCommand)">
+        <mxCell id="m4" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0900;entryX=0;entryY=0.0000;fontSize=18;" target="act_h" value="5. OverrideRefund(id, dto)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m5" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1098;entryX=0;entryY=0.0000;fontSize=18;" target="act_db1" value="6. Query Reservation, Deposit &amp;amp; kiểm tra quyền Manager">

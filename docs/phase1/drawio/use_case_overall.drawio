@@ -27,11 +27,20 @@
         <mxCell id="P0VLzzdM7p5bn0i_wGMx-26" edge="1" parent="1" source="act_system" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;exitX=-0.012;exitY=0.588;exitDx=0;exitDy=0;exitPerimeter=0;" target="P0VLzzdM7p5bn0i_wGMx-23">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+<mxCell id="e_worker_s4" edge="1" parent="1" source="act_system" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;exitX=-0.012;exitY=0.588;exitDx=0;exitDy=0;exitPerimeter=0;" target="uc_s4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+<mxCell id="e_waitstaff_u2" edge="1" parent="1" source="act_waitstaff" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.042;entryY=0.334;entryDx=0;entryDy=0;entryPerimeter=0;" target="uc_u2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+<mxCell id="uc_s4" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-S4: Theo dõi &amp;amp; cảnh báo thời gian order" vertex="1">
+          <mxGeometry height="70" width="504.38" x="389.68" y="1350" as="geometry" />
+        </mxCell>
         <mxCell id="act_system" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontStyle=1;fontSize=21;" value="&lt;div&gt;Background&lt;/div&gt;Worker" vertex="1">
           <mxGeometry height="140" width="130" x="1230" y="910" as="geometry" />
         </mxCell>
         <mxCell id="sys_box" parent="1" style="swimlane;startSize=35;fontStyle=1;rounded=1;fontSize=21;swimlaneLine=1;" value="Tổng quan use-case" vertex="1">
-          <mxGeometry height="1380" width="943.13" x="240" y="-210" as="geometry" />
+          <mxGeometry height="1490" width="943.13" x="240" y="-210" as="geometry" />
         </mxCell>
         <mxCell id="uc_u1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-U1: Đặt bàn &amp;amp; Đặt cọc trực tuyến" vertex="1">
           <mxGeometry height="80" width="410" x="290" y="120" as="geometry" />
@@ -45,7 +54,7 @@
         <mxCell id="uc_u4" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-U4: Gửi đánh giá dịch vụ" vertex="1">
           <mxGeometry height="70" width="400" x="60" y="520" as="geometry" />
         </mxCell>
-        <mxCell id="uc_e2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-E3: Xác nhận món" vertex="1">
+        <mxCell id="uc_e2" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-E3: Xác nhận đi món" vertex="1">
           <mxGeometry height="50" width="387.5" x="43.75" y="1200" as="geometry" />
         </mxCell>
         <mxCell id="uc_s1" parent="sys_box" style="ellipse;whiteSpace=wrap;html=1;fontSize=21;fontStyle=1;" value="UC-S1: Giải phóng bàn hết hạn cọc" vertex="1">

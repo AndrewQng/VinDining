@@ -14,8 +14,34 @@ participant "ServiceCallService" as Service
 participant "ServiceCallRepository" as Repo
 database "SQL Server" as DB
 
-Guest -> UI: Quét QR & Gửi yêu cầu
+Guest -> UI: Quét QR tại bàn
 activate UI
+UI -> Controller: GET /api/tables/{qrCode}/menu
+activate Controller
+Controller -> Service: ValidateTable(qrCode)
+activate Service
+Service -> Repo: GetTableByQr(qrCode)
+activate Repo
+Repo -> DB: SELECT Tables WHERE QrCode = @qr
+activate DB
+DB --> Repo: table
+deactivate DB
+Repo --> Service: table
+deactivate Repo
+
+alt QR không hợp lệ hoặc bàn chưa check-in (Status != 'Occupied')
+    Service --> Controller: Result.Fail
+    Controller --> UI: 400 Bad Request
+    UI --> Guest: Báo lỗi, đề nghị liên hệ nhân viên
+else Hợp lệ
+    Service --> Controller: Menu & danh mục yêu cầu
+    Controller --> UI: 200 OK
+    UI --> Guest: Hiển thị E-Menu & nút yêu cầu\n(gọi phục vụ, châm nước, đổi dụng cụ)
+end
+deactivate Service
+deactivate Controller
+
+Guest -> UI: Chọn yêu cầu & bấm Gửi
 
 UI -> Controller: POST /api/tables/{id}/call-service
 activate Controller

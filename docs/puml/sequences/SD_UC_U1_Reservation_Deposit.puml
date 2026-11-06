@@ -25,10 +25,11 @@ activate Controller
 Controller -> Service: CreateReservation(dto)
 activate Service
 
+Service -> Service: CalculateDeposit(dto)\n(BR-06: 30% × giá Set Menu × số khách\nhoặc 500.000đ × số khách)
 Service -> Repo: LockTable(tableId, 17m) & SaveReservation(dto)
 activate Repo
 
-Repo -> DB: UPDATE Tables SET Status = 'Hold' \nINSERT Reservations (PreOrderedSetMenuId)
+Repo -> DB: UPDATE Tables SET Status = 'Locked' \nINSERT Reservations (Status = 'PendingDeposit',\nPreOrderedSetMenuId)
 activate DB
 DB --> Repo: OK
 deactivate DB
@@ -62,13 +63,14 @@ Service -> Service: ValidateSignature(params)
 alt Còn trong thời hạn giữ chỗ (<= 17 phút)
     Service -> Repo: ConfirmReservation(id)
     activate Repo
-    Repo -> DB: UPDATE Reservations \n& Tables SET Status = 'Confirmed'
+    Repo -> DB: UPDATE Reservations, Tables \nSET Status = 'Reserved'
     activate DB
     DB --> Repo: OK
     deactivate DB
     Repo --> Service: OK
     deactivate Repo
 
+    Service -> Service: SendConfirmation(SMS/Email, BookingCode)
     Service -> UI: PushSignalR("BookingSuccess")
     activate UI
     UI --> Guest: Đặt bàn thành công
@@ -80,7 +82,7 @@ else Quá hạn giữ chỗ (> 17 phút) & Bàn đã có người khác
     
     Service -> Repo: CancelReservation()
     activate Repo
-    Repo -> DB: UPDATE Reservations \nSET Status = 'Refunded'
+    Repo -> DB: UPDATE Reservations SET Status = 'Expired_Cancelled'\nUPDATE Deposits SET Status = 'Refunded'
     activate DB
     DB --> Repo: OK
     deactivate DB

@@ -8,16 +8,16 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminRefundController" as Controller
+control "ManagerRefundController" as Controller
 participant "RefundService" as Service
 participant "ReservationRepository" as Repo
 database "SQL Server" as DB
 participant "VNPAY" as VNPAY
 
-Manager -> UI: Chọn đơn, nhập lý do & Duyệt
+Manager -> UI: Chọn đơn, nhập lý do & Chấp thuận / Từ chối
 activate UI
 
-UI -> Controller: POST /api/admin/reservations/\n{id}/manual-refund
+UI -> Controller: POST /api/manager/reservations/\n{id}/manual-refund
 activate Controller
 
 Controller -> Service: OverrideRefund(id, dto)
@@ -34,6 +34,17 @@ deactivate Repo
 
 Service -> Service: Validate(Reservation)
 
+alt Quản lý từ chối (UC-A3, 3a)
+    Service -> Repo: UpdateStatus('RefundRejected') & InsertAuditLog
+    activate Repo
+    Repo -> DB: UPDATE Reservations\n& INSERT AuditLogs
+    activate DB
+    DB --> Repo: OK
+    deactivate DB
+    Repo --> Service: Saved
+    deactivate Repo
+    Service -> Service: NotifyGuest(Bác bỏ hoàn cọc)
+else Quản lý chấp thuận
 Service -> VNPAY: CallRefundApi(txnRef, amount)
 activate VNPAY
 VNPAY --> Service: RefundSuccess (00)
@@ -47,6 +58,8 @@ DB --> Repo: OK
 deactivate DB
 Repo --> Service: Saved
 deactivate Repo
+Service -> Service: NotifyGuest(Đã hoàn cọc)
+end
 
 Service --> Controller: Result(Success)
 deactivate Service

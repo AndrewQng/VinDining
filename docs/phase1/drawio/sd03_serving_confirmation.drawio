@@ -31,7 +31,7 @@
         <mxCell id="act_ctrl" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
           <mxGeometry height="370" width="10" x="65" y="230" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=14;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="ConfirmServingHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=14;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="OrderService" vertex="1">
           <mxGeometry height="880" width="160" x="940" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=16;" value="" vertex="1">
@@ -63,7 +63,7 @@
         <mxCell id="m3" edge="1" parent="1" source="act_tab" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.0978;entryX=0;entryY=0.0000;fontSize=16;" target="act_ctrl" value="4. PATCH /api/orders/{orderId}/items/{itemId}/serve">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m4" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1216;entryX=0;entryY=0.0000;fontSize=16;" target="act_h" value="5. Send(ConfirmServingCommand)">
+        <mxCell id="m4" edge="1" parent="1" source="act_ctrl" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1216;entryX=0;entryY=0.0000;fontSize=16;" target="act_h" value="5. ConfirmServed(orderId, itemId)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m5" edge="1" parent="1" source="act_h" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1607;entryX=0;entryY=0.0000;fontSize=16;" target="act_db1" value="6. Query OrderItem">

@@ -8,7 +8,7 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminMenuController" as Controller
+control "ManagerMenuController" as Controller
 participant "MenuService" as Service
 participant "MenuRepository" as Repo
 database "SQL Server" as DB
@@ -16,7 +16,7 @@ database "SQL Server" as DB
 Manager -> UI: Bật / Tắt trạng thái món
 activate UI
 
-UI -> Controller: PATCH /api/admin/menu-items\n/{id}/availability
+UI -> Controller: PATCH /api/manager/menu-items\n/{id}/availability
 activate Controller
 
 Controller -> Service: UpdateAvailability(dto)

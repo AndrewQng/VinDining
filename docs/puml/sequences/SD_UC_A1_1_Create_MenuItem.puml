@@ -8,7 +8,7 @@ skinparam defaultFontSize 14
 
 actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminMenuController" as Controller
+control "ManagerMenuController" as Controller
 participant "MenuService" as Service
 participant "MenuRepository" as Repo
 database "SQL Server" as DB
@@ -16,7 +16,7 @@ database "SQL Server" as DB
 Manager -> UI: Nhập thông tin món & Lưu
 activate UI
 
-UI -> Controller: POST /api/admin/menu-items
+UI -> Controller: POST /api/manager/menu-items
 activate Controller
 
 Controller -> Service: Create(dto)

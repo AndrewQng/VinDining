@@ -6,17 +6,17 @@ skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
 skinparam defaultFontSize 14
 
-actor "Quản trị viên" as Admin
+actor "Quản lý" as Manager
 boundary "Giao diện Web" as UI
-control "AdminStaffController" as Controller
+control "ManagerStaffController" as Controller
 participant "StaffService" as Service
 participant "StaffRepository" as Repo
 database "SQL Server" as DB
 
-Admin -> UI: Chọn & Khóa tài khoản
+Manager -> UI: Chọn & Khóa tài khoản
 activate UI
 
-UI -> Controller: PATCH /api/admin/staff/{id}/status
+UI -> Controller: PATCH /api/manager/staff/{id}/status
 activate Controller
 
 Controller -> Service: UpdateStatus(id, isActive=false)
@@ -37,7 +37,7 @@ deactivate Service
 Controller --> UI: 200 OK
 deactivate Controller
 
-UI --> Admin: Khóa thành công
+UI --> Manager: Khóa thành công
 deactivate UI
 
 @enduml

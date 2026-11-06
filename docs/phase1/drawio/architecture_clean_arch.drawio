@@ -1,19 +1,19 @@
 <mxfile host="Electron" agent="Mozilla/5.0">
-  <diagram name="Clean Architecture VinDining" id="clean_architecture_vindining">
+  <diagram name="Kiến trúc MVC + RESTful API VinDining (ADR 0005)" id="clean_architecture_vindining">
     <mxGraphModel dx="2020" dy="1201" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="980" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="tier_pres" parent="1" style="swimlane;startSize=30;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=1;rounded=1;fontSize=16;" value="1. TẦNG TRÌNH DIỄN / CLIENT (PRESENTATION LAYER - REACT 19 &amp; TYPESCRIPT)" vertex="1">
+        <mxCell id="tier_pres" parent="1" style="swimlane;startSize=30;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=1;rounded=1;fontSize=16;" value="1. VIEW — GIAO DIỆN REACT SPA (REACT + TYPESCRIPT + VITE, ADR 0005)" vertex="1">
           <mxGeometry height="130" width="1160" x="60" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="fe_guest" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Thực khách (Guest)&#xa;Mobile Web Đặt bàn &amp;amp; Digital Display tại bàn" vertex="1">
+        <mxCell id="fe_guest" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Khách hàng (Guest)&#xa;Mobile Web: đặt bàn, đặt cọc &amp;amp; QR E-Menu tại bàn" vertex="1">
           <mxGeometry height="60" width="340" x="40" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="fe_staff" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Phục vụ (Waitstaff) &amp;amp; Điều phối (Expediter)&#xa;Tablet di động &amp;amp; Tablet quầy Pass (SignalR Client)" vertex="1">
+        <mxCell id="fe_staff" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Phục vụ (điện thoại), Điều phối (tablet quầy Pass)&#xa;&amp;amp; KDS Bếp (màn hình treo tường) — SignalR Client" vertex="1">
           <mxGeometry height="60" width="340" x="420" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="fe_admin" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Quản lý &amp;amp; Admin (Manager/Admin)&#xa;Desktop Web Portal &amp;amp; Dashboard Doanh thu" vertex="1">
+        <mxCell id="fe_admin" parent="tier_pres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0284c7;fontStyle=1;fontSize=16;" value="Thu ngân (Web POS tại quầy) &amp;amp; Quản lý (Desktop)&#xa;Thanh toán, thực đơn, sơ đồ bàn &amp;amp; báo cáo" vertex="1">
           <mxGeometry height="60" width="340" x="800" y="45" as="geometry" />
         </mxCell>
         <mxCell id="c1" edge="1" parent="1" source="fe_guest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;fontSize=16;fontColor=#0369a1;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="api_ctrl" value="HTTPS&#xa;REST API">
@@ -26,27 +26,27 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c3" edge="1" parent="1" source="fe_admin" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;fontSize=16;fontColor=#0369a1;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="middleware" value="HTTPS&#xa;Admin Portal">
+        <mxCell id="c3" edge="1" parent="1" source="fe_admin" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;fontSize=16;fontColor=#0369a1;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="middleware" value="HTTPS&#xa;Web POS / Portal">
           <mxGeometry relative="1" x="-0.1538" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c4" edge="1" parent="1" source="api_ctrl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ea580c;strokeWidth=1.5;fontSize=16;fontColor=#c2410c;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="mediatr_cmd" value="Dispatch&#xa;Command">
+        <mxCell id="c4" edge="1" parent="1" source="api_ctrl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ea580c;strokeWidth=1.5;fontSize=16;fontColor=#c2410c;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="mediatr_cmd" value="Gọi&#xa;Service">
           <mxGeometry relative="1" x="-0.1538" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c5" edge="1" parent="1" source="signalr_hub" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ea580c;strokeWidth=1.5;fontSize=16;fontColor=#c2410c;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="mediatr_query" value="Dispatch&#xa;Query">
+        <mxCell id="c5" edge="1" parent="1" source="signalr_hub" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ea580c;strokeWidth=1.5;fontSize=16;fontColor=#c2410c;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="mediatr_query" value="Gọi&#xa;Service">
           <mxGeometry relative="1" x="-0.1852" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c6" edge="1" parent="1" source="mediatr_cmd" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;fontSize=16;fontColor=#b45309;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=1;entryX=0.348;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="entities" value="Thực thi nghiệp vụ&#xa;Domain Model">
+        <mxCell id="c6" edge="1" parent="1" source="mediatr_cmd" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;fontSize=16;fontColor=#b45309;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=1;entryX=0.348;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="entities" value="Đọc / ghi&#xa;Model">
           <mxGeometry relative="1" x="-0.1571" y="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c7" edge="1" parent="1" source="app_interfaces" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;fontSize=16;fontColor=#b45309;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=1;" value="Áp dụng quy tắc&#xa;BR-01 đến BR-05">
+        <mxCell id="c7" edge="1" parent="1" source="app_interfaces" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;fontSize=16;fontColor=#b45309;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=1;" value="Áp dụng quy tắc&#xa;BR-01 đến BR-06">
           <mxGeometry relative="1" x="-0.0105" y="-14" as="geometry">
             <mxPoint x="4" y="-10" as="offset" />
             <Array as="points">
@@ -58,67 +58,67 @@
             <mxPoint x="1035" y="646.32" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c_ef_dom" edge="1" parent="1" source="efcore" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.223;entryY=1.02;entryDx=0;entryDy=0;entryPerimeter=0;" target="entities" value="Ánh xạ EF Core 9&#xa;Entities to Tables">
+        <mxCell id="c_ef_dom" edge="1" parent="1" source="efcore" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.223;entryY=1.02;entryDx=0;entryDy=0;entryPerimeter=0;" target="entities" value="Ánh xạ EF Core 9&#xa;Entities ↔ Tables">
           <mxGeometry relative="1" x="0.1692" y="-11" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c_vnpay_dom" edge="1" parent="1" source="vnpay_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.8;entryY=1;" target="entities" value="Triển khai cổng cọc&#xa;IPN Webhook (BR-01)">
+        <mxCell id="c_vnpay_dom" edge="1" parent="1" source="vnpay_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.8;entryY=1;" target="entities" value="Thu cọc &amp; hoàn cọc&#xa;IPN Webhook (BR-01, BR-04)">
           <mxGeometry relative="1" x="0.0188" y="-10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c_print_dom" edge="1" parent="1" source="printer_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="domain_logic" value="Điều phối KDS Bếp&#xa;&amp;amp; TableDisplay qua SignalR">
+        <mxCell id="c_print_dom" edge="1" parent="1" source="printer_svc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;exitX=0.5;exitY=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="domain_logic" value="Cảnh báo Prep SLA lên KDS&#xa;&amp;amp; quầy Pass qua SignalR">
           <mxGeometry relative="1" x="0.1697" y="-8" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="tier_infra" parent="1" style="swimlane;startSize=30;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;rounded=1;fontSize=16;" value="5. TẦNG HẠ TẦNG &amp; TÍCH HỢP NGOÀI (INFRASTRUCTURE LAYER - IMPLEMENTS APPLICATION)" vertex="1">
+        <mxCell id="tier_infra" parent="1" style="swimlane;startSize=30;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;rounded=1;fontSize=16;" value="5. HẠ TẦNG &amp; TÍCH HỢP NGOÀI (INFRASTRUCTURE &amp; EXTERNAL)" vertex="1">
           <mxGeometry height="150" width="1160" x="60" y="790" as="geometry" />
         </mxCell>
-        <mxCell id="efcore" parent="tier_infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Entity Framework Core 9&#xa;Triển khai IApplicationDbContext" vertex="1">
+        <mxCell id="efcore" parent="tier_infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Entity Framework Core 9&#xa;DbContext &amp; Migrations" vertex="1">
           <mxGeometry height="70" width="220" x="40" y="45" as="geometry" />
         </mxCell>
         <mxCell id="sqlserver" parent="tier_infra" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="SQL Server 2022&#xa;(Relational ACID DB)" vertex="1">
           <mxGeometry height="80" width="170" x="360" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="vnpay_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Cổng thanh toán VNPAY&#xa;Triển khai IPaymentGateway (IPN)" vertex="1">
+        <mxCell id="vnpay_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Cổng thanh toán VNPAY&#xa;Thu cọc &amp; hoàn cọc (IPN Webhook)" vertex="1">
           <mxGeometry height="70" width="190" x="580" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="printer_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Dịch vụ điều phối KDS Bếp&#xa;Triển khai IKdsDispatchService (SignalR Hub)" vertex="1">
-          <mxGeometry height="70" width="260" x="800" y="45" as="geometry" />
+        <mxCell id="printer_svc" parent="tier_infra" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontStyle=1;fontSize=16;" value="Background Worker (IHostedService)&#xa;UC-S1 giải phóng bàn, S2 khảo sát, S3 nhắc hẹn, S4 cảnh báo SLA" vertex="1">
+          <mxGeometry height="92" width="260" x="800" y="45" as="geometry" />
         </mxCell>
         <mxCell id="c_ef_sql" edge="1" parent="tier_infra" source="efcore" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=16;fontColor=#15803d;fontStyle=1;labelBackgroundColor=#ffffff;html=1;" target="sqlserver" value="Đọc / Ghi&#xa;SQL ACID">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="tier_dom" parent="1" style="swimlane;startSize=30;fillColor=#f5f3ff;strokeColor=#7c3aed;fontStyle=1;rounded=1;fontSize=16;" value="4. TẦNG THỰC THỂ MIỀN (CORE DOMAIN LAYER - ZERO EXTERNAL DEPENDENCY)" vertex="1">
+        <mxCell id="tier_dom" parent="1" style="swimlane;startSize=30;fillColor=#f5f3ff;strokeColor=#7c3aed;fontStyle=1;rounded=1;fontSize=16;" value="4. MODEL — ENTITIES &amp; DTOs (ENTITY FRAMEWORK CORE 9)" vertex="1">
           <mxGeometry height="130" width="1160" x="60" y="600" as="geometry" />
         </mxCell>
-        <mxCell id="entities" parent="tier_dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7c3aed;fontStyle=1;fontSize=16;" value="Domain Entities &amp;amp; Value Objects (Kế thừa BaseEntity)&#xa;Guest, Staff, Table, Reservation, Deposit, Order, OrderItem, MenuItem, Category, Invoice, Feedback" vertex="1">
-          <mxGeometry height="60" width="490" x="40" y="45" as="geometry" />
+        <mxCell id="entities" parent="tier_dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7c3aed;fontStyle=1;fontSize=16;" value="Entities (EF Core 9)&#xa;Guest, Staff, Table, Reservation, Deposit, Order, OrderItem, MenuItem, Category, TastingMenu, Invoice, Feedback, ServiceRequest, AuditLog" vertex="1">
+          <mxGeometry height="72" width="490" x="40" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="domain_logic" parent="tier_dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7c3aed;fontStyle=1;fontSize=16;" value="Quy tắc nghiệp vụ &amp;amp; Enums (BR-01 đến BR-05)&#xa;TableStatus, OrderStatus, DepositStatus, SettleFormula, RefundPolicy" vertex="1">
+        <mxCell id="domain_logic" parent="tier_dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7c3aed;fontStyle=1;fontSize=16;" value="DTOs / ViewModels &amp;amp; Enums&#xa;TableStatus, ReservationStatus, OrderItemStatus, StaffRole, PaymentMethod" vertex="1">
           <mxGeometry height="60" width="390" x="640" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="tier_app" parent="1" style="swimlane;startSize=30;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;rounded=1;fontSize=16;" value="3. TẦNG ỨNG DỤNG &amp; LOGIC NGHIỆP VỤ (APPLICATION LAYER - CQRS WITH MEDIATR)" vertex="1">
+        <mxCell id="tier_app" parent="1" style="swimlane;startSize=30;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;rounded=1;fontSize=16;" value="3. SERVICE — TẦNG XỬ LÝ NGHIỆP VỤ (BUSINESS LOGIC)" vertex="1">
           <mxGeometry height="130" width="1160" x="60" y="410" as="geometry" />
         </mxCell>
-        <mxCell id="mediatr_cmd" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="Commands &amp;amp; Handlers (Ghi dữ liệu)&#xa;CreateReservation, ConfirmPassItem, SettleInvoice" vertex="1">
+        <mxCell id="mediatr_cmd" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="IReservationService &amp;amp; ITableService&#xa;Đặt bàn, giữ bàn 17 phút, check-in, đổi bàn, hủy &amp;amp; hoàn cọc" vertex="1">
           <mxGeometry height="60" width="340" x="40" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="mediatr_query" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="Queries &amp;amp; Handlers (Đọc dữ liệu)&#xa;GetFloorPlanState, GetActiveOrders, GetDailyReports" vertex="1">
+        <mxCell id="mediatr_query" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="IOrderService&#xa;Order theo Course, kích hoạt Course, xác nhận đi món" vertex="1">
           <mxGeometry height="60" width="350" x="420" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="app_interfaces" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="Abstractions &amp;amp; Interfaces&#xa;IApplicationDbContext, IPaymentGateway, IKitchenPrinter" vertex="1">
+        <mxCell id="app_interfaces" parent="tier_app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d97706;fontStyle=1;fontSize=16;" value="IBillingService&#xa;Tạm tính 5% phí + 10% VAT, cấn trừ cọc (BR-02)" vertex="1">
           <mxGeometry height="60" width="330" x="810" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="tier_api" parent="1" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=16;" value="2. TẦNG ĐIỀU KHIỂN &amp; API (API &amp; REAL-TIME GATEWAY - ASP.NET CORE .NET 9)" vertex="1">
+        <mxCell id="tier_api" parent="1" style="swimlane;startSize=30;fillColor=#fff7ed;strokeColor=#ea580c;fontStyle=1;rounded=1;fontSize=16;" value="2. CONTROLLER — ASP.NET CORE WEB API (.NET 9) &amp; SIGNALR HUBS" vertex="1">
           <mxGeometry height="130" width="1160" x="60" y="220" as="geometry" />
         </mxCell>
-        <mxCell id="api_ctrl" parent="tier_api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontStyle=1;fontSize=16;" value="RESTful API Endpoints&#xa;Routing, JWT Bearer Token, Swagger/OpenAPI" vertex="1">
+        <mxCell id="api_ctrl" parent="tier_api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontStyle=1;fontSize=16;" value="Web API Controllers (RESTful)&#xa;Kiểm tra DTO, JWT Bearer, trả JSON theo mã HTTP" vertex="1">
           <mxGeometry height="60" width="340" x="40" y="45" as="geometry" />
         </mxCell>
-        <mxCell id="signalr_hub" parent="tier_api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontStyle=1;fontSize=16;" value="SignalR Real-Time Hubs (FloorPlanHub &amp;amp; KitchenHub)&#xa;Broadcast trạng thái bàn, vé in bếp, quầy Pass" vertex="1">
+        <mxCell id="signalr_hub" parent="tier_api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontStyle=1;fontSize=16;" value="SignalR Hubs (FloorPlanHub, KitchenHub, ServingHub)&#xa;Đồng bộ sơ đồ bàn, vé KDS Bếp &amp;amp; quầy Pass" vertex="1">
           <mxGeometry height="60" width="360" x="420" y="45" as="geometry" />
         </mxCell>
         <mxCell id="middleware" parent="tier_api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ea580c;fontStyle=1;fontSize=16;" value="Pipelines &amp;amp; Middleware&#xa;Global Exception Handling &amp;amp; FluentValidation" vertex="1">

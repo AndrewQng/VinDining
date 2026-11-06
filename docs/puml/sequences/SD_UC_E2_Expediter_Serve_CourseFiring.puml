@@ -13,8 +13,22 @@ participant "OrderService" as Service
 participant "OrderRepository" as Repo
 database "SQL Server" as DB
 
-Expediter -> UI: Kiểm đồ & Xác nhận ra món
+Expediter -> UI: Đối chiếu đĩa món với đơn trên màn hình Pass
 activate UI
+
+alt Món không đạt yêu cầu (UC-E3, 2a)
+    UI -> Controller: POST /api/orders/{id}\n/items/{itemId}/remake
+    activate Controller
+    Controller -> Service: RequestRemake(id, itemId)
+    activate Service
+    Service -> UI: PushSignalR("Kitchen_Remake")
+    Service --> Controller: Result(Success)
+    deactivate Service
+    Controller --> UI: 200 OK
+    deactivate Controller
+    UI --> Expediter: Đã gửi yêu cầu làm lại tới bếp
+else Món đạt yêu cầu
+Expediter -> UI: Bấm Xác nhận đi món (Served)
 
 UI -> Controller: PATCH /api/orders/{id}\n/items/{itemId}/serve
 activate Controller
@@ -40,6 +54,7 @@ Controller --> UI: 200 OK
 deactivate Controller
 
 UI --> Expediter: Hoàn thành ra món
+end
 deactivate UI
 
 @enduml

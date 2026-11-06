@@ -28,7 +28,7 @@
         <mxCell id="act_ctrl3" parent="ctrl" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">
           <mxGeometry height="580" width="10" x="75" y="650" as="geometry" />
         </mxCell>
-        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="HoldTableHandler" vertex="1">
+        <mxCell id="handler" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontSize=17;fontStyle=1;fillColor=#ffffff;strokeColor=#333333;" value="ReservationService" vertex="1">
           <mxGeometry height="1260" width="150" x="690" y="40" as="geometry" />
         </mxCell>
         <mxCell id="act_h1" parent="handler" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;fillColor=#ffffff;strokeColor=#333333;fontSize=17;" value="" vertex="1">
@@ -94,7 +94,7 @@
         <mxCell id="m6" edge="1" parent="1" source="act_fe" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4457;entryX=0;entryY=0.0;fontSize=17;" target="act_ctrl2" value="7. POST /api/reservations/hold">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="m7" edge="1" parent="1" source="act_ctrl2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1364;entryX=0;entryY=0.0;fontSize=17;" target="act_h1" value="8. Send(HoldTableCommand)">
+        <mxCell id="m7" edge="1" parent="1" source="act_ctrl2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.1364;entryX=0;entryY=0.0;fontSize=17;" target="act_h1" value="8. CreateReservation(dto)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m8" edge="1" parent="1" source="act_h1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0.0;fontSize=17;" target="act_db2" value="9. LockForPayment(17m), SaveChanges()">
@@ -142,7 +142,7 @@
         <mxCell id="lbl_if" parent="1" style="text;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=17;fontStyle=1;fontColor=#15803d;" value="[Thanh toán hợp lệ (&amp;lt; 17 phút)]" vertex="1">
           <mxGeometry height="25" width="220" x="100" y="765" as="geometry" />
         </mxCell>
-        <mxCell id="m19a" edge="1" parent="1" source="act_ctrl3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2759;entryX=0;entryY=0.0;fontSize=17;" target="act_h2" value="20a. Send(ConfirmPaymentCommand)">
+        <mxCell id="m19a" edge="1" parent="1" source="act_ctrl3" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2759;entryX=0;entryY=0.0;fontSize=17;" target="act_h2" value="20a. ProcessIpn(params)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m20a" edge="1" parent="1" source="act_h2" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.4211;entryX=0;entryY=0.0;fontSize=17;" target="act_db3" value="21a. ConfirmReservation(), SaveChanges()">

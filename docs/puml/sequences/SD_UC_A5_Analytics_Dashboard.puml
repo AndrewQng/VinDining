@@ -19,7 +19,7 @@ participant "ReportRepository" as Repo
 database "SQL Server" as DB
 
 Manager -> UI: Chọn thời gian \n& Xem báo cáo
-UI -> Controller: GET /api/admin/reports/dashboard
+UI -> Controller: GET /api/manager/reports/dashboard
 Controller -> Service: GetMetrics(range)
 Service -> Repo: QueryData(range)
 Repo -> DB: SELECT Metrics FROM Invoices

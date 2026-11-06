@@ -58,7 +58,7 @@
         <mxCell id="frame_p1" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=480;height=25;fontSize=16;fontStyle=1;strokeColor=#0284c7;" value="alt: Định kỳ quét giải phóng bàn (Hangfire Worker)" vertex="1">
           <mxGeometry height="300" width="1590" x="40" y="95" as="geometry" />
         </mxCell>
-        <mxCell id="m0" edge="1" parent="1" source="act_work" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2105;entryX=0;entryY=0.0000;fontSize=16;" target="act_db1" value="1. Query Reservation (AwaitingPayment &amp;amp; CreatedAtUtc &amp;gt; 17m)">
+        <mxCell id="m0" edge="1" parent="1" source="act_work" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=0.2105;entryX=0;entryY=0.0000;fontSize=16;" target="act_db1" value="1. Query Reservation (PendingDeposit &amp;amp; CreatedAtUtc &amp;gt; 17m)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m1" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;curved=0;rounded=0;strokeColor=#666666;fontColor=#333333;exitX=0;exitY=0.9000;entryX=1;entryY=0.4474;fontSize=16;" value="2. Trả về danh sách&amp;nbsp;">
