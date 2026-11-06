@@ -1,201 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <mxfile host="Electron" agent="Mozilla/5.0">
   <diagram name="Sơ đồ Thực thể Quan hệ CSDL" id="database_erd">
-    <mxGraphModel dx="1800" dy="1300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="1800" dy="1300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1320" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Title -->
-        <mxCell id="title" value="SƠ ĐỒ THỰC THỂ QUAN HỆ CƠ SỞ DỮ LIỆU VẬT LÝ (PHYSICAL RELATIONAL ERD - VINDINING SQL SERVER)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;fontSize=15;fontColor=#0f172a;" vertex="1" parent="1">
-          <mxGeometry x="350" y="15" width="950" height="40" as="geometry" />
-        </mxCell>
-
-        <!-- COLUMN 1: Guests, Reservations, Deposits, Feedbacks (x=50) -->
-        <!-- Table: Guests -->
-        <mxCell id="tb_guests" value="«table» Guests&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    FullName : nvarchar(150)&#xa;    PhoneNumber : varchar(20) [IDX]&#xa;    Email : varchar(256)&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="50" y="80" width="280" height="130" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Reservations -->
-        <mxCell id="tb_reservations" value="«table» Reservations&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    BookingCode : varchar(50) [UQ]&#xa;FK  GuestId : uniqueidentifier&#xa;FK  TableId : uniqueidentifier&#xa;    ReservationTime : datetime2 [IDX]&#xa;    PartySize : int&#xa;    DurationMinutes : int&#xa;    Status : varchar(50) [IDX]&#xa;    Note : nvarchar(1000) NULL&#xa;    CancelledAt : datetime2 NULL&#xa;    CancelledReason : nvarchar(500) NULL&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="50" y="270" width="280" height="240" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Deposits -->
-        <mxCell id="tb_deposits" value="«table» Deposits&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  ReservationId : uniqueidentifier [UQ]&#xa;    Amount : decimal(18,2)&#xa;    TransactionId : varchar(100) [IDX]&#xa;    PaymentMethod : varchar(50)&#xa;    Status : varchar(50) [IDX]&#xa;    PaidAt : datetime2 NULL&#xa;    RefundAmount : decimal(18,2) NULL&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="50" y="570" width="280" height="190" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Feedbacks -->
-        <mxCell id="tb_feedbacks" value="«table» Feedbacks&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  ReservationId : uniqueidentifier [IDX]&#xa;    Rating : float&#xa;    Comment : nvarchar(1000) NULL&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="50" y="820" width="280" height="130" as="geometry" />
-        </mxCell>
-
-
-        <!-- COLUMN 2: Tables, Orders, Invoices, Staffs (x=450) -->
-        <!-- Table: Tables -->
-        <mxCell id="tb_tables" value="«table» Tables&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    TableNumber : varchar(50) [UQ]&#xa;    Capacity : int&#xa;    Zone : varchar(50) [IDX]&#xa;    Status : varchar(50) [IDX]&#xa;    IsActive : bit&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="450" y="80" width="290" height="160" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Orders -->
-        <mxCell id="tb_orders" value="«table» Orders&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TableId : uniqueidentifier [IDX]&#xa;FK  ReservationId : uniqueidentifier NULL [IDX]&#xa;FK  CreateById : uniqueidentifier [IDX]&#xa;    Status : varchar(50) [IDX]&#xa;    IsPriority : bit&#xa;    OpenedAt : datetime2&#xa;    ClosedAt : datetime2 NULL" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="450" y="320" width="290" height="190" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Invoices -->
-        <mxCell id="tb_invoices" value="«table» Invoices&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  OrderId : uniqueidentifier [UQ]&#xa;FK  SettleById : uniqueidentifier [IDX]&#xa;    Subtotal : decimal(18,2)&#xa;    ServiceCharge : decimal(18,2)&#xa;    VatAmount : decimal(18,2)&#xa;    DeductedDeposit : decimal(18,2)&#xa;    TotalAmount : decimal(18,2)&#xa;    PaymentMethod : varchar(50)&#xa;    IsPaid : bit [IDX]&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="450" y="580" width="290" height="230" as="geometry" />
-        </mxCell>
-
-        <!-- Table: Staffs -->
-        <mxCell id="tb_staffs" value="«table» Staffs&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    FullName : nvarchar(150)&#xa;    PhoneNumber : varchar(20)&#xa;    Username : varchar(100) [UQ]&#xa;    Email : varchar(256) [UQ]&#xa;    PasswordHash : varchar(500)&#xa;    Role : varchar(50)&#xa;    IsActive : bit&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="450" y="860" width="290" height="200" as="geometry" />
-        </mxCell>
-
-
-        <!-- COLUMN 3: OrderItems (x=860) -->
-        <!-- Table: OrderItems -->
-        <mxCell id="tb_orderitems" value="«table» OrderItems&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  OrderId : uniqueidentifier [IDX]&#xa;FK  MenuItemId : uniqueidentifier NULL [IDX]&#xa;FK  TastingMenuId : uniqueidentifier NULL [IDX]&#xa;    Quantity : int&#xa;    UnitPrice : decimal(18,2)&#xa;    Status : varchar(50) [IDX]&#xa;    Note : nvarchar(500) NULL&#xa;    FiredAt : datetime2 NULL&#xa;    IsRush : bit&#xa;FK  ServedById : uniqueidentifier NULL [IDX]&#xa;    ServedAt : datetime2 NULL" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="860" y="320" width="310" height="250" as="geometry" />
-        </mxCell>
-
-
-        <!-- COLUMN 4: Categories, MenuItems, TastingMenus, TastingMenuItems (x=1270) -->
-        <!-- Table: Categories -->
-        <mxCell id="tb_categories" value="«table» Categories&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    Name : nvarchar(100) [UQ]&#xa;    Description : nvarchar(500) NULL&#xa;    IsActive : bit&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="1270" y="80" width="310" height="140" as="geometry" />
-        </mxCell>
-
-        <!-- Table: MenuItems -->
-        <mxCell id="tb_menuitems" value="«table» MenuItems&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  CategoryId : uniqueidentifier [IDX]&#xa;    Name : nvarchar(150) [IDX]&#xa;    Description : nvarchar(1000) NULL&#xa;    Price : decimal(18,2)&#xa;    ImageUrl : varchar(500) NULL&#xa;    Status : varchar(50) [IDX]&#xa;    PrepTimeMinutes : int&#xa;    CourseType : varchar(50) [IDX]&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="1270" y="270" width="310" height="230" as="geometry" />
-        </mxCell>
-
-        <!-- Table: TastingMenus -->
-        <mxCell id="tb_tastingmenus" value="«table» TastingMenus (Set Menu)&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;    Name : nvarchar(150) [IDX]&#xa;    Description : nvarchar(1000) NULL&#xa;    Price : decimal(18,2)&#xa;    ImageUrl : varchar(500) NULL&#xa;    IsActive : bit [IDX]&#xa;    CreatedAt : datetime2" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#faf5ff;strokeColor=#9333ea;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="1270" y="560" width="310" height="170" as="geometry" />
-        </mxCell>
-
-        <!-- Table: TastingMenuItems -->
-        <mxCell id="tb_tastingmenuitems" value="«table» TastingMenuItems&#xa;────────────────────────────────────&#xa;PK  Id : uniqueidentifier&#xa;FK  TastingMenuId : uniqueidentifier [IDX]&#xa;FK  MenuItemId : uniqueidentifier [IDX]&#xa;    CourseOrder : int&#xa;    CourseType : varchar(50)" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#faf5ff;strokeColor=#9333ea;fontStyle=0;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
-          <mxGeometry x="1270" y="780" width="310" height="140" as="geometry" />
-        </mxCell>
-
-
-        <!-- RELATIONSHIPS -->
-
-        <!-- 1. Guests -> Reservations (1 : N) -->
-        <mxCell id="rel_guest_res" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_guests" target="tb_reservations" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 2. Reservations -> Deposits (1 : 1) -->
-        <mxCell id="rel_res_deposit" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_reservations" target="tb_deposits" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 3. Reservations -> Feedbacks (1 : N) -->
-        <mxCell id="rel_res_feedback" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;entryX=0;entryY=0.5;" edge="1" source="tb_reservations" target="tb_feedbacks" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="20" y="462" />
-              <mxPoint x="20" y="885" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 4. Tables -> Reservations (1 : N) -->
-        <mxCell id="rel_tbl_res" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.2;" edge="1" source="tb_tables" target="tb_reservations" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="390" y="160" />
-              <mxPoint x="390" y="318" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 5. Tables -> Orders (1 : N) -->
-        <mxCell id="rel_tbl_order" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_tables" target="tb_orders" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 6. Reservations -> Orders (0..1 : N) -->
-        <mxCell id="rel_res_order" value="0..1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;entryX=0;entryY=0.4;" edge="1" source="tb_reservations" target="tb_orders" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 7. Staffs (Waitstaff) -> Orders (1 : N) -->
-        <mxCell id="rel_staff_order" value="1 : N (Tạo đơn)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#64748b;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.3;exitY=0;entryX=0.3;entryY=1;" edge="1" source="tb_staffs" target="tb_orders" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="537" y="830" />
-              <mxPoint x="420" y="830" />
-              <mxPoint x="420" y="540" />
-              <mxPoint x="537" y="540" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 8. Orders -> Invoices (1 : 1) -->
-        <mxCell id="rel_order_inv" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_orders" target="tb_invoices" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 9. Staffs (Cashier) -> Invoices (1 : N) -->
-        <mxCell id="rel_staff_inv" value="1 : N (Thu ngân)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#64748b;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" source="tb_staffs" target="tb_invoices" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 10. Orders -> OrderItems (1 : N) -->
-        <mxCell id="rel_order_item" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#ea580c;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="tb_orders" target="tb_orderitems" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 11. Staffs (Expediter) -> OrderItems (1 : N) -->
-        <mxCell id="rel_staff_item" value="1 : N (Điều phối phục vụ)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#64748b;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0.5;entryY=1;" edge="1" source="tb_staffs" target="tb_orderitems" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="790" y="960" />
-              <mxPoint x="790" y="650" />
-              <mxPoint x="1015" y="650" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- 12. MenuItems -> OrderItems (1 : N) -->
-        <mxCell id="rel_menu_item" value="0..1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c026d3;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.3;" edge="1" source="tb_menuitems" target="tb_orderitems" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 13. TastingMenus -> OrderItems (1 : N) -->
-        <mxCell id="rel_tasting_item" value="0..1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#9333ea;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3;entryX=1;entryY=0.7;" edge="1" source="tb_tastingmenus" target="tb_orderitems" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 14. Categories -> MenuItems (1 : N) -->
-        <mxCell id="rel_cat_menu" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c026d3;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_categories" target="tb_menuitems" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 15. TastingMenus -> TastingMenuItems (1 : N) -->
-        <mxCell id="rel_tasting_items" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#9333ea;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="tb_tastingmenus" target="tb_tastingmenuitems" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- 16. MenuItems -> TastingMenuItems (1 : N) -->
-        <mxCell id="rel_menu_tastingitems" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#c026d3;strokeWidth=1.5;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.8;exitY=1;entryX=0.8;entryY=0;" edge="1" source="tb_menuitems" target="tb_tastingmenuitems" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1518" y="530" />
-              <mxPoint x="1620" y="530" />
-              <mxPoint x="1620" y="750" />
-              <mxPoint x="1518" y="750" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
+        <mxCell id="title" value="SƠ ĐỒ THỰC THỂ QUAN HỆ CƠ SỞ DỮ LIỆU VẬT LÝ (PHYSICAL ERD) – VINDINING – SQL SERVER" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="430" y="25" width="1000" height="40" as="geometry" /></mxCell>
+        <mxCell id="tb_guests" value="&lt;b&gt;«table» Guests&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FullName : nvarchar(150)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PhoneNumber : nvarchar(20) [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Email : nvarchar(256)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="80" y="90" width="340" height="124" as="geometry" /></mxCell>
+        <mxCell id="tb_reservations" value="&lt;b&gt;«table» Reservations&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;BookingCode : nvarchar(50) [UQ]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;GuestId : uniqueidentifier [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;TableId : uniqueidentifier&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ReservationTime : datetime2 [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PartySize : int&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DurationMinutes : int = 120&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Pending' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Note : nvarchar(1000) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CancelledAt : datetime2 NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CancelledReason : nvarchar(500) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;IDX (TableId, ReservationTime)&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="80" y="300" width="340" height="231" as="geometry" /></mxCell>
+        <mxCell id="tb_deposits" value="&lt;b&gt;«table» Deposits&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;ReservationId : uniqueidentifier [UQ]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Amount : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;TransactionId : nvarchar(100) [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PaymentMethod : nvarchar(50)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Pending' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PaidAt : datetime2 NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;RefundAmount : decimal(18,2) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="80" y="680" width="340" height="178" as="geometry" /></mxCell>
+        <mxCell id="tb_feedbacks" value="&lt;b&gt;«table» Feedbacks&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;ReservationId : uniqueidentifier [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Rating : float [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Comment : nvarchar(1000) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="80" y="960" width="340" height="124" as="geometry" /></mxCell>
+        <mxCell id="tb_tables" value="&lt;b&gt;«table» Tables&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;TableNumber : nvarchar(50) [UQ]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Capacity : int&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Zone : nvarchar(50) = 'MainHall' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Available' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PosX : int = 0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PosY : int = 0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive : bit = 1&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="540" y="90" width="340" height="178" as="geometry" /></mxCell>
+        <mxCell id="tb_orders" value="&lt;b&gt;«table» Orders&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;TableId : uniqueidentifier [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;ReservationId : uniqueidentifier NULL [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;CreateById : uniqueidentifier [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Processing' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsPriority : bit = 0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;OpenedAt : datetime2&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ClosedAt : datetime2 NULL&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;IDX (TableId, Status)&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="540" y="350" width="340" height="178" as="geometry" /></mxCell>
+        <mxCell id="tb_invoices" value="&lt;b&gt;«table» Invoices&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;OrderId : uniqueidentifier [UQ]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;SettleById : uniqueidentifier [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Subtotal : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ServiceCharge : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;VatAmount : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;DeductedDeposit : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PaymentMethod : nvarchar(50) = 'Cash'&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsPaid : bit = 0 [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;/TotalAmount: tính trong code (≥ 0), không lưu cột&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="540" y="640" width="340" height="204" as="geometry" /></mxCell>
+        <mxCell id="tb_staffs" value="&lt;b&gt;«table» Staffs&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FullName : nvarchar(150)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PhoneNumber : nvarchar(20)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Username : nvarchar(100) [UQ]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Email : nvarchar(256) [UQ]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PasswordHash : nvarchar(500)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Role : nvarchar(50) = 'Waitstaff'&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive : bit = 1&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;RefreshToken : nvarchar(256) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;RefreshTokenExpiryTime : datetime2 NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#64748b;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="540" y="960" width="340" height="205" as="geometry" /></mxCell>
+        <mxCell id="tb_orderitems" value="&lt;b&gt;«table» OrderItems&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;OrderId : uniqueidentifier [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;MenuItemId : uniqueidentifier NULL [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;TastingMenuId : uniqueidentifier NULL [IDX]&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;ServedById : uniqueidentifier NULL [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Quantity : int&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UnitPrice : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Hold' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Note : nvarchar(500) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FiredAt : datetime2 NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsRush : bit = 0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ServedAt : datetime2 NULL&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;IDX (OrderId, Status)&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#ea580c;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="1000" y="350" width="360" height="231" as="geometry" /></mxCell>
+        <mxCell id="tb_categories" value="&lt;b&gt;«table» Categories&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Name : nvarchar(100) [UQ]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Description : nvarchar(500) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive : bit = 1&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="1460" y="90" width="340" height="124" as="geometry" /></mxCell>
+        <mxCell id="tb_menuitems" value="&lt;b&gt;«table» MenuItems&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;CategoryId : uniqueidentifier [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Name : nvarchar(150) [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Description : nvarchar(1000) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Price : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ImageUrl : nvarchar(500) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Status : nvarchar(50) = 'Available' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;PrepTimeMinutes : int = 15&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CourseType : nvarchar(50) = 'Appetizer' [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;IDX (CategoryId, Status)&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#fdf4ff;strokeColor=#c026d3;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="1460" y="300" width="340" height="204" as="geometry" /></mxCell>
+        <mxCell id="tb_tastingmenus" value="&lt;b&gt;«table» TastingMenus (Set Menu)&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Name : nvarchar(150) [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Description : nvarchar(1000) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Price : decimal(18,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ImageUrl : nvarchar(500) NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;IsActive : bit = 1 [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CreatedAt : datetime2" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#faf5ff;strokeColor=#9333ea;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="1460" y="640" width="340" height="151" as="geometry" /></mxCell>
+        <mxCell id="tb_tastingmenuitems" value="&lt;b&gt;«table» TastingMenuItems&lt;/b&gt;&lt;br&gt;&lt;hr size='1'&gt;&lt;br&gt;&lt;b&gt;&lt;u&gt;PK&amp;nbsp;&amp;nbsp;Id : uniqueidentifier&lt;/u&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;TastingMenuId : uniqueidentifier&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;&amp;nbsp;&amp;nbsp;MenuItemId : uniqueidentifier [IDX]&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CourseOrder : int&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;CourseType : nvarchar(50) = 'Appetizer'&lt;br&gt;&lt;font color='#475569'&gt;&lt;i&gt;IDX (TastingMenuId, CourseOrder)&lt;/i&gt;&lt;/font&gt;" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#faf5ff;strokeColor=#9333ea;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=2;fontFamily=Helvetica;" vertex="1" parent="1"><mxGeometry x="1460" y="900" width="340" height="138" as="geometry" /></mxCell>
+        <mxCell id="rel_guest_res" value="đặt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284c7;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_guests" target="tb_reservations"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_res_deposit" value="có cọc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284c7;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_reservations" target="tb_deposits"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_res_feedback" value="đánh giá" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284c7;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0;exitY=0.85;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_reservations" target="tb_feedbacks"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="40" y="496.35" /><mxPoint x="40" y="1022" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel_tbl_res" value="được đặt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d97706;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.12;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_tables" target="tb_reservations"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="500" y="179" /><mxPoint x="500" y="327.72" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel_tbl_order" value="phục vụ tại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d97706;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_tables" target="tb_orders"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_res_order" value="phát sinh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284c7;strokeWidth=1.5;startArrow=ERzeroToOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=1;exitY=0.55;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_reservations" target="tb_orders"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="470" y="427.05" /><mxPoint x="470" y="403.4" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel_staff_order" value="tạo đơn&lt;br&gt;(CreateById)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#64748b;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_staffs" target="tb_orders"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="490" y="1021.5" /><mxPoint x="490" y="501.3" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel_order_inv" value="xuất hoá đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#ea580c;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_orders" target="tb_invoices"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_staff_inv" value="thu tiền&lt;br&gt;(SettleById)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#64748b;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_staffs" target="tb_invoices"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_order_item" value="gồm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#ea580c;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_orders" target="tb_orderitems"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_staff_item" value="phục vụ&lt;br&gt;(ServedById)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#64748b;strokeWidth=1.5;startArrow=ERzeroToOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_staffs" target="tb_orderitems"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="940" y="1021.5" /><mxPoint x="940" y="546.35" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel_menu_item" value="món lẻ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#c026d3;strokeWidth=1.5;startArrow=ERzeroToOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_menuitems" target="tb_orderitems"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_tasting_item" value="set menu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9333ea;strokeWidth=1.5;startArrow=ERzeroToOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_tastingmenus" target="tb_orderitems"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_cat_menu" value="phân loại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#c026d3;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_categories" target="tb_menuitems"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_tasting_items" value="gồm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9333ea;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_tastingmenus" target="tb_tastingmenuitems"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel_menu_tastingitems" value="thuộc set" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#c026d3;strokeWidth=1.5;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=0;endFill=0;startSize=10;endSize=10;fontSize=10;fontColor=#334155;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tb_menuitems" target="tb_tastingmenuitems"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1840" y="422.4" /><mxPoint x="1840" y="969" /></Array></mxGeometry></mxCell>
+        <mxCell id="legend" value="&lt;b&gt;CHÚ THÍCH&lt;/b&gt;&lt;br&gt;&lt;b&gt;PK&lt;/b&gt; khoá chính &amp;nbsp;·&amp;nbsp; &lt;i&gt;FK&lt;/i&gt; khoá ngoại &amp;nbsp;·&amp;nbsp; [UQ] unique index &amp;nbsp;·&amp;nbsp; [IDX] index&lt;br&gt;&lt;i&gt;IDX (A, B)&lt;/i&gt; index ghép &amp;nbsp;·&amp;nbsp; &lt;code&gt;= x&lt;/code&gt; giá trị mặc định &amp;nbsp;·&amp;nbsp; NULL cho phép rỗng&lt;br&gt;Đầu đường nối (crow's foot): ┼ đúng 1 &amp;nbsp;·&amp;nbsp; o┼ 0..1 &amp;nbsp;·&amp;nbsp; o&amp;lt; 0..N&lt;br&gt;&lt;br&gt;&lt;b&gt;GIÁ TRỊ ENUM&lt;/b&gt; (lưu dạng chuỗi, EF HasConversion&amp;lt;string&amp;gt;)&lt;br&gt;Reservations.Status: Pending | Confirmed | Completed | Cancelled&lt;br&gt;Deposits.Status: Pending | Paid | Refunded | Forfeited&lt;br&gt;Deposits / Invoices.PaymentMethod: Cash | Card | BankTransfer&lt;br&gt;Tables.Status: Available | LockedForPayment | Reserved | Occupied | Cleaning&lt;br&gt;Tables.Zone: MainHall | VIP | Balcony&lt;br&gt;Orders.Status: Processing | Completed | Cancelled&lt;br&gt;OrderItems.Status: Hold | Preparing | Served | Cancelled&lt;br&gt;Staffs.Role: Waitstaff | Expediter | Admin&lt;br&gt;MenuItems / TastingMenuItems.CourseType: Appetizer | MainCourse | Dessert | Beverage&lt;br&gt;MenuItems.Status: chuỗi tự do (mặc định 'Available')&lt;br&gt;&lt;br&gt;&lt;b&gt;QUY TẮC&lt;/b&gt;&lt;br&gt;• Mỗi OrderItems có đúng một trong MenuItemId / TastingMenuId (món lẻ hoặc set menu).&lt;br&gt;• ON DELETE CASCADE: Reservations→Deposits, Feedbacks; Orders→OrderItems; TastingMenus→TastingMenuItems.&lt;br&gt;• ON DELETE SET NULL: Reservations→Orders.ReservationId. Các khoá ngoại còn lại: RESTRICT." style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;dashed=1;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1000" y="720" width="440" height="370" as="geometry" /></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
