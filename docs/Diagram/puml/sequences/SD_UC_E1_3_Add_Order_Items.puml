@@ -1,6 +1,8 @@
 @startuml SD_UC_E1_3_Add_Order_Items
 autonumber
 skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif

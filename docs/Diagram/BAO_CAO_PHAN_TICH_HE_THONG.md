@@ -2,7 +2,6 @@
 
 ## ĐỀ TÀI DỰ ÁN: HỆ THỐNG QUẢN LÝ VÀ ĐẶT BÀN NHÀ HÀNG (VINDINING)
 
----
 
 
 | Thông tin | Chi tiết |
@@ -14,7 +13,6 @@
 | Giai đoạn đồ án: | Phase 1: Phân tích Yêu cầu & Thiết kế Hệ thống |
 
 
----
 
 # CHƯƠNG 1: TỔNG QUAN TÁC NHÂN & MA TRẬN PHÂN QUYỀN
 
@@ -63,7 +61,6 @@ Hệ thống phân định 5 tác nhân chính và 2 tác nhân phụ:
 |  | Theo dõi & cảnh báo thời gian order (UC-S4) | ✗ | ✗ | ✗ | ✗ | Worker: ✓ |
 
 
----
 
 # CHƯƠNG 2: MÔ HÌNH HÓA USE CASE
 
@@ -602,7 +599,6 @@ Hệ thống phân định 5 tác nhân chính và 2 tác nhân phụ:
 | BR-06 | Mức tiền cọc giữ chỗ | Đặt bàn có chọn trước Set Menu: Tiền cọc = 30% × Giá Set Menu × Số khách. Đặt bàn không chọn trước Set Menu (gọi món tại nhà hàng): Tiền cọc = 500.000 VNĐ × Số khách. Khách vãng lai không đặt trước không phải đặt cọc. | UC-U1, UC-U3, UC-E7 |
 
 
----
 
 # CHƯƠNG 3: MÔ HÌNH HÓA QUY TRÌNH NGHIỆP VỤ (ACTIVITY DIAGRAMS)
 
@@ -667,7 +663,6 @@ Hệ thống phân định 5 tác nhân chính và 2 tác nhân phụ:
 ![AD-12: Khách hàng đánh giá & Phản hồi dịch vụ](images/ad12.png)
 
 
----
 
 ## 3.13 AD-13: Quy trình Yêu cầu phục vụ qua QR Menu
 
@@ -693,7 +688,6 @@ Hệ thống phân định 5 tác nhân chính và 2 tác nhân phụ:
 
 ![AD-17: Báo cáo Thống kê & Doanh thu](images/ad17.png)
 
----
 
 # CHƯƠNG 4: MÔ HÌNH HÓA TƯƠNG TÁC HỆ THỐNG (SEQUENCE DIAGRAMS)
 

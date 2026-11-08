@@ -1,6 +1,8 @@
 @startuml SD_UC_A4_4_Toggle_Staff_Status
 autonumber
 skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif

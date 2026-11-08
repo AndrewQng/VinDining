@@ -1,6 +1,8 @@
 @startuml SD_UC_S3_Gui_Thong_Bao_Nhac_Hen_Dat_Ban
 autonumber
 skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif

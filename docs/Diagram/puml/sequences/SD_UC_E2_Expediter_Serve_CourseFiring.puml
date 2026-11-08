@@ -1,6 +1,8 @@
 @startuml SD_UC_E2_Expediter_Serve_CourseFiring
 autonumber
 skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 skinparam defaultFontName "Segoe UI", Arial, sans-serif
