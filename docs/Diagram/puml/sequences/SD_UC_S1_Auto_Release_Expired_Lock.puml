@@ -39,5 +39,3 @@ Service --> Worker: Hoàn tất giải phóng (Completed)
 deactivate Service
 deactivate Worker
 @enduml
-
-@enduml
