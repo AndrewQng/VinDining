@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { Button, Drawer, ThemeToggle, Wordmark } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 const GUEST_NAV_ITEMS = [
   { label: 'Set Menu', to: '/#set-menu' },
@@ -13,7 +14,17 @@ const GUEST_NAV_ITEMS = [
 /** Public website layout with editorial header, mobile drawer, and minimal footer. */
 export function GuestLayout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (!location.hash) return
+    const id = location.hash.slice(1)
+    const target = document.getElementById(id)
+    if (!target) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+  }, [location.pathname, location.hash])
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-ink">
@@ -27,15 +38,24 @@ export function GuestLayout() {
             aria-label="Điều hướng chính"
             className="hidden md:flex items-center gap-6"
           >
-            {GUEST_NAV_ITEMS.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="text-sm font-medium text-ink-muted hover:text-ink transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {GUEST_NAV_ITEMS.map((item) => {
+              const active =
+                item.to === '/tra-cuu'
+                  ? location.pathname.startsWith('/tra-cuu')
+                  : location.pathname === '/' && location.hash === item.to.slice(1)
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    'text-sm font-medium transition-colors',
+                    active ? 'text-accent' : 'text-ink-muted hover:text-ink'
+                  )}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
           </nav>
 
           <div className="flex items-center gap-2.5">

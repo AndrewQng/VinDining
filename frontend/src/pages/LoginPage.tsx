@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Lock, User } from 'lucide-react'
 import { STAFF_ROLE_LABELS } from '@/domain'
 import { Button, Card, Input, ThemeToggle, Wordmark } from '@/components/ui'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { isMockMode } from '@/lib/utils'
 import { authApi } from '@/services/api'
 import { DEMO_STAFF_ACCOUNTS, resetMockDb } from '@/services/mock'
@@ -17,6 +18,7 @@ import type { ApiErrorResponse } from '@/types'
 
 /** S1 — Shared staff login page with lockout feedback and mock demo account helper. */
 export function LoginPage() {
+  useDocumentTitle('Đăng nhập')
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)

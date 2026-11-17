@@ -23,7 +23,13 @@ export function Money({
   className,
 }: MoneyProps) {
   return (
-    <span className={cn('tabular-nums font-medium', TONE_CLASS[tone], className)}>
+    <span
+      className={cn(
+        'tabular-nums font-medium whitespace-nowrap',
+        TONE_CLASS[tone],
+        className
+      )}
+    >
       {deduction ? formatVndDeduction(amount) : formatVnd(amount)}
     </span>
   )
