@@ -1,15 +1,18 @@
-import { allocateSetMenuUnitPrices, getInitialOrderItemStatus } from '@/domain'
 import { realtimeClient } from '@/services/realtime/client'
 import type {
   CheckInRequest,
   OrderDto,
-  OrderItemDto,
   TransferTableRequest,
   UpdateTableStatusRequest,
   WalkInRequest,
 } from '@/types'
 import { nextMockId, saveMockDb } from '../db'
 import { fail, ok, type MockRouteDefinition } from '../types'
+import { expandSetMenuOrderItems } from './orderHelpers'
+
+function normalizePhone(phone: string): string {
+  return phone.replace(/\s+/g, '').trim()
+}
 
 export const tableRoutes: MockRouteDefinition[] = [
   {
@@ -51,12 +54,22 @@ export const tableRoutes: MockRouteDefinition[] = [
       }
 
       const payload = body as CheckInRequest
-      const reservation = db.reservations.find(
+      const queryRaw = payload.reservationCode.trim()
+      const queryCode = queryRaw.toUpperCase()
+      const queryPhone = normalizePhone(queryRaw)
+      const matchingReserved = db.reservations.filter(
         (r) =>
-          r.bookingCode.toUpperCase() ===
-          payload.reservationCode.trim().toUpperCase()
+          r.status === 'Reserved' &&
+          (r.bookingCode.toUpperCase() === queryCode ||
+            (queryPhone.length >= 6 &&
+              normalizePhone(r.guest.phoneNumber) === queryPhone))
       )
-      if (!reservation) return fail(404, 'Không tìm thấy mã đặt bàn')
+      const reservation =
+        matchingReserved.find((r) => r.tableId === table.id) ??
+        matchingReserved[0]
+      if (!reservation) {
+        return fail(404, 'Không tìm thấy đơn đặt bàn hợp lệ khớp với mã hoặc số điện thoại')
+      }
 
       const nowIso = now.toISOString()
       table.status = 'Occupied'
@@ -67,42 +80,15 @@ export const tableRoutes: MockRouteDefinition[] = [
 
       let createdOrder: OrderDto | null = null
       if (reservation.preOrderedTastingMenuId) {
-        const setMenu = db.tastingMenus.find(
-          (m) => m.id === reservation.preOrderedTastingMenuId
+        const orderId = nextMockId('ord')
+        const { items } = expandSetMenuOrderItems(
+          db,
+          orderId,
+          reservation.preOrderedTastingMenuId,
+          reservation.partySize,
+          nowIso
         )
-        if (setMenu) {
-          const orderId = nextMockId('ord')
-          const rawPrices = setMenu.items.map((component) => {
-            const menuItem = db.menuItems.find(
-              (m) => m.id === component.menuItemId
-            )
-            return menuItem?.price ?? 0
-          })
-          const unitPrices = allocateSetMenuUnitPrices(setMenu.price, rawPrices)
-
-          const items: OrderItemDto[] = setMenu.items.map((component, idx) => {
-            const status = getInitialOrderItemStatus(component.courseType)
-            return {
-              id: nextMockId('oi'),
-              orderId,
-              menuItemId: component.menuItemId,
-              tastingMenuId: setMenu.id,
-              itemName: component.menuItemName,
-              courseType: component.courseType,
-              quantity: reservation.partySize,
-              unitPrice: unitPrices[idx] ?? 0,
-              status,
-              note: null,
-              isRemake: false,
-              remakeCount: 0,
-              isPriority: false,
-              prepTimeMinutes: component.prepTimeMinutes,
-              cookingStartedAt: status === 'Cooking' ? nowIso : null,
-              servedAt: null,
-              servedById: null,
-            }
-          })
-
+        if (items && items.length > 0) {
           createdOrder = {
             id: orderId,
             tableId: table.id,
@@ -213,6 +199,12 @@ export const tableRoutes: MockRouteDefinition[] = [
           res.tableId = target.id
           res.tableNumber = target.tableNumber
           res.zone = target.zone
+        }
+      }
+      for (const req of db.serviceRequests) {
+        if (req.tableId === source.id && req.status === 'Pending') {
+          req.tableId = target.id
+          req.tableNumber = target.tableNumber
         }
       }
 

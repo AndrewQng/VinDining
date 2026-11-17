@@ -15,12 +15,16 @@ import {
   formatSlotTime,
   formatVnd,
   formatVndDeduction,
+  getAddedOrderItemStatus,
+  getCourseAggregateStatus,
   getInitialOrderItemStatus,
   getLockoutStatus,
+  getNextActivatableCourse,
   getOrderItemDisplayLabel,
   getRemainingHoldSeconds,
   hasAnyServedItem,
   isHoldExpired,
+  isOrderLockedForTable,
   isTableUnavailableForSlot,
   markItemRemake,
   markItemServed,
@@ -399,5 +403,26 @@ describe('slotAvailability overlap and live-status rules', () => {
         reservations: [],
       })
     ).toBe(false)
+  })
+})
+
+describe('waitstaff course activation & payment lock helpers', () => {
+  it('determines added item status based on whether course was already activated', () => {
+    const existing = [
+      { courseType: 'Appetizer' as const, status: 'Served' as const },
+      { courseType: 'MainCourse' as const, status: 'Cooking' as const },
+      { courseType: 'Dessert' as const, status: 'OnHold' as const },
+    ]
+    expect(getAddedOrderItemStatus(existing, 'Beverage')).toBe('Cooking')
+    expect(getAddedOrderItemStatus(existing, 'MainCourse')).toBe('Cooking')
+    expect(getAddedOrderItemStatus(existing, 'Dessert')).toBe('OnHold')
+
+    expect(getNextActivatableCourse(existing)).toBe('Dessert')
+    expect(getCourseAggregateStatus([existing[0]])).toBe('Served')
+    expect(getCourseAggregateStatus([existing[1]])).toBe('Cooking')
+    expect(getCourseAggregateStatus([existing[2]])).toBe('OnHold')
+
+    expect(isOrderLockedForTable('PaymentPending')).toBe(true)
+    expect(isOrderLockedForTable('Occupied')).toBe(false)
   })
 })

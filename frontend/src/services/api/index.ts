@@ -1,22 +1,34 @@
 import type {
+  AddOrderItemsRequest,
   AvailableSlotDto,
   AvailableSlotsQuery,
   CancelReservationRequest,
   CancelReservationResponse,
   CategoryDto,
+  CheckInRequest,
+  CreateOrderRequest,
   CreateReservationRequest,
   CreateReservationResponse,
   CurrentUserDto,
   FeedbackDto,
+  FireCourseRequest,
   LoginRequest,
   LoginResponse,
+  MenuItemDto,
+  OrderDto,
   ReservationDto,
+  ReservationStatus,
   ServiceRequestDto,
   ServiceRequestType,
   SubmitFeedbackRequest,
+  TableDetailDto,
+  TableDto,
   TableMenuResponse,
+  TableStatus,
   TastingMenuDto,
+  TransferTableRequest,
   VnPayIpnRequest,
+  WalkInRequest,
 } from '@/types'
 import { apiClient } from './client'
 
@@ -43,12 +55,25 @@ export const serviceCallApi = {
     )
     return data
   },
+  complete: async (id: string): Promise<ServiceRequestDto> => {
+    const { data } = await apiClient.patch<ServiceRequestDto>(
+      `/service-calls/${encodeURIComponent(id)}/complete`
+    )
+    return data
+  },
 }
 
 export const menuApi = {
   getCategories: async (): Promise<CategoryDto[]> => {
     const { data } = await apiClient.get<CategoryDto[]>('/menu/categories')
     return data
+  },
+  getItems: async (params?: { categoryId?: string }): Promise<MenuItemDto[]> => {
+    const categories = await menuApi.getCategories()
+    const all = categories.flatMap((c) => c.items ?? [])
+    return params?.categoryId
+      ? all.filter((item) => item.categoryId === params.categoryId)
+      : all
   },
   getTastingMenus: async (): Promise<TastingMenuDto[]> => {
     const { data } = await apiClient.get<TastingMenuDto[]>(
@@ -118,6 +143,113 @@ export const reservationApi = {
     const { data } = await apiClient.post<CancelReservationResponse>(
       '/reservations/cancel',
       payload
+    )
+    return data
+  },
+  search: async (params?: {
+    status?: ReservationStatus
+    search?: string
+  }): Promise<ReservationDto[]> => {
+    const { data } = await apiClient.get<ReservationDto[]>('/reservations', {
+      params,
+    })
+    return data
+  },
+}
+
+export const tableApi = {
+  getAll: async (): Promise<TableDto[]> => {
+    const { data } = await apiClient.get<TableDto[]>('/tables')
+    return data
+  },
+  getById: async (id: string): Promise<TableDetailDto> => {
+    const { data } = await apiClient.get<TableDetailDto>(
+      `/tables/${encodeURIComponent(id)}`
+    )
+    return data
+  },
+  checkIn: async (
+    tableId: string,
+    payload: CheckInRequest
+  ): Promise<{ table: TableDto; order: OrderDto | null }> => {
+    const { data } = await apiClient.post<{
+      table: TableDto
+      order: OrderDto | null
+    }>(`/tables/${encodeURIComponent(tableId)}/check-in`, payload)
+    return data
+  },
+  walkIn: async (tableId: string, payload: WalkInRequest): Promise<TableDto> => {
+    const { data } = await apiClient.post<TableDto>(
+      `/tables/${encodeURIComponent(tableId)}/walk-in`,
+      payload
+    )
+    return data
+  },
+  transfer: async (
+    sourceId: string,
+    payload: TransferTableRequest
+  ): Promise<{ sourceTable: TableDto; targetTable: TableDto }> => {
+    const { data } = await apiClient.post<{
+      sourceTable: TableDto
+      targetTable: TableDto
+    }>(`/tables/${encodeURIComponent(sourceId)}/transfer`, payload)
+    return data
+  },
+  updateStatus: async (
+    tableId: string,
+    status: TableStatus
+  ): Promise<TableDto> => {
+    const { data } = await apiClient.patch<TableDto>(
+      `/tables/${encodeURIComponent(tableId)}/status`,
+      { status }
+    )
+    return data
+  },
+}
+
+export const orderApi = {
+  getByTable: async (tableId: string): Promise<OrderDto> => {
+    const { data } = await apiClient.get<OrderDto>(
+      `/orders/table/${encodeURIComponent(tableId)}`
+    )
+    return data
+  },
+  getById: async (orderId: string): Promise<OrderDto> => {
+    const { data } = await apiClient.get<OrderDto>(
+      `/orders/${encodeURIComponent(orderId)}`
+    )
+    return data
+  },
+  create: async (payload: CreateOrderRequest): Promise<OrderDto> => {
+    const { data } = await apiClient.post<OrderDto>('/orders', payload)
+    return data
+  },
+  activateCourse: async (
+    orderId: string,
+    payload: FireCourseRequest
+  ): Promise<OrderDto> => {
+    const { data } = await apiClient.post<OrderDto>(
+      `/orders/${encodeURIComponent(orderId)}/fire-course`,
+      payload
+    )
+    return data
+  },
+  addItems: async (
+    orderId: string,
+    payload: AddOrderItemsRequest
+  ): Promise<OrderDto> => {
+    const { data } = await apiClient.post<OrderDto>(
+      `/orders/${encodeURIComponent(orderId)}/items`,
+      payload
+    )
+    return data
+  },
+}
+
+export const invoiceApi = {
+  requestCheckout: async (tableId: string): Promise<TableDto> => {
+    const { data } = await apiClient.post<TableDto>(
+      `/tables/${encodeURIComponent(tableId)}/request-checkout`
     )
     return data
   },

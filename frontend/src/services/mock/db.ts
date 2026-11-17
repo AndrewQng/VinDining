@@ -14,10 +14,6 @@ function hasLocalStorage(): boolean {
 
 /** Loads the persisted mock database from localStorage, or seeds a fresh one. */
 export function getMockDb(): MockDatabase {
-  if (memoryDb) {
-    return memoryDb
-  }
-
   if (hasLocalStorage()) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
@@ -31,6 +27,8 @@ export function getMockDb(): MockDatabase {
     } catch {
       // Corrupt JSON falls back to fresh seed
     }
+  } else if (memoryDb) {
+    return memoryDb
   }
 
   memoryDb = createInitialMockDb()

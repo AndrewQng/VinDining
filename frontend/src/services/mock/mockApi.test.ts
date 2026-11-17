@@ -214,4 +214,100 @@ describe('Mock API §10 end-to-end stories', () => {
     const released = runExpiryScan(after18Min)
     expect(released).toBeGreaterThanOrEqual(1)
   })
+
+  it('supports Waitstaff check-in by phone, Set Menu order, course-aware add items, transfer conflict, and checkout guard', async () => {
+    const client = createTestClient()
+    const token = await loginAs(client, 'mai.tt')
+    const headers = { Authorization: `Bearer ${token}` }
+
+    // 1. Check in B05 via phone number -> auto-creates Set Menu order (Course 1 Cooking, Course 2/3 OnHold)
+    const checkIn = await client.post(
+      '/tables/tbl-b05/check-in',
+      { reservationCode: '0901 234 567' },
+      { headers }
+    )
+    expect(checkIn.data.table.status).toBe('Occupied')
+    expect(checkIn.data.order?.items).toHaveLength(3)
+    expect(checkIn.data.order.items[0].status).toBe('Cooking')
+    expect(checkIn.data.order.items[1].status).toBe('OnHold')
+    expect(checkIn.data.order.items[2].status).toBe('OnHold')
+
+    // 2. B03 has MainCourse Cooking & Dessert OnHold -> adding MainCourse cooks now, Dessert stays OnHold
+    const added = await client.post(
+      '/orders/ord-b03/items',
+      {
+        items: [
+          { menuItemId: 'item-wagyu', quantity: 1, note: 'Medium' },
+          { menuItemId: 'item-souffle', quantity: 1 },
+        ],
+      },
+      { headers }
+    )
+    const addedWagyu = added.data.items.find(
+      (i: { menuItemId: string; status: string }) => i.menuItemId === 'item-wagyu'
+    )
+    const addedSouffle = added.data.items.find(
+      (i: { menuItemId: string; status: string }) => i.menuItemId === 'item-souffle'
+    )
+    expect(addedWagyu.status).toBe('Cooking')
+    expect(addedSouffle.status).toBe('OnHold')
+
+    // 3. B08 has 0 Served items -> request-checkout returns 409; B03 has Served items -> succeeds & locks
+    await expect(
+      client.post('/tables/tbl-b08/request-checkout', {}, { headers })
+    ).rejects.toMatchObject({ response: { status: 409 } })
+
+    const reqCheckout = await client.post(
+      '/tables/tbl-b03/request-checkout',
+      {},
+      { headers }
+    )
+    expect(reqCheckout.data.status).toBe('PaymentPending')
+
+    await expect(
+      client.post(
+        '/orders/ord-b03/items',
+        { items: [{ menuItemId: 'item-nuoc-khoang', quantity: 1 }] },
+        { headers }
+      )
+    ).rejects.toMatchObject({ response: { status: 409 } })
+
+    // 4. Transfer to a non-Available target returns 409
+    await expect(
+      client.post(
+        '/tables/tbl-b05/transfer',
+        { targetTableId: 'tbl-b08' },
+        { headers }
+      )
+    ).rejects.toMatchObject({
+      response: { status: 409, data: { message: 'Bàn đích không còn trống' } },
+    })
+
+    // 5. Creating walk-in order with Set Menu + SoldOut item returns 400
+    await client.post('/tables/tbl-b06/walk-in', { guestCount: 2 }, { headers })
+    await expect(
+      client.post(
+        '/orders',
+        {
+          tableId: 'tbl-b06',
+          guestCount: 2,
+          items: [{ menuItemId: 'item-so-diep', quantity: 1 }],
+        },
+        { headers }
+      )
+    ).rejects.toMatchObject({ response: { status: 400 } })
+
+    const setOrder = await client.post(
+      '/orders',
+      {
+        tableId: 'tbl-b06',
+        guestCount: 2,
+        tastingMenuId: 'set-hai-san',
+        items: [],
+      },
+      { headers }
+    )
+    expect(setOrder.status).toBe(201)
+    expect(setOrder.data.items).toHaveLength(3)
+  })
 })

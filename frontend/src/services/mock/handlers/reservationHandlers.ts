@@ -361,7 +361,7 @@ export const reservationRoutes: MockRouteDefinition[] = [
     id: 7,
     method: 'GET',
     pattern: '/reservations',
-    access: ['Cashier', 'Manager'],
+    access: ['Waitstaff', 'Cashier', 'Manager'],
     handler: ({ db, query }) => {
       const status = query.get('status') as ReservationStatus | null
       const search = (query.get('search') || '').trim().toLowerCase()

@@ -1,4 +1,4 @@
-import type { CourseType, OrderItemStatus } from '@/types'
+import type { CourseType, OrderItemStatus, TableStatus } from '@/types'
 
 /** Standard dining course progression (Beverage starts automatically with Appetizer). */
 export const COURSE_SEQUENCE: readonly CourseType[] = [
@@ -24,6 +24,50 @@ export function getInitialOrderItemStatus(courseType: CourseType): OrderItemStat
     return 'Cooking'
   }
   return 'OnHold'
+}
+
+/**
+ * Resolves kitchen status when Waitstaff adds a new item to an active order:
+ * Course 1/drinks cook immediately; Course 2/3 cook now if that course was already activated,
+ * otherwise stay OnHold until Waitstaff activates the course.
+ */
+export function getAddedOrderItemStatus(
+  existingItems: ReadonlyArray<Pick<FireableOrderItem, 'courseType' | 'status'>>,
+  targetCourse: CourseType
+): OrderItemStatus {
+  if (targetCourse === 'Appetizer' || targetCourse === 'Beverage') {
+    return 'Cooking'
+  }
+  const courseAlreadyActivated = existingItems.some(
+    (item) => item.courseType === targetCourse && item.status !== 'OnHold'
+  )
+  return courseAlreadyActivated ? 'Cooking' : 'OnHold'
+}
+
+/** Returns the next activatable course ('MainCourse' before 'Dessert') with OnHold items, or null. */
+export function getNextActivatableCourse(
+  items: ReadonlyArray<Pick<FireableOrderItem, 'courseType' | 'status'>>
+): 'MainCourse' | 'Dessert' | null {
+  if (canFireCourse(items, 'MainCourse')) return 'MainCourse'
+  if (canFireCourse(items, 'Dessert')) return 'Dessert'
+  return null
+}
+
+/** Summarizes the collective status of a course group for display badges. */
+export function getCourseAggregateStatus(
+  items: ReadonlyArray<Pick<FireableOrderItem, 'status'>>
+): OrderItemStatus {
+  if (items.length === 0) return 'OnHold'
+  if (items.every((item) => item.status === 'Served')) return 'Served'
+  if (items.some((item) => item.status === 'Cooking' || item.status === 'Served')) {
+    return 'Cooking'
+  }
+  return 'OnHold'
+}
+
+/** Order edits, course activation, transfer, and extra checkout calls are locked while PaymentPending. */
+export function isOrderLockedForTable(status: TableStatus): boolean {
+  return status === 'PaymentPending'
 }
 
 /** Returns true when at least one item in the target course is waiting OnHold. */

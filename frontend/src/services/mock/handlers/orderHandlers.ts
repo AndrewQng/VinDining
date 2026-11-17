@@ -1,6 +1,7 @@
 import {
   canFireCourse,
   fireCourseItems,
+  getAddedOrderItemStatus,
   getInitialOrderItemStatus,
   markItemRemake,
   markItemServed,
@@ -18,12 +19,14 @@ import type {
 import { nextMockId, saveMockDb } from '../db'
 import type { MockDatabase } from '../seed'
 import { fail, ok, type MockRouteDefinition } from '../types'
+import { expandSetMenuOrderItems } from './orderHelpers'
 
 function buildOrderItemsFromInput(
   db: MockDatabase,
   orderId: string,
   inputs: OrderItemInput[],
-  nowIso: string
+  nowIso: string,
+  existingItems?: OrderItemDto[]
 ): { items?: OrderItemDto[]; error?: string } {
   const built: OrderItemDto[] = []
   for (const input of inputs) {
@@ -35,7 +38,9 @@ function buildOrderItemsFromInput(
     if (menuItem.status === 'SoldOut') {
       return { error: `Món "${menuItem.name}" hiện đang tạm hết` }
     }
-    const status = getInitialOrderItemStatus(menuItem.courseType)
+    const status = existingItems
+      ? getAddedOrderItemStatus(existingItems, menuItem.courseType)
+      : getInitialOrderItemStatus(menuItem.courseType)
     built.push({
       id: nextMockId('oi'),
       orderId,
@@ -134,14 +139,34 @@ export const orderRoutes: MockRouteDefinition[] = [
 
       const nowIso = now.toISOString()
       const orderId = nextMockId('ord')
-      const { items, error } = buildOrderItemsFromInput(
+      const items: OrderItemDto[] = []
+
+      if (input.tastingMenuId) {
+        const setRes = expandSetMenuOrderItems(
+          db,
+          orderId,
+          input.tastingMenuId,
+          input.guestCount,
+          nowIso
+        )
+        if (setRes.error || !setRes.items) {
+          return fail(400, setRes.error ?? 'Set Menu không hợp lệ')
+        }
+        items.push(...setRes.items)
+      }
+
+      const { items: alaCarteItems, error } = buildOrderItemsFromInput(
         db,
         orderId,
         input.items,
         nowIso
       )
-      if (error || !items) {
+      if (error || !alaCarteItems) {
         return fail(400, error ?? 'Danh sách món không hợp lệ')
+      }
+      items.push(...alaCarteItems)
+      if (items.length === 0) {
+        return fail(400, 'Vui lòng chọn ít nhất 1 món hoặc Set Menu')
       }
 
       const order: OrderDto = {
@@ -224,10 +249,11 @@ export const orderRoutes: MockRouteDefinition[] = [
         db,
         order.id,
         inputs,
-        now.toISOString()
+        now.toISOString(),
+        order.items
       )
-      if (error || !added) {
-        return fail(400, error ?? 'Không thể thêm món')
+      if (error || !added || added.length === 0) {
+        return fail(400, error ?? 'Vui lòng chọn ít nhất 1 món để gọi thêm')
       }
 
       order.items.push(...added)
