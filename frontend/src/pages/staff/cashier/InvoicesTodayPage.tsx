@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Printer } from 'lucide-react'
-import { formatDateTime, formatVnd } from '@/domain'
+import { formatDateTime, formatInvoiceCode, formatVnd } from '@/domain'
 import { ReceiptSlip80mm } from '@/components/ReceiptSlip80mm'
 import {
   Button,
@@ -126,7 +126,7 @@ export function InvoicesTodayPage() {
                     className="transition-colors hover:bg-card-hover"
                   >
                     <td className="px-4 py-3.5 font-mono text-xs text-ink">
-                      {inv.id}
+                      {formatInvoiceCode(inv.id)}
                     </td>
                     <td className="px-4 py-3.5 font-semibold text-ink">
                       Bàn {inv.tableNumber}
@@ -174,7 +174,7 @@ export function InvoicesTodayPage() {
         onClose={() => setSelectedInvoiceId(null)}
         title={
           detail
-            ? `Chi tiết hóa đơn ${detail.id} · Bàn ${detail.tableNumber}`
+            ? `Chi tiết hóa đơn ${formatInvoiceCode(detail.id)} · Bàn ${detail.tableNumber}`
             : 'Chi tiết hóa đơn'
         }
         size="sm"

@@ -173,3 +173,10 @@ export function buildBillLineItems(
 
   return lines
 }
+
+/** Formats a raw invoice ID into a readable 6-character uppercase display code. */
+export function formatInvoiceCode(id: string): string {
+  const clean = id.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+  if (!clean) return '------'
+  return clean.length > 6 ? clean.slice(-6) : clean
+}

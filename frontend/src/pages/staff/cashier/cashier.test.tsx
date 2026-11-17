@@ -14,6 +14,8 @@ import { CashierQueuePage } from './CashierQueuePage'
 import { InvoicePreviewPage } from './InvoicePreviewPage'
 import { InvoicesTodayPage } from './InvoicesTodayPage'
 
+const activeClients: QueryClient[] = []
+
 function renderCashierRoute(initialEntry: string) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,6 +23,7 @@ function renderCashierRoute(initialEntry: string) {
       mutations: { retry: false },
     },
   })
+  activeClients.push(queryClient)
   return {
     queryClient,
     ...render(
@@ -53,7 +56,14 @@ describe('Cashier C1–C4 & Hóa đơn hôm nay components', () => {
     useAuthStore.getState().setAuth(res.token, res.user)
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await Promise.all(
+      activeClients.splice(0).map(async (qc) => {
+        await qc.cancelQueries()
+        qc.clear()
+      })
+    )
+    useAuthStore.getState().logout()
     cleanup()
     vi.restoreAllMocks()
     window.localStorage.clear()
@@ -163,6 +173,9 @@ describe('Cashier C1–C4 & Hóa đơn hôm nay components', () => {
     await user.click(
       screen.getByRole('button', { name: /Đã in → Tiếp tục thanh toán/i })
     )
+    expect(
+      screen.getByText(/cà thẻ POS không dây tại bàn/i)
+    ).toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: /Thẻ/i }))
     await user.click(
       screen.getByRole('button', { name: /Xác nhận hoàn tất thanh toán/i })
@@ -172,10 +185,11 @@ describe('Cashier C1–C4 & Hóa đơn hôm nay components', () => {
     expect(
       await screen.findByText(/Thanh toán thành công/i)
     ).toBeInTheDocument()
-    expect(screen.getByTestId('receipt-slip-80mm')).toHaveTextContent('HÓA ĐƠN')
-    expect(screen.getByTestId('receipt-slip-80mm')).toHaveTextContent(
-      'Quét mã để đánh giá'
-    )
+    const slip = screen.getByTestId('receipt-slip-80mm')
+    expect(slip).toHaveTextContent('HÓA ĐƠN')
+    expect(slip).toHaveTextContent(/Mã HĐ:\s*[A-Z0-9]{6}/)
+    expect(slip).not.toHaveTextContent(/Mã HĐ:\s*inv-/i)
+    expect(slip).toHaveTextContent('Quét mã để đánh giá')
   })
 
   it('C4 check-in by phone and Hóa đơn hôm nay listing/reprint work cleanly', async () => {

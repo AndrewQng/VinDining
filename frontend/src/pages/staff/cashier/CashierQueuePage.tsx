@@ -292,11 +292,6 @@ export function CashierQueuePage() {
                     >
                       <td className="px-4 py-3.5 font-semibold text-ink">
                         <span>Bàn {table.tableNumber}</span>
-                        {isHighlighted && (
-                          <span className="ml-2 inline-block rounded bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent">
-                            Mới
-                          </span>
-                        )}
                       </td>
                       <td className="px-4 py-3.5 text-ink-muted tabular-nums">
                         {table.guestCount ?? preview?.guestCount ?? '—'} khách

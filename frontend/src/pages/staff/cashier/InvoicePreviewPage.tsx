@@ -15,6 +15,7 @@ import {
 import {
   buildBillLineItems,
   formatDateTime,
+  formatInvoiceCode,
   formatSlotTime,
   formatVnd,
   hasAnyServedItem,
@@ -50,19 +51,19 @@ const PAYMENT_OPTIONS: ReadonlyArray<{
   {
     value: 'Cash',
     label: 'Tiền mặt',
-    hint: 'Thu tiền mặt tại quầy hoặc qua sổ da',
+    hint: 'Thu tiền mặt tại bàn qua sổ da',
     icon: Banknote,
   },
   {
     value: 'Card',
     label: 'Thẻ',
-    hint: 'Quẹt thẻ ngân hàng qua máy POS tại quầy',
+    hint: 'Khách thanh toán bằng cà thẻ POS không dây tại bàn',
     icon: CreditCard,
   },
   {
     value: 'VietQR',
     label: 'VietQR',
-    hint: 'Khách quét mã VietQR trên phiếu tạm tính 80mm',
+    hint: 'Khách quét mã VietQR trên phiếu tạm tính tại bàn',
     icon: QrCode,
   },
 ]
@@ -649,7 +650,7 @@ function SettledSuccessPanel({ invoice }: { invoice: InvoiceDto }) {
               </h1>
               <p className="mt-1 text-xs text-ink-muted">
                 Thời gian quyết toán: {formatDateTime(invoice.createdAt)} · Hóa
-                đơn {invoice.id}
+                đơn {formatInvoiceCode(invoice.id)}
               </p>
             </div>
           </div>

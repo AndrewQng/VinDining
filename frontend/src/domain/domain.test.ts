@@ -13,6 +13,7 @@ import {
   fireCourseItems,
   formatDate,
   formatDateTime,
+  formatInvoiceCode,
   formatMinutesSeconds,
   formatRelativeMinutes,
   formatSlotTime,
@@ -665,5 +666,13 @@ describe('buildBillLineItems', () => {
     })
     const lineSum = lines.reduce((sum, l) => sum + l.lineTotal, 0)
     expect(lineSum).toBe(calculateInvoiceTotals(items, 0).subtotal)
+  })
+})
+
+describe('formatInvoiceCode', () => {
+  it('extracts last 6 uppercase alphanumeric characters from raw invoice IDs', () => {
+    expect(formatInvoiceCode('inv-1794921839070-2')).toBe('390702')
+    expect(formatInvoiceCode('inv-seed-1')).toBe('VSEED1')
+    expect(formatInvoiceCode('abc')).toBe('ABC')
   })
 })

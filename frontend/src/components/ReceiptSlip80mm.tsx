@@ -3,6 +3,7 @@ import QRCode from 'qrcode'
 import {
   buildBillLineItems,
   formatDateTime,
+  formatInvoiceCode,
   formatVnd,
   formatVndDeduction,
   type BillLineItem,
@@ -110,7 +111,7 @@ export function ReceiptSlip80mm({
         </p>
         {invoiceId && variant === 'official' && (
           <p className="text-[11px] font-mono text-[#6b7280]">
-            Mã HĐ: {invoiceId}
+            Mã HĐ: {formatInvoiceCode(invoiceId)}
           </p>
         )}
         <p className="text-xs font-semibold text-[#374151]">

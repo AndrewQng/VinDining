@@ -4,6 +4,8 @@ import { expect, test, type Page } from '@playwright/test'
 
 const SHOTS_DIR =
   '/home/life/Documents/AGY-Proxy/Response/vindining_web_p1.txt/shots-p5a'
+const SHOTS_P5B_DIR =
+  '/home/life/Documents/AGY-Proxy/Response/vindining_web_p1.txt/shots-p5b'
 
 function attachErrorGuard(page: Page): string[] {
   const errors: string[] = []
@@ -115,7 +117,12 @@ test.describe('Phase 5a: Cashier POS (/thu-ngan/*, C1–C4 + Hóa đơn hôm nay
     const b05Row = cashierPage.getByTestId('queue-row-B05')
     await expect(b05Row).toBeVisible()
     await expect(b05Row).toContainText('6.156.000 ₫')
+    await expect(b05Row).not.toContainText(/\bMới\b/i)
     await saveShot(cashierPage, 'cashier-queue.png')
+    fs.mkdirSync(SHOTS_P5B_DIR, { recursive: true })
+    await cashierPage.screenshot({
+      path: path.join(SHOTS_P5B_DIR, 'c1-fixed-dark.png'),
+    })
 
     // C2: Open B05 preview
     await b05Row.getByRole('link', { name: /Xem tạm tính/i }).click()
@@ -150,6 +157,9 @@ test.describe('Phase 5a: Cashier POS (/thu-ngan/*, C1–C4 + Hóa đơn hôm nay
     await expect(
       cashierPage.getByRole('heading', { name: /Xác nhận thanh toán/i })
     ).toBeVisible()
+    await expect(
+      cashierPage.getByText(/cà thẻ POS không dây tại bàn/i)
+    ).toBeVisible()
     await saveShot(cashierPage, 'invoice-payment-methods.png')
 
     // Settle via VietQR -> C3b
@@ -162,12 +172,17 @@ test.describe('Phase 5a: Cashier POS (/thu-ngan/*, C1–C4 + Hóa đơn hôm nay
     ).toBeVisible()
     const officialSlip = cashierPage.getByTestId('receipt-slip-80mm')
     await expect(officialSlip).toContainText('HÓA ĐƠN')
+    await expect(officialSlip).toContainText(/Mã HĐ:\s*[A-Z0-9]{6}/)
+    await expect(officialSlip).not.toContainText(/inv-/i)
     await expect(officialSlip).toContainText('Quét mã để đánh giá')
     await expect(officialSlip.locator('img')).toHaveAttribute(
       'src',
       /^data:image\/png;base64,/
     )
     await saveShot(cashierPage, 'invoice-settled.png')
+    await cashierPage.screenshot({
+      path: path.join(SHOTS_P5B_DIR, 'c3b-short-code-dark.png'),
+    })
 
     // C1b: Return to queue -> B05 is gone live, only B04 remains
     await cashierPage
@@ -179,7 +194,7 @@ test.describe('Phase 5a: Cashier POS (/thu-ngan/*, C1–C4 + Hóa đơn hôm nay
     await saveShot(cashierPage, 'cashier-queue-after-settle.png')
 
     // Waiter W1 shows B05 as Đang dọn live (navigate via bottom nav without full reload)
-    await waiterPage.getByRole('link', { name: 'Sơ đồ bàn' }).click()
+    await waiterPage.getByRole('link', { name: 'Sơ đồ bàn', exact: true }).click()
     await expect(waiterPage.getByTestId('waitstaff-table-B05')).toContainText(
       'Đang dọn'
     )
