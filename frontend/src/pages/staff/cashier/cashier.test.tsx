@@ -46,7 +46,7 @@ function renderCashierRoute(initialEntry: string) {
 
 describe('Cashier C1–C4 & Hóa đơn hôm nay components', () => {
   beforeEach(async () => {
-    installMockAdapter(apiClient)
+    installMockAdapter(apiClient, { minLatencyMs: 0, maxLatencyMs: 0 })
     resetMockDb()
     setCashierBellMuted(false)
     const res = await authApi.login({

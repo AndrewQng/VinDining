@@ -13,6 +13,7 @@ import type {
   TastingMenuDto,
 } from '@/types'
 import { calculateDepositAmount } from '@/domain'
+import { buildHistorical120DayData } from './historicalSeed'
 
 export interface DemoStaffCredential {
   id: string
@@ -755,6 +756,42 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         createdAt: minsAgo(400),
       },
     },
+    {
+      id: 'res-vd-8p4k',
+      bookingCode: 'VD-8P4K',
+      guest: {
+        id: 'guest-refund-2',
+        fullName: 'Nguyễn Văn An',
+        phoneNumber: '0901 234 567',
+        email: 'an.nguyen@email.com',
+      },
+      tableId: 'tbl-b06',
+      tableNumber: 'B06',
+      zone: 'MainHall',
+      reservationTime: halfHourBoundary(150),
+      partySize: 2,
+      preOrderedTastingMenuId: null,
+      preOrderedTastingMenuName: null,
+      durationMinutes: 120,
+      status: 'Cancelled_Forfeited',
+      note: null,
+      cancelledAt: minsAgo(25),
+      cancelledReason: 'Thay đổi lịch hẹn công việc ngoài dự kiến',
+      holdExpiresAt: null,
+      reminderSentAt: null,
+      createdAt: minsAgo(320),
+      deposit: {
+        id: 'dep-vd-8p4k',
+        reservationId: 'res-vd-8p4k',
+        amount: b04Deposit,
+        transactionId: 'VNP-8P4K-001',
+        paymentMethod: 'Card',
+        status: 'Forfeited',
+        paidAt: minsAgo(318),
+        refundAmount: null,
+        createdAt: minsAgo(320),
+      },
+    },
   ]
 
   const orders: OrderDto[] = [
@@ -1014,6 +1051,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     },
   ]
 
+  const history = buildHistorical120DayData(now)
+
   return {
     version: MOCK_DB_VERSION,
     staffs,
@@ -1022,11 +1061,11 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     menuItems,
     tastingMenus,
     tables,
-    reservations,
-    orders,
-    invoices,
+    reservations: [...reservations, ...history.reservations],
+    orders: [...orders, ...history.orders],
+    invoices: [...invoices, ...history.invoices],
     serviceRequests,
-    feedbacks,
+    feedbacks: [...feedbacks, ...history.feedbacks],
     auditLogs: [
       {
         id: 'audit-seed-1',

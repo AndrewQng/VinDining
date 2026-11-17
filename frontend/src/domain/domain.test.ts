@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   areAllItemsServed,
   buildBillLineItems,
+  buildDashboardReportMetrics,
+  calculateCancellationRate,
   calculateDepositAmount,
   calculateInvoiceTotals,
+  calculateOccupancyRate,
   canFireCourse,
+  canModifyStaffAccount,
   computeHoldExpiresAt,
   computeKdsRowsPerPage,
   evaluateCancellationPolicy,
@@ -26,6 +30,7 @@ import {
   getNextActivatableCourse,
   getOrderItemDisplayLabel,
   getRemainingHoldSeconds,
+  getReportPeriodWindow,
   groupKitchenTickets,
   hasAnyServedItem,
   isHoldExpired,
@@ -34,6 +39,8 @@ import {
   markItemRemake,
   markItemServed,
   paginateKdsLanes,
+  validateFloorPlanLayout,
+  validateTastingMenuSelection,
   type FireableOrderItem,
 } from './index'
 
@@ -674,5 +681,88 @@ describe('formatInvoiceCode', () => {
     expect(formatInvoiceCode('inv-1794921839070-2')).toBe('390702')
     expect(formatInvoiceCode('inv-seed-1')).toBe('VSEED1')
     expect(formatInvoiceCode('abc')).toBe('ABC')
+  })
+})
+
+describe('manager domain rules and report KPIs', () => {
+  it('computes occupancy and cancellation KPIs cleanly', () => {
+    expect(calculateOccupancyRate(15, 60)).toBe(25)
+    expect(calculateOccupancyRate(0, 0)).toBe(0)
+    expect(calculateCancellationRate(3, 20)).toBe(15)
+    expect(calculateCancellationRate(0, 0)).toBe(0)
+  })
+
+  it('aggregates report period metrics and empty future period', () => {
+    const anchor = new Date('2026-11-17T12:00:00')
+    const monthWin = getReportPeriodWindow('month', 0, anchor)
+    expect(monthWin.label).toBe('Tháng 11/2026')
+
+    const emptyFuture = getReportPeriodWindow('month', 3, anchor)
+    const emptyRes = buildDashboardReportMetrics({
+      period: 'month',
+      from: emptyFuture.from,
+      to: emptyFuture.to,
+      periodLabel: emptyFuture.label,
+      tables: [],
+      invoices: [],
+      orders: [],
+      reservations: [],
+      feedbacks: [],
+      now: anchor,
+    })
+    expect(emptyRes.hasData).toBe(false)
+    expect(emptyRes.totalRevenue).toBe(0)
+  })
+
+  it('validates set-menu one-dish-per-course rule, layout coordinates, and self-lock guard', () => {
+    const missingDessert = validateTastingMenuSelection([
+      { menuItemId: 'item-1', courseOrder: 1, courseType: 'Appetizer' },
+      { menuItemId: 'item-2', courseOrder: 2, courseType: 'MainCourse' },
+    ])
+    expect(missingDessert.valid).toBe(false)
+    expect(missingDessert.errors.Dessert).toBeTruthy()
+
+    const validSet = validateTastingMenuSelection([
+      { menuItemId: 'item-1', courseOrder: 1, courseType: 'Appetizer' },
+      { menuItemId: 'item-2', courseOrder: 2, courseType: 'MainCourse' },
+      { menuItemId: 'item-3', courseOrder: 3, courseType: 'Dessert' },
+    ])
+    expect(validSet.valid).toBe(true)
+
+    expect(
+      validateFloorPlanLayout([{ tableId: 'tbl-1', posX: 80, posY: 160, capacity: 4 }])
+        .valid
+    ).toBe(true)
+    expect(
+      validateFloorPlanLayout([{ tableId: 'tbl-1', posX: -10, posY: 160 }]).valid
+    ).toBe(false)
+
+    expect(
+      canModifyStaffAccount({
+        actorId: 'staff-manager-1',
+        targetId: 'staff-manager-1',
+        nextIsActive: false,
+      })
+    ).toEqual({
+      allowed: false,
+      reason: 'Không thể tự khóa tài khoản Quản lý đang đăng nhập',
+    })
+    expect(
+      canModifyStaffAccount({
+        actorId: 'staff-manager-1',
+        targetId: 'staff-manager-1',
+        nextRole: 'Cashier',
+      })
+    ).toEqual({
+      allowed: false,
+      reason: 'Không thể tự hạ quyền tài khoản Quản lý đang đăng nhập',
+    })
+    expect(
+      canModifyStaffAccount({
+        actorId: 'staff-manager-1',
+        targetId: 'staff-cashier-1',
+        nextIsActive: false,
+      }).allowed
+    ).toBe(true)
   })
 })

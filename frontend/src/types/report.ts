@@ -14,6 +14,13 @@ export interface ReportDateRangeQuery {
   zone?: TableZone
 }
 
+/** Single bucket in the revenue-over-time series chart. */
+export interface RevenueSeriesPointDto {
+  label: string
+  revenue: number
+  guests: number
+}
+
 /** Best-selling menu item metric row. */
 export interface BestSellerItemDto {
   menuItemId: string
@@ -30,12 +37,27 @@ export interface ZoneRevenueDto {
   reservationCount: number
 }
 
+/** Aggregated guest feedback averages returned in reports. */
+export interface ReportFeedbackSummaryDto {
+  count: number
+  avgFood: number
+  avgAmbience: number
+  avgService: number
+}
+
 /** Dashboard metrics DTO returned by GET /api/manager/reports/dashboard. */
 export interface DashboardMetricsDto {
+  period: ReportPeriod
+  from: string
+  to: string
+  periodLabel: string
+  hasData: boolean
   totalRevenue: number
   totalGuests: number
   occupancyRate: number
   cancellationRate: number
+  revenueSeries: RevenueSeriesPointDto[]
   bestSellers: BestSellerItemDto[]
   revenueByZone: ZoneRevenueDto[]
+  feedbackSummary: ReportFeedbackSummaryDto
 }

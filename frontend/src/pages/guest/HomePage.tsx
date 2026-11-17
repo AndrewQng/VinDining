@@ -15,6 +15,7 @@ import {
 } from '@/domain'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { menuApi, reservationApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
 import type { CourseType, MenuItemDto, TableZone } from '@/types'
 import { getDefaultBookingDate } from './bookingState'
 
@@ -74,6 +75,9 @@ export function HomePage() {
     queryKey: ['public-tasting-menus'],
     queryFn: () => menuApi.getTastingMenus(),
   })
+
+  useRealtime('menu:updated')
+  useRealtime('table:status-changed')
 
   const {
     data: categories = [],

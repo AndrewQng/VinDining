@@ -18,6 +18,14 @@ const EVENT_QUERY_KEYS: Record<RealtimeEventName, QueryKey[]> = {
   'checkout:requested': [['tables'], ['table'], ['invoices']],
   'invoice:settled': [['tables'], ['table'], ['invoices'], ['orders'], ['reports']],
   'sla:alert': [['kitchen'], ['orders']],
+  'menu:updated': [
+    ['menu-items'],
+    ['public-tasting-menus'],
+    ['public-menu-categories'],
+    ['table-emenu'],
+    ['manager', 'menu-items'],
+    ['manager', 'tasting-menus'],
+  ],
 }
 
 /**

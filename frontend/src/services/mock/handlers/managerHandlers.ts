@@ -1,8 +1,15 @@
+import {
+  buildDashboardReportMetrics,
+  canModifyStaffAccount,
+  getReportPeriodWindow,
+  validateFloorPlanLayout,
+} from '@/domain'
 import { realtimeClient } from '@/services/realtime/client'
 import type {
   CreateStaffRequest,
   CreateTableRequest,
   ManualRefundRequest,
+  ReportPeriod,
   ResetPasswordRequest,
   StaffRole,
   TableDto,
@@ -28,14 +35,33 @@ export const managerRoutes: MockRouteDefinition[] = [
     access: ['Manager'],
     handler: ({ db, body }) => {
       const { positions } = body as UpdateFloorPlanLayoutRequest
+      const check = validateFloorPlanLayout(positions)
+      if (!check.valid) {
+        return fail(
+          400,
+          Object.values(check.errors)[0] ?? 'Cấu hình bàn không hợp lệ'
+        )
+      }
       for (const pos of positions) {
         const table = db.tables.find((t) => t.id === pos.tableId)
-        if (table) {
-          table.posX = pos.posX
-          table.posY = pos.posY
+        if (!table) continue
+        table.posX = Math.round(pos.posX)
+        table.posY = Math.round(pos.posY)
+        if (pos.capacity !== undefined) table.capacity = pos.capacity
+        if (pos.zone !== undefined) table.zone = pos.zone
+        if (pos.tableNumber !== undefined && pos.tableNumber.trim()) {
+          table.tableNumber = pos.tableNumber.trim().toUpperCase()
         }
       }
       saveMockDb(db)
+      const first = db.tables.find((t) => t.isActive)
+      if (first) {
+        realtimeClient.publish('table:status-changed', {
+          tableId: first.id,
+          tableNumber: first.tableNumber,
+          status: first.status,
+        })
+      }
       return ok(db.tables.filter((t) => t.isActive))
     },
   },
@@ -47,12 +73,18 @@ export const managerRoutes: MockRouteDefinition[] = [
     handler: ({ db, body }) => {
       const input = body as CreateTableRequest
       const tableNumber = input.tableNumber.trim().toUpperCase()
+      if (!tableNumber) {
+        return fail(400, 'Vui lòng nhập số hiệu bàn')
+      }
+      if (!Number.isInteger(input.capacity) || input.capacity < 1 || input.capacity > 20) {
+        return fail(400, 'Số ghế phải từ 1 đến 20')
+      }
       if (
         db.tables.some(
           (t) => t.isActive && t.tableNumber.toUpperCase() === tableNumber
         )
       ) {
-        return fail(409, 'Số bàn đã tồn tại')
+        return fail(409, 'Số hiệu bàn đã tồn tại')
       }
       const table: TableDto = {
         id: nextMockId('tbl'),
@@ -61,8 +93,8 @@ export const managerRoutes: MockRouteDefinition[] = [
         capacity: input.capacity,
         zone: input.zone,
         status: 'Available',
-        posX: input.posX,
-        posY: input.posY,
+        posX: Math.round(input.posX),
+        posY: Math.round(input.posY),
         isActive: true,
         assignedStaffId: null,
         assignedStaffName: null,
@@ -70,9 +102,15 @@ export const managerRoutes: MockRouteDefinition[] = [
         currentReservationCode: null,
         guestCount: null,
         holdExpiresAt: null,
+        checkoutRequestedAt: null,
       }
       db.tables.push(table)
       saveMockDb(db)
+      realtimeClient.publish('table:status-changed', {
+        tableId: table.id,
+        tableNumber: table.tableNumber,
+        status: table.status,
+      })
       return ok(table, 201)
     },
   },
@@ -81,17 +119,30 @@ export const managerRoutes: MockRouteDefinition[] = [
     method: 'DELETE',
     pattern: '/manager/tables/:id',
     access: ['Manager'],
-    handler: ({ db, params }) => {
+    handler: ({ db, params, now }) => {
       const table = db.tables.find((t) => t.id === params.id && t.isActive)
       if (!table) return fail(404, 'Không tìm thấy bàn')
+
+      const hasFutureReservation = db.reservations.some(
+        (r) =>
+          r.tableId === table.id &&
+          (r.status === 'Reserved' || r.status === 'PendingDeposit') &&
+          Date.parse(r.reservationTime) > now.getTime()
+      )
+
       if (
         table.status === 'Occupied' ||
         table.status === 'Reserved' ||
         table.status === 'Locked' ||
-        table.status === 'PaymentPending'
+        table.status === 'PaymentPending' ||
+        hasFutureReservation
       ) {
-        return fail(409, 'Không thể xóa bàn đang có khách hoặc đã đặt trước')
+        return fail(
+          409,
+          'Bàn đang có khách hoặc đã đặt trước — vui lòng chuyển khách trước khi xóa'
+        )
       }
+
       table.isActive = false
       saveMockDb(db)
       realtimeClient.publish('table:status-changed', {
@@ -107,7 +158,7 @@ export const managerRoutes: MockRouteDefinition[] = [
     method: 'GET',
     pattern: '/manager/refunds',
     access: ['Manager'],
-    handler: ({ db }) => {
+    handler: ({ db, now }) => {
       const list = db.reservations
         .filter(
           (r) =>
@@ -116,7 +167,9 @@ export const managerRoutes: MockRouteDefinition[] = [
             r.status === 'RefundRejected'
         )
         .map((r) => {
-          const cancelledMs = r.cancelledAt ? Date.parse(r.cancelledAt) : Date.now()
+          const cancelledMs = r.cancelledAt
+            ? Date.parse(r.cancelledAt)
+            : now.getTime()
           const hours =
             (Date.parse(r.reservationTime) - cancelledMs) / 3_600_000
           const log = db.auditLogs.find(
@@ -127,8 +180,12 @@ export const managerRoutes: MockRouteDefinition[] = [
             hoursBeforeReservation: Math.max(0, Number(hours.toFixed(1))),
             requestedAt: r.cancelledAt ?? r.createdAt,
             auditReason: log?.reason ?? null,
+            processedAt: log?.createdAt ?? null,
           }
         })
+        .sort(
+          (a, b) => Date.parse(b.requestedAt) - Date.parse(a.requestedAt)
+        )
       return ok(list)
     },
   },
@@ -212,6 +269,9 @@ export const managerRoutes: MockRouteDefinition[] = [
       const input = body as CreateStaffRequest
       const email = input.email.trim().toLowerCase()
       const username = input.username.trim().toLowerCase()
+      if (!input.fullName.trim() || !email || !username) {
+        return fail(400, 'Vui lòng điền đầy đủ họ tên, email và tên đăng nhập')
+      }
       if (db.staffs.some((s) => s.email.toLowerCase() === email)) {
         return fail(409, 'Email đã được sử dụng cho tài khoản khác')
       }
@@ -219,10 +279,13 @@ export const managerRoutes: MockRouteDefinition[] = [
         return fail(409, 'Tên đăng nhập đã tồn tại')
       }
 
+      const temporaryPassword =
+        input.initialPassword?.trim() || 'VinDining@2026'
+
       const staff: MockStaffRecord = {
         id: nextMockId('staff'),
         fullName: input.fullName.trim(),
-        phoneNumber: input.phoneNumber.trim(),
+        phoneNumber: (input.phoneNumber ?? '').trim(),
         username,
         email,
         role: input.role,
@@ -230,11 +293,11 @@ export const managerRoutes: MockRouteDefinition[] = [
         failedLoginCount: 0,
         lockoutEnd: null,
         createdAt: now.toISOString(),
-        password: input.initialPassword ?? 'VinDining@2026',
+        password: temporaryPassword,
       }
       db.staffs.push(staff)
       saveMockDb(db)
-      return ok(sanitizeStaff(staff), 201)
+      return ok({ ...sanitizeStaff(staff), temporaryPassword }, 201)
     },
   },
   {
@@ -242,10 +305,20 @@ export const managerRoutes: MockRouteDefinition[] = [
     method: 'PUT',
     pattern: '/manager/staff/:id',
     access: ['Manager'],
-    handler: ({ db, params, body }) => {
+    handler: ({ db, params, body, user }) => {
       const staff = db.staffs.find((s) => s.id === params.id)
       if (!staff) return fail(404, 'Không tìm thấy nhân viên')
       const input = body as UpdateStaffRequest
+
+      const selfGuard = canModifyStaffAccount({
+        actorId: user?.id,
+        targetId: staff.id,
+        nextRole: input.role,
+      })
+      if (!selfGuard.allowed) {
+        return fail(409, selfGuard.reason ?? 'Không thể sửa phân quyền bản thân')
+      }
+
       const email = input.email.trim().toLowerCase()
       if (
         db.staffs.some(
@@ -255,7 +328,7 @@ export const managerRoutes: MockRouteDefinition[] = [
         return fail(409, 'Email đã được sử dụng cho tài khoản khác')
       }
       staff.fullName = input.fullName.trim()
-      staff.phoneNumber = input.phoneNumber.trim()
+      staff.phoneNumber = (input.phoneNumber ?? '').trim()
       staff.email = email
       staff.role = input.role
       saveMockDb(db)
@@ -270,15 +343,16 @@ export const managerRoutes: MockRouteDefinition[] = [
     handler: ({ db, params, body }) => {
       const staff = db.staffs.find((s) => s.id === params.id)
       if (!staff) return fail(404, 'Không tìm thấy nhân viên')
-      const { newPassword } = body as ResetPasswordRequest
-      if (!newPassword || newPassword.length < 6) {
+      const { newPassword } = (body ?? {}) as ResetPasswordRequest
+      const temporaryPassword = newPassword?.trim() || 'VinDining@2026'
+      if (temporaryPassword.length < 6) {
         return fail(400, 'Mật khẩu mới phải có ít nhất 6 ký tự')
       }
-      staff.password = newPassword
+      staff.password = temporaryPassword
       staff.failedLoginCount = 0
       staff.lockoutEnd = null
       saveMockDb(db)
-      return ok({ success: true })
+      return ok({ success: true, temporaryPassword })
     },
   },
   {
@@ -286,10 +360,20 @@ export const managerRoutes: MockRouteDefinition[] = [
     method: 'PATCH',
     pattern: '/manager/staff/:id/status',
     access: ['Manager'],
-    handler: ({ db, params, body }) => {
+    handler: ({ db, params, body, user }) => {
       const staff = db.staffs.find((s) => s.id === params.id)
       if (!staff) return fail(404, 'Không tìm thấy nhân viên')
       const { isActive } = body as ToggleStaffStatusRequest
+
+      const selfGuard = canModifyStaffAccount({
+        actorId: user?.id,
+        targetId: staff.id,
+        nextIsActive: isActive,
+      })
+      if (!selfGuard.allowed) {
+        return fail(409, selfGuard.reason ?? 'Không thể khóa tài khoản đang đăng nhập')
+      }
+
       staff.isActive = isActive
       if (isActive) {
         staff.failedLoginCount = 0
@@ -304,99 +388,41 @@ export const managerRoutes: MockRouteDefinition[] = [
     method: 'GET',
     pattern: '/manager/reports/dashboard',
     access: ['Manager'],
-    handler: ({ db, query }) => {
-      const zone = query.get('zone') as TableZone | null
-      const tablesInScope = db.tables.filter(
-        (t) => t.isActive && (!zone || t.zone === zone)
+    handler: ({ db, query, now }) => {
+      const periodParam = (query.get('period') ?? 'month') as ReportPeriod
+      const period: ReportPeriod = ['day', 'week', 'month', 'quarter'].includes(
+        periodParam
       )
-      const tableIds = new Set(tablesInScope.map((t) => t.id))
+        ? periodParam
+        : 'month'
+      const zoneParam = query.get('zone') as TableZone | null
+      const zone =
+        zoneParam && ['MainHall', 'VIP', 'Balcony'].includes(zoneParam)
+          ? zoneParam
+          : undefined
 
-      const paidInvoices = db.invoices.filter(
-        (inv) => inv.isPaid && tableIds.has(inv.tableId)
+      const defaultWin = getReportPeriodWindow(period, 0, now)
+      const fromParam = query.get('from')
+      const toParam = query.get('to')
+      const from = fromParam ? new Date(fromParam) : defaultWin.from
+      const to = toParam ? new Date(toParam) : defaultWin.to
+      const periodLabel = query.get('label') || defaultWin.label
+
+      return ok(
+        buildDashboardReportMetrics({
+          period,
+          from,
+          to,
+          periodLabel,
+          zone,
+          tables: db.tables,
+          invoices: db.invoices,
+          orders: db.orders,
+          reservations: db.reservations,
+          feedbacks: db.feedbacks,
+          now,
+        })
       )
-      const totalRevenue = paidInvoices.reduce(
-        (sum, inv) => sum + inv.totalAmount,
-        0
-      )
-
-      const activeOccupied = tablesInScope.filter(
-        (t) => t.status === 'Occupied' || t.status === 'PaymentPending'
-      )
-      const occupancyRate =
-        tablesInScope.length > 0
-          ? Number(((activeOccupied.length / tablesInScope.length) * 100).toFixed(1))
-          : 0
-
-      const reservationsInScope = db.reservations.filter((r) =>
-        zone ? r.zone === zone : true
-      )
-      const cancelledCount = reservationsInScope.filter(
-        (r) =>
-          r.status === 'Cancelled_Forfeited' ||
-          r.status === 'Cancelled_Refunded' ||
-          r.status === 'RefundRejected'
-      ).length
-      const cancellationRate =
-        reservationsInScope.length > 0
-          ? Number(
-              ((cancelledCount / reservationsInScope.length) * 100).toFixed(1)
-            )
-          : 0
-
-      const totalGuests =
-        activeOccupied.reduce((sum, t) => sum + (t.guestCount ?? 0), 0) +
-        paidInvoices.length * 4
-
-      const itemTotals = new Map<
-        string,
-        { menuItemId: string; name: string; quantitySold: number; revenue: number }
-      >()
-      for (const order of db.orders) {
-        if (!tableIds.has(order.tableId)) continue
-        for (const item of order.items) {
-          if (item.status !== 'Served' || !item.menuItemId) continue
-          const existing = itemTotals.get(item.menuItemId)
-          if (existing) {
-            existing.quantitySold += item.quantity
-            existing.revenue += item.quantity * item.unitPrice
-          } else {
-            itemTotals.set(item.menuItemId, {
-              menuItemId: item.menuItemId,
-              name: item.itemName,
-              quantitySold: item.quantity,
-              revenue: item.quantity * item.unitPrice,
-            })
-          }
-        }
-      }
-
-      const zones: TableZone[] = zone ? [zone] : ['MainHall', 'VIP', 'Balcony']
-      const revenueByZone = zones.map((z) => {
-        const zTableIds = new Set(
-          db.tables.filter((t) => t.isActive && t.zone === z).map((t) => t.id)
-        )
-        const zInvoices = db.invoices.filter(
-          (inv) => inv.isPaid && zTableIds.has(inv.tableId)
-        )
-        const zRes = db.reservations.filter((r) => r.zone === z)
-        return {
-          zone: z,
-          revenue: zInvoices.reduce((s, inv) => s + inv.totalAmount, 0),
-          guestCount: zRes.reduce((s, r) => s + r.partySize, 0),
-          reservationCount: zRes.length,
-        }
-      })
-
-      return ok({
-        totalRevenue,
-        totalGuests,
-        occupancyRate,
-        cancellationRate,
-        bestSellers: Array.from(itemTotals.values()).sort(
-          (a, b) => b.quantitySold - a.quantitySold
-        ),
-        revenueByZone,
-      })
     },
   },
   {

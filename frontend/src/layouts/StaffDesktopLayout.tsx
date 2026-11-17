@@ -77,6 +77,17 @@ const MANAGER_NAV: NavEntry[] = [
   },
 ]
 
+const OTHER_STAFF_LINKS: NavEntry[] = [
+  { to: '/phuc-vu', label: 'Phục vụ', icon: <Utensils className="w-4 h-4" /> },
+  {
+    to: '/dieu-phoi',
+    label: 'Điều phối',
+    icon: <CheckCircle2 className="w-4 h-4" />,
+  },
+  { to: '/thu-ngan', label: 'Thu ngân', icon: <Receipt className="w-4 h-4" /> },
+  { to: '/kds', label: 'KDS Bếp', icon: <LayoutGrid className="w-4 h-4" /> },
+]
+
 /** Desktop workspace shell with sidebar navigation for Cashier and Manager areas. */
 export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
   const navigate = useNavigate()
@@ -99,32 +110,55 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
   }, [logout, navigate])
 
   const navList = (onNavigate?: () => void) => (
-    <nav aria-label="Điều hướng phân hệ" className="space-y-1">
-      {navItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium border transition-colors',
-              isActive
-                ? 'bg-card border-primary/60 text-accent'
-                : 'border-transparent text-ink-muted hover:text-ink hover:bg-card-hover'
-            )
-          }
-        >
-          <span aria-hidden="true">{item.icon}</span>
-          <span>{item.label}</span>
-        </NavLink>
-      ))}
-    </nav>
+    <div className="space-y-6">
+      <nav aria-label="Điều hướng phân hệ" className="space-y-1">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            onClick={onNavigate}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium border transition-colors',
+                isActive
+                  ? 'bg-card border-primary/60 text-accent'
+                  : 'border-transparent text-ink-muted hover:text-ink hover:bg-card-hover'
+              )
+            }
+          >
+            <span aria-hidden="true">{item.icon}</span>
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      {area === 'manager' && (
+        <div className="pt-4 border-t border-line space-y-2">
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-subtle">
+            Phân hệ vận hành
+          </p>
+          <nav aria-label="Liên kết phân hệ khác" className="space-y-1">
+            {OTHER_STAFF_LINKS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={onNavigate}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-ink-muted hover:text-ink hover:bg-card-hover border border-transparent transition-colors"
+              >
+                <span aria-hidden="true">{item.icon}</span>
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      )}
+    </div>
   )
 
   return (
     <div className="min-h-screen bg-bg text-ink flex">
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col justify-between bg-surface border-r border-line p-5">
+      <aside className="no-print hidden lg:flex w-64 shrink-0 flex-col justify-between bg-surface border-r border-line p-5">
         <div className="space-y-6">
           <Wordmark subtitle={subtitle} size="md" />
           {navList()}
@@ -152,7 +186,7 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="sticky top-0 z-30 h-14 bg-surface border-b border-line px-4 sm:px-6 flex items-center justify-between gap-3">
+        <header className="no-print sticky top-0 z-30 h-14 bg-surface border-b border-line px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"

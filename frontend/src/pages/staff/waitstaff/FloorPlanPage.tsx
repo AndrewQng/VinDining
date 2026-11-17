@@ -15,6 +15,7 @@ import {
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { tableApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
 import type { TableDto, TableStatus, TableZone } from '@/types'
 import { CheckInSheet } from './CheckInSheet'
 
@@ -53,6 +54,8 @@ export function FloorPlanPage() {
     queryKey: ['tables'],
     queryFn: () => tableApi.getAll(),
   })
+
+  useRealtime('table:status-changed')
 
   const markAvailableMutation = useMutation({
     mutationFn: (tableId: string) => tableApi.updateStatus(tableId, 'Available'),

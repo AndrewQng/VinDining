@@ -24,6 +24,11 @@ export interface CreateStaffRequest {
   initialPassword?: string
 }
 
+/** Response returned by POST /api/manager/staff (temporaryPassword included in mock mode). */
+export interface CreateStaffResponse extends StaffDto {
+  temporaryPassword?: string
+}
+
 /** Payload for PUT /api/manager/staff/{id}. */
 export interface UpdateStaffRequest {
   fullName: string
@@ -34,7 +39,13 @@ export interface UpdateStaffRequest {
 
 /** Payload for POST /api/manager/staff/{id}/reset-password. */
 export interface ResetPasswordRequest {
-  newPassword: string
+  newPassword?: string
+}
+
+/** Response returned by POST /api/manager/staff/{id}/reset-password. */
+export interface ResetPasswordResponse {
+  success: boolean
+  temporaryPassword?: string
 }
 
 /** Payload for PATCH /api/manager/staff/{id}/status. */

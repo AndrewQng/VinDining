@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -9,6 +9,9 @@ export function useDialogBehavior(
   onClose: () => void,
   containerRef: RefObject<HTMLElement | null>
 ): void {
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
   useEffect(() => {
     if (!open) return
 
@@ -25,7 +28,7 @@ export function useDialogBehavior(
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.stopPropagation()
-        onClose()
+        onCloseRef.current()
         return
       }
       if (event.key !== 'Tab' || !container) return
@@ -55,5 +58,5 @@ export function useDialogBehavior(
       document.body.style.overflow = prevOverflow
       previousFocus?.focus?.()
     }
-  }, [open, onClose, containerRef])
+  }, [open, containerRef])
 }

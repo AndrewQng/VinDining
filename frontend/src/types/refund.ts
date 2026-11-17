@@ -6,6 +6,7 @@ export interface RefundRequestDto {
   hoursBeforeReservation: number
   requestedAt: string
   auditReason: string | null
+  processedAt?: string | null
 }
 
 /** Payload for POST /api/manager/reservations/{id}/manual-refund. */

@@ -65,6 +65,9 @@ export interface TableLayoutPositionInput {
   tableId: string
   posX: number
   posY: number
+  capacity?: number
+  zone?: TableZone
+  tableNumber?: string
 }
 
 /** Payload for PUT /api/manager/tables/layout. */

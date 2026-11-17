@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios'
 import { Button, Card, PageHeader, Skeleton } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { menuApi, orderApi, tableApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
 import type { ApiErrorResponse, OrderItemInput } from '@/types'
 import { OrderMenuPicker } from './OrderMenuPicker'
 
@@ -31,6 +32,8 @@ export function CreateOrderPage() {
     queryKey: ['public-tasting-menus'],
     queryFn: () => menuApi.getTastingMenus(),
   })
+
+  useRealtime('menu:updated')
 
   const createMutation = useMutation({
     mutationFn: (payload: {

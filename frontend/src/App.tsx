@@ -38,11 +38,6 @@ const FeedbackPage = lazy(() =>
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((m) => ({ default: m.LoginPage }))
 )
-const PlaceholderPage = lazy(() =>
-  import('@/pages/PlaceholderPage').then((m) => ({
-    default: m.PlaceholderPage,
-  }))
-)
 const UiGalleryPage = lazy(() =>
   import('@/pages/dev/UiGalleryPage').then((m) => ({
     default: m.UiGalleryPage,
@@ -116,6 +111,31 @@ const ExpediterPassPage = lazy(() =>
 const KdsBoardPage = lazy(() =>
   import('@/pages/kds/KdsBoardPage').then((m) => ({
     default: m.KdsBoardPage,
+  }))
+)
+const ManagerMenuPage = lazy(() =>
+  import('@/pages/staff/manager/ManagerMenuPage').then((m) => ({
+    default: m.ManagerMenuPage,
+  }))
+)
+const ManagerFloorPlanPage = lazy(() =>
+  import('@/pages/staff/manager/ManagerFloorPlanPage').then((m) => ({
+    default: m.ManagerFloorPlanPage,
+  }))
+)
+const ManagerRefundsPage = lazy(() =>
+  import('@/pages/staff/manager/ManagerRefundsPage').then((m) => ({
+    default: m.ManagerRefundsPage,
+  }))
+)
+const ManagerStaffPage = lazy(() =>
+  import('@/pages/staff/manager/ManagerStaffPage').then((m) => ({
+    default: m.ManagerStaffPage,
+  }))
+)
+const ManagerReportsPage = lazy(() =>
+  import('@/pages/staff/manager/ManagerReportsPage').then((m) => ({
+    default: m.ManagerReportsPage,
   }))
 )
 
@@ -235,51 +255,11 @@ export default function App() {
               path="/quan-ly"
               element={<StaffDesktopLayout area="manager" />}
             >
-              <Route
-                index
-                element={
-                  <PlaceholderPage
-                    title="Quản lý thực đơn"
-                    subtitle="Quản trị món lẻ, Prep SLA, trạng thái món và Set Menu"
-                  />
-                }
-              />
-              <Route
-                path="so-do-ban"
-                element={
-                  <PlaceholderPage
-                    title="Cấu hình sơ đồ bàn"
-                    subtitle="Quản lý vị trí, sức chứa, khu vực và mã QR bàn"
-                  />
-                }
-              />
-              <Route
-                path="hoan-coc"
-                element={
-                  <PlaceholderPage
-                    title="Duyệt hoàn cọc ngoại lệ"
-                    subtitle="Xem xét yêu cầu hủy đặt bàn và phê duyệt hoàn cọc"
-                  />
-                }
-              />
-              <Route
-                path="tai-khoan"
-                element={
-                  <PlaceholderPage
-                    title="Tài khoản nhân viên"
-                    subtitle="Tạo tài khoản, phân quyền, đặt lại mật khẩu và khóa mở tài khoản"
-                  />
-                }
-              />
-              <Route
-                path="bao-cao"
-                element={
-                  <PlaceholderPage
-                    title="Báo cáo doanh thu & vận hành"
-                    subtitle="Thống kê doanh thu, tỷ lệ lấp đầy, món bán chạy và xuất báo cáo"
-                  />
-                }
-              />
+              <Route index element={<ManagerMenuPage />} />
+              <Route path="so-do-ban" element={<ManagerFloorPlanPage />} />
+              <Route path="hoan-coc" element={<ManagerRefundsPage />} />
+              <Route path="tai-khoan" element={<ManagerStaffPage />} />
+              <Route path="bao-cao" element={<ManagerReportsPage />} />
             </Route>
           </Route>
 

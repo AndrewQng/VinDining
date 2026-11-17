@@ -17,6 +17,8 @@ Things the docs don't settle. Agents add rows here instead of guessing. The proj
 | 11 | Waitstaff W2 check-in supports looking up a reservation by booking code or phone number; docs/api.md lists GET /api/reservations as Cashier/Manager only. | docs/api.md vs UC-E6 / W2 | Website allows Waitstaff on GET /api/reservations?search=... (mock until backend extends role access) |
 | 12 | How is the SLA of a course ticket with several dishes measured on the KDS? | Report UC-S4 (per dish) | Ticket deadline = longest Prep SLA among its dishes, from the course start |
 | 13 | How is a pre-ordered Set Menu billed when some of its courses were not served? | Report BR-02 (Subtotal = served dishes) has no rule for sets | Bill only the served courses, split by their à la carte prices |
+| 14 | UC-A5 lists a "ca phục vụ" filter, but no doc defines the shifts. | Report UC-A5 vs PROTOTYPE_RULES §3 row 11 | Zone filter only until the shifts are defined |
+| 15 | Occupancy rate and cancellation rate KPI formulas are not specified in the report. | UC-A5 vs BR-01..BR-06 | Occupancy = occupied table-slots / available table-slots in the period; Cancellation rate = cancelled reservations / all reservations in the period |
 
 ## Answers from the project lead (29/10/2026)
 

@@ -1,3 +1,5 @@
+import { validateTastingMenuSelection } from '@/domain'
+import { realtimeClient } from '@/services/realtime/client'
 import type {
   CreateMenuItemRequest,
   CreateTastingMenuRequest,
@@ -128,6 +130,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       }
       db.menuItems.push(item)
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'item' })
       return ok(item, 201)
     },
   },
@@ -159,6 +162,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       if (input.categoryId) item.categoryId = input.categoryId
       if (input.imageUrl !== undefined) item.imageUrl = input.imageUrl
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'item' })
       return ok(item)
     },
   },
@@ -173,6 +177,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       const { status } = body as ToggleAvailabilityRequest
       item.status = status
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'item' })
       return ok(item)
     },
   },
@@ -186,6 +191,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       if (idx === -1) return fail(404, 'Không tìm thấy món ăn')
       db.menuItems.splice(idx, 1)
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'item' })
       return ok({ deleted: true })
     },
   },
@@ -203,10 +209,29 @@ export const menuRoutes: MockRouteDefinition[] = [
     access: ['Manager'],
     handler: ({ db, body, now }) => {
       const input = body as CreateTastingMenuRequest
+      const name = input.name.trim()
+      if (!name || input.price <= 0) {
+        return fail(400, 'Tên Set Menu và đơn giá trọn gói phải hợp lệ')
+      }
+      if (
+        db.tastingMenus.some(
+          (m) => m.name.toLowerCase() === name.toLowerCase()
+        )
+      ) {
+        return fail(409, 'Tên Set Menu đã tồn tại')
+      }
+      const validation = validateTastingMenuSelection(input.items)
+      if (!validation.valid) {
+        return fail(
+          400,
+          Object.values(validation.errors)[0] ??
+            'Set Menu phải có đủ 1 Khai vị, 1 Món chính, 1 Tráng miệng'
+        )
+      }
       const id = nextMockId('set')
       const setMenu: TastingMenuDto = {
         id,
-        name: input.name.trim(),
+        name,
         description: input.description?.trim() || null,
         price: Math.round(input.price),
         imageUrl: input.imageUrl ?? null,
@@ -227,6 +252,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       }
       db.tastingMenus.push(setMenu)
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'tasting-menu' })
       return ok(setMenu, 201)
     },
   },
@@ -239,7 +265,26 @@ export const menuRoutes: MockRouteDefinition[] = [
       const setMenu = db.tastingMenus.find((s) => s.id === params.id)
       if (!setMenu) return fail(404, 'Không tìm thấy Set Menu')
       const input = body as UpdateTastingMenuRequest
-      setMenu.name = input.name.trim()
+      const name = input.name.trim()
+      if (!name || input.price <= 0) {
+        return fail(400, 'Tên Set Menu và đơn giá trọn gói phải hợp lệ')
+      }
+      if (
+        db.tastingMenus.some(
+          (m) => m.id !== setMenu.id && m.name.toLowerCase() === name.toLowerCase()
+        )
+      ) {
+        return fail(409, 'Tên Set Menu đã tồn tại')
+      }
+      const validation = validateTastingMenuSelection(input.items)
+      if (!validation.valid) {
+        return fail(
+          400,
+          Object.values(validation.errors)[0] ??
+            'Set Menu phải có đủ 1 Khai vị, 1 Món chính, 1 Tráng miệng'
+        )
+      }
+      setMenu.name = name
       setMenu.description = input.description?.trim() || null
       setMenu.price = Math.round(input.price)
       if (input.imageUrl !== undefined) setMenu.imageUrl = input.imageUrl
@@ -257,6 +302,7 @@ export const menuRoutes: MockRouteDefinition[] = [
         }
       })
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'tasting-menu' })
       return ok(setMenu)
     },
   },
@@ -270,6 +316,7 @@ export const menuRoutes: MockRouteDefinition[] = [
       if (idx === -1) return fail(404, 'Không tìm thấy Set Menu')
       db.tastingMenus.splice(idx, 1)
       saveMockDb(db)
+      realtimeClient.publish('menu:updated', { entity: 'tasting-menu' })
       return ok({ deleted: true })
     },
   },

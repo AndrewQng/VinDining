@@ -6,6 +6,7 @@ import { formatVnd, isOrderLockedForTable } from '@/domain'
 import { Button, Card, PageHeader, Skeleton } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { menuApi, orderApi, tableApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
 import type { ApiErrorResponse, OrderItemInput } from '@/types'
 import { OrderMenuPicker } from './OrderMenuPicker'
 
@@ -27,6 +28,8 @@ export function AddItemsPage() {
     queryKey: ['menu-items'],
     queryFn: () => menuApi.getItems(),
   })
+
+  useRealtime('menu:updated')
 
   const addItemsMutation = useMutation({
     mutationFn: (items: OrderItemInput[]) =>

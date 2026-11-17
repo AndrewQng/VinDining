@@ -20,6 +20,7 @@ import {
 import { COURSE_TYPE_LABELS, SERVICE_REQUEST_TYPE_LABELS } from '@/domain'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { menuApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
 import { toast } from '@/stores/useToastStore'
 import type {
   ApiErrorResponse,
@@ -74,6 +75,8 @@ export function EMenuPage() {
     enabled: Boolean(qrCode),
     retry: false,
   })
+
+  useRealtime('menu:updated')
 
   const serviceMutation = useMutation({
     mutationFn: (requestType: ServiceRequestType) => {

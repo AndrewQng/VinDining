@@ -93,6 +93,16 @@ function hydrateInvoiceRecord(
   }
 }
 
+function isSameLocalDay(iso: string, ref: Date): boolean {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return false
+  return (
+    d.getFullYear() === ref.getFullYear() &&
+    d.getMonth() === ref.getMonth() &&
+    d.getDate() === ref.getDate()
+  )
+}
+
 export const invoiceRoutes: MockRouteDefinition[] = [
   {
     id: 24,
@@ -228,10 +238,17 @@ export const invoiceRoutes: MockRouteDefinition[] = [
     method: 'GET',
     pattern: '/invoices',
     access: ['Cashier', 'Manager'],
-    handler: ({ db, query }) => {
+    handler: ({ db, query, now }) => {
       const method = query.get('paymentMethod') as PaymentMethod | null
+      const dateParam = query.get('date')
+      const refDate = dateParam ? new Date(`${dateParam}T12:00:00`) : now
       const filtered = db.invoices
-        .filter((inv) => (method ? inv.paymentMethod === method : true))
+        .filter((inv) => {
+          if (method && inv.paymentMethod !== method) return false
+          if (dateParam) return isSameLocalDay(inv.createdAt, refDate)
+          const ageMs = now.getTime() - Date.parse(inv.createdAt)
+          return isSameLocalDay(inv.createdAt, refDate) || (ageMs >= 0 && ageMs < 12 * 3600_000)
+        })
         .map((inv) => hydrateInvoiceRecord(db, inv))
       return ok(filtered)
     },

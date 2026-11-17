@@ -19,6 +19,7 @@ const EVENT_HUB_MAP: Record<RealtimeEventName, HubName> = {
   'item:served': 'ServingHub',
   'service-request:created': 'ServingHub',
   'service-request:completed': 'ServingHub',
+  'menu:updated': 'FloorPlanHub',
 }
 
 /** SignalR realtime transport connecting to FloorPlanHub, KitchenHub, and ServingHub. */

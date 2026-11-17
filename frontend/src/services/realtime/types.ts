@@ -12,6 +12,7 @@ export type RealtimeEventName =
   | 'checkout:requested'
   | 'invoice:settled'
   | 'sla:alert'
+  | 'menu:updated'
 
 /** Strongly typed event payloads keyed by RealtimeEventName. */
 export interface RealtimePayloadMap {
@@ -35,6 +36,7 @@ export interface RealtimePayloadMap {
   'checkout:requested': { tableId: string; tableNumber: string }
   'invoice:settled': { invoiceId: string; tableId: string; tableNumber: string }
   'sla:alert': { overdueCount: number; warningCount: number }
+  'menu:updated': { entity: 'item' | 'tasting-menu' }
 }
 
 export type RealtimeHandler<K extends RealtimeEventName> = (

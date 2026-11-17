@@ -6,10 +6,17 @@ import type {
   CancelReservationResponse,
   CategoryDto,
   CheckInRequest,
+  CreateMenuItemRequest,
   CreateOrderRequest,
   CreateReservationRequest,
   CreateReservationResponse,
+  CreateStaffRequest,
+  CreateStaffResponse,
+  CreateTableRequest,
+  CreateTastingMenuRequest,
   CurrentUserDto,
+  DashboardMetricsDto,
+  ExportReportFormat,
   FeedbackDto,
   FireCourseRequest,
   InvoiceDto,
@@ -18,15 +25,23 @@ import type {
   KitchenPendingTicketDto,
   LoginRequest,
   LoginResponse,
+  ManualRefundRequest,
   MenuItemDto,
+  MenuItemStatus,
   OrderDto,
   OrderItemDto,
   PrintPreviewResponse,
+  RefundRequestDto,
+  ReportDateRangeQuery,
   ReservationDto,
   ReservationStatus,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   ServiceRequestDto,
   ServiceRequestType,
   SettleInvoiceRequest,
+  StaffDto,
+  StaffFilter,
   SubmitFeedbackRequest,
   TableDetailDto,
   TableDto,
@@ -34,6 +49,10 @@ import type {
   TableStatus,
   TastingMenuDto,
   TransferTableRequest,
+  UpdateFloorPlanLayoutRequest,
+  UpdateMenuItemRequest,
+  UpdateStaffRequest,
+  UpdateTastingMenuRequest,
   VnPayIpnRequest,
   WalkInRequest,
 } from '@/types'
@@ -320,6 +339,182 @@ export const invoiceApi = {
 export const feedbackApi = {
   submit: async (payload: SubmitFeedbackRequest): Promise<FeedbackDto> => {
     const { data } = await apiClient.post<FeedbackDto>('/feedbacks', payload)
+    return data
+  },
+}
+
+export const managerApi = {
+  getMenuItems: async (search?: string): Promise<MenuItemDto[]> => {
+    const { data } = await apiClient.get<MenuItemDto[]>('/manager/menu-items', {
+      params: search ? { search } : undefined,
+    })
+    return data
+  },
+  createMenuItem: async (
+    payload: CreateMenuItemRequest
+  ): Promise<MenuItemDto> => {
+    const { data } = await apiClient.post<MenuItemDto>(
+      '/manager/menu-items',
+      payload
+    )
+    return data
+  },
+  updateMenuItem: async (
+    id: string,
+    payload: UpdateMenuItemRequest
+  ): Promise<MenuItemDto> => {
+    const { data } = await apiClient.put<MenuItemDto>(
+      `/manager/menu-items/${encodeURIComponent(id)}`,
+      payload
+    )
+    return data
+  },
+  setMenuItemAvailability: async (
+    id: string,
+    status: MenuItemStatus
+  ): Promise<MenuItemDto> => {
+    const { data } = await apiClient.patch<MenuItemDto>(
+      `/manager/menu-items/${encodeURIComponent(id)}/availability`,
+      { status }
+    )
+    return data
+  },
+  deleteMenuItem: async (id: string): Promise<{ deleted: boolean }> => {
+    const { data } = await apiClient.delete<{ deleted: boolean }>(
+      `/manager/menu-items/${encodeURIComponent(id)}`
+    )
+    return data
+  },
+  getTastingMenus: async (): Promise<TastingMenuDto[]> => {
+    const { data } = await apiClient.get<TastingMenuDto[]>(
+      '/manager/tasting-menus'
+    )
+    return data
+  },
+  createTastingMenu: async (
+    payload: CreateTastingMenuRequest
+  ): Promise<TastingMenuDto> => {
+    const { data } = await apiClient.post<TastingMenuDto>(
+      '/manager/tasting-menus',
+      payload
+    )
+    return data
+  },
+  updateTastingMenu: async (
+    id: string,
+    payload: UpdateTastingMenuRequest
+  ): Promise<TastingMenuDto> => {
+    const { data } = await apiClient.put<TastingMenuDto>(
+      `/manager/tasting-menus/${encodeURIComponent(id)}`,
+      payload
+    )
+    return data
+  },
+  deleteTastingMenu: async (id: string): Promise<{ deleted: boolean }> => {
+    const { data } = await apiClient.delete<{ deleted: boolean }>(
+      `/manager/tasting-menus/${encodeURIComponent(id)}`
+    )
+    return data
+  },
+  saveFloorPlanLayout: async (
+    payload: UpdateFloorPlanLayoutRequest
+  ): Promise<TableDto[]> => {
+    const { data } = await apiClient.put<TableDto[]>(
+      '/manager/tables/layout',
+      payload
+    )
+    return data
+  },
+  createTable: async (payload: CreateTableRequest): Promise<TableDto> => {
+    const { data } = await apiClient.post<TableDto>('/manager/tables', payload)
+    return data
+  },
+  deleteTable: async (id: string): Promise<{ deleted: boolean }> => {
+    const { data } = await apiClient.delete<{ deleted: boolean }>(
+      `/manager/tables/${encodeURIComponent(id)}`
+    )
+    return data
+  },
+  getRefunds: async (): Promise<RefundRequestDto[]> => {
+    const { data } = await apiClient.get<RefundRequestDto[]>('/manager/refunds')
+    return data
+  },
+  processManualRefund: async (
+    reservationId: string,
+    payload: ManualRefundRequest
+  ): Promise<ReservationDto> => {
+    const { data } = await apiClient.post<ReservationDto>(
+      `/manager/reservations/${encodeURIComponent(reservationId)}/manual-refund`,
+      payload
+    )
+    return data
+  },
+  getStaffList: async (filter?: StaffFilter): Promise<StaffDto[]> => {
+    const { data } = await apiClient.get<StaffDto[]>('/manager/staff', {
+      params: filter,
+    })
+    return data
+  },
+  createStaff: async (
+    payload: CreateStaffRequest
+  ): Promise<CreateStaffResponse> => {
+    const { data } = await apiClient.post<CreateStaffResponse>(
+      '/manager/staff',
+      payload
+    )
+    return data
+  },
+  updateStaff: async (
+    id: string,
+    payload: UpdateStaffRequest
+  ): Promise<StaffDto> => {
+    const { data } = await apiClient.put<StaffDto>(
+      `/manager/staff/${encodeURIComponent(id)}`,
+      payload
+    )
+    return data
+  },
+  resetStaffPassword: async (
+    id: string,
+    payload?: ResetPasswordRequest
+  ): Promise<ResetPasswordResponse> => {
+    const { data } = await apiClient.post<ResetPasswordResponse>(
+      `/manager/staff/${encodeURIComponent(id)}/reset-password`,
+      payload ?? {}
+    )
+    return data
+  },
+  setStaffStatus: async (
+    id: string,
+    isActive: boolean
+  ): Promise<StaffDto> => {
+    const { data } = await apiClient.patch<StaffDto>(
+      `/manager/staff/${encodeURIComponent(id)}/status`,
+      { isActive }
+    )
+    return data
+  },
+  getDashboardReport: async (
+    params: ReportDateRangeQuery & { label?: string }
+  ): Promise<DashboardMetricsDto> => {
+    const { data } = await apiClient.get<DashboardMetricsDto>(
+      '/manager/reports/dashboard',
+      { params }
+    )
+    return data
+  },
+  getFeedbacks: async (): Promise<FeedbackDto[]> => {
+    const { data } = await apiClient.get<FeedbackDto[]>('/manager/feedbacks')
+    return data
+  },
+  exportReportMeta: async (
+    params: ReportDateRangeQuery & { format: ExportReportFormat }
+  ): Promise<{ fileName: string; format: ExportReportFormat; generatedAt: string }> => {
+    const { data } = await apiClient.get<{
+      fileName: string
+      format: ExportReportFormat
+      generatedAt: string
+    }>('/manager/reports/export', { params })
     return data
   },
 }
