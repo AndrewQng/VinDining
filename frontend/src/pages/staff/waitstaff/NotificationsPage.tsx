@@ -86,7 +86,7 @@ export function NotificationsPage() {
                     <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                   )}
                   {alert.kind === 'pass-ready'
-                    ? 'Quầy Pass · Món sẵn sàng'
+                    ? 'Quầy Pass · Món đã sẵn sàng tại quầy Pass'
                     : 'Quầy Pass · Làm lại món'}
                 </span>
                 <span className="text-ink-muted">

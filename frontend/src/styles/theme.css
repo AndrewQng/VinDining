@@ -22,6 +22,8 @@ html[data-theme='dark'] {
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --on-danger: #ffffff;
+  --success: #10b981;
+  --warning: #f59e0b;
 
   --badge-success-bg: rgba(16, 185, 129, 0.14);
   --badge-success-fg: #34d399;
@@ -78,6 +80,8 @@ html[data-theme='light'] {
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --on-danger: #ffffff;
+  --success: #15803d;
+  --warning: #d97706;
 
   --badge-success-bg: #dcfce7;
   --badge-success-fg: #15803d;
@@ -132,6 +136,8 @@ html[data-theme='light'] {
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);
   --color-on-danger: var(--on-danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
 
   --color-scrim: var(--scrim);
   --color-focus-ring: var(--focus-ring);

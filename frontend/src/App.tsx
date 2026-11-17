@@ -88,6 +88,16 @@ const WaitstaffNotificationsPage = lazy(() =>
     default: m.NotificationsPage,
   }))
 )
+const ExpediterPassPage = lazy(() =>
+  import('@/pages/staff/expediter/ExpediterPassPage').then((m) => ({
+    default: m.ExpediterPassPage,
+  }))
+)
+const KdsBoardPage = lazy(() =>
+  import('@/pages/kds/KdsBoardPage').then((m) => ({
+    default: m.KdsBoardPage,
+  }))
+)
 
 function PageFallback() {
   return (
@@ -138,15 +148,7 @@ export default function App() {
 
           {/* KDS Bếp (Wall display, no login) */}
           <Route element={<WallLayout />}>
-            <Route
-              path="/kds"
-              element={
-                <PlaceholderPage
-                  title="KDS Bếp"
-                  subtitle="Màn hình hiển thị vé món đang chế biến tại bếp"
-                />
-              }
-            />
+            <Route path="/kds" element={<KdsBoardPage />} />
           </Route>
 
           {/* Waitstaff (Mobile POS) */}
@@ -185,15 +187,7 @@ export default function App() {
             element={<ProtectedRoute allowedRoles={['Expediter', 'Manager']} />}
           >
             <Route path="/dieu-phoi" element={<StaffTabletLayout />}>
-              <Route
-                index
-                element={
-                  <PlaceholderPage
-                    title="Quầy Pass"
-                    subtitle="Kiểm soát đĩa món, xác nhận đi món hoặc yêu cầu làm lại"
-                  />
-                }
-              />
+              <Route index element={<ExpediterPassPage />} />
             </Route>
           </Route>
 
