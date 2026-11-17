@@ -13,6 +13,7 @@ Things the docs don't settle. Agents add rows here instead of guessing. The proj
 | 7 | Can guests pre-order à la carte items when booking, or only a Set Menu? | UC-U1 says Set Menu only | Set Menu only |
 | 8 | How should the KDS handle more tickets than fit on screen? | No doc covers KDS overflow | Answered below: page buttons |
 | 9 | Should the deposit rule (30% of the set, or 500.000 ₫ per guest) be added to the analysis report as a business rule? | Report BR-02 / BR-04 give no amount | Answered below: added as BR-06 |
+| 10 | Guests need a public list of Set Menus (home page, booking, QR menu); docs/api.md only has the Manager-only GET /api/manager/tasting-menus. | docs/api.md vs UC-U1 / UC-U2 | Website calls a public GET /api/menu/tasting-menus (mock only until the backend adds it) |
 
 ## Answers from the project lead (29/10/2026)
 

@@ -9,6 +9,10 @@ import {
   evaluateLoginFailure,
   evaluateSla,
   fireCourseItems,
+  formatDate,
+  formatDateTime,
+  formatRelativeMinutes,
+  formatSlotTime,
   formatVnd,
   formatVndDeduction,
   getInitialOrderItemStatus,
@@ -17,6 +21,7 @@ import {
   getRemainingHoldSeconds,
   hasAnyServedItem,
   isHoldExpired,
+  isTableUnavailableForSlot,
   markItemRemake,
   markItemServed,
   type FireableOrderItem,
@@ -256,5 +261,143 @@ describe('login lock (5 failures -> 15 min lock)', () => {
       locked: false,
       remainingMinutes: 0,
     })
+  })
+})
+
+describe('datetime formatters', () => {
+  it('formats 24h slot time, Vietnamese date, combined dateTime, and relative minutes', () => {
+    const sample = new Date(2026, 10, 18, 19, 0, 0) // Wed Nov 18 2026 19:00 local
+    expect(formatSlotTime(sample)).toBe('19:00')
+    expect(formatDate(sample)).toBe('Thứ Tư, 18/11/2026')
+    expect(formatDateTime(sample)).toBe('19:00 · Thứ Tư, 18/11/2026')
+
+    const now = new Date(2026, 10, 18, 19, 10, 0)
+    expect(formatRelativeMinutes(new Date(2026, 10, 18, 19, 10, 0), now)).toBe(
+      'vừa xong'
+    )
+    expect(formatRelativeMinutes(new Date(2026, 10, 18, 19, 5, 0), now)).toBe(
+      '5 phút trước'
+    )
+  })
+})
+
+describe('slotAvailability overlap and live-status rules', () => {
+  const now = new Date(2026, 10, 17, 17, 30, 0) // 17:30 today
+
+  it('ignores non-Available live status for tomorrow, blocks only overlapping active bookings', () => {
+    const tomorrow19 = new Date(2026, 10, 18, 19, 0, 0)
+    const tomorrow20 = new Date(2026, 10, 18, 20, 0, 0)
+    const tomorrow21 = new Date(2026, 10, 18, 21, 0, 0)
+
+    // Busy tonight (Occupied) does NOT block tomorrow 19:00
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b03',
+        tableStatus: 'Occupied',
+        slotStart: tomorrow19,
+        now,
+        reservations: [],
+      })
+    ).toBe(false)
+
+    // Overlapping Reserved booking at tomorrow 19:00 blocks 20:00 (19:00..21:00 vs 20:00..22:00)
+    const activeRes = {
+      tableId: 'tbl-b03',
+      reservationTime: tomorrow19.toISOString(),
+      durationMinutes: 120,
+      status: 'Reserved' as const,
+      holdExpiresAt: null,
+    }
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b03',
+        tableStatus: 'Occupied',
+        slotStart: tomorrow20,
+        now,
+        reservations: [activeRes],
+      })
+    ).toBe(true)
+
+    // Exact adjacent slot 21:00 (21:00..23:00) does NOT overlap 19:00..21:00
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b03',
+        tableStatus: 'Occupied',
+        slotStart: tomorrow21,
+        now,
+        reservations: [activeRes],
+      })
+    ).toBe(false)
+  })
+
+  it('ignores expired PendingDeposit holds and cancelled bookings', () => {
+    const tomorrow19 = new Date(2026, 10, 18, 19, 0, 0)
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b06',
+        tableStatus: 'Available',
+        slotStart: tomorrow19,
+        now,
+        reservations: [
+          {
+            tableId: 'tbl-b06',
+            reservationTime: tomorrow19.toISOString(),
+            durationMinutes: 120,
+            status: 'PendingDeposit',
+            holdExpiresAt: new Date(now.getTime() - 1000).toISOString(),
+          },
+          {
+            tableId: 'tbl-b06',
+            reservationTime: tomorrow19.toISOString(),
+            durationMinutes: 120,
+            status: 'Cancelled_Refunded',
+            holdExpiresAt: null,
+          },
+        ],
+      })
+    ).toBe(false)
+
+    // Unexpired PendingDeposit hold DOES block
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b06',
+        tableStatus: 'Available',
+        slotStart: tomorrow19,
+        now,
+        reservations: [
+          {
+            tableId: 'tbl-b06',
+            reservationTime: tomorrow19.toISOString(),
+            durationMinutes: 120,
+            status: 'PendingDeposit',
+            holdExpiresAt: new Date(now.getTime() + 60_000).toISOString(),
+          },
+        ],
+      })
+    ).toBe(true)
+  })
+
+  it('blocks today slots within 120 min when live table status is not Available', () => {
+    const today19 = new Date(2026, 10, 17, 19, 0, 0) // +90 min from 17:30
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b03',
+        tableStatus: 'Occupied',
+        slotStart: today19,
+        now,
+        reservations: [],
+      })
+    ).toBe(true)
+
+    const today20 = new Date(2026, 10, 17, 20, 0, 0) // +150 min from 17:30 -> >120 min
+    expect(
+      isTableUnavailableForSlot({
+        tableId: 'tbl-b03',
+        tableStatus: 'Occupied',
+        slotStart: today20,
+        now,
+        reservations: [],
+      })
+    ).toBe(false)
   })
 })

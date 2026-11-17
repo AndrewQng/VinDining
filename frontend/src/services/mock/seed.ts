@@ -100,8 +100,11 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   const nowIso = now.toISOString()
   const minsAgo = (m: number) => new Date(now.getTime() - m * 60_000).toISOString()
   const minsAhead = (m: number) => new Date(now.getTime() + m * 60_000).toISOString()
-  const hoursAhead = (h: number) =>
-    new Date(now.getTime() + h * 3_600_000).toISOString()
+  const halfHourBoundary = (offsetMinutes: number) => {
+    const step = 30 * 60_000
+    const snapped = Math.ceil((now.getTime() + offsetMinutes * 60_000) / step) * step
+    return new Date(snapped).toISOString()
+  }
 
   const staffs: MockStaffRecord[] = DEMO_STAFF_ACCOUNTS.map((acc) => ({
     id: acc.id,
@@ -616,7 +619,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b05',
       tableNumber: 'B05',
       zone: 'MainHall',
-      reservationTime: hoursAhead(1.5),
+      reservationTime: halfHourBoundary(90),
       partySize: 4,
       preOrderedTastingMenuId: 'set-thuong-hang',
       preOrderedTastingMenuName: 'Set Menu Thượng Hạng',
@@ -652,7 +655,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b04',
       tableNumber: 'B04',
       zone: 'MainHall',
-      reservationTime: minsAgo(45),
+      reservationTime: halfHourBoundary(-60),
       partySize: 2,
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
@@ -688,7 +691,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b07',
       tableNumber: 'B07',
       zone: 'MainHall',
-      reservationTime: hoursAhead(3),
+      reservationTime: halfHourBoundary(180),
       partySize: 6,
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
@@ -724,7 +727,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-v01',
       tableNumber: 'V01',
       zone: 'VIP',
-      reservationTime: hoursAhead(2),
+      reservationTime: halfHourBoundary(120),
       partySize: 4,
       preOrderedTastingMenuId: 'set-hai-san',
       preOrderedTastingMenuName: 'Set Menu Hải Sản',

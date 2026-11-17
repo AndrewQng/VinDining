@@ -1,4 +1,4 @@
-import type { TableStatus, TableZone } from './table'
+import type { TableZone } from './table'
 
 /** Canonical reservation lifecycle statuses. */
 export type ReservationStatus =
@@ -117,13 +117,16 @@ export interface AvailableSlotsQuery {
   zone?: TableZone
 }
 
+/** Guest-facing availability state for a table in a specific time slot (never exposes internal statuses). */
+export type GuestTableAvailability = 'available' | 'taken' | 'tooSmall'
+
 /** Table entry inside an available slot floor-plan response. */
 export interface SlotTableDto {
   id: string
   tableNumber: string
   capacity: number
   zone: TableZone
-  status: TableStatus
+  availability: GuestTableAvailability
   posX: number
   posY: number
   isSelectable: boolean

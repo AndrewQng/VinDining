@@ -36,10 +36,16 @@ export const menuRoutes: MockRouteDefinition[] = [
             t.tableNumber.toLowerCase() === key.toLowerCase())
       )
       if (!table) {
-        return fail(404, 'Mã QR bàn không hợp lệ')
+        return fail(
+          404,
+          'Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân viên phục vụ.'
+        )
       }
       if (table.status !== 'Occupied' && table.status !== 'PaymentPending') {
-        return fail(409, 'Bàn chưa check-in, vui lòng liên hệ nhân viên')
+        return fail(
+          409,
+          'Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân viên phục vụ.'
+        )
       }
       return ok({
         tableId: table.id,

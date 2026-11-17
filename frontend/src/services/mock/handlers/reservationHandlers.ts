@@ -3,11 +3,13 @@ import {
   computeHoldExpiresAt,
   evaluateCancellationPolicy,
   isHoldExpired,
+  isTableUnavailableForSlot,
 } from '@/domain'
 import { realtimeClient } from '@/services/realtime/client'
 import type {
   CancelReservationRequest,
   CreateReservationRequest,
+  GuestTableAvailability,
   ReservationDto,
   ReservationStatus,
   TableZone,
@@ -22,43 +24,80 @@ function normalizePhone(phone: string): string {
   return phone.replace(/\s+/g, '').trim()
 }
 
+function getLocalTodayKey(now: Date): string {
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+function isSameLocalTodayWithin120Min(slotStart: Date, now: Date): boolean {
+  const y = slotStart.getFullYear()
+  const m = String(slotStart.getMonth() + 1).padStart(2, '0')
+  const d = String(slotStart.getDate()).padStart(2, '0')
+  if (`${y}-${m}-${d}` !== getLocalTodayKey(now)) {
+    return false
+  }
+  return (slotStart.getTime() - now.getTime()) / 60_000 <= 120
+}
+
 export const reservationRoutes: MockRouteDefinition[] = [
   {
     id: 9,
     method: 'GET',
     pattern: '/reservations/available-slots',
     access: 'Public',
-    handler: ({ db, query }) => {
+    handler: ({ db, query, now }) => {
+      const dateStr = query.get('date') || getLocalTodayKey(now)
       const partySize = Number(query.get('partySize') || '2')
       const zone = query.get('zone') as TableZone | null
       const zoneTablesAll = db.tables.filter(
         (t) => t.isActive && (!zone || t.zone === zone)
       )
-      const candidates = zoneTablesAll.filter(
-        (t) => t.capacity >= partySize && t.status === 'Available'
-      )
 
-      const slots = SLOT_TIMES.map((time) => ({
-        time,
-        availableTables: candidates.map((t) => ({
-          id: t.id,
-          tableNumber: t.tableNumber,
-          capacity: t.capacity,
-          zone: t.zone,
-          posX: t.posX,
-          posY: t.posY,
-        })),
-        zoneTables: zoneTablesAll.map((t) => ({
-          id: t.id,
-          tableNumber: t.tableNumber,
-          capacity: t.capacity,
-          zone: t.zone,
-          status: t.status,
-          posX: t.posX,
-          posY: t.posY,
-          isSelectable: t.status === 'Available' && t.capacity >= partySize,
-        })),
-      }))
+      const slots = SLOT_TIMES.map((time) => {
+        const slotStart = new Date(`${dateStr}T${time}:00`)
+        const zoneTables = zoneTablesAll.map((t) => {
+          const unavailable = isTableUnavailableForSlot({
+            tableId: t.id,
+            tableStatus: t.status,
+            slotStart,
+            now,
+            reservations: db.reservations,
+          })
+          let availability: GuestTableAvailability = 'available'
+          if (unavailable) {
+            availability = 'taken'
+          } else if (t.capacity < partySize) {
+            availability = 'tooSmall'
+          }
+          return {
+            id: t.id,
+            tableNumber: t.tableNumber,
+            capacity: t.capacity,
+            zone: t.zone,
+            availability,
+            posX: t.posX,
+            posY: t.posY,
+            isSelectable: availability === 'available',
+          }
+        })
+
+        return {
+          time,
+          availableTables: zoneTables
+            .filter((t) => t.isSelectable)
+            .map((t) => ({
+              id: t.id,
+              tableNumber: t.tableNumber,
+              capacity: t.capacity,
+              zone: t.zone,
+              posX: t.posX,
+              posY: t.posY,
+            })),
+          zoneTables,
+        }
+      })
       return ok(slots)
     },
   },
@@ -73,11 +112,21 @@ export const reservationRoutes: MockRouteDefinition[] = [
       if (!table) {
         return fail(404, 'Không tìm thấy bàn ăn')
       }
-      if (table.status !== 'Available') {
-        return fail(409, 'Bàn vừa được giữ hoặc không còn trống')
-      }
       if (input.partySize < 1 || input.partySize > table.capacity) {
         return fail(400, 'Số lượng khách không phù hợp với sức chứa bàn')
+      }
+      const slotStart = new Date(input.reservationTime)
+      if (
+        Number.isNaN(slotStart.getTime()) ||
+        isTableUnavailableForSlot({
+          tableId: table.id,
+          tableStatus: table.status,
+          slotStart,
+          now,
+          reservations: db.reservations,
+        })
+      ) {
+        return fail(409, 'Bàn vừa có khách khác đặt, vui lòng chọn bàn khác')
       }
 
       const tastingMenu = input.preOrderedTastingMenuId
@@ -136,19 +185,20 @@ export const reservationRoutes: MockRouteDefinition[] = [
         },
       }
 
-      table.status = 'Locked'
-      table.currentReservationCode = bookingCode
-      table.guestCount = input.partySize
-      table.holdExpiresAt = holdExpiresAt
+      if (isSameLocalTodayWithin120Min(slotStart, now)) {
+        table.status = 'Locked'
+        table.currentReservationCode = bookingCode
+        table.guestCount = input.partySize
+        table.holdExpiresAt = holdExpiresAt
+        realtimeClient.publish('table:status-changed', {
+          tableId: table.id,
+          tableNumber: table.tableNumber,
+          status: table.status,
+        })
+      }
 
       db.reservations.unshift(reservation)
       saveMockDb(db)
-
-      realtimeClient.publish('table:status-changed', {
-        tableId: table.id,
-        tableNumber: table.tableNumber,
-        status: table.status,
-      })
 
       return ok(
         {
@@ -200,8 +250,17 @@ export const reservationRoutes: MockRouteDefinition[] = [
           reservation.deposit.transactionId = payload.transactionId
           reservation.deposit.paidAt = now.toISOString()
         }
-        if (table) {
+        if (
+          table &&
+          (table.currentReservationCode === reservation.bookingCode ||
+            isSameLocalTodayWithin120Min(
+              new Date(reservation.reservationTime),
+              now
+            ))
+        ) {
           table.status = 'Reserved'
+          table.currentReservationCode = reservation.bookingCode
+          table.guestCount = reservation.partySize
           table.holdExpiresAt = null
           realtimeClient.publish('table:status-changed', {
             tableId: table.id,

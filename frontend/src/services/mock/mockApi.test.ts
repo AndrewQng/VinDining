@@ -191,6 +191,24 @@ describe('Mock API §10 end-to-end stories', () => {
     })
     expect(ipn.data.reservation.status).toBe('Reserved')
 
+    // Concurrent booking on the same table and overlapping slot returns 409
+    await expect(
+      client.post('/reservations', {
+        tableId: 'tbl-b06',
+        reservationTime: '2026-11-06T19:30:00.000Z',
+        partySize: 4,
+        preOrderedTastingMenuId: null,
+        fullName: 'Khách Thứ Hai',
+        phoneNumber: '0902 222 333',
+        email: 'khach2@email.com',
+      })
+    ).rejects.toMatchObject({
+      response: {
+        status: 409,
+        data: { message: 'Bàn vừa có khách khác đặt, vui lòng chọn bàn khác' },
+      },
+    })
+
     // Existing seeded hold on tbl-b07 expires after 17+ minutes
     const after18Min = new Date(Date.now() + 18 * 60_000)
     const released = runExpiryScan(after18Min)
