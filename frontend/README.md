@@ -1,32 +1,35 @@
-# React + TypeScript + Vite
+# VinDining Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Ứng dụng React + TypeScript + Vite + Tailwind CSS v4 cho hệ thống quản lý và đặt bàn nhà hàng VinDining.
 
-Currently, two official plugins are available:
+## Chạy ở chế độ Mock (mặc định khi phát triển)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+File `.env.development` bật sẵn `VITE_USE_MOCK=true`, sử dụng dữ liệu mẫu lưu trong `localStorage` (`vd-mock-db`) và đồng bộ thời gian thực giữa các tab qua `BroadcastChannel('vd-realtime')`.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Để kết nối backend thật, đặt `VITE_USE_MOCK=false` và cấu hình `VITE_API_URL` + `VITE_SIGNALR_URL` theo `.env.example`.
+
+## Kiểm tra chất lượng
+
+```bash
+npm run build
+npm run lint
+npm test
+```
+
+## Tài khoản demo (chế độ Mock)
+
+Nguồn dữ liệu duy nhất: `src/services/mock/seed.ts` (`DEMO_STAFF_ACCOUNTS`).
+
+| Họ tên | Vai trò | Tên đăng nhập | Mật khẩu | Điều hướng sau đăng nhập |
+| :--- | :--- | :--- | :--- | :--- |
+| Trần Thị Mai | Phục vụ (`Waitstaff`) | `mai.tt` | `VinDining@2026` | `/phuc-vu` |
+| Lê Minh Quân | Điều phối (`Expediter`) | `quan.lm` | `VinDining@2026` | `/dieu-phoi` |
+| Phạm Thu Hà | Thu ngân (`Cashier`) | `ha.pt` | `VinDining@2026` | `/thu-ngan` |
+| Đỗ Hoàng Long | Quản lý (`Manager`) | `long.dh` | `VinDining@2026` | `/quan-ly` |
+
+Trong chế độ Mock, đường dẫn `/dev/ui` hiển thị thư viện thành phần giao diện và toàn bộ huy hiệu trạng thái trên cả hai giao diện tối và sáng.
