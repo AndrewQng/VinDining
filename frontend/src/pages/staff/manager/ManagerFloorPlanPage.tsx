@@ -260,7 +260,7 @@ export function ManagerFloorPlanPage() {
         <Skeleton className="h-[520px] w-full rounded-xl" />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1.55fr_1fr] items-start">
-          <Card className="space-y-3">
+          <Card className="min-w-0 space-y-3">
             <div className="flex items-center justify-between text-xs text-ink-muted">
               <span className="font-semibold text-ink">
                 Khu vực: {TABLE_ZONE_LABELS[zone]} ({zoneTables.length} bàn)
@@ -344,7 +344,7 @@ export function ManagerFloorPlanPage() {
             </div>
           </Card>
 
-          <Card className="space-y-5">
+          <Card className="min-w-0 space-y-5">
             {selectedTable ? (
               <>
                 <div className="flex items-center justify-between">
