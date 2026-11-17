@@ -729,7 +729,7 @@ function SetMenuFormModal({
   const [error, setError] = useState<string | null>(null)
 
   const [lastKey, setLastKey] = useState('')
-  const key = `${open}-${setMenu?.id ?? 'new'}-${menuItems.length}`
+  const key = `${open}-${setMenu?.id ?? 'new'}`
   if (open && key !== lastKey) {
     setLastKey(key)
     setName(setMenu?.name ?? '')
@@ -753,6 +753,10 @@ function SetMenuFormModal({
     setError(null)
   } else if (!open && lastKey) {
     setLastKey('')
+  } else if (open) {
+    if (!appetizerId && appetizers[0]) setAppetizerId(appetizers[0].id)
+    if (!mainId && mains[0]) setMainId(mains[0].id)
+    if (!dessertId && desserts[0]) setDessertId(desserts[0].id)
   }
 
   const mutation = useMutation({
