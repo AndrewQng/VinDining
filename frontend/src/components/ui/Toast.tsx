@@ -38,7 +38,7 @@ export function ToastViewport() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 w-full max-w-sm pointer-events-none px-4 sm:px-0"
+      className="fixed bottom-20 sm:bottom-4 right-4 z-[60] flex flex-col gap-2 w-full max-w-sm pointer-events-none px-4 sm:px-0"
       aria-live="polite"
       aria-atomic="true"
     >

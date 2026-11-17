@@ -48,6 +48,46 @@ const UiGalleryPage = lazy(() =>
     default: m.UiGalleryPage,
   }))
 )
+const WaitstaffFloorPlanPage = lazy(() =>
+  import('@/pages/staff/waitstaff/FloorPlanPage').then((m) => ({
+    default: m.FloorPlanPage,
+  }))
+)
+const WaitstaffCheckInLookupPage = lazy(() =>
+  import('@/pages/staff/waitstaff/CheckInLookupPage').then((m) => ({
+    default: m.CheckInLookupPage,
+  }))
+)
+const WaitstaffTableDetailPage = lazy(() =>
+  import('@/pages/staff/waitstaff/TableCheckInDetailPage').then((m) => ({
+    default: m.TableCheckInDetailPage,
+  }))
+)
+const WaitstaffCreateOrderPage = lazy(() =>
+  import('@/pages/staff/waitstaff/CreateOrderPage').then((m) => ({
+    default: m.CreateOrderPage,
+  }))
+)
+const WaitstaffActiveOrderPage = lazy(() =>
+  import('@/pages/staff/waitstaff/ActiveOrderPage').then((m) => ({
+    default: m.ActiveOrderPage,
+  }))
+)
+const WaitstaffAddItemsPage = lazy(() =>
+  import('@/pages/staff/waitstaff/AddItemsPage').then((m) => ({
+    default: m.AddItemsPage,
+  }))
+)
+const WaitstaffTransferTablePage = lazy(() =>
+  import('@/pages/staff/waitstaff/TransferTablePage').then((m) => ({
+    default: m.TransferTablePage,
+  }))
+)
+const WaitstaffNotificationsPage = lazy(() =>
+  import('@/pages/staff/waitstaff/NotificationsPage').then((m) => ({
+    default: m.NotificationsPage,
+  }))
+)
 
 function PageFallback() {
   return (
@@ -114,43 +154,28 @@ export default function App() {
             element={<ProtectedRoute allowedRoles={['Waitstaff', 'Manager']} />}
           >
             <Route path="/phuc-vu" element={<StaffMobileLayout />}>
+              <Route index element={<WaitstaffFloorPlanPage />} />
+              <Route path="check-in" element={<WaitstaffCheckInLookupPage />} />
+              <Route path="ban/:tableId" element={<WaitstaffTableDetailPage />} />
               <Route
-                index
-                element={
-                  <PlaceholderPage
-                    title="Sơ đồ bàn"
-                    subtitle="Theo dõi trạng thái bàn theo khu vực"
-                  />
-                }
-              />
-              <Route
-                path="check-in"
-                element={
-                  <PlaceholderPage
-                    title="Check-in nhận bàn"
-                    subtitle="Tra cứu mã đặt bàn hoặc nhận khách trực tiếp"
-                    backTo="/phuc-vu"
-                  />
-                }
+                path="tao-order/:tableId"
+                element={<WaitstaffCreateOrderPage />}
               />
               <Route
                 path="order/:tableId"
-                element={
-                  <PlaceholderPage
-                    title="Order tại bàn"
-                    subtitle="Tạo order, gọi thêm món, kích hoạt Course và yêu cầu tính tiền"
-                    backTo="/phuc-vu"
-                  />
-                }
+                element={<WaitstaffActiveOrderPage />}
+              />
+              <Route
+                path="goi-them/:tableId"
+                element={<WaitstaffAddItemsPage />}
+              />
+              <Route
+                path="doi-ban/:tableId"
+                element={<WaitstaffTransferTablePage />}
               />
               <Route
                 path="thong-bao"
-                element={
-                  <PlaceholderPage
-                    title="Thông báo phục vụ"
-                    subtitle="Yêu cầu từ QR E-Menu và món sẵn sàng tại quầy Pass"
-                  />
-                }
+                element={<WaitstaffNotificationsPage />}
               />
             </Route>
           </Route>
