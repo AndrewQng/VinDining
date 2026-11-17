@@ -8,6 +8,18 @@
 @import "@fontsource/playfair-display/700.css";
 @import "./styles/theme.css";
 
+:root .text-danger {
+  color: var(--danger-fg);
+}
+
+:root .text-warning {
+  color: var(--warning-fg);
+}
+
+:root .text-success {
+  color: var(--success-fg);
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);
@@ -114,8 +126,11 @@
     --accent: #1d4f9c !important;
     --primary: #1f5fbf !important;
     --success: #15803d !important;
+    --success-fg: #166534 !important;
     --danger: #dc2626 !important;
+    --danger-fg: #991b1b !important;
     --warning: #d97706 !important;
+    --warning-fg: #92400e !important;
     background: #ffffff !important;
     color: #0f172a !important;
   }

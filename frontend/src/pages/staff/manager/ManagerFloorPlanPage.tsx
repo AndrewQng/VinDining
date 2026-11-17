@@ -293,7 +293,6 @@ export function ManagerFloorPlanPage() {
                       role="button"
                       tabIndex={0}
                       data-testid={`floor-node-${table.tableNumber}`}
-                      aria-label={`Bàn ${table.tableNumber}, ${table.capacity} ghế`}
                       onClick={() => {
                         setSelectedId(table.id)
                         setDeleteError(null)

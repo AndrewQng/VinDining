@@ -349,7 +349,7 @@ function BillDetailsColumn({
               'flex items-center justify-between gap-4 rounded-xl border px-4 py-3',
               line.isServed
                 ? 'border-line bg-card'
-                : 'border-dashed border-line/70 bg-card/40 opacity-65'
+                : 'border-dashed border-line-strong bg-surface'
             )}
           >
             <div className="min-w-0">
