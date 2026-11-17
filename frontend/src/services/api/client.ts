@@ -1,6 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { isMockMode } from '@/lib/utils'
+import { installMockAdapter } from '@/services/mock/router'
 import { useAuthStore } from '@/stores/useAuthStore'
-import type { ApiErrorResponse } from '@/types/api'
+import type { ApiErrorResponse } from '@/types'
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5159/api'
 
@@ -12,7 +14,10 @@ export const apiClient = axios.create({
   timeout: 15000,
 })
 
-// Request interceptor: attach bearer token
+if (isMockMode()) {
+  installMockAdapter(apiClient)
+}
+
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = useAuthStore.getState().token
@@ -24,14 +29,13 @@ apiClient.interceptors.request.use(
   (error: unknown) => Promise.reject(error)
 )
 
-// Response interceptor: handle errors & 401 unauthorized
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiErrorResponse>) => {
-    if (error.response?.status === 401) {
-      // Clear session if unauthorized and not already on login page
-      const logout = useAuthStore.getState().logout
-      logout()
+    const requestUrl = error.config?.url ?? ''
+    const isLoginAttempt = requestUrl.includes('/auth/login')
+    if (error.response?.status === 401 && !isLoginAttempt) {
+      useAuthStore.getState().logout()
     }
     return Promise.reject(error)
   }
