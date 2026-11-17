@@ -9,10 +9,14 @@ import {
   StatusBadge,
   ThemedImage,
 } from '@/components/ui'
-import { COURSE_TYPE_LABELS } from '@/domain'
+import {
+  COURSE_TYPE_LABELS,
+  TABLE_ZONE_LABELS,
+} from '@/domain'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { menuApi } from '@/services/api'
+import { menuApi, reservationApi } from '@/services/api'
 import type { CourseType, MenuItemDto, TableZone } from '@/types'
+import { getDefaultBookingDate } from './bookingState'
 
 const BOOKING_STEPS = [
   {
@@ -32,27 +36,23 @@ const BOOKING_STEPS = [
   },
 ]
 
-const ZONES: { zone: TableZone; title: string; subtitle: string; image: string }[] =
-  [
-    {
-      zone: 'MainHall',
-      title: 'Sảnh chính',
-      subtitle: 'Bàn 2–8 ghế',
-      image: 'zone_sanh_chinh.jpg',
-    },
-    {
-      zone: 'VIP',
-      title: 'Phòng VIP',
-      subtitle: 'Không gian riêng tư 6–10 ghế',
-      image: 'zone_vip.jpg',
-    },
-    {
-      zone: 'Balcony',
-      title: 'Ban công',
-      subtitle: 'Bàn 2–4 ghế thoáng đãng',
-      image: 'zone_ban_cong.jpg',
-    },
-  ]
+const ZONES: { zone: TableZone; title: string; image: string }[] = [
+  {
+    zone: 'MainHall',
+    title: TABLE_ZONE_LABELS.MainHall,
+    image: 'zone_sanh_chinh.jpg',
+  },
+  {
+    zone: 'VIP',
+    title: 'Phòng VIP',
+    image: 'zone_vip.jpg',
+  },
+  {
+    zone: 'Balcony',
+    title: TABLE_ZONE_LABELS.Balcony,
+    image: 'zone_ban_cong.jpg',
+  },
+]
 
 const FOOD_COURSE_ORDER: readonly CourseType[] = [
   'Appetizer',
@@ -84,6 +84,26 @@ export function HomePage() {
     queryKey: ['public-menu-categories'],
     queryFn: () => menuApi.getCategories(),
   })
+
+  const { data: zoneSlots = [] } = useQuery({
+    queryKey: ['public-zone-capacities'],
+    queryFn: () =>
+      reservationApi.getAvailableSlots({
+        date: getDefaultBookingDate(),
+        partySize: 1,
+      }),
+  })
+
+  const zoneTables = zoneSlots[0]?.zoneTables ?? []
+  const getZoneSeatRange = (zone: TableZone): string | null => {
+    const caps = zoneTables
+      .filter((t) => t.zone === zone)
+      .map((t) => t.capacity)
+    if (caps.length === 0) return null
+    const min = Math.min(...caps)
+    const max = Math.max(...caps)
+    return min === max ? `Bàn ${min} ghế` : `Bàn ${min}–${max} ghế`
+  }
 
   const allItems: MenuItemDto[] = categories.flatMap((c) => c.items ?? [])
   const foodItems = allItems.filter((item) => item.courseType !== 'Beverage')
@@ -276,7 +296,11 @@ export function HomePage() {
                   <h3 className="font-serif text-lg font-semibold text-ink">
                     {z.title}
                   </h3>
-                  <p className="text-xs text-ink-muted mt-0.5">{z.subtitle}</p>
+                  {getZoneSeatRange(z.zone) && (
+                    <p className="text-xs text-ink-muted mt-0.5">
+                      {getZoneSeatRange(z.zone)}
+                    </p>
+                  )}
                 </div>
                 <Link
                   to={`/dat-ban?zone=${z.zone}`}

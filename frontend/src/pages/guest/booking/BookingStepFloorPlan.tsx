@@ -1,10 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import { AlertTriangle, ChevronLeft } from 'lucide-react'
 import { TABLE_ZONE_LABELS } from '@/domain'
-import { Button, Card, Skeleton, StatusBadge } from '@/components/ui'
+import { Button, Card, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { reservationApi } from '@/services/api'
-import type { AvailableSlotDto, SlotTableDto, TableZone } from '@/types'
+import type {
+  AvailableSlotDto,
+  GuestTableAvailability,
+  SlotTableDto,
+  TableZone,
+} from '@/types'
+
+const GUEST_AVAILABILITY_LABELS: Record<GuestTableAvailability, string> = {
+  available: 'Còn trống',
+  taken: 'Đã có người đặt',
+  tooSmall: 'Không đủ chỗ',
+}
 
 export interface BookingStepFloorPlanProps {
   date: string
@@ -39,6 +50,7 @@ export function BookingStepFloorPlan({
     queryKey: ['booking-slots', date, partySize, zone],
     queryFn: () =>
       reservationApi.getAvailableSlots({ date, partySize, zone }),
+    staleTime: 0,
   })
 
   const activeSlot = slots.find((s) => s.time === time) ?? slots[0]
@@ -49,6 +61,7 @@ export function BookingStepFloorPlan({
     queryKey: ['booking-all-slots', date, partySize],
     queryFn: () => reservationApi.getAvailableSlots({ date, partySize }),
     enabled: !isLoading && !isError && !hasSelectable,
+    staleTime: 0,
   })
 
   const alternativeSuggestions = computeAlternatives(allZoneSlots, time, zone)
@@ -154,8 +167,6 @@ export function BookingStepFloorPlan({
       >
         {zoneTables.map((table) => {
           const isSelected = table.id === selectedTableId
-          const tooSmall =
-            table.status === 'Available' && table.capacity < partySize
           return (
             <button
               key={table.id}
@@ -165,12 +176,12 @@ export function BookingStepFloorPlan({
               disabled={!table.isSelectable}
               onClick={() => onSelectTable(table)}
               className={cn(
-                'p-3.5 rounded-xl border text-left transition-colors space-y-2.5',
+                'p-3.5 rounded-xl border text-left transition-colors space-y-2',
                 isSelected
                   ? 'border-primary ring-1 ring-primary bg-card-hover cursor-pointer'
                   : table.isSelectable
                     ? 'border-line bg-card hover:bg-card-hover cursor-pointer'
-                    : 'border-line bg-card/40 opacity-55 cursor-not-allowed'
+                    : 'border-line bg-card/40 opacity-60 cursor-not-allowed'
               )}
             >
               <div className="flex items-baseline justify-between gap-2">
@@ -181,12 +192,16 @@ export function BookingStepFloorPlan({
                   {table.capacity} ghế
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-1">
-                <StatusBadge status={table.status} domain="table" />
-              </div>
-              {tooSmall && (
-                <p className="text-[11px] text-ink-subtle">Không đủ chỗ</p>
-              )}
+              <span
+                className={cn(
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full border text-xs font-medium',
+                  table.availability === 'available'
+                    ? 'border-primary/40 text-accent bg-card'
+                    : 'border-line text-ink-muted bg-card'
+                )}
+              >
+                {GUEST_AVAILABILITY_LABELS[table.availability]}
+              </span>
             </button>
           )
         })}

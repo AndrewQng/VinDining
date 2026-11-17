@@ -68,7 +68,7 @@ export function EMenuPage() {
     null
   )
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['table-emenu', qrCode],
     queryFn: () => menuApi.getTableMenu(qrCode),
     enabled: Boolean(qrCode),
@@ -129,11 +129,6 @@ export function EMenuPage() {
   }
 
   if (isError || !data) {
-    const message = isAxiosError<ApiErrorResponse>(error)
-      ? (error.response?.data?.message ??
-        'Mã QR không hợp lệ hoặc bàn chưa được check-in. Vui lòng liên hệ nhân viên.')
-      : 'Mã QR không hợp lệ hoặc bàn chưa được check-in. Vui lòng liên hệ nhân viên.'
-
     return (
       <div className="max-w-md mx-auto px-4 py-10 space-y-6">
         <h1 className="font-serif text-2xl font-semibold text-ink">
@@ -145,9 +140,12 @@ export function EMenuPage() {
           </div>
           <div className="space-y-1.5">
             <h2 className="text-base font-semibold text-ink">
-              Mã QR không hợp lệ
+              Không thể mở thực đơn
             </h2>
-            <p className="text-sm text-ink-muted">{message}</p>
+            <p className="text-sm text-ink-muted">
+              Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân
+              viên phục vụ.
+            </p>
           </div>
           <Link to="/" className="inline-block">
             <Button variant="secondary">Về trang chủ</Button>
@@ -219,9 +217,7 @@ export function EMenuPage() {
       {/* Set Menu Section First */}
       <section className="space-y-3">
         <div>
-          <h2 className="text-base font-semibold text-accent">
-            Set Menu đặc biệt
-          </h2>
+          <h2 className="text-base font-semibold text-accent">Set Menu</h2>
           <p className="text-xs text-ink-muted">
             Được phục vụ theo trình tự từng course
           </p>
@@ -245,7 +241,7 @@ export function EMenuPage() {
                   .map((item) => (
                     <li key={item.id}>
                       • {COURSE_TYPE_LABELS[item.courseType]}:{' '}
-                      {item.menuItemName} ({item.prepTimeMinutes} phút)
+                      {item.menuItemName}
                     </li>
                   ))}
               </ul>
@@ -293,9 +289,11 @@ export function EMenuPage() {
                           <StatusBadge status="SoldOut" domain="menuItem" />
                         )}
                       </div>
-                      <p className="text-xs text-ink-muted">
-                        Thời gian chuẩn bị: {item.prepTimeMinutes} phút
-                      </p>
+                      {item.description && (
+                        <p className="text-xs text-ink-muted line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
                     </div>
                     <Money
                       amount={item.price}

@@ -1,7 +1,7 @@
-import { calculateDepositAmount, TABLE_ZONE_LABELS } from '@/domain'
+import { calculateDepositAmount, formatDate, TABLE_ZONE_LABELS } from '@/domain'
 import { Card, Money } from '@/components/ui'
 import type { TastingMenuDto } from '@/types'
-import { formatBookingDateLabel, type BookingDraft } from '../bookingState'
+import { type BookingDraft } from '../bookingState'
 
 export interface BookingSummaryCardProps {
   draft: BookingDraft
@@ -25,7 +25,7 @@ export function BookingSummaryCard({
         <li className="flex justify-between gap-2">
           <span>Ngày</span>
           <span className="text-ink font-medium text-right">
-            {formatBookingDateLabel(draft.date)}
+            {formatDate(draft.date)}
           </span>
         </li>
         <li className="flex justify-between gap-2">

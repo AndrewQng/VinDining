@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
 import {
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui'
 import {
   calculateDepositAmount,
+  formatDateTime,
   isHoldExpired,
   TABLE_ZONE_LABELS,
 } from '@/domain'
@@ -55,6 +56,7 @@ export function BookingPage() {
   useDocumentTitle('Đặt bàn & đặt cọc')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const queryClient = useQueryClient()
 
   const querySetId = searchParams.get('set')
   const queryZone = searchParams.get('zone') as TableZone | null
@@ -113,6 +115,8 @@ export function BookingPage() {
       }),
     onSuccess: (res) => {
       setSubmitError(null)
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
       setDraft((prev) => ({
         ...prev,
         step: 'hold',
@@ -567,9 +571,7 @@ export function BookingPage() {
                 </p>
                 <p className="text-ink-muted">
                   Thời gian:{' '}
-                  {new Date(
-                    draft.confirmedReservation.reservationTime
-                  ).toLocaleString('vi-VN')}
+                  {formatDateTime(draft.confirmedReservation.reservationTime)}
                 </p>
                 <p className="text-ink-muted">
                   Khách hàng: {draft.confirmedReservation.guest.fullName} (

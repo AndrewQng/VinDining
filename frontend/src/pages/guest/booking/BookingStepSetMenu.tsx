@@ -84,7 +84,7 @@ export function BookingStepSetMenu({
                     .map((item) => (
                       <li key={item.id}>
                         • {COURSE_TYPE_LABELS[item.courseType]}:{' '}
-                        {item.menuItemName} ({item.prepTimeMinutes} phút)
+                        {item.menuItemName}
                       </li>
                     ))}
                 </ul>

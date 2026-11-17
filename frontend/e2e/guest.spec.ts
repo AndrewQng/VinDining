@@ -33,7 +33,12 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     // Step 1: 4 khách (default) -> Tìm bàn trống
     await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
 
-    // Step 2: pick free table B06 (6 ghế, Trống)
+    // Step 2: Guest floor plan must NOT display internal statuses
+    await expect(page.getByText(/Đang dọn/i)).toHaveCount(0)
+    await expect(page.getByText(/Chờ thanh toán/i)).toHaveCount(0)
+    await expect(page.getByText(/Đang phục vụ/i)).toHaveCount(0)
+
+    // Pick free table B06 (6 ghế, Còn trống) -> booked tomorrow -> B03 is also free tomorrow
     await page.getByRole('radio', { name: /B06/i }).click()
     await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
 
@@ -69,6 +74,11 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
       page.getByRole('heading', { name: /Đặt bàn thành công!/i })
     ).toBeVisible()
     await expect(page.getByText(/MÃ ĐẶT BÀN: VD-/i)).toBeVisible()
+
+    // Verify slot availability: B06 for tomorrow 19:00 is now taken and not selectable
+    await page.getByRole('button', { name: /Đặt bàn mới/i }).click()
+    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await expect(page.getByRole('radio', { name: /B06/i })).toBeDisabled()
 
     expect(errors).toEqual([])
   })
@@ -149,7 +159,10 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     // Invalid QR -> G3.1x error
     await page.goto('/menu/INVALID-QR')
     await expect(
-      page.getByRole('heading', { name: /Mã QR không hợp lệ/i })
+      page.getByRole('heading', { name: /Không thể mở thực đơn/i })
+    ).toBeVisible()
+    await expect(
+      page.getByText(/Mã QR không hợp lệ hoặc bàn chưa được nhận/i)
     ).toBeVisible()
 
     expect(errors.filter((e) => !e.includes('404'))).toEqual([])

@@ -175,14 +175,3 @@ export function validateContactFields(input: {
 export function buildReservationIso(date: string, time: string): string {
   return new Date(`${date}T${time}:00`).toISOString()
 }
-
-export function formatBookingDateLabel(dateStr: string): string {
-  const parsed = new Date(`${dateStr}T12:00:00`)
-  if (Number.isNaN(parsed.getTime())) return dateStr
-  return parsed.toLocaleDateString('vi-VN', {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-}

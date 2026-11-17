@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Search } from 'lucide-react'
 import {
@@ -12,7 +12,11 @@ import {
   StatusBadge,
   Textarea,
 } from '@/components/ui'
-import { evaluateCancellationPolicy, TABLE_ZONE_LABELS } from '@/domain'
+import {
+  evaluateCancellationPolicy,
+  formatDateTime,
+  TABLE_ZONE_LABELS,
+} from '@/domain'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { reservationApi } from '@/services/api'
 import type { ApiErrorResponse, ReservationDto } from '@/types'
@@ -21,6 +25,7 @@ import type { ApiErrorResponse, ReservationDto } from '@/types'
 export function LookupReservationPage() {
   useDocumentTitle('Tra cứu đặt bàn')
   const [searchParams] = useSearchParams()
+  const queryClient = useQueryClient()
 
   const [bookingCode, setBookingCode] = useState(
     () => searchParams.get('code') ?? ''
@@ -76,6 +81,8 @@ export function LookupReservationPage() {
         confirmForfeit,
       }),
     onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
       setReservation(res.reservation)
       setConfirmMode('none')
       setCancelError(null)
@@ -194,8 +201,7 @@ export function LookupReservationPage() {
 
             <div className="space-y-2 text-sm">
               <p className="text-ink">
-                Thời gian:{' '}
-                {new Date(reservation.reservationTime).toLocaleString('vi-VN')}
+                Thời gian: {formatDateTime(reservation.reservationTime)}
               </p>
               <p className="text-ink-muted">
                 Vị trí: Bàn {reservation.tableNumber} ·{' '}

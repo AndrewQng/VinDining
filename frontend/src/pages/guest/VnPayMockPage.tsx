@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { CreditCard, QrCode, ShieldCheck } from 'lucide-react'
 import { Button, Card, Money, PageHeader, Skeleton } from '@/components/ui'
@@ -15,6 +15,7 @@ export function VnPayMockPage() {
   useDocumentTitle('Cổng thanh toán VNPAY')
   const { code = '' } = useParams<{ code: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [method, setMethod] = useState<DepositPaymentMethod>('VietQR')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -37,6 +38,8 @@ export function VnPayMockPage() {
         responseCode: '00',
       }),
     onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
       const current = loadBookingDraft()
       saveBookingDraft({
         ...current,
