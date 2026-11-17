@@ -95,7 +95,7 @@ describe('Expediter E1 Pass & KDS K1 components', () => {
     ).toHaveAttribute('data-sla-status', 'overdue')
   })
 
-  it('Pass buttons dispatch serve and optional-reason remake routes safely', async () => {
+  it('Pass buttons dispatch serve and remake routes while keeping waiter note intact', async () => {
     const user = userEvent.setup()
     const serveSpy = vi.spyOn(orderApi, 'serveItem')
     const remakeSpy = vi.spyOn(orderApi, 'remakeItem')
@@ -103,25 +103,27 @@ describe('Expediter E1 Pass & KDS K1 components', () => {
     renderWithRouter(<ExpediterPassPage />, '/dieu-phoi')
 
     expect(
-      await screen.findByTestId('pass-ticket-B03-Course2-cooking')
+      await screen.findByTestId('pass-ticket-B08-Course2-cooking')
     ).toBeInTheDocument()
 
-    // Request remake with empty optional reason on B03 Course 2
-    const b03Card = screen.getByTestId('pass-ticket-B03-Course2-cooking')
-    const remakeBtn = b03Card.querySelector(
+    // Request remake on B08 Bò Wagyu (has waiter note "Medium rare") -> confirm modal without text field
+    const b08CookingCard = screen.getByTestId('pass-ticket-B08-Course2-cooking')
+    const remakeBtn = b08CookingCard.querySelector(
       'button:has(.lucide-rotate-ccw)'
     ) as HTMLButtonElement
     await user.click(remakeBtn)
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+    expect(screen.getByText('Yêu cầu bếp làm lại món này?')).toBeInTheDocument()
     await user.click(
       screen.getByRole('button', { name: 'Gửi yêu cầu làm lại' })
     )
 
-    expect(remakeSpy).toHaveBeenCalledWith('ord-b03', 'oi-b03-3', {
-      reason: null,
-    })
+    expect(remakeSpy).toHaveBeenCalledWith('ord-b08', 'oi-b08-2')
     expect(
       await screen.findByTestId('pass-feedback-banner')
     ).toHaveTextContent(/Đã gửi yêu cầu làm lại/i)
+    // Waiter note survives remake
+    expect(screen.getByText(/Ghi chú: Medium rare/i)).toBeInTheDocument()
 
     // Serve B08 remake item on Pass
     const b08Card = screen.getByTestId('pass-ticket-B08-Course2-remake')

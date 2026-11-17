@@ -69,11 +69,6 @@ export interface AddOrderItemsRequest {
   items: OrderItemInput[]
 }
 
-/** Optional reason payload for POST /api/orders/{id}/items/{itemId}/remake. */
-export interface RemakeOrderItemRequest {
-  reason?: string | null
-}
-
 /** Ticket DTO displayed on KDS Bếp and Pass (GET /api/orders/kitchen/pending). */
 export interface KitchenPendingTicketDto {
   orderItemId: string

@@ -164,25 +164,28 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
     const passErrors = attachErrorGuard(passPage)
     await loginAs(passPage, 'quan.lm', /\/dieu-phoi$/)
 
-    const b03Card = passPage.getByTestId('pass-ticket-B03-Course2-cooking')
-    await b03Card.getByRole('button', { name: /Yêu cầu làm lại/i }).click()
+    const b08Card = passPage.getByTestId('pass-ticket-B08-Course2-cooking')
+    await b08Card.getByRole('button', { name: /Yêu cầu làm lại/i }).click()
     await expect(
       passPage.getByRole('heading', { name: 'Yêu cầu làm lại món' })
     ).toBeVisible()
+    await expect(
+      passPage.getByText('Yêu cầu bếp làm lại món này?')
+    ).toBeVisible()
+    await expect(passPage.getByRole('textbox')).toHaveCount(0)
     await saveShot(passPage, 'e1r-dark.png')
 
-    // Reason is optional: submit immediately without filling reason
     await passPage.getByRole('button', { name: 'Gửi yêu cầu làm lại' }).click()
     await expect(passPage.getByTestId('pass-feedback-banner')).toContainText(
-      /Đã gửi yêu cầu làm lại · B03/i
+      /Đã gửi yêu cầu làm lại · B08/i
     )
 
-    // KDS immediately shows B03 Course 2 inside Làm lại lane
+    // KDS immediately shows B08 Course 2 (now 2 items) inside Làm lại lane and waiter's "Medium rare" note survives
     await expect(
       kdsPage
         .getByTestId('kds-lane-remake')
-        .getByTestId('kds-ticket-B03-Course2-remake')
-    ).toBeVisible()
+        .getByTestId('kds-ticket-B08-Course2-remake')
+    ).toContainText(/Medium rare/i)
 
     expect(kdsErrors).toEqual([])
     expect(passErrors).toEqual([])

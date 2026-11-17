@@ -18,7 +18,6 @@ import type {
   MenuItemDto,
   OrderDto,
   OrderItemDto,
-  RemakeOrderItemRequest,
   ReservationDto,
   ReservationStatus,
   ServiceRequestDto,
@@ -262,14 +261,9 @@ export const orderApi = {
     )
     return data
   },
-  remakeItem: async (
-    orderId: string,
-    itemId: string,
-    payload: RemakeOrderItemRequest = {}
-  ): Promise<OrderItemDto> => {
+  remakeItem: async (orderId: string, itemId: string): Promise<OrderItemDto> => {
     const { data } = await apiClient.post<OrderItemDto>(
-      `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/remake`,
-      payload
+      `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/remake`
     )
     return data
   },

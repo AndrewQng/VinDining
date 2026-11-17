@@ -15,7 +15,6 @@ import type {
   OrderDto,
   OrderItemDto,
   OrderItemInput,
-  RemakeOrderItemRequest,
 } from '@/types'
 import { nextMockId, saveMockDb } from '../db'
 import type { MockDatabase } from '../seed'
@@ -304,7 +303,7 @@ export const orderRoutes: MockRouteDefinition[] = [
     method: 'POST',
     pattern: '/orders/:id/items/:itemId/remake',
     access: ['Expediter', 'Manager'],
-    handler: ({ db, params, body, now }) => {
+    handler: ({ db, params, now }) => {
       const order = db.orders.find((o) => o.id === params.id)
       if (!order) return fail(404, 'Không tìm thấy order')
       const idx = order.items.findIndex((i) => i.id === params.itemId)
@@ -312,10 +311,6 @@ export const orderRoutes: MockRouteDefinition[] = [
 
       try {
         order.items[idx] = markItemRemake(order.items[idx], now.toISOString())
-        const payload = body as RemakeOrderItemRequest | undefined
-        if (payload?.reason?.trim()) {
-          order.items[idx].note = payload.reason.trim()
-        }
       } catch (err) {
         return fail(409, (err as Error).message)
       }

@@ -12,7 +12,6 @@ import {
   Button,
   Card,
   EmptyState,
-  Input,
   Modal,
   Skeleton,
   StatusBadge,
@@ -79,7 +78,6 @@ export function ExpediterPassPage() {
   const [remakeTarget, setRemakeTarget] = useState<RemakeDialogTarget | null>(
     null
   )
-  const [remakeReason, setRemakeReason] = useState('')
   const [busyTicketId, setBusyTicketId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -161,17 +159,11 @@ export function ExpediterPassPage() {
   })
 
   const remakeMutation = useMutation({
-    mutationFn: async (input: {
-      target: RemakeDialogTarget
-      reason: string
-    }) => {
-      return orderApi.remakeItem(input.target.orderId, input.target.itemId, {
-        reason: input.reason.trim() || null,
-      })
+    mutationFn: async (target: RemakeDialogTarget) => {
+      return orderApi.remakeItem(target.orderId, target.itemId)
     },
-    onSuccess: (_res, { target }) => {
+    onSuccess: (_res, target) => {
       setRemakeTarget(null)
-      setRemakeReason('')
       setFeedbackBanner({
         tone: 'warning',
         message: `Đã gửi yêu cầu làm lại · ${target.tableNumber} · ${target.itemName}`,
@@ -271,7 +263,6 @@ export function ExpediterPassPage() {
                 })
               }
               onRequestRemake={(item) => {
-                setRemakeReason('')
                 setRemakeTarget({
                   orderId: item.orderId,
                   itemId: item.orderItemId,
@@ -308,30 +299,16 @@ export function ExpediterPassPage() {
               variant="danger"
               className="min-h-[44px]"
               loading={remakeMutation.isPending}
-              onClick={() =>
-                remakeTarget &&
-                remakeMutation.mutate({
-                  target: remakeTarget,
-                  reason: remakeReason,
-                })
-              }
+              onClick={() => remakeTarget && remakeMutation.mutate(remakeTarget)}
             >
               Gửi yêu cầu làm lại
             </Button>
           </>
         }
       >
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-ink">
-            {remakeTarget?.itemName}
-          </p>
-          <Input
-            label="Ghi chú cho bếp (không bắt buộc)"
-            placeholder="Ví dụ: Chưa đủ độ nóng"
-            value={remakeReason}
-            onChange={(e) => setRemakeReason(e.target.value)}
-            className="min-h-[44px]"
-          />
+        <div className="space-y-2 text-sm">
+          <p className="text-ink-muted">Yêu cầu bếp làm lại món này?</p>
+          <p className="font-semibold text-ink">{remakeTarget?.itemName}</p>
         </div>
       </Modal>
     </div>
