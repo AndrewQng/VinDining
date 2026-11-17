@@ -11,6 +11,7 @@ export interface CategoryDto {
   description: string | null
   courseType: CourseType
   isActive: boolean
+  items?: MenuItemDto[]
 }
 
 /** A la carte menu item DTO matching the MenuItems ERD table. */

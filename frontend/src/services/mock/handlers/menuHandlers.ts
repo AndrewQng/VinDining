@@ -10,6 +10,16 @@ import type {
 import { nextMockId, saveMockDb } from '../db'
 import { fail, ok, type MockRouteDefinition } from '../types'
 
+export const extraPublicMenuRoutes: MockRouteDefinition[] = [
+  {
+    id: 101,
+    method: 'GET',
+    pattern: '/menu/tasting-menus',
+    access: 'Public',
+    handler: ({ db }) => ok(db.tastingMenus.filter((m) => m.isActive)),
+  },
+]
+
 export const menuRoutes: MockRouteDefinition[] = [
   {
     id: 30,
@@ -46,7 +56,15 @@ export const menuRoutes: MockRouteDefinition[] = [
     method: 'GET',
     pattern: '/menu/categories',
     access: 'Public',
-    handler: ({ db }) => ok(db.categories.filter((c) => c.isActive)),
+    handler: ({ db }) =>
+      ok(
+        db.categories
+          .filter((c) => c.isActive)
+          .map((cat) => ({
+            ...cat,
+            items: db.menuItems.filter((m) => m.categoryId === cat.id),
+          }))
+      ),
   },
   {
     id: 32,

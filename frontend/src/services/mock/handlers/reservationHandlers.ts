@@ -31,12 +31,11 @@ export const reservationRoutes: MockRouteDefinition[] = [
     handler: ({ db, query }) => {
       const partySize = Number(query.get('partySize') || '2')
       const zone = query.get('zone') as TableZone | null
-      const candidates = db.tables.filter(
-        (t) =>
-          t.isActive &&
-          t.capacity >= partySize &&
-          (!zone || t.zone === zone) &&
-          t.status === 'Available'
+      const zoneTablesAll = db.tables.filter(
+        (t) => t.isActive && (!zone || t.zone === zone)
+      )
+      const candidates = zoneTablesAll.filter(
+        (t) => t.capacity >= partySize && t.status === 'Available'
       )
 
       const slots = SLOT_TIMES.map((time) => ({
@@ -48,6 +47,16 @@ export const reservationRoutes: MockRouteDefinition[] = [
           zone: t.zone,
           posX: t.posX,
           posY: t.posY,
+        })),
+        zoneTables: zoneTablesAll.map((t) => ({
+          id: t.id,
+          tableNumber: t.tableNumber,
+          capacity: t.capacity,
+          zone: t.zone,
+          status: t.status,
+          posX: t.posX,
+          posY: t.posY,
+          isSelectable: t.status === 'Available' && t.capacity >= partySize,
         })),
       }))
       return ok(slots)
@@ -321,17 +330,30 @@ export const reservationRoutes: MockRouteDefinition[] = [
       const reservation = db.reservations.find(
         (r) => r.bookingCode.toUpperCase() === code
       )
+
+      if (!user) {
+        if (query.has('phone')) {
+          const phone = query.get('phone') ?? ''
+          if (
+            !reservation ||
+            !phone.trim() ||
+            normalizePhone(phone) !== normalizePhone(reservation.guest.phoneNumber)
+          ) {
+            return fail(
+              404,
+              'Không tìm thấy thông tin đặt bàn khớp với mã và số điện thoại đã nhập'
+            )
+          }
+          return ok(reservation)
+        }
+        if (!reservation || reservation.status !== 'PendingDeposit') {
+          return fail(404, 'Không tìm thấy phiên giữ chỗ đang chờ thanh toán')
+        }
+        return ok(reservation)
+      }
+
       if (!reservation) {
         return fail(404, 'Không tìm thấy mã đặt bàn')
-      }
-      if (!user) {
-        const phone = query.get('phone')
-        if (
-          phone &&
-          normalizePhone(phone) !== normalizePhone(reservation.guest.phoneNumber)
-        ) {
-          return fail(403, 'Số điện thoại tra cứu không chính xác')
-        }
       }
       return ok(reservation)
     },

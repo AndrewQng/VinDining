@@ -1,4 +1,4 @@
-import type { TableZone } from './table'
+import type { TableStatus, TableZone } from './table'
 
 /** Canonical reservation lifecycle statuses. */
 export type ReservationStatus =
@@ -117,6 +117,18 @@ export interface AvailableSlotsQuery {
   zone?: TableZone
 }
 
+/** Table entry inside an available slot floor-plan response. */
+export interface SlotTableDto {
+  id: string
+  tableNumber: string
+  capacity: number
+  zone: TableZone
+  status: TableStatus
+  posX: number
+  posY: number
+  isSelectable: boolean
+}
+
 /** Available table slot returned by GET /api/reservations/available-slots. */
 export interface AvailableSlotDto {
   time: string
@@ -128,4 +140,5 @@ export interface AvailableSlotDto {
     posX: number
     posY: number
   }[]
+  zoneTables?: SlotTableDto[]
 }

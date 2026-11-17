@@ -21,6 +21,15 @@ export const serviceAndFeedbackRoutes: MockRouteDefinition[] = [
         return fail(409, 'Bàn chưa check-in, không thể gửi yêu cầu')
       }
       const { requestType } = body as CreateServiceRequestInput
+      const alreadyPending = db.serviceRequests.some(
+        (s) =>
+          s.tableId === table.id &&
+          s.requestType === requestType &&
+          s.status === 'Pending'
+      )
+      if (alreadyPending) {
+        return fail(409, 'Yêu cầu này đã được gửi và đang chờ phục vụ xử lý')
+      }
       const item: ServiceRequestDto = {
         id: nextMockId('sr'),
         tableId: table.id,
@@ -78,15 +87,31 @@ export const serviceAndFeedbackRoutes: MockRouteDefinition[] = [
     access: 'Guest',
     handler: ({ db, body, now }) => {
       const input = body as SubmitFeedbackRequest
-      const invoice = db.invoices.find(
-        (inv) => inv.surveyToken === input.token
+      const token = (input.token ?? '').trim()
+      const invoice = db.invoices.find((inv) => inv.surveyToken === token)
+      if (!invoice) {
+        return fail(404, 'Liên kết đánh giá không hợp lệ hoặc đã hết hạn')
+      }
+      const alreadySubmitted = db.feedbacks.some(
+        (fb) => fb.invoiceId === invoice.id
       )
+      if (alreadySubmitted) {
+        return fail(409, 'Quý khách đã hoàn tất đánh giá cho hóa đơn này trước đó')
+      }
+      const ratings = [
+        input.foodRating,
+        input.ambienceRating,
+        input.serviceRating,
+      ]
+      if (ratings.some((r) => !Number.isInteger(r) || r < 1 || r > 5)) {
+        return fail(400, 'Vui lòng chấm điểm từ 1 đến 5 sao cho cả 3 tiêu chí')
+      }
       const fb: FeedbackDto = {
         id: nextMockId('fb'),
         reservationId: null,
-        invoiceId: invoice?.id ?? null,
+        invoiceId: invoice.id,
         guestName: null,
-        tableNumber: invoice?.tableNumber ?? null,
+        tableNumber: invoice.tableNumber,
         foodRating: input.foodRating,
         ambienceRating: input.ambienceRating,
         serviceRating: input.serviceRating,

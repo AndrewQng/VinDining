@@ -951,6 +951,25 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       surveySentAt: minsAgo(60),
       createdAt: minsAgo(90),
     },
+    {
+      id: 'inv-seed-2',
+      orderId: 'ord-seed-b01',
+      tableId: 'tbl-b01',
+      tableNumber: 'B01',
+      settleById: 'staff-cashier-1',
+      settleByName: 'Phạm Thu Hà',
+      subtotal: 2_500_000,
+      serviceCharge: 125_000,
+      vatAmount: 262_500,
+      deductedDeposit: 1_000_000,
+      totalAmount: 2_887_500,
+      amountDue: 1_887_500,
+      paymentMethod: 'VietQR',
+      isPaid: true,
+      surveyToken: 'survey-demo-b01',
+      surveySentAt: minsAgo(20),
+      createdAt: minsAgo(30),
+    },
   ]
 
   const serviceRequests: ServiceRequestDto[] = [
