@@ -12,7 +12,7 @@ function hasLocalStorage(): boolean {
   }
 }
 
-/** Loads the persisted mock database from localStorage, or seeds a fresh one. */
+/** Loads the persisted mock database from localStorage, preserving in-memory fallback. */
 export function getMockDb(): MockDatabase {
   if (hasLocalStorage()) {
     try {
@@ -27,7 +27,8 @@ export function getMockDb(): MockDatabase {
     } catch {
       // Corrupt JSON falls back to fresh seed
     }
-  } else if (memoryDb) {
+  }
+  if (memoryDb) {
     return memoryDb
   }
 

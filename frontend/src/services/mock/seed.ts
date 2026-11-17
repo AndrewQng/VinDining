@@ -13,7 +13,6 @@ import type {
   TastingMenuDto,
 } from '@/types'
 import { calculateDepositAmount } from '@/domain'
-import { buildHistorical120DayData } from './historicalSeed'
 
 export interface DemoStaffCredential {
   id: string
@@ -101,10 +100,32 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   const nowIso = now.toISOString()
   const minsAgo = (m: number) => new Date(now.getTime() - m * 60_000).toISOString()
   const minsAhead = (m: number) => new Date(now.getTime() + m * 60_000).toISOString()
-  const halfHourBoundary = (offsetMinutes: number) => {
-    const step = 30 * 60_000
-    const snapped = Math.ceil((now.getTime() + offsetMinutes * 60_000) / step) * step
-    return new Date(snapped).toISOString()
+  const eveningSlotIso = (daysOffset: number, hour: number, minute: number) =>
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + daysOffset,
+      hour,
+      minute,
+      0,
+      0
+    ).toISOString()
+
+  const pickForfeitableTodaySlot = () => {
+    const candidates: ReadonlyArray<[number, number, number]> = [
+      [0, 20, 0],
+      [0, 19, 30],
+      [0, 19, 0],
+      [0, 18, 30],
+      [0, 18, 0],
+    ]
+    for (const [d, h, m] of candidates) {
+      const slotMs = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d, h, m, 0, 0).getTime()
+      if (slotMs - now.getTime() < 4 * 3_600_000) {
+        return new Date(slotMs).toISOString()
+      }
+    }
+    return eveningSlotIso(-1, 20, 0)
   }
 
   const staffs: MockStaffRecord[] = DEMO_STAFF_ACCOUNTS.map((acc) => ({
@@ -621,7 +642,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b05',
       tableNumber: 'B05',
       zone: 'MainHall',
-      reservationTime: halfHourBoundary(90),
+      reservationTime: pickForfeitableTodaySlot(),
       partySize: 4,
       preOrderedTastingMenuId: 'set-thuong-hang',
       preOrderedTastingMenuName: 'Set Menu Thượng Hạng',
@@ -657,7 +678,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b04',
       tableNumber: 'B04',
       zone: 'MainHall',
-      reservationTime: halfHourBoundary(-60),
+      reservationTime: eveningSlotIso(0, 18, 30),
       partySize: 2,
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
@@ -693,7 +714,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b07',
       tableNumber: 'B07',
       zone: 'MainHall',
-      reservationTime: halfHourBoundary(180),
+      reservationTime: eveningSlotIso(1, 19, 30),
       partySize: 6,
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
@@ -729,7 +750,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-v01',
       tableNumber: 'V01',
       zone: 'VIP',
-      reservationTime: halfHourBoundary(120),
+      reservationTime: eveningSlotIso(0, 19, 0),
       partySize: 4,
       preOrderedTastingMenuId: 'set-hai-san',
       preOrderedTastingMenuName: 'Set Menu Hải Sản',
@@ -768,7 +789,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tableId: 'tbl-b06',
       tableNumber: 'B06',
       zone: 'MainHall',
-      reservationTime: halfHourBoundary(150),
+      reservationTime: eveningSlotIso(0, 20, 0),
       partySize: 2,
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
@@ -1051,8 +1072,6 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     },
   ]
 
-  const history = buildHistorical120DayData(now)
-
   return {
     version: MOCK_DB_VERSION,
     staffs,
@@ -1061,11 +1080,11 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     menuItems,
     tastingMenus,
     tables,
-    reservations: [...reservations, ...history.reservations],
-    orders: [...orders, ...history.orders],
-    invoices: [...invoices, ...history.invoices],
+    reservations,
+    orders,
+    invoices,
     serviceRequests,
-    feedbacks: [...feedbacks, ...history.feedbacks],
+    feedbacks,
     auditLogs: [
       {
         id: 'audit-seed-1',

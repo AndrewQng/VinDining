@@ -251,8 +251,8 @@ export function ManagerRefundsPage() {
               <div className="sm:col-span-2">
                 <dt className="text-xs text-ink-muted">Lý do hủy của khách</dt>
                 <dd className="text-ink">
-                  {selected.reservation.cancelledReason ?? 'Không có ghi chú'} (hủy
-                  trước giờ hẹn {selected.hoursBeforeReservation} giờ)
+                  {selected.reservation.cancelledReason ??
+                    'Hủy sát giờ hẹn dưới 4 tiếng'}
                 </dd>
               </div>
             </dl>

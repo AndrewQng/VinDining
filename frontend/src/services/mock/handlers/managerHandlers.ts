@@ -19,6 +19,7 @@ import type {
   UpdateStaffRequest,
 } from '@/types'
 import { nextMockId, saveMockDb } from '../db'
+import { getHistorical120DayData } from '../historicalSeed'
 import type { MockStaffRecord } from '../seed'
 import { fail, ok, type MockRouteDefinition } from '../types'
 
@@ -159,7 +160,8 @@ export const managerRoutes: MockRouteDefinition[] = [
     pattern: '/manager/refunds',
     access: ['Manager'],
     handler: ({ db, now }) => {
-      const list = db.reservations
+      const history = getHistorical120DayData(now)
+      const list = [...db.reservations, ...history.reservations]
         .filter(
           (r) =>
             r.status === 'Cancelled_Forfeited' ||
@@ -408,6 +410,7 @@ export const managerRoutes: MockRouteDefinition[] = [
       const to = toParam ? new Date(toParam) : defaultWin.to
       const periodLabel = query.get('label') || defaultWin.label
 
+      const history = getHistorical120DayData(now)
       return ok(
         buildDashboardReportMetrics({
           period,
@@ -416,10 +419,10 @@ export const managerRoutes: MockRouteDefinition[] = [
           periodLabel,
           zone,
           tables: db.tables,
-          invoices: db.invoices,
-          orders: db.orders,
-          reservations: db.reservations,
-          feedbacks: db.feedbacks,
+          invoices: [...history.invoices, ...db.invoices],
+          orders: [...history.orders, ...db.orders],
+          reservations: [...history.reservations, ...db.reservations],
+          feedbacks: [...history.feedbacks, ...db.feedbacks],
           now,
         })
       )

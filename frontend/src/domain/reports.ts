@@ -13,7 +13,27 @@ import type {
   ZoneRevenueDto,
 } from '@/types'
 
-const DAILY_TABLE_SLOTS = 4
+/** Official evening booking start slots (§10) and standard dining duration (min). */
+export const EVENING_SLOT_TIMES = ['18:00', '18:30', '19:00', '19:30', '20:00'] as const
+export const DEFAULT_BOOKING_DURATION_MINUTES = 120
+
+/**
+ * Derives non-overlapping seatings per table per evening from the slot window and booking duration.
+ * Example: slots 18:00..20:00 + 120 min spans 18:00..22:00 (240 min) -> floor(240 / 120) = 2 seatings.
+ */
+export function calculateSeatingsPerTablePerEvening(
+  slots: ReadonlyArray<string> = EVENING_SLOT_TIMES,
+  durationMinutes: number = DEFAULT_BOOKING_DURATION_MINUTES
+): number {
+  if (slots.length === 0 || durationMinutes <= 0) return 1
+  const startMinutes = slots.map((hhmm) => {
+    const [h, m] = hhmm.split(':').map(Number)
+    return (Number.isFinite(h) ? h : 0) * 60 + (Number.isFinite(m) ? m : 0)
+  })
+  const earliestStart = Math.min(...startMinutes)
+  const latestEnd = Math.max(...startMinutes) + durationMinutes
+  return Math.max(1, Math.floor((latestEnd - earliestStart) / durationMinutes))
+}
 
 export interface PeriodWindow {
   period: ReportPeriod
@@ -284,8 +304,12 @@ export function buildDashboardReportMetrics({
         Math.ceil((now.getTime() - fromMs + 1) / (24 * 60 * 60_000))
       )
     : daysInRange
+  const seatingsPerEvening = calculateSeatingsPerTablePerEvening(
+    EVENING_SLOT_TIMES,
+    DEFAULT_BOOKING_DURATION_MINUTES
+  )
   const availableSlots =
-    tablesInScope.length * Math.min(daysInRange, effectiveDays) * DAILY_TABLE_SLOTS
+    tablesInScope.length * Math.min(daysInRange, effectiveDays) * seatingsPerEvening
   const occupiedSlots = paidInvoices.length + activeTablesNow.length
   const occupancyRate = calculateOccupancyRate(occupiedSlots, availableSlots)
   const cancellationRate = calculateCancellationRate(

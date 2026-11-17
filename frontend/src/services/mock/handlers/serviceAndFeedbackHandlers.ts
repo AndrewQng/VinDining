@@ -5,6 +5,7 @@ import type {
   ServiceRequestDto,
   SubmitFeedbackRequest,
 } from '@/types'
+import { getHistorical120DayData } from '../historicalSeed'
 import { nextMockId, saveMockDb } from '../db'
 import { fail, ok, type MockRouteDefinition } from '../types'
 
@@ -128,6 +129,12 @@ export const serviceAndFeedbackRoutes: MockRouteDefinition[] = [
     method: 'GET',
     pattern: '/manager/feedbacks',
     access: ['Manager'],
-    handler: ({ db }) => ok(db.feedbacks),
+    handler: ({ db, now }) => {
+      const history = getHistorical120DayData(now)
+      const merged = [...db.feedbacks, ...history.feedbacks].sort(
+        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+      )
+      return ok(merged)
+    },
   },
 ]

@@ -7,6 +7,7 @@ import {
   calculateDepositAmount,
   calculateInvoiceTotals,
   calculateOccupancyRate,
+  calculateSeatingsPerTablePerEvening,
   canFireCourse,
   canModifyStaffAccount,
   computeHoldExpiresAt,
@@ -685,11 +686,58 @@ describe('formatInvoiceCode', () => {
 })
 
 describe('manager domain rules and report KPIs', () => {
-  it('computes occupancy and cancellation KPIs cleanly', () => {
+  it('computes seatings per evening from slot window and duration, occupancy, and cancellation KPIs', () => {
+    expect(calculateSeatingsPerTablePerEvening(['18:00', '18:30', '19:00', '19:30', '20:00'], 120)).toBe(2)
+    expect(calculateSeatingsPerTablePerEvening(['18:00', '20:00'], 90)).toBe(2)
     expect(calculateOccupancyRate(15, 60)).toBe(25)
     expect(calculateOccupancyRate(0, 0)).toBe(0)
     expect(calculateCancellationRate(3, 20)).toBe(15)
     expect(calculateCancellationRate(0, 0)).toBe(0)
+  })
+
+  it('uses derived 2 seatings per table per evening in buildDashboardReportMetrics occupancy denominator', () => {
+    const anchor = new Date(2026, 10, 17, 19, 0, 0)
+    const dayWin = getReportPeriodWindow('day', 0, anchor)
+    const tables = [
+      { id: 't1', tableNumber: 'B01', qrCode: 'Q1', capacity: 4, zone: 'MainHall' as const, status: 'Available' as const, posX: 0, posY: 0, isActive: true, assignedStaffId: null, assignedStaffName: null, currentOrderId: null, currentReservationCode: null, guestCount: null, holdExpiresAt: null },
+      { id: 't2', tableNumber: 'B02', qrCode: 'Q2', capacity: 4, zone: 'MainHall' as const, status: 'Available' as const, posX: 0, posY: 0, isActive: true, assignedStaffId: null, assignedStaffName: null, currentOrderId: null, currentReservationCode: null, guestCount: null, holdExpiresAt: null },
+    ]
+    const invoice = {
+      id: 'inv-1',
+      orderId: 'ord-1',
+      tableId: 't1',
+      tableNumber: 'B01',
+      settleById: 's1',
+      settleByName: 'Ha',
+      guestCount: 2,
+      waiterName: 'Mai',
+      items: [],
+      subtotal: 1_000_000,
+      serviceCharge: 50_000,
+      vatAmount: 105_000,
+      totalAmount: 1_155_000,
+      deductedDeposit: 0,
+      amountDue: 1_155_000,
+      paymentMethod: 'Card' as const,
+      isPaid: true,
+      surveyToken: 'tok-1',
+      surveySentAt: null,
+      createdAt: anchor.toISOString(),
+    }
+    const res = buildDashboardReportMetrics({
+      period: 'day',
+      from: dayWin.from,
+      to: dayWin.to,
+      periodLabel: dayWin.label,
+      tables,
+      invoices: [invoice],
+      orders: [],
+      reservations: [],
+      feedbacks: [],
+      now: anchor,
+    })
+    // 2 tables * 1 day * 2 seatings = 4 slots; 1 paid invoice / 4 = 25%
+    expect(res.occupancyRate).toBe(25)
   })
 
   it('aggregates report period metrics and empty future period', () => {
