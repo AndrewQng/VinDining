@@ -1,83 +1,73 @@
-import React from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
-  isLoading?: boolean
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
+export type ButtonSize = 'sm' | 'md' | 'lg'
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
   loading?: boolean
+  icon?: ReactNode
+  fullWidth?: boolean
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = 'primary',
-      size = 'md',
-      isLoading = false,
-      loading = false,
-      disabled,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const isActuallyLoading = isLoading || loading
-    const baseStyles =
-      'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+  primary:
+    'bg-primary text-on-primary hover:bg-primary-hover border border-transparent shadow-sm',
+  secondary:
+    'bg-card text-ink border border-line-strong hover:bg-card-hover',
+  ghost:
+    'bg-transparent text-ink-muted hover:text-ink hover:bg-card-hover border border-transparent',
+  danger:
+    'bg-danger text-on-danger hover:bg-danger-hover border border-transparent shadow-sm',
+}
 
-    const variants = {
-      primary:
-        'bg-gradient-to-r from-amber-500 via-gold-500 to-amber-600 text-neutral-950 font-semibold shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 hover:brightness-110 focus:ring-gold-400',
-      secondary:
-        'bg-neutral-800 text-neutral-100 hover:bg-neutral-700 border border-neutral-700/80 focus:ring-neutral-500',
-      outline:
-        'border border-gold-500/40 text-gold-300 hover:bg-gold-500/10 focus:ring-gold-400',
-      danger:
-        'bg-rose-600/90 hover:bg-rose-600 text-white shadow-lg shadow-rose-900/20 focus:ring-rose-500',
-      ghost:
-        'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800/50 focus:ring-neutral-600',
-    }
+const SIZE_CLASSES: Record<ButtonSize, string> = {
+  sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
+  md: 'h-10 px-4 text-sm rounded-lg gap-2',
+  lg: 'h-11 px-5 text-sm rounded-xl gap-2',
+}
 
-    const sizes = {
-      sm: 'text-xs px-3 py-1.5 gap-1.5',
-      md: 'text-sm px-4 py-2 gap-2',
-      lg: 'text-base px-6 py-2.5 gap-2.5',
-    }
+/** Accessible button with semantic variants, sizes, icon slot, and loading spinner. */
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  icon,
+  fullWidth = false,
+  disabled,
+  className,
+  children,
+  type = 'button',
+  ...props
+}: ButtonProps) {
+  const isDisabled = disabled || loading
 
-    return (
-      <button
-        ref={ref}
-        disabled={disabled || isActuallyLoading}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
-        {...props}
-      >
-        {isActuallyLoading && (
-          <svg
-            className="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-          </svg>
-        )}
-        {children}
-      </button>
-    )
-  }
-)
-
-Button.displayName = 'Button'
+  return (
+    <button
+      type={type}
+      disabled={isDisabled}
+      aria-busy={loading || undefined}
+      className={cn(
+        'inline-flex items-center justify-center font-medium transition-colors cursor-pointer select-none',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        VARIANT_CLASSES[variant],
+        SIZE_CLASSES[size],
+        fullWidth && 'w-full',
+        className
+      )}
+      {...props}
+    >
+      {loading ? (
+        <Loader2 className="w-4 h-4 animate-spin shrink-0" aria-hidden="true" />
+      ) : icon ? (
+        <span className="shrink-0 inline-flex items-center" aria-hidden="true">
+          {icon}
+        </span>
+      ) : null}
+      {children}
+    </button>
+  )
+}

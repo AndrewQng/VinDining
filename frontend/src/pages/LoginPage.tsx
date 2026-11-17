@@ -1,163 +1,212 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Lock, User, UtensilsCrossed, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react'
-import { useAuthStore } from '@/stores/useAuthStore'
-import type { StaffRole, UserProfile } from '@/types/auth'
+import { useState, type FormEvent } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Lock, User } from 'lucide-react'
+import { STAFF_ROLE_LABELS } from '@/domain'
+import { Button, Card, Input, ThemeToggle, Wordmark } from '@/components/ui'
+import { isMockMode } from '@/lib/utils'
+import { authApi } from '@/services/api'
+import { DEMO_STAFF_ACCOUNTS, resetMockDb } from '@/services/mock'
+import {
+  getRoleHomeRoute,
+  isRouteAllowedForRole,
+  useAuthStore,
+} from '@/stores/useAuthStore'
+import { toast } from '@/stores/useToastStore'
+import type { ApiErrorResponse } from '@/types'
 
+/** S1 — Shared staff login page with lockout feedback and mock demo account helper. */
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
+  const mockEnabled = isMockMode()
 
-  const [username, setUsername] = useState('waiter1')
-  const [password, setPassword] = useState('Password123!')
-  const [role, setRole] = useState<StaffRole>('Waitstaff')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [lockedMinutes, setLockedMinutes] = useState<number | null>(null)
 
-  const demoAccounts: { role: StaffRole; label: string; desc: string; user: string }[] = [
-    { role: 'Waitstaff', label: 'Phục Vụ Bàn', desc: 'Đón khách, Order, Course Firing', user: 'waiter1' },
-    { role: 'Expediter', label: 'Điều Phối Quầy Pass', desc: 'Kiểm đồ, xác nhận ra món', user: 'chef1' },
-    { role: 'Manager', label: 'Quản Lý Nhà Hàng', desc: 'Báo cáo doanh thu, duyệt hoàn cọc', user: 'manager1' },
-    { role: 'Admin', label: 'Quản Trị Hệ Thống', desc: 'Cấu hình nhân sự, tài khoản', user: 'admin1' },
-  ]
-
-  const handleSelectDemo = (selectedRole: StaffRole, demoUser: string) => {
-    setRole(selectedRole)
-    setUsername(demoUser)
-    setPassword('Password123!')
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setErrorMessage(null)
+    setLockedMinutes(null)
     setLoading(true)
 
-    // Demo authentication session
-    const mockUser: UserProfile = {
-      id: `usr_${Date.now()}`,
-      username,
-      fullName:
-        role === 'Waitstaff'
-          ? 'Nguyễn Văn Phục Vụ'
-          : role === 'Expediter'
-          ? 'Trần Bếp Điều Phối'
-          : role === 'Manager'
-          ? 'Lê Quản Lý Nhà Hàng'
-          : 'Hệ Thống Quản Trị',
-      email: `${username}@vindining.vn`,
-      role,
-    }
+    try {
+      const response = await authApi.login({ username, password })
+      setAuth(response.token, response.user)
 
-    setTimeout(() => {
-      setAuth('mock-jwt-token-fine-dining', 'mock-refresh-token', mockUser)
-      setLoading(false)
-
-      const from = (location.state as { from?: { pathname: string } })?.from?.pathname
-      if (from) {
-        navigate(from, { replace: true })
-      } else if (role === 'Expediter') {
-        navigate('/expediter', { replace: true })
-      } else if (role === 'Manager' || role === 'Admin') {
-        navigate('/manager', { replace: true })
+      const fromPath = (location.state as { from?: { pathname?: string } })?.from
+        ?.pathname
+      const target =
+        fromPath && isRouteAllowedForRole(fromPath, response.user.role)
+          ? fromPath
+          : getRoleHomeRoute(response.user.role)
+      navigate(target, { replace: true })
+    } catch (err) {
+      if (isAxiosError<ApiErrorResponse>(err)) {
+        const status = err.response?.status
+        const data = err.response?.data
+        if (status === 423 || data?.code === 'ACCOUNT_LOCKED') {
+          const mins = data?.remainingMinutes ?? 15
+          setLockedMinutes(mins)
+          setErrorMessage(
+            `Tài khoản đang tạm khóa. Vui lòng thử lại sau ${mins} phút.`
+          )
+        } else {
+          setErrorMessage(data?.message ?? 'Sai tên đăng nhập hoặc mật khẩu')
+        }
       } else {
-        navigate('/pos/tables', { replace: true })
+        setErrorMessage('Không thể kết nối máy chủ')
       }
-    }, 400)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSelectDemo = (demoUsername: string, demoPassword: string) => {
+    setUsername(demoUsername)
+    setPassword(demoPassword)
+    setErrorMessage(null)
+    setLockedMinutes(null)
+  }
+
+  const handleResetDemo = () => {
+    resetMockDb()
+    setErrorMessage(null)
+    setLockedMinutes(null)
+    toast.success('Đã khôi phục dữ liệu demo')
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg text-neutral-100 flex flex-col justify-center items-center px-4 py-12 relative selection:bg-gold-500 selection:text-neutral-950">
-      <div className="w-full max-w-md">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gold-600 to-gold-400 flex items-center justify-center shadow-xl shadow-gold-500/20 mx-auto mb-4">
-            <UtensilsCrossed className="w-7 h-7 text-neutral-950" />
-          </div>
-          <h2 className="text-2xl font-black tracking-wider uppercase text-neutral-100">Cổng Nhân Sự VinDining</h2>
-          <p className="text-xs text-neutral-400 mt-1">Đăng nhập tài khoản nội bộ theo phân quyền chức vụ</p>
-        </div>
-
-        {/* Quick Role Select Demo Cards */}
-        <div className="mb-6">
-          <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <UserCheck className="w-3.5 h-3.5 text-gold-400" />
-            <span>Chọn nhanh vai trò ca trực</span>
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {demoAccounts.map((acc) => (
-              <button
-                key={acc.role}
-                type="button"
-                onClick={() => handleSelectDemo(acc.role, acc.user)}
-                className={`cursor-pointer p-3 rounded-xl border text-left transition-all duration-150 ${
-                  role === acc.role
-                    ? 'border-gold-500/50 bg-gold-500/10 text-gold-300 shadow-sm'
-                    : 'border-dark-border bg-dark-surface/60 hover:bg-dark-card text-neutral-300'
-                }`}
-              >
-                <p className="text-xs font-bold leading-tight">{acc.label}</p>
-                <p className="text-[10px] text-neutral-400 line-clamp-1 mt-0.5">{acc.desc}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Login Form */}
-        <div className="rounded-2xl border border-dark-border bg-dark-surface/90 backdrop-blur-md p-6 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1.5">Tên đăng nhập</label>
-              <div className="relative">
-                <User className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-dark-card border border-dark-border rounded-xl px-10 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-gold-500 transition-colors"
-                  placeholder="Nhập tên đăng nhập"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1.5">Mật khẩu</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-dark-card border border-dark-border rounded-xl px-10 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-gold-500 transition-colors"
-                  placeholder="Nhập mật khẩu"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="cursor-pointer w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-neutral-950 font-bold text-sm shadow-lg shadow-gold-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>{loading ? 'Đang xác thực...' : `Vào Ca Trực (${role})`}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        </div>
-
-        {/* Back Link */}
-        <div className="text-center mt-6">
-          <button
-            onClick={() => navigate('/')}
-            className="cursor-pointer text-xs text-neutral-400 hover:text-gold-300 transition-colors"
-          >
-            &larr; Quay lại trang chủ Thực khách
-          </button>
-        </div>
+    <div className="min-h-screen bg-bg text-ink flex flex-col justify-between p-4 sm:p-6">
+      <div className="max-w-md w-full mx-auto flex items-center justify-between pt-2">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-accent transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>Quay lại trang chủ</span>
+        </Link>
+        <ThemeToggle />
       </div>
+
+      <div className="w-full max-w-md mx-auto my-8 space-y-4">
+        <Card padding="lg" className="space-y-6 shadow-xl">
+          <div className="text-center space-y-1.5">
+            <Wordmark size="lg" className="items-center" />
+            <p className="text-sm text-ink-muted">Đăng nhập hệ thống nội bộ</p>
+          </div>
+
+          {errorMessage && (
+            <div
+              role="alert"
+              className="rounded-lg border border-danger/50 bg-danger/10 px-3.5 py-2.5 flex items-start gap-2.5 text-sm text-danger"
+            >
+              <AlertCircle
+                className="w-4 h-4 shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
+              <div className="space-y-0.5">
+                <p className="font-medium">{errorMessage}</p>
+                {lockedMinutes !== null && (
+                  <p className="text-xs text-ink-muted">
+                    Thời gian khóa còn lại: {lockedMinutes} phút.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Tên đăng nhập / Email"
+              type="text"
+              required
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Nhập tên đăng nhập"
+              leftIcon={<User className="w-4 h-4" />}
+            />
+
+            <Input
+              label="Mật khẩu"
+              type={showPassword ? 'text' : 'password'}
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Nhập mật khẩu"
+              leftIcon={<Lock className="w-4 h-4" />}
+              rightAction={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                  className="p-1 text-ink-muted hover:text-ink cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="w-4 h-4" aria-hidden="true" />
+                  )}
+                </button>
+              }
+            />
+
+            <Button type="submit" fullWidth size="lg" loading={loading}>
+              {loading ? 'Đang xác thực...' : 'Đăng nhập'}
+            </Button>
+          </form>
+        </Card>
+
+        {mockEnabled && (
+          <Card padding="sm" className="space-y-2.5">
+            <p className="text-xs font-semibold text-accent">Tài khoản demo</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {DEMO_STAFF_ACCOUNTS.map((acc) => {
+                const selected = username === acc.username
+                return (
+                  <button
+                    key={acc.id}
+                    type="button"
+                    onClick={() =>
+                      handleSelectDemo(acc.username, acc.password)
+                    }
+                    className={`text-left px-3 py-2 rounded-lg border text-xs transition-colors cursor-pointer ${
+                      selected
+                        ? 'border-primary bg-card-hover text-accent'
+                        : 'border-line bg-card text-ink hover:bg-card-hover'
+                    }`}
+                  >
+                    <span className="block font-medium">{acc.fullName}</span>
+                    <span className="block text-ink-muted mt-0.5">
+                      {STAFF_ROLE_LABELS[acc.role]} · {acc.username}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </Card>
+        )}
+      </div>
+
+      <footer className="max-w-md w-full mx-auto pb-2 text-center space-y-2">
+        {mockEnabled && (
+          <button
+            type="button"
+            onClick={handleResetDemo}
+            className="text-xs text-ink-muted hover:text-accent underline underline-offset-4 cursor-pointer"
+          >
+            Khôi phục dữ liệu demo
+          </button>
+        )}
+        <p className="text-xs text-ink-subtle">© VinDining</p>
+      </footer>
     </div>
   )
 }
-
-export default LoginPage
