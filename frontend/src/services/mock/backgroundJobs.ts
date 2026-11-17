@@ -39,7 +39,7 @@ export function runExpiryScan(now: Date = new Date()): number {
 }
 
 /** Marks paid invoices as having had their CSAT survey link sent. */
-export function runSurveyScan(now: Date = new Date()): number {
+function runSurveyScan(now: Date = new Date()): number {
   const db = getMockDb()
   let marked = 0
   const nowIso = now.toISOString()
@@ -58,7 +58,7 @@ export function runSurveyScan(now: Date = new Date()): number {
 }
 
 /** Marks Reserved bookings within 2 hours as having received a reminder. */
-export function runReminderScan(now: Date = new Date()): number {
+function runReminderScan(now: Date = new Date()): number {
   const db = getMockDb()
   let reminded = 0
   const twoHoursMs = 2 * 3_600_000
@@ -80,7 +80,7 @@ export function runReminderScan(now: Date = new Date()): number {
 }
 
 /** Evaluates active Cooking items against Prep SLA and emits sla:alert if needed. */
-export function runSlaScan(now: Date = new Date()): {
+function runSlaScan(now: Date = new Date()): {
   warningCount: number
   overdueCount: number
 } {
@@ -127,7 +127,7 @@ export function startMockBackgroundJobs(): () => void {
 }
 
 /** Stops all running mock background worker intervals. */
-export function stopMockBackgroundJobs(): void {
+function stopMockBackgroundJobs(): void {
   if (typeof window === 'undefined') return
   for (const id of timerHandles) {
     window.clearInterval(id)

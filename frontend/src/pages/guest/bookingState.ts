@@ -13,15 +13,6 @@ export type BookingStep =
   | 'confirmed'
   | 'expired'
 
-export const BOOKING_STEP_ORDER: readonly BookingStep[] = [
-  'time-zone',
-  'table',
-  'set-menu',
-  'contact',
-  'hold',
-  'confirmed',
-]
-
 export const BOOKING_TIMES = [
   '18:00',
   '18:30',

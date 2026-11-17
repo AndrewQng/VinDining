@@ -1,6 +1,5 @@
 import type {
   CourseType,
-  DepositStatus,
   MenuItemStatus,
   OrderItemStatus,
   OrderStatus,
@@ -38,8 +37,7 @@ export const TABLE_ZONE_LABELS: Record<TableZone, string> = {
   Balcony: 'Ban công',
 }
 
-/** Vietnamese display labels for order item statuses. */
-export const ORDER_ITEM_STATUS_LABELS: Record<OrderItemStatus, string> = {
+const ORDER_ITEM_STATUS_LABELS: Record<OrderItemStatus, string> = {
   OnHold: 'Chờ',
   Cooking: 'Đang nấu',
   Served: 'Đã ra món',
@@ -70,14 +68,6 @@ export const RESERVATION_STATUS_LABELS: Record<ReservationStatus, string> = {
   Cancelled_Refunded: 'Đã hủy · đã hoàn cọc',
   Cancelled_Forfeited: 'Đã hủy · không hoàn cọc',
   RefundRejected: 'Bác bỏ hoàn cọc',
-}
-
-/** Vietnamese display labels for deposit statuses. */
-export const DEPOSIT_STATUS_LABELS: Record<DepositStatus, string> = {
-  Pending: 'Chờ đặt cọc',
-  Paid: 'Đã thanh toán',
-  Refunded: 'Đã hoàn cọc',
-  Forfeited: 'Không hoàn cọc',
 }
 
 /** Vietnamese display labels for invoice payment methods. */

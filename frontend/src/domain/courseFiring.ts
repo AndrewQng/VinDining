@@ -1,12 +1,5 @@
 import type { CourseType, OrderItemStatus, TableStatus } from '@/types'
 
-/** Standard dining course progression (Beverage starts automatically with Appetizer). */
-export const COURSE_SEQUENCE: readonly CourseType[] = [
-  'Appetizer',
-  'MainCourse',
-  'Dessert',
-]
-
 export interface FireableOrderItem {
   courseType: CourseType
   status: OrderItemStatus

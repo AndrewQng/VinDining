@@ -281,7 +281,7 @@ function buildOrderItemsForDinner(
  * Generates deterministic 120-evening history (strictly §10 slots, dishes, prices,
  * weekday occupancy variance, cancellations, and feedbacks) without bloating bundle size.
  */
-export function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
+function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
   const rng = createSeededRng(20261117)
   const reservations: ReservationDto[] = []
   const orders: OrderDto[] = []
