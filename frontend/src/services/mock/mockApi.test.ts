@@ -310,4 +310,35 @@ describe('Mock API §10 end-to-end stories', () => {
     expect(setOrder.status).toBe(201)
     expect(setOrder.data.items).toHaveLength(3)
   })
+
+  it('rejects Waitstaff and Cashier from serving or remaking Pass items with 403', async () => {
+    const client = createTestClient()
+    const waiterToken = await loginAs(client, 'mai.tt')
+    const cashierToken = await loginAs(client, 'ha.pt')
+    const expediterToken = await loginAs(client, 'quan.lm')
+
+    await expect(
+      client.patch(
+        '/orders/ord-b03/items/oi-b03-3/serve',
+        {},
+        { headers: { Authorization: `Bearer ${waiterToken}` } }
+      )
+    ).rejects.toMatchObject({ response: { status: 403 } })
+
+    await expect(
+      client.post(
+        '/orders/ord-b03/items/oi-b03-3/remake',
+        {},
+        { headers: { Authorization: `Bearer ${cashierToken}` } }
+      )
+    ).rejects.toMatchObject({ response: { status: 403 } })
+
+    const remade = await client.post(
+      '/orders/ord-b03/items/oi-b03-3/remake',
+      {},
+      { headers: { Authorization: `Bearer ${expediterToken}` } }
+    )
+    expect(remade.status).toBe(200)
+    expect(remade.data.isRemake).toBe(true)
+  })
 })

@@ -12,10 +12,13 @@ import type {
   CurrentUserDto,
   FeedbackDto,
   FireCourseRequest,
+  KitchenPendingTicketDto,
   LoginRequest,
   LoginResponse,
   MenuItemDto,
   OrderDto,
+  OrderItemDto,
+  RemakeOrderItemRequest,
   ReservationDto,
   ReservationStatus,
   ServiceRequestDto,
@@ -240,6 +243,32 @@ export const orderApi = {
   ): Promise<OrderDto> => {
     const { data } = await apiClient.post<OrderDto>(
       `/orders/${encodeURIComponent(orderId)}/items`,
+      payload
+    )
+    return data
+  },
+  getKitchenPending: async (): Promise<KitchenPendingTicketDto[]> => {
+    const { data } = await apiClient.get<KitchenPendingTicketDto[]>(
+      '/orders/kitchen/pending'
+    )
+    return data
+  },
+  serveItem: async (
+    orderId: string,
+    itemId: string
+  ): Promise<OrderItemDto> => {
+    const { data } = await apiClient.patch<OrderItemDto>(
+      `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/serve`
+    )
+    return data
+  },
+  remakeItem: async (
+    orderId: string,
+    itemId: string,
+    payload: RemakeOrderItemRequest = {}
+  ): Promise<OrderItemDto> => {
+    const { data } = await apiClient.post<OrderItemDto>(
+      `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/remake`,
       payload
     )
     return data

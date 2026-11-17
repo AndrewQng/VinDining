@@ -5,12 +5,14 @@ import {
   calculateInvoiceTotals,
   canFireCourse,
   computeHoldExpiresAt,
+  computeKdsRowsPerPage,
   evaluateCancellationPolicy,
   evaluateLoginFailure,
   evaluateSla,
   fireCourseItems,
   formatDate,
   formatDateTime,
+  formatMinutesSeconds,
   formatRelativeMinutes,
   formatSlotTime,
   formatVnd,
@@ -22,12 +24,14 @@ import {
   getNextActivatableCourse,
   getOrderItemDisplayLabel,
   getRemainingHoldSeconds,
+  groupKitchenTickets,
   hasAnyServedItem,
   isHoldExpired,
   isOrderLockedForTable,
   isTableUnavailableForSlot,
   markItemRemake,
   markItemServed,
+  paginateKdsLanes,
   type FireableOrderItem,
 } from './index'
 
@@ -424,5 +428,134 @@ describe('waitstaff course activation & payment lock helpers', () => {
 
     expect(isOrderLockedForTable('PaymentPending')).toBe(true)
     expect(isOrderLockedForTable('Occupied')).toBe(false)
+  })
+})
+
+describe('kitchen ticket grouping, max Prep SLA rule, urgency sort & KDS pagination', () => {
+  it('groups course dishes, takes max Prep SLA from course start, and sorts most urgent first', () => {
+    const now = new Date('2026-11-17T19:30:00.000Z')
+    const minsAgo = (m: number) =>
+      new Date(now.getTime() - m * 60_000).toISOString()
+
+    const tickets = groupKitchenTickets(
+      [
+        {
+          orderItemId: 'oi-1',
+          orderId: 'ord-a',
+          tableId: 'tbl-b05',
+          tableNumber: 'B05',
+          itemName: 'Gỏi tôm hùm',
+          quantity: 2,
+          courseType: 'Appetizer',
+          status: 'Cooking',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 10,
+          cookingStartedAt: minsAgo(9),
+        },
+        {
+          orderItemId: 'oi-2',
+          orderId: 'ord-a',
+          tableId: 'tbl-b05',
+          tableNumber: 'B05',
+          itemName: 'Súp bào ngư',
+          quantity: 2,
+          courseType: 'Appetizer',
+          status: 'Cooking',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 12,
+          cookingStartedAt: minsAgo(9),
+        },
+        {
+          orderItemId: 'oi-3',
+          orderId: 'ord-b',
+          tableId: 'tbl-b03',
+          tableNumber: 'B03',
+          itemName: 'Cá tuyết Miso',
+          quantity: 2,
+          courseType: 'MainCourse',
+          status: 'Cooking',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 10,
+          cookingStartedAt: minsAgo(11),
+        },
+      ],
+      now
+    )
+
+    expect(tickets).toHaveLength(2)
+    // B03 (11/10 = 1.10 overdue) ranks before B05 (9/12 = 0.75 normal; max of 10 and 12 = 12!)
+    expect(tickets[0].tableNumber).toBe('B03')
+    expect(tickets[0].slaStatus).toBe('overdue')
+    expect(tickets[1].tableNumber).toBe('B05')
+    expect(tickets[1].items).toHaveLength(2)
+    expect(tickets[1].prepSlaMinutes).toBe(12)
+    expect(tickets[1].slaStatus).toBe('normal')
+    expect(formatMinutesSeconds(tickets[0].remainingSeconds)).toBe('01:00')
+  })
+
+  it('computes rows per height, repeats Làm lại across pages, and reports later-page counts', () => {
+    expect(computeKdsRowsPerPage(1080)).toBe(3)
+    expect(computeKdsRowsPerPage(720)).toBe(2)
+
+    const now = new Date('2026-11-17T19:30:00.000Z')
+    const makePending = (
+      id: string,
+      status: 'Cooking' | 'OnHold',
+      isRemake = false
+    ) => ({
+      orderItemId: id,
+      orderId: `ord-${id}`,
+      tableId: `tbl-${id}`,
+      tableNumber: id.toUpperCase(),
+      itemName: 'Món thử',
+      quantity: 1,
+      courseType: 'MainCourse' as const,
+      status,
+      note: null,
+      isRemake,
+      remakeCount: isRemake ? 1 : 0,
+      isPriority: false,
+      prepTimeMinutes: 20,
+      cookingStartedAt: status === 'Cooking' ? now.toISOString() : null,
+    })
+
+    const grouped = groupKitchenTickets(
+      [
+        makePending('r1', 'Cooking', true),
+        ...Array.from({ length: 8 }, (_, idx) =>
+          makePending(`c${idx + 1}`, 'Cooking', false)
+        ),
+        ...Array.from({ length: 4 }, (_, idx) =>
+          makePending(`h${idx + 1}`, 'OnHold', false)
+        ),
+      ],
+      now
+    )
+
+    const p1 = paginateKdsLanes(grouped, 1, 3)
+    expect(p1.page).toBe(1)
+    expect(p1.totalPages).toBe(2)
+    expect(p1.remake).toHaveLength(1)
+    expect(p1.cooking).toHaveLength(6)
+    expect(p1.onHold).toHaveLength(3)
+    expect(p1.cookingLaterCount).toBe(2)
+    expect(p1.onHoldLaterCount).toBe(1)
+
+    const p2 = paginateKdsLanes(grouped, 2, 3)
+    expect(p2.page).toBe(2)
+    expect(p2.remake).toHaveLength(1) // Làm lại repeated on page 2
+    expect(p2.cooking).toHaveLength(2)
+    expect(p2.onHold).toHaveLength(1)
+    expect(p2.cookingLaterCount).toBe(0)
+    expect(p2.onHoldLaterCount).toBe(0)
   })
 })
