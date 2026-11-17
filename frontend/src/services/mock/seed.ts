@@ -146,7 +146,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     {
       id: 'cat-appetizer',
       name: 'Khai vị',
-      description: 'Các món khai vị mở đầu bữa tiệc',
+      description: 'Các món khai vị mở đầu bữa tối',
       courseType: 'Appetizer',
       isActive: true,
     },
