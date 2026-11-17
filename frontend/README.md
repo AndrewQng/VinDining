@@ -19,7 +19,19 @@ npm run dev
 npm run build
 npm run lint
 npm test
+npm run e2e
 ```
+
+## Đường dẫn thử nghiệm Khách hàng (chế độ Mock)
+
+- **Trang chủ (G0):** `/`
+- **Đặt bàn & cọc (G1):** `/dat-ban` (hỗ trợ `?set=set-thuong-hang` và `?zone=VIP`)
+- **Tra cứu & hủy đặt bàn (G2):** `/tra-cuu` — mã mẫu `VD-7K3Q`, SĐT `0901 234 567` (bàn B05, < 4 tiếng)
+- **QR E-Menu tại bàn (G3):**
+  - Bàn đang phục vụ (hợp lệ): `/menu/VD-QR-B03` (Bàn B03), `/menu/VD-QR-B08` (Bàn B08)
+  - Bàn đã đặt chưa check-in (trạng thái chờ): `/menu/VD-QR-B05` (Bàn B05 — hoạt động sau khi check-in `VD-7K3Q`)
+  - Bàn khác theo quy ước `/menu/VD-QR-<MÃ_BÀN>` (`B01`–`B08`, `V01`–`V03`, `C01`–`C04`)
+- **Đánh giá dịch vụ (G4):** `/danh-gia/survey-demo-b01` (token hợp lệ chưa gửi)
 
 ## Tài khoản demo (chế độ Mock)
 
