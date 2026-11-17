@@ -1,96 +1,131 @@
 import type { TableZone } from './table'
 
-export type ReservationStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'NoShow'
+/** Canonical reservation lifecycle statuses. */
+export type ReservationStatus =
+  | 'PendingDeposit'
+  | 'Reserved'
+  | 'Expired_Cancelled'
+  | 'Cancelled_Refunded'
+  | 'Cancelled_Forfeited'
+  | 'RefundRejected'
 
-export type DiningShift = 'Lunch' | 'Dinner'
+/** Canonical deposit payment statuses. */
+export type DepositStatus = 'Pending' | 'Paid' | 'Refunded' | 'Forfeited'
 
-export interface Reservation {
+/** Payment methods supported by the VNPAY deposit gateway. */
+export type DepositPaymentMethod = 'VietQR' | 'Card'
+
+/** Guest contact entity matching the Guests ERD table. */
+export interface GuestDto {
   id: string
-  guestName: string
-  guestPhone: string
-  guestEmail: string
-  partySize: number
-  reservationTime: string
-  shift: DiningShift
-  zone: TableZone
-  tableId?: string | null
-  tableNumber?: string | null
-  status: ReservationStatus
-  depositAmount: number
-  depositStatus: 'Pending' | 'Paid' | 'Refunded' | 'Forfeited'
-  specialRequests?: string | null
-  createdAtUtc: string
-}
-
-export interface CreateReservationRequest {
-  guestName: string
-  guestPhone: string
-  guestEmail: string
-  partySize: number
-  reservationDate: string
-  reservationTime: string
-  shift: DiningShift
-  zone: TableZone
-  specialRequests?: string
-}
-
-export interface AvailableTableDto {
-  id: string
-  tableNumber: string
-  capacity: number
-  zone: number | string
-  zoneName: string
-  status: number | string
-}
-
-export interface CreateReservationCommand {
   fullName: string
   phoneNumber: string
   email: string
-  tableId: string
-  reservationTime: string
-  partySize: number
-  note?: string
 }
 
-export interface CreateReservationResultDto {
-  reservationId: string
-  bookingCode: string
-  tableNumber: string
-  depositAmount: number
-  paymentUrl: string
-  expiresAt: string
-}
-
-export interface ConfirmDepositPaymentCommand {
-  bookingCode: string
-  transactionId: string
-  paymentMethod?: number
-}
-
-export interface CancelReservationResultDto {
-  bookingCode: string
-  status: string
-  isRefunded: boolean
-  refundAmount: number
-  message: string
-}
-
-export interface ReservationDetailDto {
+/** Deposit record matching the Deposits ERD table. */
+export interface DepositDto {
   id: string
-  bookingCode: string
-  guestName: string
-  guestPhone: string
-  guestEmail: string
-  tableId: string
-  tableNumber: string
-  tableZone: string
-  reservationTime: string
-  partySize: number
-  status: string
-  note?: string
-  depositAmount?: number
-  depositStatus?: string
+  reservationId: string
+  amount: number
+  transactionId: string
+  paymentMethod: DepositPaymentMethod
+  status: DepositStatus
+  paidAt: string | null
+  refundAmount: number | null
   createdAt: string
 }
 
+/** Full reservation DTO returned by reservation lookup and list endpoints. */
+export interface ReservationDto {
+  id: string
+  bookingCode: string
+  guest: GuestDto
+  tableId: string
+  tableNumber: string
+  zone: TableZone
+  reservationTime: string
+  partySize: number
+  preOrderedTastingMenuId: string | null
+  preOrderedTastingMenuName: string | null
+  durationMinutes: number
+  status: ReservationStatus
+  note: string | null
+  cancelledAt: string | null
+  cancelledReason: string | null
+  holdExpiresAt: string | null
+  reminderSentAt: string | null
+  createdAt: string
+  deposit: DepositDto | null
+}
+
+/** Payload for POST /api/reservations. */
+export interface CreateReservationRequest {
+  tableId: string
+  reservationTime: string
+  partySize: number
+  preOrderedTastingMenuId: string | null
+  fullName: string
+  phoneNumber: string
+  email: string
+  note?: string | null
+  paymentMethod?: DepositPaymentMethod
+}
+
+/** Response from POST /api/reservations with temporary 17-minute hold and payment URL. */
+export interface CreateReservationResponse {
+  reservation: ReservationDto
+  depositAmount: number
+  holdExpiresAt: string
+  paymentUrl: string
+}
+
+/** Payload for POST /api/payments/vnpay-ipn. */
+export interface VnPayIpnRequest {
+  bookingCode: string
+  transactionId: string
+  paymentMethod: DepositPaymentMethod
+  responseCode: '00' | '24' | '99'
+}
+
+/** Payload for POST /api/reservations/cancel. */
+export interface CancelReservationRequest {
+  bookingCode: string
+  phoneNumber: string
+  reason: string
+  confirmForfeit?: boolean
+}
+
+/** Result returned by POST /api/reservations/cancel. */
+export interface CancelReservationResponse {
+  reservation: ReservationDto
+  refunded: boolean
+  refundAmount: number
+}
+
+/** Query filter for GET /api/reservations. */
+export interface ReservationFilter {
+  date?: string
+  status?: ReservationStatus
+  search?: string
+}
+
+/** Query params for GET /api/reservations/available-slots. */
+export interface AvailableSlotsQuery {
+  date: string
+  partySize: number
+  zone?: TableZone
+}
+
+/** Available table slot returned by GET /api/reservations/available-slots. */
+export interface AvailableSlotDto {
+  time: string
+  availableTables: {
+    id: string
+    tableNumber: string
+    capacity: number
+    zone: TableZone
+    posX: number
+    posY: number
+  }[]
+}
