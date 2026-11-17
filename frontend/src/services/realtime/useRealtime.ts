@@ -8,15 +8,15 @@ import type {
 } from './types'
 
 const EVENT_QUERY_KEYS: Record<RealtimeEventName, QueryKey[]> = {
-  'table:status-changed': [['tables'], ['reservations']],
-  'order:updated': [['orders'], ['tables'], ['kitchen']],
-  'course:activated': [['orders'], ['kitchen']],
-  'item:served': [['orders'], ['kitchen'], ['tables']],
-  'item:remake-requested': [['orders'], ['kitchen']],
+  'table:status-changed': [['tables'], ['table'], ['reservations'], ['invoices']],
+  'order:updated': [['orders'], ['tables'], ['table'], ['kitchen'], ['invoices']],
+  'course:activated': [['orders'], ['table'], ['kitchen']],
+  'item:served': [['orders'], ['kitchen'], ['tables'], ['table'], ['invoices']],
+  'item:remake-requested': [['orders'], ['table'], ['kitchen']],
   'service-request:created': [['service-calls']],
   'service-request:completed': [['service-calls']],
-  'checkout:requested': [['tables'], ['invoices']],
-  'invoice:settled': [['tables'], ['invoices'], ['orders'], ['reports']],
+  'checkout:requested': [['tables'], ['table'], ['invoices']],
+  'invoice:settled': [['tables'], ['table'], ['invoices'], ['orders'], ['reports']],
   'sla:alert': [['kitchen'], ['orders']],
 }
 

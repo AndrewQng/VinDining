@@ -43,6 +43,13 @@ function buildInvoicePreview(
 
   const totals = calculateInvoiceTotals(order.items, depositAmount)
   const hasUnservedItems = !areAllItemsServed(order.items)
+  const tastingMenuNames: Record<string, string> = {}
+  for (const item of order.items) {
+    if (item.tastingMenuId && !tastingMenuNames[item.tastingMenuId]) {
+      const setMenu = db.tastingMenus.find((m) => m.id === item.tastingMenuId)
+      if (setMenu) tastingMenuNames[item.tastingMenuId] = setMenu.name
+    }
+  }
 
   return {
     preview: {
@@ -50,11 +57,39 @@ function buildInvoicePreview(
       tableNumber: table.tableNumber,
       orderId: order.id,
       guestCount: order.guestCount,
+      waiterName: table.assignedStaffName ?? null,
+      openedAt: order.openedAt,
+      checkoutRequestedAt: table.checkoutRequestedAt ?? null,
+      tastingMenuNames,
       items: order.items,
       ...totals,
       vietQrPayload: `VIETQR|VINDINING|${table.tableNumber}|${totals.amountDue}`,
       hasUnservedItems,
     },
+  }
+}
+
+function hydrateInvoiceRecord(
+  db: MockDatabase,
+  invoice: InvoiceDto
+): InvoiceDto {
+  if (invoice.items && invoice.items.length > 0) return invoice
+  const order = db.orders.find((o) => o.id === invoice.orderId)
+  if (!order) return invoice
+  const tastingMenuNames: Record<string, string> = {
+    ...(invoice.tastingMenuNames ?? {}),
+  }
+  for (const item of order.items) {
+    if (item.tastingMenuId && !tastingMenuNames[item.tastingMenuId]) {
+      const setMenu = db.tastingMenus.find((m) => m.id === item.tastingMenuId)
+      if (setMenu) tastingMenuNames[item.tastingMenuId] = setMenu.name
+    }
+  }
+  return {
+    ...invoice,
+    guestCount: invoice.guestCount ?? order.guestCount,
+    items: order.items,
+    tastingMenuNames,
   }
 }
 
@@ -64,7 +99,7 @@ export const invoiceRoutes: MockRouteDefinition[] = [
     method: 'POST',
     pattern: '/tables/:tableId/request-checkout',
     access: ['Waitstaff', 'Manager'],
-    handler: ({ db, params }) => {
+    handler: ({ db, params, now }) => {
       const table = db.tables.find(
         (t) => t.id === params.tableId && t.isActive
       )
@@ -78,6 +113,7 @@ export const invoiceRoutes: MockRouteDefinition[] = [
       }
 
       table.status = 'PaymentPending'
+      table.checkoutRequestedAt = now.toISOString()
       saveMockDb(db)
 
       realtimeClient.publish('table:status-changed', {
@@ -128,8 +164,8 @@ export const invoiceRoutes: MockRouteDefinition[] = [
       if (error || !preview) {
         return fail(error?.status ?? 400, error?.message ?? 'Không thể quyết toán')
       }
-      if (preview.hasUnservedItems) {
-        return fail(409, 'Còn món chưa phục vụ xong, không thể xuất hóa đơn')
+      if (!hasAnyServedItem(preview.items)) {
+        return fail(409, 'Bàn ăn chưa có món nào đã phục vụ để xuất hóa đơn')
       }
 
       const { paymentMethod } = body as SettleInvoiceRequest
@@ -144,6 +180,10 @@ export const invoiceRoutes: MockRouteDefinition[] = [
         tableNumber: table.tableNumber,
         settleById: user?.id ?? 'staff-cashier-1',
         settleByName: user?.fullName ?? 'Phạm Thu Hà',
+        guestCount: order.guestCount,
+        waiterName: table.assignedStaffName ?? null,
+        items: order.items,
+        tastingMenuNames: preview.tastingMenuNames,
         subtotal: preview.subtotal,
         serviceCharge: preview.serviceCharge,
         vatAmount: preview.vatAmount,
@@ -165,6 +205,7 @@ export const invoiceRoutes: MockRouteDefinition[] = [
       table.currentOrderId = null
       table.currentReservationCode = null
       table.guestCount = null
+      table.checkoutRequestedAt = null
 
       db.invoices.unshift(invoice)
       saveMockDb(db)
@@ -189,9 +230,9 @@ export const invoiceRoutes: MockRouteDefinition[] = [
     access: ['Cashier', 'Manager'],
     handler: ({ db, query }) => {
       const method = query.get('paymentMethod') as PaymentMethod | null
-      const filtered = db.invoices.filter((inv) =>
-        method ? inv.paymentMethod === method : true
-      )
+      const filtered = db.invoices
+        .filter((inv) => (method ? inv.paymentMethod === method : true))
+        .map((inv) => hydrateInvoiceRecord(db, inv))
       return ok(filtered)
     },
   },
@@ -203,7 +244,7 @@ export const invoiceRoutes: MockRouteDefinition[] = [
     handler: ({ db, params }) => {
       const invoice = db.invoices.find((inv) => inv.id === params.id)
       if (!invoice) return fail(404, 'Không tìm thấy hóa đơn')
-      return ok(invoice)
+      return ok(hydrateInvoiceRecord(db, invoice))
     },
   },
 ]

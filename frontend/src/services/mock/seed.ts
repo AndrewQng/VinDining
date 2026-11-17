@@ -409,6 +409,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       currentReservationCode: 'VD-4M2P',
       guestCount: 2,
       holdExpiresAt: null,
+      checkoutRequestedAt: minsAgo(7),
     },
     {
       id: 'tbl-b05',

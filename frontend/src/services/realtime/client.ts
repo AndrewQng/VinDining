@@ -16,6 +16,7 @@ function readStoredToken(): string | null {
   }
 }
 
-export const realtimeClient: RealtimeClient = isMockMode()
-  ? createMockRealtimeClient()
-  : createSignalRRealtimeClient(readStoredToken)
+export const realtimeClient: RealtimeClient =
+  isMockMode() || Boolean(import.meta.env.VITEST)
+    ? createMockRealtimeClient()
+    : createSignalRRealtimeClient(readStoredToken)

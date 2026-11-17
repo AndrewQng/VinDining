@@ -239,6 +239,9 @@ export const tableRoutes: MockRouteDefinition[] = [
       if (!table) return fail(404, 'Không tìm thấy bàn')
       const { status } = body as UpdateTableStatusRequest
       table.status = status
+      if (status !== 'PaymentPending') {
+        table.checkoutRequestedAt = null
+      }
       if (status === 'Available') {
         table.assignedStaffId = null
         table.assignedStaffName = null

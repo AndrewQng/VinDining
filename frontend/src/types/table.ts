@@ -30,6 +30,7 @@ export interface TableDto {
   currentReservationCode: string | null
   guestCount: number | null
   holdExpiresAt: string | null
+  checkoutRequestedAt?: string | null
 }
 
 /** Detailed table view DTO returned by GET /api/tables/{id}. */

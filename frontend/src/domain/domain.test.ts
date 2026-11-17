@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   areAllItemsServed,
+  buildBillLineItems,
   calculateDepositAmount,
   calculateInvoiceTotals,
   canFireCourse,
@@ -557,5 +558,112 @@ describe('kitchen ticket grouping, max Prep SLA rule, urgency sort & KDS paginat
     expect(p2.onHold).toHaveLength(1)
     expect(p2.cookingLaterCount).toBe(0)
     expect(p2.onHoldLaterCount).toBe(0)
+  })
+})
+
+describe('buildBillLineItems', () => {
+  it('groups a fully served pre-ordered Set Menu into one summary line', () => {
+    const lines = buildBillLineItems(
+      [
+        {
+          id: 'oi-1',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Súp bào ngư',
+          courseType: 'Appetizer',
+          quantity: 4,
+          unitPrice: 350_000,
+          status: 'Served',
+        },
+        {
+          id: 'oi-2',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Bò Wagyu A5',
+          courseType: 'MainCourse',
+          quantity: 4,
+          unitPrice: 1_230_000,
+          status: 'Served',
+        },
+        {
+          id: 'oi-3',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Bánh Soufflé',
+          courseType: 'Dessert',
+          quantity: 4,
+          unitPrice: 220_000,
+          status: 'Served',
+        },
+      ],
+      { 'set-thuong-hang': 'Set Menu Thượng Hạng' }
+    )
+
+    expect(lines).toHaveLength(1)
+    expect(lines[0]).toMatchObject({
+      label: 'Set Menu Thượng Hạng',
+      quantity: 4,
+      unitPrice: 1_800_000,
+      lineTotal: 7_200_000,
+      isServed: true,
+      isSetMenuGroup: true,
+    })
+  })
+
+  it('splits a partially served Set Menu by allocated course prices and excludes unserved items', () => {
+    const items = [
+      {
+        id: 'oi-1',
+        tastingMenuId: 'set-thuong-hang',
+        itemName: 'Súp bào ngư',
+        courseType: 'Appetizer' as const,
+        quantity: 4,
+        unitPrice: 350_000,
+        status: 'Served' as const,
+      },
+      {
+        id: 'oi-2',
+        tastingMenuId: 'set-thuong-hang',
+        itemName: 'Bò Wagyu A5',
+        courseType: 'MainCourse' as const,
+        quantity: 4,
+        unitPrice: 1_230_000,
+        status: 'Served' as const,
+      },
+      {
+        id: 'oi-3',
+        tastingMenuId: 'set-thuong-hang',
+        itemName: 'Bánh Soufflé',
+        courseType: 'Dessert' as const,
+        quantity: 4,
+        unitPrice: 220_000,
+        status: 'OnHold' as const,
+      },
+      {
+        id: 'oi-4',
+        tastingMenuId: null,
+        itemName: 'Nước khoáng có ga',
+        courseType: 'Appetizer' as const,
+        quantity: 2,
+        unitPrice: 120_000,
+        status: 'Cooking' as const,
+      },
+    ]
+    const lines = buildBillLineItems(items, {
+      'set-thuong-hang': 'Set Menu Thượng Hạng',
+    })
+
+    expect(lines).toHaveLength(4)
+    expect(lines[2]).toMatchObject({
+      label: 'Bánh Soufflé',
+      isServed: false,
+      lineTotal: 0,
+      unservedNote: 'Chưa phục vụ — không tính',
+    })
+    expect(lines[3]).toMatchObject({
+      label: 'Nước khoáng có ga',
+      isServed: false,
+      lineTotal: 0,
+      unservedNote: 'Chưa phục vụ — không tính',
+    })
+    const lineSum = lines.reduce((sum, l) => sum + l.lineTotal, 0)
+    expect(lineSum).toBe(calculateInvoiceTotals(items, 0).subtotal)
   })
 })

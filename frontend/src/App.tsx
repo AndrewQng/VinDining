@@ -83,6 +83,26 @@ const WaitstaffTransferTablePage = lazy(() =>
     default: m.TransferTablePage,
   }))
 )
+const CashierQueuePage = lazy(() =>
+  import('@/pages/staff/cashier/CashierQueuePage').then((m) => ({
+    default: m.CashierQueuePage,
+  }))
+)
+const CashierCheckInPage = lazy(() =>
+  import('@/pages/staff/cashier/CashierCheckInPage').then((m) => ({
+    default: m.CashierCheckInPage,
+  }))
+)
+const InvoicePreviewPage = lazy(() =>
+  import('@/pages/staff/cashier/InvoicePreviewPage').then((m) => ({
+    default: m.InvoicePreviewPage,
+  }))
+)
+const InvoicesTodayPage = lazy(() =>
+  import('@/pages/staff/cashier/InvoicesTodayPage').then((m) => ({
+    default: m.InvoicesTodayPage,
+  }))
+)
 const WaitstaffNotificationsPage = lazy(() =>
   import('@/pages/staff/waitstaff/NotificationsPage').then((m) => ({
     default: m.NotificationsPage,
@@ -199,34 +219,13 @@ export default function App() {
               path="/thu-ngan"
               element={<StaffDesktopLayout area="cashier" />}
             >
-              <Route
-                index
-                element={
-                  <PlaceholderPage
-                    title="Hàng chờ thanh toán"
-                    subtitle="Danh sách bàn đang chờ tạm tính và quyết toán"
-                  />
-                }
-              />
-              <Route
-                path="check-in"
-                element={
-                  <PlaceholderPage
-                    title="Check-in khách"
-                    subtitle="Nhận khách đặt trước và khách đến trực tiếp tại quầy"
-                  />
-                }
-              />
+              <Route index element={<CashierQueuePage />} />
+              <Route path="check-in" element={<CashierCheckInPage />} />
               <Route
                 path="tam-tinh/:tableId"
-                element={
-                  <PlaceholderPage
-                    title="Tạm tính & thanh toán"
-                    subtitle="Kiểm tra phiếu tạm tính 80mm, cấn trừ cọc và xác nhận thanh toán"
-                    backTo="/thu-ngan"
-                  />
-                }
+                element={<InvoicePreviewPage />}
               />
+              <Route path="hoa-don" element={<InvoicesTodayPage />} />
             </Route>
           </Route>
 

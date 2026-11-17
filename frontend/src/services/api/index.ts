@@ -12,16 +12,21 @@ import type {
   CurrentUserDto,
   FeedbackDto,
   FireCourseRequest,
+  InvoiceDto,
+  InvoiceFilter,
+  InvoicePreviewDto,
   KitchenPendingTicketDto,
   LoginRequest,
   LoginResponse,
   MenuItemDto,
   OrderDto,
   OrderItemDto,
+  PrintPreviewResponse,
   ReservationDto,
   ReservationStatus,
   ServiceRequestDto,
   ServiceRequestType,
+  SettleInvoiceRequest,
   SubmitFeedbackRequest,
   TableDetailDto,
   TableDto,
@@ -273,6 +278,40 @@ export const invoiceApi = {
   requestCheckout: async (tableId: string): Promise<TableDto> => {
     const { data } = await apiClient.post<TableDto>(
       `/tables/${encodeURIComponent(tableId)}/request-checkout`
+    )
+    return data
+  },
+  getPreview: async (tableId: string): Promise<InvoicePreviewDto> => {
+    const { data } = await apiClient.get<InvoicePreviewDto>(
+      `/invoices/preview/${encodeURIComponent(tableId)}`
+    )
+    return data
+  },
+  printPreview: async (tableId: string): Promise<PrintPreviewResponse> => {
+    const { data } = await apiClient.post<PrintPreviewResponse>(
+      `/invoices/${encodeURIComponent(tableId)}/print-preview`
+    )
+    return data
+  },
+  settle: async (
+    tableId: string,
+    payload: SettleInvoiceRequest
+  ): Promise<InvoiceDto> => {
+    const { data } = await apiClient.post<InvoiceDto>(
+      `/invoices/${encodeURIComponent(tableId)}/settle`,
+      payload
+    )
+    return data
+  },
+  list: async (filter?: InvoiceFilter): Promise<InvoiceDto[]> => {
+    const { data } = await apiClient.get<InvoiceDto[]>('/invoices', {
+      params: filter,
+    })
+    return data
+  },
+  getById: async (invoiceId: string): Promise<InvoiceDto> => {
+    const { data } = await apiClient.get<InvoiceDto>(
+      `/invoices/${encodeURIComponent(invoiceId)}`
     )
     return data
   },

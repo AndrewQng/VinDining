@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
   CheckCircle2,
+  FileText,
   LayoutGrid,
   LogOut,
   Menu,
@@ -39,6 +40,11 @@ const CASHIER_NAV: NavEntry[] = [
     to: '/thu-ngan/check-in',
     label: 'Check-in khách',
     icon: <CheckCircle2 className="w-4 h-4" />,
+  },
+  {
+    to: '/thu-ngan/hoa-don',
+    label: 'Hóa đơn hôm nay',
+    icon: <FileText className="w-4 h-4" />,
   },
 ]
 

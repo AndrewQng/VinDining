@@ -9,6 +9,10 @@ export interface InvoicePreviewDto {
   tableNumber: string
   orderId: string
   guestCount: number
+  waiterName?: string | null
+  openedAt?: string | null
+  checkoutRequestedAt?: string | null
+  tastingMenuNames?: Record<string, string>
   items: OrderItemDto[]
   subtotal: number
   serviceCharge: number
@@ -20,6 +24,12 @@ export interface InvoicePreviewDto {
   hasUnservedItems: boolean
 }
 
+/** Response returned by POST /api/invoices/{tableId}/print-preview. */
+export interface PrintPreviewResponse {
+  printedAt: string
+  preview: InvoicePreviewDto
+}
+
 /** Settled invoice DTO matching the Invoices ERD table. */
 export interface InvoiceDto {
   id: string
@@ -28,6 +38,10 @@ export interface InvoiceDto {
   tableNumber: string
   settleById: string
   settleByName: string
+  guestCount?: number | null
+  waiterName?: string | null
+  items?: OrderItemDto[]
+  tastingMenuNames?: Record<string, string>
   subtotal: number
   serviceCharge: number
   vatAmount: number

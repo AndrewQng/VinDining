@@ -206,7 +206,7 @@ export function CheckInSheet({
   )
 }
 
-interface ReservedPanelProps {
+export interface ReservedPanelProps {
   table: TableDto
   searchInput: string
   onSearchInputChange: (val: string) => void
@@ -217,9 +217,10 @@ interface ReservedPanelProps {
   submitError: string | null
   isSubmitting: boolean
   onConfirm: () => void
+  hideSearch?: boolean
 }
 
-function ReservedCheckInPanel({
+export function ReservedCheckInPanel({
   table,
   searchInput,
   onSearchInputChange,
@@ -230,30 +231,33 @@ function ReservedCheckInPanel({
   submitError,
   isSubmitting,
   onConfirm,
+  hideSearch = false,
 }: ReservedPanelProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-end gap-2">
-        <div className="flex-1">
-          <Input
-            label="Mã đặt bàn hoặc số điện thoại"
-            placeholder="VD-7K3Q hoặc 0901 234 567"
-            value={searchInput}
-            onChange={(e) => onSearchInputChange(e.target.value)}
+      {!hideSearch && (
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <Input
+              label="Mã đặt bàn hoặc số điện thoại"
+              placeholder="VD-7K3Q hoặc 0901 234 567"
+              value={searchInput}
+              onChange={(e) => onSearchInputChange(e.target.value)}
+              className="min-h-[44px]"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
             className="min-h-[44px]"
-          />
+            icon={<Search className="w-4 h-4" />}
+            loading={isSearching}
+            onClick={onSearch}
+          >
+            Tìm
+          </Button>
         </div>
-        <Button
-          type="button"
-          variant="secondary"
-          className="min-h-[44px]"
-          icon={<Search className="w-4 h-4" />}
-          loading={isSearching}
-          onClick={onSearch}
-        >
-          Tìm
-        </Button>
-      </div>
+      )}
 
       {lookupError && (
         <p className="text-xs text-danger" role="alert">
@@ -336,17 +340,17 @@ function ReservedCheckInPanel({
   )
 }
 
-interface WalkInPanelProps {
+export interface WalkInPanelProps {
   table: TableDto
   guestCount: number
   onGuestCountChange: (value: number) => void
   submitError: string | null
   isSubmitting: boolean
   onConfirm: () => void
-  onCancel: () => void
+  onCancel?: () => void
 }
 
-function WalkInCheckInPanel({
+export function WalkInCheckInPanel({
   table,
   guestCount,
   onGuestCountChange,
@@ -384,14 +388,16 @@ function WalkInCheckInPanel({
         >
           Check-in vãng lai
         </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          className="w-full min-h-[44px]"
-          onClick={onCancel}
-        >
-          Hủy
-        </Button>
+        {onCancel && (
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full min-h-[44px]"
+            onClick={onCancel}
+          >
+            Hủy
+          </Button>
+        )}
       </div>
     </div>
   )
