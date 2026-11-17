@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Countdown,
+  Drawer,
   Modal,
   Skeleton,
   StatusBadge,
@@ -14,20 +15,34 @@ import {
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { tableApi } from '@/services/api'
-import type { TableDto, TableZone } from '@/types'
+import type { TableDto, TableStatus, TableZone } from '@/types'
 import { CheckInSheet } from './CheckInSheet'
 
 const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
 
-/** W1 — Mobile waitstaff floor plan across zones with check-in, cleaning, and active order entry. */
+const STATUS_FILTER_ORDER: readonly TableStatus[] = [
+  'Available',
+  'Locked',
+  'Reserved',
+  'Occupied',
+  'PaymentPending',
+  'Cleaning',
+]
+
+type TableStatusFilter = 'ALL' | TableStatus
+
+/** W1 — Mobile waitstaff floor plan across zones & statuses with check-in, reopen, cleaning, and active order entry. */
 export function FloorPlanPage() {
   useDocumentTitle('Sơ đồ bàn')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [zone, setZone] = useState<TableZone>('MainHall')
+  const [statusFilter, setStatusFilter] = useState<TableStatusFilter>('ALL')
   const [checkInTable, setCheckInTable] = useState<TableDto | null>(null)
   const [cleaningTable, setCleaningTable] = useState<TableDto | null>(null)
   const [lockedTable, setLockedTable] = useState<TableDto | null>(null)
+  const [paymentPendingTable, setPaymentPendingTable] =
+    useState<TableDto | null>(null)
 
   const {
     data: tables = [],
@@ -47,14 +62,31 @@ export function FloorPlanPage() {
     },
   })
 
+  const reopenServingMutation = useMutation({
+    mutationFn: (tableId: string) => tableApi.updateStatus(tableId, 'Occupied'),
+    onSuccess: (_res, tableId) => {
+      setPaymentPendingTable(null)
+      void queryClient.invalidateQueries({ queryKey: ['tables'] })
+      void queryClient.invalidateQueries({ queryKey: ['table', tableId] })
+    },
+  })
+
   const zoneTables = tables.filter((t) => t.zone === zone)
+  const filteredTables =
+    statusFilter === 'ALL'
+      ? zoneTables
+      : zoneTables.filter((t) => t.status === statusFilter)
 
   const handleTableTap = (table: TableDto) => {
     if (table.status === 'Available' || table.status === 'Reserved') {
       setCheckInTable(table)
       return
     }
-    if (table.status === 'Occupied' || table.status === 'PaymentPending') {
+    if (table.status === 'PaymentPending') {
+      setPaymentPendingTable(table)
+      return
+    }
+    if (table.status === 'Occupied') {
       if (table.currentOrderId) {
         navigate(`/phuc-vu/order/${encodeURIComponent(table.id)}`)
       } else {
@@ -84,6 +116,46 @@ export function FloorPlanPage() {
         className="w-full"
       />
 
+      <div
+        role="group"
+        aria-label="Lọc trạng thái bàn"
+        className="flex items-center gap-1.5 overflow-x-auto pb-1"
+      >
+        <button
+          type="button"
+          onClick={() => setStatusFilter('ALL')}
+          aria-pressed={statusFilter === 'ALL'}
+          className={cn(
+            'min-h-[44px] px-3 py-1.5 rounded-lg border text-xs font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0',
+            statusFilter === 'ALL'
+              ? 'bg-card border-primary text-accent'
+              : 'bg-surface border-line text-ink-muted hover:text-ink'
+          )}
+        >
+          Tất cả ({zoneTables.length})
+        </button>
+        {STATUS_FILTER_ORDER.map((status) => {
+          const count = zoneTables.filter((t) => t.status === status).length
+          const active = statusFilter === status
+          return (
+            <button
+              key={status}
+              type="button"
+              onClick={() => setStatusFilter(status)}
+              aria-pressed={active}
+              className={cn(
+                'min-h-[44px] px-3 py-1.5 rounded-lg border text-xs font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0',
+                active
+                  ? 'bg-card border-primary text-accent'
+                  : 'bg-surface border-line text-ink-muted hover:text-ink'
+              )}
+            >
+              {TABLE_STATUS_LABELS[status]} ({count})
+            </button>
+          )
+        })}
+      </div>
+
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3">
           <Skeleton className="h-24" />
@@ -103,9 +175,23 @@ export function FloorPlanPage() {
             Thử lại
           </Button>
         </Card>
+      ) : filteredTables.length === 0 ? (
+        <Card className="space-y-3 text-center py-6">
+          <p className="text-xs text-ink-muted">
+            Không có bàn nào ở trạng thái đã chọn trong khu vực này.
+          </p>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="min-h-[44px]"
+            onClick={() => setStatusFilter('ALL')}
+          >
+            Xem tất cả
+          </Button>
+        </Card>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {zoneTables.map((table) => (
+          {filteredTables.map((table) => (
             <button
               key={table.id}
               type="button"
@@ -155,6 +241,46 @@ export function FloorPlanPage() {
           navigate(`/phuc-vu/ban/${encodeURIComponent(tableId)}`)
         }}
       />
+
+      <Drawer
+        open={Boolean(paymentPendingTable)}
+        onClose={() => setPaymentPendingTable(null)}
+        title={`Bàn ${paymentPendingTable?.tableNumber ?? ''} · Chờ thanh toán`}
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-ink-muted">
+            Bàn đang chờ thu ngân thanh toán và tạm khóa gọi món. Nếu khách muốn
+            gọi thêm, bạn có thể mở lại trạng thái Đang phục vụ.
+          </p>
+          <div className="space-y-2 pt-1">
+            <Button
+              type="button"
+              variant="primary"
+              className="w-full min-h-[44px]"
+              loading={reopenServingMutation.isPending}
+              onClick={() =>
+                paymentPendingTable &&
+                reopenServingMutation.mutate(paymentPendingTable.id)
+              }
+            >
+              Mở lại phục vụ
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full min-h-[44px]"
+              onClick={() => {
+                if (!paymentPendingTable) return
+                const targetId = paymentPendingTable.id
+                setPaymentPendingTable(null)
+                navigate(`/phuc-vu/order/${encodeURIComponent(targetId)}`)
+              }}
+            >
+              Xem Order (đã khóa)
+            </Button>
+          </div>
+        </div>
+      </Drawer>
 
       <Modal
         open={Boolean(cleaningTable)}

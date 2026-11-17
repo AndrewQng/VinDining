@@ -121,6 +121,18 @@ export function ActiveOrderPage() {
     },
   })
 
+  const reopenMutation = useMutation({
+    mutationFn: () => tableApi.updateStatus(tableId, 'Occupied'),
+    onSuccess: () => {
+      setActionError(null)
+      void queryClient.invalidateQueries({ queryKey: ['table', tableId] })
+      void queryClient.invalidateQueries({ queryKey: ['tables'] })
+    },
+    onError: () => {
+      setActionError('Không thể mở lại trạng thái phục vụ lúc này')
+    },
+  })
+
   const order = data?.activeOrder ?? null
   const table = data?.table ?? null
   const reservation = data?.activeReservation ?? null
@@ -253,11 +265,22 @@ export function ActiveOrderPage() {
             </span>
           </div>
 
-          <Link to="/phuc-vu" className="block">
-            <Button variant="primary" className="w-full min-h-[44px]">
-              Về sơ đồ bàn
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full min-h-[44px]"
+              loading={reopenMutation.isPending}
+              onClick={() => reopenMutation.mutate()}
+            >
+              Mở lại phục vụ
             </Button>
-          </Link>
+            <Link to="/phuc-vu" className="block">
+              <Button variant="primary" className="w-full min-h-[44px]">
+                Về sơ đồ bàn
+              </Button>
+            </Link>
+          </div>
         </Card>
       )}
 

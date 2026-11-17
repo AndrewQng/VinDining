@@ -54,6 +54,14 @@ export function AddItemsPage() {
     },
   })
 
+  const reopenMutation = useMutation({
+    mutationFn: () => tableApi.updateStatus(tableId, 'Occupied'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['table', tableId] })
+      void queryClient.invalidateQueries({ queryKey: ['tables'] })
+    },
+  })
+
   if (tableQuery.isLoading || menuQuery.isLoading) {
     return (
       <div className="space-y-4">
@@ -98,15 +106,26 @@ export function AddItemsPage() {
           <p className="text-sm text-danger">
             Order đã khóa — không thể gọi thêm món khi bàn chờ thanh toán.
           </p>
-          <Button
-            variant="secondary"
-            className="w-full min-h-[44px]"
-            onClick={() =>
-              navigate(`/phuc-vu/order/${encodeURIComponent(table.id)}`)
-            }
-          >
-            Quay lại Order
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant="primary"
+              className="w-full min-h-[44px]"
+              loading={reopenMutation.isPending}
+              onClick={() => reopenMutation.mutate()}
+            >
+              Mở lại phục vụ
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full min-h-[44px]"
+              onClick={() =>
+                navigate(`/phuc-vu/order/${encodeURIComponent(table.id)}`)
+              }
+            >
+              Quay lại Order
+            </Button>
+          </div>
         </Card>
       ) : (
         <>

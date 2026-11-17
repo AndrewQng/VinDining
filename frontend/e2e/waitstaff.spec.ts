@@ -42,10 +42,15 @@ test.describe('VinDining Waitstaff Mobile App (W1–W9)', () => {
     const errors = attachErrorGuard(page)
     await loginAsWaitstaff(page)
 
-    // W1 Floor plan checks: zone tabs + statuses
+    // W1 Floor plan checks: zone tabs + status filter with counts
     await expect(page.getByRole('tab', { name: /Sảnh chính/i })).toBeVisible()
     await expect(page.getByRole('tab', { name: /VIP/i })).toBeVisible()
     await expect(page.getByRole('tab', { name: /Ban công/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Tất cả \(8\)/i })).toBeVisible()
+    await page.getByRole('button', { name: /Đã đặt \(1\)/i }).click()
+    await expect(page.getByTestId('waitstaff-table-B05')).toBeVisible()
+    await expect(page.getByTestId('waitstaff-table-B01')).toHaveCount(0)
+    await page.getByRole('button', { name: /Tất cả \(8\)/i }).click()
     await expect(page.getByTestId('waitstaff-table-B05')).toBeVisible()
     await saveShot(page, '01-w1-floor-plan.png')
 
@@ -229,6 +234,26 @@ test.describe('VinDining Waitstaff Mobile App (W1–W9)', () => {
       page.getByText(/Order đã khóa — không thể gọi thêm món/i)
     ).toBeVisible()
     await saveShot(page, '14-w8b-payment-pending.png')
+
+    // Click "Mở lại phục vụ" on W8b -> unlocks order actions live
+    await page.getByRole('button', { name: 'Mở lại phục vụ' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Gọi thêm món' })
+    ).toBeVisible()
+    await expect(
+      page.getByText(/Order đã khóa/i)
+    ).toHaveCount(0)
+
+    // Go back to W1 -> tap B04 (PaymentPending) -> W1 action sheet -> "Mở lại phục vụ"
+    await page.getByRole('link', { name: /Quay lại/i }).click()
+    await page.getByTestId('waitstaff-table-B04').click()
+    await expect(
+      page.getByRole('heading', { name: /Bàn B04 · Chờ thanh toán/i })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Mở lại phục vụ' }).click()
+    await expect(
+      page.getByTestId('waitstaff-table-B04').getByText('Đang phục vụ')
+    ).toBeVisible()
 
     expect(errors).toEqual([])
   })

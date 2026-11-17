@@ -5,12 +5,12 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { apiClient, authApi, tableApi } from '@/services/api'
+import { apiClient, authApi } from '@/services/api'
 import { installMockAdapter, resetMockDb } from '@/services/mock'
-import { realtimeClient } from '@/services/realtime/client'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useWaitstaffNotificationsStore } from '@/stores/useWaitstaffNotificationsStore'
 import { ActiveOrderPage } from './ActiveOrderPage'
+import { FloorPlanPage } from './FloorPlanPage'
 import { NotificationsPage } from './NotificationsPage'
 
 function renderWaitstaffRoute(initialEntry: string) {
@@ -26,7 +26,7 @@ function renderWaitstaffRoute(initialEntry: string) {
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntry]}>
           <Routes>
-            <Route path="/phuc-vu" element={<div>Sơ đồ bàn</div>} />
+            <Route path="/phuc-vu" element={<FloorPlanPage />} />
             <Route
               path="/phuc-vu/order/:tableId"
               element={<ActiveOrderPage />}
@@ -76,9 +76,9 @@ describe('Waitstaff W5, W8x, W8b, and W9 components', () => {
     ).toBeInTheDocument()
   })
 
-  it('locks order mutations when PaymentPending (W8b) and unlocks if table reopens to Occupied', async () => {
+  it('locks order mutations when PaymentPending (W8b) and unlocks on clicking Mở lại phục vụ', async () => {
     const user = userEvent.setup()
-    const { queryClient } = renderWaitstaffRoute('/phuc-vu/order/tbl-b04')
+    renderWaitstaffRoute('/phuc-vu/order/tbl-b04')
 
     expect(
       await screen.findByText(/Bàn B04 · Chờ thanh toán/i)
@@ -90,20 +90,25 @@ describe('Waitstaff W5, W8x, W8b, and W9 components', () => {
       screen.queryByRole('button', { name: 'Gọi thêm món' })
     ).not.toBeInTheDocument()
 
-    await tableApi.updateStatus('tbl-b04', 'Occupied')
-    realtimeClient.publish('table:status-changed', {
-      tableId: 'tbl-b04',
-      tableNumber: 'B04',
-      status: 'Occupied',
-    })
-    await queryClient.invalidateQueries({ queryKey: ['table', 'tbl-b04'] })
+    await user.click(screen.getByRole('button', { name: 'Mở lại phục vụ' }))
 
     await waitFor(() => {
       expect(
         screen.getByRole('button', { name: 'Gọi thêm món' })
       ).toBeInTheDocument()
     })
-    void user
+  })
+
+  it('filters W1 tables by status with counts', async () => {
+    const user = userEvent.setup()
+    renderWaitstaffRoute('/phuc-vu')
+
+    expect(await screen.findByTestId('waitstaff-table-B01')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Tất cả \(8\)/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Chờ thanh toán \(1\)/i }))
+    expect(screen.getByTestId('waitstaff-table-B04')).toBeInTheDocument()
+    expect(screen.queryByTestId('waitstaff-table-B01')).not.toBeInTheDocument()
   })
 
   it('marks service request complete on W9 -> W9b', async () => {
