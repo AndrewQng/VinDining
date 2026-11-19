@@ -38,6 +38,7 @@ test.describe('Booking stability & fixed background', () => {
     for (const vp of [
       { width: 1440, height: 900, maxTop: 230 },
       { width: 390, height: 844, maxTop: 200 },
+      { width: 360, height: 780, maxTop: 200 },
     ] as const) {
       test(`stability (${theme}, ${vp.width}x${vp.height})`, async ({ page }) => {
         await page.setViewportSize({ width: vp.width, height: vp.height })
@@ -64,9 +65,22 @@ test.describe('Booking stability & fixed background', () => {
         const stepCardTop = await getBox(page.getByTestId('booking-step-card'))
         expect(stepCardTop.y).toBeLessThanOrEqual(vp.maxTop)
 
-        // (c) Summary height on step 1 (time-zone)
+        // (c) Summary height on step 1 (time-zone) & Summary/Nav order
         const summaryCard = page.getByTestId('booking-summary-card')
-        const summaryHeightTimeZone = (await getBox(summaryCard)).height
+        const navBar = page.getByTestId('booking-nav')
+        const summaryBoxTimeZone = await getBox(summaryCard)
+        const navBoxTimeZone = await getBox(navBar)
+        const summaryHeightTimeZone = summaryBoxTimeZone.height
+        expect(navBoxTimeZone.y).toBeGreaterThanOrEqual(
+          summaryBoxTimeZone.y + summaryBoxTimeZone.height - 1
+        )
+        if (vp.width < 1024) {
+          expect(summaryBoxTimeZone.y).toBeGreaterThanOrEqual(
+            stepCardTop.y + stepCardTop.height - 1
+          )
+        } else {
+          expect(Math.abs(navBoxTimeZone.x - summaryBoxTimeZone.x)).toBeLessThanOrEqual(1)
+        }
 
         // Step 1 -> Step 2 (table)
         await page.getByTestId('booking-nav-next').click()
