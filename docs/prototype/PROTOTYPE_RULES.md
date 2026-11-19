@@ -72,8 +72,32 @@ Caught in review (hallucinations that actually happened — never repeat):
 **Guest (website: every screen in a mobile 390 and a desktop 1440 version, except G3)**
 - G0 Trang chủ (website home, the guest entry point): an editorial, photo-led page meant to make people want to book (see task 12 for the section list). Header (VinDining wordmark; nav: Set Menu · Không gian · Thực đơn · Tra cứu đặt bàn; gold pill "Đặt bàn"), full-bleed hero photo, **Set Menu first** (one large photo card per §10 set), the 3-step booking explainer, the three zones, the à la carte menu with dish photos, a closing booking call-to-action, and a footer with only "© VinDining" plus nav links. Images come from `docs/prototype/images/` (AI-generated, see CREDITS.md). No address, hotline, opening hours, chef names, awards, "chuẩn sao" or landmark claims (not in the docs).
 - G1 Đặt bàn & cọc (UC-U1): choose date, time, party size, zone (Sảnh chính / VIP / Ban công) → floor plan with available tables → **Chọn Set Menu đặt trước (tùy chọn)**: the §10 sets as cards + option "Gọi món tại nhà hàng"; picking a set shows "× 4 khách" and the set total, with the note that the meal is paid after dining and the deposit is deducted → contact info → 17-minute hold countdown (summary includes the chosen set) → VNPAY handoff (VietQR or bank card) → confirmation with reservation code and the pre-ordered set. Error states: no tables (suggest other time/zone), hold expired. Coming from a G0 set card, that set is pre-selected.
-  - Design (owner feedback 19/11/2026): the booking pages sit on a full-bleed restaurant photo background (dimmed in dark, washed out in light) with the steps on a card. The step indicator is a **progress line** with step dots that fills up to the current step (labels under the dots on desktop, current step name only on phone), not numbered boxes. The table picker is the **real floor plan** of the chosen zone: tables drawn at their `PosX/PosY` positions with their seat count, and the guest taps a table on the plan (taken / too small tables are shown but not selectable). On the Set Menu step, choosing a set **changes the page background** to that set's photo ("Gọi món tại nhà hàng" uses the dining-room photo). Set cards are symmetric: equal height, names on one line or clamped to two with the same height, prices and buttons aligned on one baseline.
-- G2 Tra cứu & hủy đặt bàn (UC-U3): reservation code + phone → details (incl. pre-ordered set) + refund policy → reason → confirm. ≥4h: 100% refund via VNPAY. <4h: warning that deposit is not refunded.
+  - Design (owner feedback 19/11/2026, round 2 replaces round 1 where they differ):
+    - **Background**: one restaurant photo (`hero_desktop.jpg`, `hero_mobile.jpg` on phone), dimmed in dark and washed out in light, fixed to the screen. It is the same photo on every step and never changes size, zoom or position when the step or the content height changes. Choosing a Set Menu no longer changes the background.
+    - **Progress line** at the top: a thin track with step dots that fills up to the current step (labels under the dots on desktop; "Bước 2/6 · Chọn bàn" over a thin bar on phone). No numbered boxes.
+    - **Layout**: desktop has two columns, the current step on the left and, on the right, the **"Tóm tắt đặt bàn"** card with the **navigation directly below it** (Quay lại + the step's main button). Phone: step, then summary, then navigation. Steps carry no back/next buttons of their own.
+    - **Summary card**: a fixed-size photo at its top (16:9, no text on it): the chosen zone's photo, replaced by the chosen set's photo once a Set Menu is picked (short crossfade). Its rows are always present ("Chưa chọn" when empty), so the card never changes height.
+    - **No movement**: choosing a date, time, party size, zone, table or set changes colours and text only. Nothing moves, resizes or reflows. Step changes do not slide.
+    - **G1.1 Chọn thời gian & khu vực**: a label column and a control column, one row each:
+      - Ngày: the next 7 days as tiles (weekday, day, month; "Hôm nay" / "Ngày mai" on the first two), plus a "Ngày khác" tile that opens a date picker.
+      - Giờ: the 5 slots (18:00 to 20:00) as tiles showing how many fitting tables are free for that date and party size; a slot with none is disabled ("Hết bàn").
+      - Số khách: chips 1 to 10.
+      - Khu vực: three photo cards (zone photos) with the number of fitting free tables at the chosen time; a zone with none is disabled.
+    - **G1.2 Chọn bàn**: the real floor plan of the zone.
+      - A zone switch sits above the plan.
+      - The room outline shows its landmarks:
+        - Sảnh chính: "Cửa sổ" wall at the top, "Lối đi" between the two rows, "Lối vào" at the bottom left;
+        - VIP: "Lối vào";
+        - Ban công: "Lan can" at the top, "Lối vào".
+      - Tables sit at their `PosX/PosY` positions (Sảnh chính is 4 × 2: B01–B04 along the window, B05–B08 across the aisle, like M2), with one chair per seat, the table number and "N ghế".
+      - States:
+        - free and big enough: selectable, green chairs;
+        - selected: gold border and chairs;
+        - "Đã có người đặt" / "Không đủ chỗ": dimmed, not selectable.
+      - Legend under the plan.
+      - The whole room fits on screen without scrolling (1440 × 900 and 390 × 844). On phone the plan turns to portrait (rotated with its landmarks) when that makes the tables bigger.
+    - Set cards are symmetric: equal height, names on one line, price under the name, totals aligned on one baseline.
+- G2 Tra cứu & hủy đặt bàn (UC-U3): reservation code + phone → details (incl. pre-ordered set) + refund policy → reason → confirm. ≥4h: 100% refund via VNPAY. <4h: warning that deposit is not refunded. Same fixed restaurant-photo background as G1 (owner feedback round 2), the form and details on a card.
 - G3 QR E-Menu (UC-U2, phone only): view-only menu, **Set Menu section first**, then à la carte by course + 3 service buttons: Gọi phục vụ, Châm nước, Đổi dụng cụ. Error: invalid QR / table not checked in. Reached by scanning the table QR, not from G0.
 - G4 Đánh giá (UC-U4): opened from the QR on the invoice or the link in the thank-you email/SMS. Star rating for món ăn, không gian, thái độ phục vụ + comment → thank-you.
 
@@ -128,6 +152,17 @@ Caught in review (hallucinations that actually happened — never repeat):
 - Staff desktop sidebars are as tall as the screen (viewport), never as tall as the page: the staff name and Đăng xuất stay visible at the bottom while the content scrolls.
 - UI copy in Vietnamese, using the report's terms.
 - **Tone: plain, neutral, informative.** Show status and numbers, not commentary: `Đang làm lại · 18:00 / 20:00`, not `Làm lại khẩn cấp · Đã chế biến 18:00 / Định mức 20:00`. No emoji (§3 row 16).
+- **Copy follows the unslop-ui rules U1 to U16** (`~/.claude/skills/unslop-ui/SKILL.md`, owner request 19/11/2026):
+  - no eyebrow labels over headings;
+  - no subtitle under a heading unless it adds a fact;
+  - no captions that explain what the screen visibly does ("Chọn bàn trên sơ đồ…", "dùng phím mũi tên…");
+  - no design notes in UI text;
+  - no decorative badges or icons;
+  - no em dash in UI sentences (use a comma or a new sentence; "—" for an empty value is fine);
+  - headings and card titles of 5 words or fewer;
+  - sentence case.
+  
+  Keep what a person needs to act: labels, values, prices, errors, policy lines that state a rule.
 - Never delete or rename existing Figma nodes you did not create in the current task.
 
 ## 8. Working protocol in Figma
