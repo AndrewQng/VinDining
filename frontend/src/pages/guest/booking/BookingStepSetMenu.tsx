@@ -71,13 +71,18 @@ export function BookingStepSetMenu({
                   : 'border-line bg-card hover:bg-card-hover'
               )}
             >
-              <div className="flex items-start justify-between gap-2 w-full">
-                <span className="font-serif text-lg font-semibold text-ink line-clamp-2 min-h-[3.25rem]">
-                  {set.name}
+              <div className="space-y-1 w-full">
+                <span className="block w-full">
+                  <span
+                    data-testid="booking-set-name"
+                    className="font-serif text-lg font-semibold text-ink leading-7"
+                  >
+                    {set.name}
+                  </span>
                 </span>
                 <span
                   data-testid="booking-set-price"
-                  className="text-xs font-semibold text-accent shrink-0 pt-0.5"
+                  className="block text-xs font-semibold text-accent"
                 >
                   <Money amount={set.price} tone="accent" /> / khách
                 </span>

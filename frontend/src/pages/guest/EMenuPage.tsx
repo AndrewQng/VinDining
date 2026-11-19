@@ -229,11 +229,11 @@ export function EMenuPage() {
         <div className="space-y-3">
           {data.tastingMenus.map((set) => (
             <Card key={set.id} padding="sm" className="space-y-2.5">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-serif text-base font-semibold text-ink line-clamp-2 min-h-[2.75rem]">
+              <div className="space-y-1">
+                <h3 className="font-serif text-base font-semibold text-ink leading-6">
                   {set.name}
                 </h3>
-                <span className="text-xs font-semibold text-accent shrink-0 pt-0.5">
+                <span className="block text-xs font-semibold text-accent">
                   <Money amount={set.price} tone="accent" /> / khách
                 </span>
               </div>

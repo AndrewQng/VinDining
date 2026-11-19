@@ -314,6 +314,38 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
       'Booking Set Menu',
       390
     )
+
+    const assertSingleLineSetNames = async (width: number) => {
+      await page.setViewportSize({ width, height: 900 })
+      const nameStats = await page
+        .locator('[data-testid="booking-set-name"]')
+        .evaluateAll((els) =>
+          els.map((el) => {
+            const cs = window.getComputedStyle(el)
+            const lh = parseFloat(cs.lineHeight) || 28
+            return {
+              text: el.textContent ?? '',
+              rects: el.getClientRects().length,
+              height: el.getBoundingClientRect().height,
+              maxH: lh * 1.25,
+            }
+          })
+        )
+      expect(nameStats.length).toBe(4)
+      for (const s of nameStats) {
+        expect(
+          s.rects,
+          `Set "${s.text}" @ ${width}px wrapped to ${s.rects} lines`
+        ).toBe(1)
+        expect(
+          s.height,
+          `Set "${s.text}" @ ${width}px height ${s.height} > ${s.maxH}`
+        ).toBeLessThanOrEqual(s.maxH)
+      }
+    }
+
+    await assertSingleLineSetNames(1440)
+    await assertSingleLineSetNames(390)
   })
 
   test('Staff sidebar fits 1440x900 viewport and Đăng xuất stays visible after scrolling to bottom of /quan-ly/bao-cao', async ({
