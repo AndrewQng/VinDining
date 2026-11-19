@@ -93,6 +93,26 @@ const SET_MENUS: readonly SetSpec[] = [
       { menuItemId: 'item-panna-cotta', name: 'Panna cotta chanh dây', courseType: 'Dessert', unitPrice: 180_000, prep: 8 },
     ],
   },
+  {
+    id: 'set-tinh-hoa',
+    name: 'Set Menu Tinh Hoa',
+    price: 1_190_000,
+    courses: [
+      { menuItemId: 'item-sup-bao-ngu', name: 'Súp bào ngư thượng hạng', courseType: 'Appetizer', unitPrice: 350_000, prep: 12 },
+      { menuItemId: 'item-ca-tuyet', name: 'Cá tuyết nướng Miso mật ong', courseType: 'MainCourse', unitPrice: 660_000, prep: 20 },
+      { menuItemId: 'item-panna-cotta', name: 'Panna cotta chanh dây', courseType: 'Dessert', unitPrice: 180_000, prep: 8 },
+    ],
+  },
+  {
+    id: 'set-dac-tuyen',
+    name: 'Set Menu Đặc Tuyển',
+    price: 1_850_000,
+    courses: [
+      { menuItemId: 'item-goi-tom-hum', name: 'Gỏi tôm hùm sốt chanh leo', courseType: 'Appetizer', unitPrice: 420_000, prep: 10 },
+      { menuItemId: 'item-wagyu', name: 'Bò Wagyu A5 sốt nấm Truffle', courseType: 'MainCourse', unitPrice: 1_210_000, prep: 25 },
+      { menuItemId: 'item-souffle', name: 'Bánh Soufflé sô-cô-la', courseType: 'Dessert', unitPrice: 220_000, prep: 15 },
+    ],
+  },
 ]
 
 const ALL_TABLES: readonly TableSpec[] = [

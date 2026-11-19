@@ -66,6 +66,16 @@ describe('deposit calculation', () => {
       calculateDepositAmount({ guestCount: 4, setMenuPricePerGuest: 1_250_000 })
     ).toBe(1_500_000)
 
+    // Set Menu Tinh Hoa (1.190.000) x 4 guests = 1.428.000
+    expect(
+      calculateDepositAmount({ guestCount: 4, setMenuPricePerGuest: 1_190_000 })
+    ).toBe(1_428_000)
+
+    // Set Menu Đặc Tuyển (1.850.000) x 4 guests = 2.220.000
+    expect(
+      calculateDepositAmount({ guestCount: 4, setMenuPricePerGuest: 1_850_000 })
+    ).toBe(2_220_000)
+
     // No set menu, 4 guests = 2.000.000
     expect(calculateDepositAmount({ guestCount: 4 })).toBe(2_000_000)
 

@@ -135,20 +135,26 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     await expect(
       mgrPage.getByTestId('set-menu-card-set-thuong-hang')
     ).toBeVisible()
+    await expect(
+      mgrPage.getByTestId('set-menu-card-set-tinh-hoa')
+    ).toBeVisible()
+    await expect(
+      mgrPage.getByTestId('set-menu-card-set-dac-tuyen')
+    ).toBeVisible()
 
     await mgrPage.getByRole('button', { name: /Tạo Set Menu/i }).click()
-    await mgrPage.getByLabel('Tên Set Menu').fill('Set Menu Tinh Hoa')
+    await mgrPage.getByLabel('Tên Set Menu').fill('Set Menu Mùa Thu')
     await mgrPage.getByLabel(/Giá trọn gói/i).fill('1480000')
     await mgrPage
       .getByRole('dialog')
       .getByRole('button', { name: /Tạo Set Menu/i })
       .click()
 
-    await expect(mgrPage.getByText('Set Menu Tinh Hoa')).toBeVisible()
+    await expect(mgrPage.getByText('Set Menu Mùa Thu')).toBeVisible()
     await saveShot(mgrPage, 'm1s-dark.png')
 
     await expect(
-      guestPage.getByText('Set Menu Tinh Hoa').first()
+      guestPage.getByText('Set Menu Mùa Thu').first()
     ).toBeVisible()
 
     expect(guestErrors).toEqual([])

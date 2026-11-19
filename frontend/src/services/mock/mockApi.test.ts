@@ -341,4 +341,45 @@ describe('Mock API §10 end-to-end stories', () => {
     expect(remade.status).toBe(200)
     expect(remade.data.isRemake).toBe(true)
   })
+
+  it('serves all 4 §10 Set Menus and computes Tinh Hoa & Đặc Tuyển booking deposits', async () => {
+    const client = createTestClient()
+    const setsRes = await client.get('/menu/tasting-menus')
+    expect(setsRes.status).toBe(200)
+    expect(setsRes.data).toHaveLength(4)
+    expect(
+      setsRes.data.map((s: { id: string; price: number; imageUrl: string }) => ({
+        id: s.id,
+        price: s.price,
+        imageUrl: s.imageUrl,
+      }))
+    ).toEqual([
+      { id: 'set-thuong-hang', price: 1_800_000, imageUrl: 'set_thuong_hang.jpg' },
+      { id: 'set-hai-san', price: 1_250_000, imageUrl: 'set_hai_san.jpg' },
+      { id: 'set-tinh-hoa', price: 1_190_000, imageUrl: 'dish_sup_bao_ngu.jpg' },
+      { id: 'set-dac-tuyen', price: 1_850_000, imageUrl: 'dish_wagyu.jpg' },
+    ])
+
+    const tinhHoaBooking = await client.post('/reservations', {
+      tableId: 'tbl-b06',
+      reservationTime: '2026-11-08T19:00:00.000Z',
+      partySize: 4,
+      preOrderedTastingMenuId: 'set-tinh-hoa',
+      fullName: 'Nguyễn Văn An',
+      phoneNumber: '0901 234 567',
+      email: 'an.nguyen@email.com',
+    })
+    expect(tinhHoaBooking.data.depositAmount).toBe(1_428_000)
+
+    const dacTuyenBooking = await client.post('/reservations', {
+      tableId: 'tbl-v01',
+      reservationTime: '2026-11-08T19:00:00.000Z',
+      partySize: 4,
+      preOrderedTastingMenuId: 'set-dac-tuyen',
+      fullName: 'Nguyễn Văn An',
+      phoneNumber: '0901 234 567',
+      email: 'an.nguyen@email.com',
+    })
+    expect(dacTuyenBooking.data.depositAmount).toBe(2_220_000)
+  })
 })
