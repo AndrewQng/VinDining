@@ -85,7 +85,7 @@ export function GuestLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-line bg-surface">
+      <footer className="relative z-10 border-t border-line bg-surface">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-2">
             <Wordmark size="sm" />

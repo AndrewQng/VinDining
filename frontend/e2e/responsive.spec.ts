@@ -70,7 +70,7 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
 
     // 2. /dat-ban step 2
     await page.goto('/dat-ban')
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await page.getByTestId('booking-nav-next').click()
     await expect(page.getByRole('radio').first()).toBeVisible()
     for (const w of publicWidths) {
       await assertNoHorizontalOverflow(page, '/dat-ban step 2', w)
@@ -298,9 +298,9 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
     )
 
     await page.goto('/dat-ban')
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await page.getByTestId('booking-nav-next').click()
     await page.getByRole('radio', { name: /B06/i }).click()
-    await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
+    await page.getByTestId('booking-nav-next').click()
     await expect(page.getByTestId('booking-set-card')).toHaveCount(4)
     await assertSameRowPriceAlignment(
       '[data-testid="booking-set-card"]',

@@ -356,7 +356,7 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
 
     await guest.setViewportSize({ width: 1440, height: 900 })
     await guest.goto('/dat-ban')
-    await guest.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await guest.getByTestId('booking-nav-next').click()
     await expect(guest.getByText(/Còn trống/i).first()).toBeVisible()
     await saveShot(guest, 'g1-floorplan-guest-desktop-dark.png')
 

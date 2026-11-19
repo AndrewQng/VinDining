@@ -150,3 +150,22 @@
     color: #475569 !important;
   }
 }
+
+@keyframes bookingStepFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-step-fade {
+  animation: bookingStepFadeIn 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-fade {
+    animation: none;
+  }
+}

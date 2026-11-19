@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import { GuestPhotoBackground } from '@/components/guest/GuestPhotoBackground'
 import {
   Button,
   Card,
@@ -10,7 +11,6 @@ import {
   Input,
   Money,
   NumberStepper,
-  PageHeader,
   StatusBadge,
   Textarea,
 } from '@/components/ui'
@@ -23,7 +23,6 @@ import {
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { menuApi, reservationApi } from '@/services/api'
-import { useThemeStore } from '@/stores/useThemeStore'
 import type { ApiErrorResponse, TableZone } from '@/types'
 import {
   BOOKING_TIMES,
@@ -37,6 +36,7 @@ import {
   type BookingDraft,
   type BookingStep,
 } from './bookingState'
+import { BookingNav } from './booking/BookingNav'
 import {
   BookingProgressStepper,
   type StepItem,
@@ -54,7 +54,7 @@ const STEPPER_ITEMS: StepItem[] = [
   { step: 'confirmed', label: 'Xác nhận' },
 ]
 
-const DEFAULT_BOOKING_PHOTO = 'hero_desktop.jpg'
+const BOOKING_CONTACT_FORM_ID = 'booking-contact-form'
 
 const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
 
@@ -64,7 +64,6 @@ export function BookingPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
-  const theme = useThemeStore((s) => s.theme)
 
   const querySetId = searchParams.get('set')
   const queryZone = searchParams.get('zone') as TableZone | null
@@ -168,66 +167,18 @@ export function BookingPage() {
     navigate('/dat-ban', { replace: true })
   }
 
-  const activeBgPhoto =
-    draft.step === 'set-menu' && selectedSet?.imageUrl
-      ? selectedSet.imageUrl.replace(/^.*\//, '')
-      : DEFAULT_BOOKING_PHOTO
-
-  const backgroundPhotos = useMemo(() => {
-    const names = new Set<string>([DEFAULT_BOOKING_PHOTO])
-    for (const set of tastingMenus) {
-      if (set.imageUrl) {
-        names.add(set.imageUrl.replace(/^.*\//, ''))
-      }
-    }
-    return Array.from(names)
-  }, [tastingMenus])
-
   const showSummarySidebar =
     draft.step !== 'confirmed' && draft.step !== 'expired'
 
   return (
-    <div
-      data-bg-photo={activeBgPhoto}
-      className="relative min-h-[calc(100dvh-4rem)] overflow-x-clip"
-    >
-      {/* Full-bleed restaurant / Set Menu background with smooth crossfade and readable overlay */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute inset-0 z-0 overflow-hidden"
-      >
-        {backgroundPhotos.map((photo) => {
-          const isCurrent = photo === activeBgPhoto
-          return (
-            <img
-              key={photo}
-              src={`/images/${theme}/${photo}`}
-              alt=""
-              className={cn(
-                'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none',
-                isCurrent ? 'opacity-100' : 'opacity-0'
-              )}
-            />
-          )
-        })}
-        <div
-          className={cn(
-            'absolute inset-0 transition-colors duration-300 motion-reduce:transition-none',
-            theme === 'dark'
-              ? 'bg-gradient-to-b from-bg/85 via-bg/75 to-bg/90'
-              : 'bg-gradient-to-b from-bg/88 via-bg/78 to-bg/90'
-          )}
-        />
-      </div>
+    <div className="relative min-h-[calc(100dvh-4rem)] overflow-x-clip">
+      <GuestPhotoBackground />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-        <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md p-4 sm:p-6 space-y-5">
-          <PageHeader
-            title="Đặt bàn trực tuyến"
-            subtitle="Chọn thời gian, khu vực, bàn ăn và Set Menu đặt trước"
-            backTo="/"
-            backLabel="Về trang chủ"
-          />
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4">
+        <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md px-4 py-3 sm:px-5 sm:py-3.5 space-y-2.5">
+          <h1 className="font-serif text-xl sm:text-2xl font-bold text-ink">
+            Đặt bàn
+          </h1>
 
           <BookingProgressStepper
             steps={STEPPER_ITEMS}
@@ -245,7 +196,11 @@ export function BookingPage() {
           showSummarySidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1 max-w-2xl mx-auto w-full'
         )}
       >
-        <div className={cn(showSummarySidebar && 'lg:col-span-2', 'space-y-6')}>
+        <div
+          key={draft.step}
+          data-testid="booking-step-card"
+          className={cn(showSummarySidebar && 'lg:col-span-2', 'animate-step-fade space-y-6')}
+        >
           {/* Step 1: Date, Time, Guests, Zone */}
           {draft.step === 'time-zone' && (
             <Card className="bg-surface/95 backdrop-blur-md space-y-6">
@@ -352,14 +307,6 @@ export function BookingPage() {
                   })}
                 </div>
               </div>
-
-              <div className="flex justify-end pt-2 border-t border-line">
-                <Button
-                  onClick={() => setDraft((d) => ({ ...d, step: 'table' }))}
-                >
-                  Tìm bàn trống
-                </Button>
-              </div>
             </Card>
           )}
 
@@ -402,22 +349,15 @@ export function BookingPage() {
               onSelectSet={(setId) =>
                 setDraft((d) => ({ ...d, preOrderedTastingMenuId: setId }))
               }
-              onBack={handleBack}
-              onNext={() => setDraft((d) => ({ ...d, step: 'contact' }))}
             />
           )}
 
           {/* Step 4: Contact info */}
           {draft.step === 'contact' && (
             <Card className="bg-surface/95 backdrop-blur-md space-y-5">
-              <div>
-                <h2 className="text-base font-semibold text-accent">
-                  Thông tin liên hệ
-                </h2>
-                <p className="text-xs text-ink-muted mt-0.5">
-                  Dùng để gửi xác nhận đặt bàn và tra cứu khi cần thay đổi.
-                </p>
-              </div>
+              <h2 className="text-base font-semibold text-accent">
+                Thông tin liên hệ
+              </h2>
 
               {submitError && (
                 <div
@@ -429,7 +369,11 @@ export function BookingPage() {
                 </div>
               )}
 
-              <form onSubmit={handleContactSubmit} className="space-y-4">
+              <form
+                id={BOOKING_CONTACT_FORM_ID}
+                onSubmit={handleContactSubmit}
+                className="space-y-4"
+              >
                 <Input
                   label="Họ và tên *"
                   required
@@ -470,15 +414,6 @@ export function BookingPage() {
                   }
                   placeholder="Yêu cầu vị trí bàn hoặc ghi chú phục vụ..."
                 />
-
-                <div className="flex items-center justify-between gap-3 pt-2 border-t border-line">
-                  <Button variant="secondary" onClick={handleBack}>
-                    Quay lại
-                  </Button>
-                  <Button type="submit" loading={createMutation.isPending}>
-                    Giữ chỗ & tiếp tục thanh toán
-                  </Button>
-                </div>
               </form>
             </Card>
           )}
@@ -534,24 +469,6 @@ export function BookingPage() {
                     {draft.holdReservation.partySize}
                   </p>
                 )}
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
-                <Button variant="secondary" onClick={handleBack}>
-                  Quay lại chỉnh sửa
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() =>
-                    navigate(
-                      `/thanh-toan/vnpay/${encodeURIComponent(
-                        draft.holdReservation!.bookingCode
-                      )}`
-                    )
-                  }
-                >
-                  Thanh toán qua VNPAY
-                </Button>
               </div>
             </Card>
           )}
@@ -653,8 +570,34 @@ export function BookingPage() {
         </div>
 
         {showSummarySidebar && (
-          <div>
-            <BookingSummaryCard draft={draft} selectedSet={selectedSet} />
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <BookingSummaryCard
+              draft={draft}
+              selectedSet={selectedSet}
+              tastingMenus={tastingMenus}
+            />
+            <BookingNav
+              step={draft.step}
+              hasSelectedTable={Boolean(draft.tableId)}
+              isSubmittingContact={createMutation.isPending}
+              contactFormId={BOOKING_CONTACT_FORM_ID}
+              onBack={handleBack}
+              onNext={() => {
+                if (draft.step === 'time-zone') {
+                  setDraft((d) => ({ ...d, step: 'table' }))
+                } else if (draft.step === 'table') {
+                  setDraft((d) => ({ ...d, step: 'set-menu' }))
+                } else if (draft.step === 'set-menu') {
+                  setDraft((d) => ({ ...d, step: 'contact' }))
+                } else if (draft.step === 'hold' && draft.holdReservation) {
+                  navigate(
+                    `/thanh-toan/vnpay/${encodeURIComponent(
+                      draft.holdReservation.bookingCode
+                    )}`
+                  )
+                }
+              }}
+            />
           </div>
         )}
       </div>

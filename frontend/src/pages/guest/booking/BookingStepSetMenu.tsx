@@ -1,6 +1,6 @@
-import { Check, ChevronLeft } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { calculateDepositAmount, COURSE_TYPE_LABELS } from '@/domain'
-import { Button, Card, Money } from '@/components/ui'
+import { Card, Money } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { TastingMenuDto } from '@/types'
 
@@ -9,41 +9,20 @@ export interface BookingStepSetMenuProps {
   partySize: number
   selectedSetId: string | null
   onSelectSet: (setId: string | null) => void
-  onBack: () => void
-  onNext: () => void
 }
 
-/** Step 3 optional Set Menu pre-order selector with deposit calculation. */
+/** Step 3 optional Set Menu pre-order selector with layout-stable selection states. */
 export function BookingStepSetMenu({
   tastingMenus,
   partySize,
   selectedSetId,
   onSelectSet,
-  onBack,
-  onNext,
 }: BookingStepSetMenuProps) {
   const noSetDeposit = calculateDepositAmount({ guestCount: partySize })
 
   return (
     <Card className="bg-surface/95 backdrop-blur-md space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold text-accent">
-            Chọn Set Menu đặt trước (tùy chọn)
-          </h2>
-          <p className="text-xs text-ink-muted mt-0.5">
-            Nếu chọn trước Set Menu, Course 1 sẽ được chuẩn bị ngay khi nhận bàn.
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={<ChevronLeft className="w-4 h-4" />}
-          onClick={onBack}
-        >
-          Quay lại
-        </Button>
-      </div>
+      <h2 className="text-base font-semibold text-accent">Chọn Set Menu</h2>
 
       <div
         data-testid="booking-set-grid"
@@ -106,16 +85,22 @@ export function BookingStepSetMenu({
                   <Money amount={setTotal} tone="accent" />
                 </p>
                 <p className="text-xs text-ink-muted">
-                  Thanh toán sau bữa ăn · cọc 30%:{' '}
-                  <Money amount={deposit} tone="default" />, trừ vào hóa đơn
+                  Thanh toán sau bữa ăn, cọc 30%:{' '}
+                  <Money amount={deposit} tone="default" /> (trừ vào hóa đơn)
                 </p>
-                <div className="min-h-[1.25rem] pt-0.5">
-                  {isSelected && (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
-                      <Check className="w-3.5 h-3.5" aria-hidden="true" />
-                      Đã chọn cho {partySize} khách
-                    </span>
-                  )}
+                <div className="h-5 pt-0.5 flex items-center">
+                  <span
+                    aria-hidden={!isSelected}
+                    className={cn(
+                      'inline-flex items-center gap-1 text-xs font-medium text-accent transition-opacity duration-150 motion-reduce:transition-none',
+                      isSelected
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none select-none'
+                    )}
+                  >
+                    <Check className="w-3.5 h-3.5" aria-hidden="true" />
+                    Đã chọn cho {partySize} khách
+                  </span>
                 </div>
               </div>
             </button>
@@ -125,6 +110,7 @@ export function BookingStepSetMenu({
 
       <button
         type="button"
+        data-testid="booking-no-set-option"
         onClick={() => onSelectSet(null)}
         aria-pressed={selectedSetId === null}
         className={cn(
@@ -137,21 +123,17 @@ export function BookingStepSetMenu({
         <div className="space-y-1">
           <p className="text-sm font-semibold text-ink">Gọi món tại nhà hàng</p>
           <p className="text-xs text-ink-muted">
-            Không chọn trước Set Menu · gọi món khi dùng bữa · cọc 500.000 ₫ / khách (
-            <Money amount={noSetDeposit} />)
+            Cọc 500.000 ₫ mỗi khách (<Money amount={noSetDeposit} />)
           </p>
         </div>
-        {selectedSetId === null && (
-          <Check className="w-4 h-4 text-accent shrink-0" aria-hidden="true" />
-        )}
+        <Check
+          aria-hidden="true"
+          className={cn(
+            'w-4 h-4 text-accent shrink-0 transition-opacity duration-150 motion-reduce:transition-none',
+            selectedSetId === null ? 'opacity-100' : 'opacity-0'
+          )}
+        />
       </button>
-
-      <div className="flex items-center justify-between gap-3 pt-2 border-t border-line">
-        <Button variant="secondary" onClick={onBack}>
-          Quay lại
-        </Button>
-        <Button onClick={onNext}>Tiếp tục thông tin liên hệ</Button>
-      </div>
     </Card>
   )
 }
