@@ -60,6 +60,7 @@ export function BookingNav({
 
       {step === 'contact' ? (
         <Button
+          key="next-contact"
           type="submit"
           form={contactFormId}
           loading={isSubmittingContact}
@@ -70,6 +71,7 @@ export function BookingNav({
         </Button>
       ) : (
         <Button
+          key={`next-${step}`}
           type="button"
           className="w-full"
           disabled={step === 'table' && !hasSelectedTable}
