@@ -4,13 +4,13 @@ import { isAxiosError } from 'axios'
 import { GripVertical, Plus, Printer, QrCode, Save, Trash2 } from 'lucide-react'
 import QRCode from 'qrcode'
 import { TABLE_ZONE_LABELS, validateFloorPlanLayout } from '@/domain'
+import { FloorPlanCanvas } from '@/components/floor-plan/FloorPlanCanvas'
 import {
   FLOOR_CANVAS_H,
   FLOOR_CANVAS_W,
   FLOOR_SNAP_GRID,
-  FloorPlanCanvas,
   getTableGeometry,
-} from '@/components/floor-plan/FloorPlanCanvas'
+} from '@/components/floor-plan/floorPlanGeometry'
 import {
   Button,
   Card,

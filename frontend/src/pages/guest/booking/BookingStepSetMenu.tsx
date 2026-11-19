@@ -45,7 +45,10 @@ export function BookingStepSetMenu({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div
+        data-testid="booking-set-grid"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         {tastingMenus.map((set) => {
           const isSelected = selectedSetId === set.id
           const setTotal = set.price * partySize
@@ -58,39 +61,41 @@ export function BookingStepSetMenu({
             <button
               key={set.id}
               type="button"
+              data-testid="booking-set-card"
               onClick={() => onSelectSet(set.id)}
               aria-pressed={isSelected}
               className={cn(
-                'p-4 rounded-xl border text-left transition-colors flex flex-col justify-between gap-4 cursor-pointer',
+                'p-4 rounded-xl border text-left transition-colors cursor-pointer grid grid-rows-[auto_1fr_auto] md:row-span-3 md:grid-rows-[subgrid] gap-y-3 h-full',
                 isSelected
                   ? 'border-primary ring-1 ring-primary bg-card'
                   : 'border-line bg-card hover:bg-card-hover'
               )}
             >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-serif text-lg font-semibold text-ink">
-                    {set.name}
-                  </span>
-                  <span className="text-xs font-semibold text-accent shrink-0">
-                    <Money amount={set.price} tone="accent" /> / khách
-                  </span>
-                </div>
-
-                <ul className="space-y-1 text-xs text-ink-muted">
-                  {set.items
-                    .slice()
-                    .sort((a, b) => a.courseOrder - b.courseOrder)
-                    .map((item) => (
-                      <li key={item.id}>
-                        • {COURSE_TYPE_LABELS[item.courseType]}:{' '}
-                        {item.menuItemName}
-                      </li>
-                    ))}
-                </ul>
+              <div className="flex items-start justify-between gap-2 w-full">
+                <span className="font-serif text-lg font-semibold text-ink line-clamp-2 min-h-[3.25rem]">
+                  {set.name}
+                </span>
+                <span
+                  data-testid="booking-set-price"
+                  className="text-xs font-semibold text-accent shrink-0 pt-0.5"
+                >
+                  <Money amount={set.price} tone="accent" /> / khách
+                </span>
               </div>
 
-              <div className="pt-3 border-t border-line space-y-1">
+              <ul className="space-y-1 text-xs text-ink-muted">
+                {set.items
+                  .slice()
+                  .sort((a, b) => a.courseOrder - b.courseOrder)
+                  .map((item) => (
+                    <li key={item.id}>
+                      • {COURSE_TYPE_LABELS[item.courseType]}:{' '}
+                      {item.menuItemName}
+                    </li>
+                  ))}
+              </ul>
+
+              <div className="pt-3 border-t border-line space-y-1 w-full self-end">
                 <p className="text-xs font-semibold text-ink">
                   {set.name} × {partySize} khách ={' '}
                   <Money amount={setTotal} tone="accent" />
@@ -99,12 +104,14 @@ export function BookingStepSetMenu({
                   Thanh toán sau bữa ăn · cọc 30%:{' '}
                   <Money amount={deposit} tone="default" />, trừ vào hóa đơn
                 </p>
-                {isSelected && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-accent pt-1">
-                    <Check className="w-3.5 h-3.5" aria-hidden="true" />
-                    Đã chọn cho {partySize} khách
-                  </span>
-                )}
+                <div className="min-h-[1.25rem] pt-0.5">
+                  {isSelected && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
+                      <Check className="w-3.5 h-3.5" aria-hidden="true" />
+                      Đã chọn cho {partySize} khách
+                    </span>
+                  )}
+                </div>
               </div>
             </button>
           )

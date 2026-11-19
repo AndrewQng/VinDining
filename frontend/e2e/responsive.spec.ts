@@ -232,4 +232,87 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
       }
     }
   })
+
+  test('Symmetry check: Home Set Menu & Booking Set Menu price alignment at 1440 and 390', async ({
+    page,
+  }) => {
+    const assertSameRowPriceAlignment = async (
+      cardSelector: string,
+      priceSelector: string,
+      label: string,
+      width: number
+    ) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.waitForTimeout(100)
+      const cards = await page.locator(cardSelector).all()
+      const prices = await page.locator(priceSelector).all()
+      expect(cards.length).toBeGreaterThanOrEqual(4)
+      expect(prices.length).toBe(cards.length)
+
+      const rows = new Map<number, Array<{ cardH: number; priceTop: number }>>()
+      for (let i = 0; i < cards.length; i++) {
+        const cardBox = await cards[i].boundingBox()
+        const priceBox = await prices[i].boundingBox()
+        expect(cardBox).not.toBeNull()
+        expect(priceBox).not.toBeNull()
+        const rowKey =
+          Array.from(rows.keys()).find((k) => Math.abs(k - cardBox!.y) <= 4) ??
+          Math.round(cardBox!.y)
+        const group = rows.get(rowKey) ?? []
+        group.push({ cardH: cardBox!.height, priceTop: priceBox!.y })
+        rows.set(rowKey, group)
+      }
+
+      if (width >= 1024) {
+        expect(rows.size).toBe(2)
+      }
+      for (const [, group] of rows) {
+        const baseH = group[0].cardH
+        const basePriceTop = group[0].priceTop
+        for (const item of group) {
+          expect(
+            Math.abs(item.cardH - baseH),
+            `${label} @ ${width}px card height mismatch`
+          ).toBeLessThanOrEqual(1)
+          expect(
+            Math.abs(item.priceTop - basePriceTop),
+            `${label} @ ${width}px price top mismatch`
+          ).toBeLessThanOrEqual(1)
+        }
+      }
+    }
+
+    await page.goto('/')
+    await expect(page.getByTestId('home-set-card')).toHaveCount(4)
+    await assertSameRowPriceAlignment(
+      '[data-testid="home-set-card"]',
+      '[data-testid="home-set-price"]',
+      'Home Set Menu',
+      1440
+    )
+    await assertSameRowPriceAlignment(
+      '[data-testid="home-set-card"]',
+      '[data-testid="home-set-price"]',
+      'Home Set Menu',
+      390
+    )
+
+    await page.goto('/dat-ban')
+    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await page.getByRole('radio', { name: /B06/i }).click()
+    await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
+    await expect(page.getByTestId('booking-set-card')).toHaveCount(4)
+    await assertSameRowPriceAlignment(
+      '[data-testid="booking-set-card"]',
+      '[data-testid="booking-set-price"]',
+      'Booking Set Menu',
+      1440
+    )
+    await assertSameRowPriceAlignment(
+      '[data-testid="booking-set-card"]',
+      '[data-testid="booking-set-price"]',
+      'Booking Set Menu',
+      390
+    )
+  })
 })

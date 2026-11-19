@@ -230,14 +230,14 @@ export function EMenuPage() {
           {data.tastingMenus.map((set) => (
             <Card key={set.id} padding="sm" className="space-y-2.5">
               <div className="flex items-start justify-between gap-2">
-                <h3 className="font-serif text-base font-semibold text-ink">
+                <h3 className="font-serif text-base font-semibold text-ink line-clamp-2 min-h-[2.75rem]">
                   {set.name}
                 </h3>
-                <span className="text-xs font-semibold text-accent shrink-0">
+                <span className="text-xs font-semibold text-accent shrink-0 pt-0.5">
                   <Money amount={set.price} tone="accent" /> / khách
                 </span>
               </div>
-              <ul className="space-y-1 text-xs text-ink-muted">
+              <ul className="space-y-1 text-xs text-ink-muted min-h-[3.75rem]">
                 {set.items
                   .slice()
                   .sort((a, b) => a.courseOrder - b.courseOrder)

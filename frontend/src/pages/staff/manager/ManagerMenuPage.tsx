@@ -334,29 +334,27 @@ export function ManagerMenuPage() {
           description="Tạo Set Menu gồm đủ Khai vị, Món chính và Tráng miệng."
         />
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {(setsQuery.data ?? []).map((setMenu) => (
             <Card
               key={setMenu.id}
               data-testid={`set-menu-card-${setMenu.id}`}
-              className="space-y-4"
+              className="grid grid-rows-[auto_1fr] md:row-span-2 md:grid-rows-[subgrid] gap-y-4 h-full"
             >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <h2 className="font-serif text-lg font-bold text-ink">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 space-y-1">
+                  <h2 className="font-serif text-lg font-bold text-ink line-clamp-2 min-h-[1.75rem]">
                     {setMenu.name}
                   </h2>
-                  <p className="mt-1 text-sm font-semibold text-accent tabular-nums">
+                  <p className="text-sm font-semibold text-accent tabular-nums">
                     Giá trọn gói: {formatVnd(setMenu.price)} / khách
                   </p>
-                  {setMenu.description && (
-                    <p className="mt-1 text-xs text-ink-muted">
-                      {setMenu.description}
-                    </p>
-                  )}
+                  <p className="text-xs text-ink-muted line-clamp-2 min-h-[2rem]">
+                    {setMenu.description ?? ''}
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <Button
                     type="button"
                     variant="secondary"
@@ -379,19 +377,19 @@ export function ManagerMenuPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 self-end">
                 {setMenu.items.map((course) => (
                   <div
                     key={course.id}
-                    className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm"
+                    className="flex flex-wrap items-center gap-2.5 rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm"
                   >
-                    <span className="rounded border border-accent/40 bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                    <span className="rounded border border-accent/40 bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent shrink-0">
                       {COURSE_TYPE_LABELS[course.courseType]}
                     </span>
-                    <span className="font-semibold text-ink">
+                    <span className="font-semibold text-ink truncate">
                       {course.menuItemName}
                     </span>
-                    <span className="text-xs text-ink-muted">
+                    <span className="text-xs text-ink-muted ml-auto tabular-nums">
                       (Prep: {course.prepTimeMinutes} phút)
                     </span>
                   </div>
