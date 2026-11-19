@@ -80,6 +80,9 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await scanAxe(page, '/', 'light', collected)
 
     await page.goto('/dat-ban')
+    await expect(page.getByTestId('booking-step-time-zone')).toBeVisible()
+    await scanAxe(page, '/dat-ban step 1', 'dark', collected)
+    await scanAxe(page, '/dat-ban step 1', 'light', collected)
     await page.getByTestId('booking-nav-next').click()
     await expect(page.getByRole('radio').first()).toBeVisible()
     await scanAxe(page, '/dat-ban step 2', 'dark', collected)
