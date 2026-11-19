@@ -184,6 +184,16 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await scanAxe(page, 'M2', 'dark', collected)
     await scanAxe(page, 'M2', 'light', collected)
 
+    await page.getByRole('link', { name: 'Hoàn cọc ngoại lệ', exact: true }).click()
+    await expect(page).toHaveURL(/\/quan-ly\/hoan-coc$/)
+    await expect(page.getByTestId('refund-row-VD-2C8N')).toBeVisible()
+    await scanAxe(page, 'M3 pending', 'dark', collected)
+    await scanAxe(page, 'M3 pending', 'light', collected)
+    await page.getByRole('tab', { name: /Đã xử lý/i }).click()
+    await expect(page.getByTestId('refund-row-VD-5E1M')).toBeVisible()
+    await scanAxe(page, 'M3 processed', 'dark', collected)
+    await scanAxe(page, 'M3 processed', 'light', collected)
+
     await page.getByRole('link', { name: 'Báo cáo', exact: true }).click()
     await expect(page).toHaveURL(/\/quan-ly\/bao-cao$/)
     await expect(page.getByTestId('kpi-total-revenue')).not.toHaveText(/^0 ₫$/)

@@ -205,7 +205,7 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
       }
     }
 
-    await page.getByRole('link', { name: 'Duyệt hoàn cọc', exact: true }).click()
+    await page.getByRole('link', { name: 'Hoàn cọc ngoại lệ', exact: true }).click()
     await expect(page).toHaveURL(/\/quan-ly\/hoan-coc$/)
     await expect(page.getByTestId('refund-row-VD-2C8N')).toBeVisible()
     for (const w of [1280, 1440]) {

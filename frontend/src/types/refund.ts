@@ -7,6 +7,7 @@ export interface RefundRequestDto {
   requestedAt: string
   auditReason: string | null
   processedAt?: string | null
+  decisionAction?: 'ManualRefundApproved' | 'ManualRefundRejected' | null
 }
 
 /** Payload for POST /api/manager/reservations/{id}/manual-refund. */

@@ -234,8 +234,14 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     const errors = attachErrorGuard(page)
     await loginAs(page, 'long.dh', /\/quan-ly$/)
 
-    await page.getByRole('link', { name: 'Duyệt hoàn cọc' }).click()
+    await page.getByRole('link', { name: 'Hoàn cọc ngoại lệ' }).click()
     await expect(page).toHaveURL(/\/quan-ly\/hoan-coc$/)
+    await expect(
+      page.getByRole('heading', { name: 'Hoàn cọc ngoại lệ' })
+    ).toBeVisible()
+    await expect(page.getByTestId('refund-policy-banner')).toContainText(
+      'tự động hoàn 100% cọc'
+    )
     await expect(page.getByTestId('refund-row-VD-2C8N')).toBeVisible()
     await expect(page.getByTestId('refund-row-VD-8P4K')).toBeVisible()
     await saveShot(page, 'm3-dark.png')
@@ -273,8 +279,15 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     )
     await page.getByRole('button', { name: 'Đóng hộp thoại' }).click()
 
-    await page.getByRole('tab', { name: /Tất cả/i }).click()
-    await expect(page.getByTestId('refund-row-VD-2C8N')).toContainText('Đã hủy')
+    await page.getByRole('tab', { name: /Đã xử lý/i }).click()
+    await expect(page.getByTestId('refund-row-VD-2C8N')).toContainText(
+      'Chấp thuận hoàn cọc'
+    )
+    await expect(page.getByTestId('refund-row-VD-8P4K')).toContainText(
+      'Từ chối hoàn cọc'
+    )
+    await expect(page.getByTestId('refund-row-VD-5E1M')).toBeVisible()
+    await expect(page.getByTestId('refund-row-VD-6R2T')).toBeVisible()
 
     expect(errors).toEqual([])
   })

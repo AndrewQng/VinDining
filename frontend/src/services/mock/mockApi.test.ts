@@ -416,4 +416,50 @@ describe('Mock API §10 end-to-end stories', () => {
     expect(b01Only.data.every((item: { tableNumber: string }) => item.tableNumber === 'B01')).toBe(true)
     expect(b01Only.data.some((item: { remakeCount: number }) => item.remakeCount === 1)).toBe(true)
   })
+
+  it('excludes automatic >= 4h refunds from GET /manager/refunds and returns exception decisions', async () => {
+    const client = createTestClient()
+    const created = await client.post('/reservations', {
+      tableId: 'tbl-b06',
+      reservationTime: new Date(Date.now() + 30 * 3_600_000).toISOString(),
+      partySize: 2,
+      fullName: 'Khách Hủy Sớm',
+      phoneNumber: '0988776655',
+      email: 'early@email.com',
+    })
+    await client.post('/payments/vnpay-ipn', {
+      bookingCode: created.data.reservation.bookingCode,
+      transactionId: 'VNP-EARLY-001',
+      paymentMethod: 'Card',
+      responseCode: '00',
+    })
+    const autoCancel = await client.post('/reservations/cancel', {
+      bookingCode: created.data.reservation.bookingCode,
+      phoneNumber: '0988776655',
+      reason: 'Hủy trước 30 tiếng để test tự động hoàn 100%',
+    })
+    expect(autoCancel.data.refunded).toBe(true)
+    expect(autoCancel.data.reservation.status).toBe('Cancelled_Refunded')
+
+    const mgrToken = await loginAs(client, 'long.dh')
+    const refundsRes = await client.get('/manager/refunds', {
+      headers: { Authorization: `Bearer ${mgrToken}` },
+    })
+    expect(refundsRes.status).toBe(200)
+    const codes = refundsRes.data.map(
+      (r: { reservation: { bookingCode: string } }) => r.reservation.bookingCode
+    )
+    expect(codes).not.toContain(created.data.reservation.bookingCode)
+    expect(codes).toContain('VD-2C8N')
+    expect(codes).toContain('VD-8P4K')
+    expect(codes).toContain('VD-5E1M')
+    expect(codes).toContain('VD-6R2T')
+
+    const approvedSeed = refundsRes.data.find(
+      (r: { reservation: { bookingCode: string } }) =>
+        r.reservation.bookingCode === 'VD-5E1M'
+    )
+    expect(approvedSeed.decisionAction).toBe('ManualRefundApproved')
+    expect(approvedSeed.processedAt).toBeTruthy()
+  })
 })

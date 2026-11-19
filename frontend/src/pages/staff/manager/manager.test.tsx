@@ -114,6 +114,14 @@ describe('Manager M1–M5 backoffice components', () => {
     const user = userEvent.setup()
     renderManagerRoute('/quan-ly/hoan-coc')
 
+    expect(
+      await screen.findByRole('heading', { name: 'Hoàn cọc ngoại lệ' })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('refund-policy-banner')).toHaveTextContent(
+      /Hủy trước giờ hẹn từ 4 tiếng: tự động hoàn 100% cọc/i
+    )
+    expect(screen.queryByRole('tab', { name: /Tất cả/i })).toBeNull()
+
     const row = await screen.findByTestId('refund-row-VD-2C8N')
     await user.click(row.querySelector('button')!)
 
@@ -134,6 +142,14 @@ describe('Manager M1–M5 backoffice components', () => {
     expect(
       await screen.findByTestId('refund-decision-status')
     ).toHaveTextContent(/Đã hoàn tiền cọc qua VNPAY/i)
+
+    await user.click(screen.getByRole('button', { name: 'Đóng hộp thoại' }))
+    await user.click(screen.getByRole('tab', { name: /Đã xử lý/i }))
+    expect(await screen.findByTestId('refund-row-VD-5E1M')).toBeInTheDocument()
+    expect(screen.getByTestId('refund-row-VD-6R2T')).toBeInTheDocument()
+    expect(screen.getByTestId('refund-row-VD-2C8N')).toHaveTextContent(
+      /Khách có lý do bất khả kháng hợp lệ/i
+    )
   })
 
   it('M4 disables self-lock and creates Cashier account with mock temporary password note', async () => {

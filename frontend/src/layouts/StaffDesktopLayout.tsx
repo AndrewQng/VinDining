@@ -63,7 +63,7 @@ const MANAGER_NAV: NavEntry[] = [
   },
   {
     to: '/quan-ly/hoan-coc',
-    label: 'Duyệt hoàn cọc',
+    label: 'Hoàn cọc ngoại lệ',
     icon: <RotateCcw className="w-4 h-4" />,
   },
   {
