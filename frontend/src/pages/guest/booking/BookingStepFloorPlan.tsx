@@ -239,7 +239,7 @@ export function BookingStepFloorPlan({
 
       <FloorPlanCanvas
         tables={zoneTables}
-        fitContent
+        fit
         role="radiogroup"
         ariaLabel={`Chọn bàn tại ${TABLE_ZONE_LABELS[zone]}`}
         renderTable={(table, { left, top, width, height, shapeClass }) => {

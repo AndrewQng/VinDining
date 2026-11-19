@@ -39,10 +39,21 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     )
     await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
 
-    // Step 2: Guest floor plan must NOT display internal statuses
+    // Step 2: Guest floor plan must NOT display internal statuses and must center fitted tables
     await expect(page.getByText(/Đang dọn/i)).toHaveCount(0)
     await expect(page.getByText(/Chờ thanh toán/i)).toHaveCount(0)
     await expect(page.getByText(/Đang phục vụ/i)).toHaveCount(0)
+
+    const floorBalance = await page
+      .getByRole('radiogroup', { name: /Chọn bàn tại Sảnh chính/i })
+      .evaluate((canvas) => {
+        const cb = canvas.getBoundingClientRect()
+        const nodes = Array.from(canvas.querySelectorAll('[role="radio"]'))
+        const minL = Math.min(...nodes.map((n) => n.getBoundingClientRect().left))
+        const maxR = Math.max(...nodes.map((n) => n.getBoundingClientRect().right))
+        return { leftGap: minL - cb.left, rightGap: cb.right - maxR }
+      })
+    expect(Math.abs(floorBalance.leftGap - floorBalance.rightGap)).toBeLessThanOrEqual(6)
 
     // Keyboard arrow + Enter selection on floor plan
     const b03Radio = page.getByRole('radio', { name: /B03/i })

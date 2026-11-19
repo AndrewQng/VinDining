@@ -4,13 +4,14 @@ import {
   FLOOR_CANVAS_H,
   FLOOR_CANVAS_W,
   FLOOR_SNAP_GRID,
+  computeFittedFloorTransform,
   getClampedTablePosition,
   type FloorPlanTableBase,
 } from './floorPlanGeometry'
 
 export interface FloorPlanCanvasProps<T extends FloorPlanTableBase> {
   tables: T[]
-  fitContent?: boolean
+  fit?: boolean
   showGrid?: boolean
   snapGrid?: number
   role?: string
@@ -27,11 +28,11 @@ export interface FloorPlanCanvasProps<T extends FloorPlanTableBase> {
 
 /**
  * Shared responsive 2D floor plan canvas used by both Manager M2 editor and Guest G1 booking.
- * Renders tables at their canonical posX/posY coordinates and scales proportionally to fit narrow screens.
+ * M2 keeps exact canonical 680x580 coordinates; G1 opts into `fit` to scale and center a zone's tables.
  */
 export function FloorPlanCanvas<T extends FloorPlanTableBase>({
   tables,
-  fitContent = false,
+  fit = false,
   showGrid = false,
   snapGrid = FLOOR_SNAP_GRID,
   role,
@@ -59,46 +60,48 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
     return () => observer.disconnect()
   }, [])
 
-  const { logicalW, logicalH } = useMemo(() => {
-    if (!fitContent || tables.length === 0) {
-      return { logicalW: FLOOR_CANVAS_W, logicalH: FLOOR_CANVAS_H }
+  const transform = useMemo(() => {
+    if (fit) {
+      return computeFittedFloorTransform(tables, containerWidth)
     }
-    let maxRight = 0
-    let maxBottom = 0
-    for (const t of tables) {
-      const pos = getClampedTablePosition(t)
-      maxRight = Math.max(maxRight, pos.left + pos.width)
-      maxBottom = Math.max(maxBottom, pos.top + pos.height)
-    }
+    const scale =
+      containerWidth > 0 ? Math.min(1, containerWidth / FLOOR_CANVAS_W) : 1
+    const scaledWidth = Math.round(FLOOR_CANVAS_W * scale)
     return {
-      logicalW: Math.min(FLOOR_CANVAS_W, Math.max(400, maxRight + 32)),
-      logicalH: Math.min(FLOOR_CANVAS_H, Math.max(300, maxBottom + 32)),
+      scale,
+      contentWidth: FLOOR_CANVAS_W,
+      contentHeight: FLOOR_CANVAS_H,
+      scaledWidth,
+      scaledHeight: Math.round(FLOOR_CANVAS_H * scale),
+      offsetX: 0,
+      originX: 0,
+      originY: 0,
     }
-  }, [fitContent, tables])
-
-  const scale = containerWidth > 0 ? Math.min(1, containerWidth / logicalW) : 1
-  const scaledHeight = Math.round(logicalH * scale)
+  }, [fit, tables, containerWidth])
 
   return (
     <div
       ref={containerRef}
       role={role}
       aria-label={ariaLabel}
-      onPointerMove={onPointerMove ? (e) => onPointerMove(e, scale) : undefined}
+      onPointerMove={
+        onPointerMove ? (e) => onPointerMove(e, transform.scale) : undefined
+      }
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerLeave}
       className={cn(
         'relative w-full overflow-hidden rounded-xl border border-line bg-bg',
         className
       )}
-      style={{ height: `${scaledHeight}px` }}
+      style={{ height: `${transform.scaledHeight}px` }}
     >
       <div
         className="relative"
         style={{
-          width: `${logicalW}px`,
-          height: `${logicalH}px`,
-          transform: `scale(${scale})`,
+          width: `${transform.contentWidth}px`,
+          height: `${transform.contentHeight}px`,
+          marginLeft: `${transform.offsetX}px`,
+          transform: `scale(${transform.scale})`,
           transformOrigin: 'top left',
           backgroundImage: showGrid
             ? 'radial-gradient(circle, var(--line-strong) 1px, transparent 1px)'
@@ -107,8 +110,13 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
         }}
       >
         {tables.map((table) => {
-          const layout = getClampedTablePosition(table)
-          return renderTable(table, { ...layout, scale })
+          const pos = getClampedTablePosition(table)
+          return renderTable(table, {
+            ...pos,
+            left: pos.left - transform.originX,
+            top: pos.top - transform.originY,
+            scale: transform.scale,
+          })
         })}
       </div>
     </div>
