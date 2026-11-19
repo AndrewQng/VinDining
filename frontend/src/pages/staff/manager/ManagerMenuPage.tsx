@@ -142,9 +142,6 @@ export function ManagerMenuPage() {
           <h1 className="font-serif text-2xl font-bold text-ink">
             Quản lý thực đơn
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Thiết lập món lẻ, định mức chế biến (Prep SLA) và trạng thái phục vụ
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -224,7 +221,7 @@ export function ManagerMenuPage() {
           <Card className="overflow-hidden p-0">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[820px] text-left text-sm">
-                <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                   <tr>
                     <th className="px-4 py-3">Tên món</th>
                     <th className="px-4 py-3">Nhóm</th>
@@ -832,7 +829,7 @@ function SetMenuFormModal({
         </div>
 
         <div className="space-y-3 rounded-xl border border-line bg-card p-3.5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+          <p className="text-xs font-semibold text-accent">
             Chọn đúng 1 món cho mỗi Course
           </p>
 

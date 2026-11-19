@@ -422,7 +422,7 @@ export function BookingPage() {
           {draft.step === 'hold' && draft.holdReservation && (
             <Card className="bg-surface/95 backdrop-blur-md space-y-6">
               <div className="rounded-xl bg-card border border-line p-6 text-center space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                <p className="text-sm font-medium text-ink-muted">
                   Thời gian giữ chỗ còn lại
                 </p>
                 <div className="flex justify-center">
@@ -484,11 +484,8 @@ export function BookingPage() {
                   Hết thời gian giữ chỗ
                 </h2>
                 <p className="text-sm text-ink-muted leading-relaxed">
-                  Thời gian giữ chỗ 17 phút đã kết thúc. Yêu cầu đặt bàn của quý
-                  khách đã tự động hủy để mở lại bàn cho khách hàng khác.
-                </p>
-                <p className="text-xs text-ink-subtle">
-                  Quý khách vui lòng thực hiện lại nếu vẫn muốn đặt bàn.
+                  Thời gian giữ chỗ 17 phút đã kết thúc. Yêu cầu đặt bàn đã hủy
+                  để mở lại bàn.
                 </p>
               </div>
               <Button onClick={handleRestart}>Thực hiện đặt lại</Button>
@@ -504,10 +501,13 @@ export function BookingPage() {
                   aria-hidden="true"
                 />
                 <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-ink">
-                  Đặt bàn thành công!
+                  Đặt bàn thành công
                 </h2>
-                <p className="text-base font-semibold text-accent tracking-wide">
-                  MÃ ĐẶT BÀN: {draft.confirmedReservation.bookingCode}
+                <p className="text-base text-ink-muted">
+                  Mã đặt bàn:{' '}
+                  <span className="font-mono font-semibold text-accent">
+                    {draft.confirmedReservation.bookingCode}
+                  </span>
                 </p>
                 <div className="pt-1">
                   <StatusBadge
@@ -518,9 +518,9 @@ export function BookingPage() {
               </div>
 
               <div className="rounded-xl bg-card border border-line p-5 space-y-2 text-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                <h3 className="text-sm font-semibold text-accent">
                   Chi tiết đặt hẹn
-                </p>
+                </h3>
                 <p className="text-ink">
                   Bàn {draft.confirmedReservation.tableNumber} ·{' '}
                   {TABLE_ZONE_LABELS[draft.confirmedReservation.zone]} ·{' '}

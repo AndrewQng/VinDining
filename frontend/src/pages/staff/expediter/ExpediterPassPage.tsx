@@ -220,9 +220,9 @@ export function ExpediterPassPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface border border-line px-5 py-3.5">
         <div>
-          <h1 className="text-lg font-bold text-ink">Điều phối món tại quầy Pass</h1>
+          <h1 className="text-lg font-bold text-ink">Quầy Pass</h1>
           <p className="text-xs text-ink-muted">
-            Sắp xếp theo mức độ ưu tiên thời gian chế biến
+            Ưu tiên theo thời gian chế biến
           </p>
         </div>
 

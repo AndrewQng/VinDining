@@ -210,10 +210,6 @@ export function ManagerFloorPlanPage() {
           <h1 className="font-serif text-2xl font-bold text-ink">
             Cấu hình sơ đồ bàn
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Kéo thả hoặc dùng phím mũi tên để định vị bàn, sức chứa và mã QR gọi
-            món tại bàn
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">

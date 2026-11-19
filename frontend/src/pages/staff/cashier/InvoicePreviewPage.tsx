@@ -318,9 +318,7 @@ function BillDetailsColumn({
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-accent">
-          Chi tiết món ăn đã phục vụ
-        </h2>
+        <h2 className="text-sm font-semibold text-accent">Món đã phục vụ</h2>
         <p className="mt-1 text-xs text-ink-muted">
           Bàn {preview.tableNumber} · {preview.guestCount} khách
           {preview.openedAt ? ` · Giờ vào: ${formatSlotTime(preview.openedAt)}` : ''}
@@ -408,9 +406,7 @@ function TotalsBreakdownPanel({
 
   return (
     <Card className="space-y-5">
-      <h2 className="text-xs font-bold uppercase tracking-wider text-accent">
-        Bảng tính tiền tạm tính
-      </h2>
+      <h2 className="text-sm font-semibold text-accent">Bảng tạm tính</h2>
 
       <dl className="space-y-3 text-sm">
         <div className="flex justify-between gap-2">
@@ -453,7 +449,7 @@ function TotalsBreakdownPanel({
         data-testid="amount-due-box"
         className="rounded-xl border border-accent/50 bg-accent/10 px-4 py-3.5"
       >
-        <p className="text-[11px] font-bold uppercase tracking-wider text-accent">
+        <p className="text-xs font-semibold text-accent">
           Còn phải thanh toán
         </p>
         <p className="mt-1 font-serif text-3xl font-bold text-accent tabular-nums">
@@ -466,7 +462,7 @@ function TotalsBreakdownPanel({
           data-testid="minimum-spend-note"
           className="rounded-xl border border-warning/50 bg-warning/10 px-4 py-3"
         >
-          <p className="text-[11px] font-bold uppercase tracking-wider text-warning">
+          <p className="text-xs font-semibold text-warning">
             Quy tắc tiền cọc tối thiểu
           </p>
           <p className="mt-1 text-xs font-medium text-ink">
@@ -474,11 +470,6 @@ function TotalsBreakdownPanel({
           </p>
         </div>
       )}
-
-      <div className="rounded-xl border border-line bg-card px-3.5 py-2.5 text-xs text-ink-muted">
-        In phiếu 80mm có mã VietQR, kẹp vào sổ da và giao cho phục vụ mang ra
-        bàn.
-      </div>
 
       <div className="space-y-2.5">
         <Button
@@ -547,17 +538,15 @@ function PaymentConfirmPanel({
 
       <Card className="space-y-6">
         <div className="rounded-xl border border-accent/40 bg-accent/10 px-5 py-4 text-center">
-          <p className="text-xs font-bold uppercase tracking-wider text-accent">
-            Số tiền cần thu
-          </p>
+          <p className="text-xs font-semibold text-accent">Số tiền cần thu</p>
           <p className="mt-1 font-serif text-4xl font-bold text-accent tabular-nums">
             <Money amount={preview.amountDue} />
           </p>
         </div>
 
         <fieldset className="space-y-3">
-          <legend className="text-xs font-bold uppercase tracking-wider text-ink-muted">
-            Chọn phương thức thanh toán
+          <legend className="text-xs font-semibold text-ink-muted">
+            Phương thức thanh toán
           </legend>
           <div className="grid gap-3 sm:grid-cols-3">
             {PAYMENT_OPTIONS.map((option) => {
@@ -640,17 +629,18 @@ function SettledSuccessPanel({ invoice }: { invoice: InvoiceDto }) {
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-0.5 h-7 w-7 shrink-0 text-success" />
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-success">
+              <p className="text-xs font-semibold text-success">
                 Thanh toán thành công
               </p>
               <h1 className="mt-1 font-serif text-2xl font-bold text-ink">
-                Đã thanh toán Bàn {invoice.tableNumber} ·{' '}
-                {formatVnd(invoice.amountDue)} ·{' '}
-                {METHOD_LABELS[invoice.paymentMethod]}
+                Đã thanh toán Bàn {invoice.tableNumber}
               </h1>
+              <p className="mt-1 text-sm font-medium text-ink">
+                {formatVnd(invoice.amountDue)} · {METHOD_LABELS[invoice.paymentMethod]}
+              </p>
               <p className="mt-1 text-xs text-ink-muted">
-                Thời gian quyết toán: {formatDateTime(invoice.createdAt)} · Hóa
-                đơn {formatInvoiceCode(invoice.id)}
+                Quyết toán lúc {formatDateTime(invoice.createdAt)} · Hóa đơn{' '}
+                {formatInvoiceCode(invoice.id)}
               </p>
             </div>
           </div>

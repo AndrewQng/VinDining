@@ -168,8 +168,9 @@ test.describe('Phase 5a: Cashier POS (/thu-ngan/*, C1–C4 + Hóa đơn hôm nay
       .getByRole('button', { name: /Xác nhận hoàn tất thanh toán/i })
       .click()
     await expect(
-      cashierPage.getByText(/Đã thanh toán Bàn B05 · 6\.156\.000 ₫ · VietQR/i)
+      cashierPage.getByRole('heading', { name: /Đã thanh toán Bàn B05/i })
     ).toBeVisible()
+    await expect(cashierPage.getByText(/6\.156\.000 ₫ · VietQR/i)).toBeVisible()
     const officialSlip = cashierPage.getByTestId('receipt-slip-80mm')
     await expect(officialSlip).toContainText('HÓA ĐƠN')
     await expect(officialSlip).toContainText(/Mã HĐ:\s*[A-Z0-9]{6}/)

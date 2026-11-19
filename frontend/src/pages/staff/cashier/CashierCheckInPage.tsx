@@ -195,10 +195,6 @@ export function CashierCheckInPage() {
           <h1 className="font-serif text-2xl font-bold text-ink">
             Check-in khách
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Nhận khách đặt trước bằng mã đặt bàn hoặc số điện thoại, hoặc mở bàn
-            cho khách vãng lai.
-          </p>
         </div>
 
         <Tabs

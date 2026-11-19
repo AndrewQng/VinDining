@@ -1410,7 +1410,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         action: 'ManualRefundApproved',
         entityName: 'Reservation',
         entityId: 'res-vd-5e1m',
-        reason: 'Xác nhận giấy nhập viện cấp cứu — chấp thuận hoàn ngoại lệ',
+        reason: 'Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ',
         createdAt: minsAgo(2_880),
       },
       {

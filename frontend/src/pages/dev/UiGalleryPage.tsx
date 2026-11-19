@@ -73,7 +73,6 @@ export function UiGalleryPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <PageHeader
           title="Thư viện giao diện VinDining"
-          subtitle="Bộ thành phần UI nền tảng và bảng huy hiệu trạng thái trên cả hai giao diện tối / sáng"
           backTo="/dang-nhap"
           backLabel="Về đăng nhập"
           actions={

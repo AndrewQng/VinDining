@@ -51,18 +51,18 @@ function buildCourseSections(menuItems: MenuItemDto[]): CourseSection[] {
   return [
     {
       key: 'course-1',
-      title: 'Course 1 — Khai vị & Đồ uống',
+      title: 'Course 1: Khai vị & Đồ uống',
       subtitle: 'Đồ uống phục vụ cùng Course 1',
       items: courseOne,
     },
     {
       key: 'course-2',
-      title: 'Course 2 — Món chính',
+      title: 'Course 2: Món chính',
       items: courseTwo,
     },
     {
       key: 'course-3',
-      title: 'Course 3 — Tráng miệng',
+      title: 'Course 3: Tráng miệng',
       items: courseThree,
     },
   ].filter((sec) => sec.items.length > 0)
@@ -114,9 +114,7 @@ export function OrderMenuPicker({
 
   const adjustQuantity = (item: MenuItemDto, delta: number) => {
     if (item.status === 'SoldOut') {
-      setSoldOutAlert(
-        `${item.name} tạm hết — vui lòng tư vấn món khác cho khách.`
-      )
+      setSoldOutAlert(`${item.name} tạm hết. Vui lòng tư vấn món khác cho khách.`)
       return
     }
     setSoldOutAlert(null)
@@ -212,7 +210,7 @@ export function OrderMenuPicker({
           {sections.map((section) => (
             <section key={section.key} className="space-y-2.5">
               <div className="space-y-0.5">
-                <h2 className="text-xs font-bold uppercase tracking-wide text-accent">
+                <h2 className="text-xs font-bold text-accent">
                   {section.title}
                 </h2>
                 {section.subtitle && (

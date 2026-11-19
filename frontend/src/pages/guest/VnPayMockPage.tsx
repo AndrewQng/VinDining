@@ -102,7 +102,6 @@ export function VnPayMockPage() {
     <div className="max-w-lg mx-auto px-4 py-10 space-y-6">
       <PageHeader
         title="Cổng thanh toán VNPAY (mô phỏng)"
-        subtitle="Môi trường mô phỏng thanh toán đặt cọc trực tuyến"
         backTo="/dat-ban"
         backLabel="Hủy giao dịch"
       />
@@ -111,7 +110,7 @@ export function VnPayMockPage() {
         <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-card border border-line text-xs text-ink-muted">
           <span className="inline-flex items-center gap-1.5 text-accent font-medium">
             <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-            Cổng thanh toán mô phỏng
+            Thanh toán đặt cọc
           </span>
           <span>Mã: {reservation.bookingCode}</span>
         </div>

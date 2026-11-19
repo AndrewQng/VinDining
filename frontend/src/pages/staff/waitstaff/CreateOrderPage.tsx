@@ -63,7 +63,7 @@ export function CreateOrderPage() {
         const msg = err.response?.data?.message ?? 'Không thể tạo order lúc này'
         setSubmitError(
           msg.includes('tạm hết')
-            ? `${msg} — vui lòng tư vấn món khác cho khách.`
+            ? `${msg}. Vui lòng tư vấn món khác cho khách.`
             : msg
         )
       } else {

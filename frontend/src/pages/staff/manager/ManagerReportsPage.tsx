@@ -110,7 +110,7 @@ export function ManagerReportsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl font-bold text-ink">
-            Báo cáo doanh thu & vận hành
+            Báo cáo vận hành
           </h1>
           <p className="print-muted mt-1 text-sm text-ink-muted">
             Kỳ báo cáo: <strong className="text-ink">{windowInfo.label}</strong> ·{' '}
@@ -322,7 +322,7 @@ export function ManagerReportsPage() {
                 <Card data-testid="m5-feedback-card" className="print-card space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h2 className="text-sm font-semibold text-ink">
-                      Chất lượng dịch vụ & đánh giá khách hàng
+                      Đánh giá khách hàng
                     </h2>
                     <span className="print-muted text-xs text-ink-muted">
                       {feedbacksQuery.data?.length ?? 0} phản hồi

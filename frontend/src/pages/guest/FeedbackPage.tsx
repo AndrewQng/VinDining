@@ -120,11 +120,10 @@ export function FeedbackPage() {
           />
           <div className="space-y-2">
             <h1 className="font-serif text-2xl font-semibold text-ink">
-              Cảm ơn quý khách!
+              Cảm ơn quý khách
             </h1>
             <p className="text-sm text-ink-muted">
-              Ý kiến đóng góp của quý khách đã được ghi nhận để VinDining ngày
-              càng hoàn thiện chất lượng phục vụ.
+              Đánh giá của quý khách đã được ghi nhận.
             </p>
           </div>
           <Link to="/" className="inline-block">
@@ -138,14 +137,9 @@ export function FeedbackPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-10">
       <Card padding="lg" className="space-y-6">
-        <div className="space-y-1">
-          <h1 className="font-serif text-2xl font-semibold text-ink">
-            Đánh giá dịch vụ
-          </h1>
-          <p className="text-sm text-accent">
-            Cảm ơn quý khách đã dùng bữa tại VinDining
-          </p>
-        </div>
+        <h1 className="font-serif text-2xl font-semibold text-ink">
+          Đánh giá dịch vụ
+        </h1>
 
         {errorMessage && (
           <div

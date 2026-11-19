@@ -331,7 +331,7 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
     await waiter.waitForTimeout(250)
     await waiter.goto('/phuc-vu/goi-them/tbl-b04')
     await expect(
-      waiter.getByText(/Order đã khóa — không thể gọi thêm món/i)
+      waiter.getByText(/Order đã khóa, không thể gọi thêm món/i)
     ).toBeVisible()
     await waiter.waitForTimeout(200)
     await saveShot(waiter, 'w6-locked-light.png')

@@ -140,7 +140,7 @@ export const managerRoutes: MockRouteDefinition[] = [
       ) {
         return fail(
           409,
-          'Bàn đang có khách hoặc đã đặt trước — vui lòng chuyển khách trước khi xóa'
+          'Bàn đang có khách hoặc đã đặt trước. Vui lòng chuyển khách trước khi xóa.'
         )
       }
 

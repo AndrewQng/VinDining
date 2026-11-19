@@ -149,7 +149,6 @@ export function LookupReservationPage() {
         <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md px-5 py-4">
           <PageHeader
             title="Tra cứu & hủy đặt bàn"
-            subtitle="Nhập mã đặt bàn và số điện thoại đã đăng ký để xem chi tiết"
             backTo="/"
             backLabel="Về trang chủ"
           />
@@ -331,7 +330,7 @@ export function LookupReservationPage() {
             {/* G2.2x < 4h forfeit warning */}
             {confirmMode === 'forfeit' && (
               <Card className="bg-surface/95 backdrop-blur-md space-y-4 border-danger/60">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-danger">
+                <h3 className="text-sm font-semibold text-danger">
                   Cảnh báo chính sách hủy
                 </h3>
                 <p className="text-sm text-ink">

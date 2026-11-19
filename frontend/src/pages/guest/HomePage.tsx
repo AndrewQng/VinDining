@@ -21,19 +21,19 @@ import { getDefaultBookingDate } from './bookingState'
 
 const BOOKING_STEPS = [
   {
-    num: '01',
+    num: 'Bước 1',
     title: 'Chọn ngày, giờ & bàn',
     desc: 'Sảnh chính, VIP hoặc Ban công',
   },
   {
-    num: '02',
+    num: 'Bước 2',
     title: 'Chọn trước Set Menu',
-    desc: 'Tùy chọn — Course 1 được chuẩn bị ngay khi nhận bàn',
+    desc: 'Tùy chọn, Course 1 chuẩn bị ngay khi nhận bàn',
   },
   {
-    num: '03',
+    num: 'Bước 3',
     title: 'Đặt cọc qua VNPAY',
-    desc: '30% giá Set Menu, hoặc 500.000 ₫ / khách · hủy trước 4 tiếng hoàn 100% tiền cọc',
+    desc: 'Cọc 30% Set Menu hoặc 500.000 ₫ mỗi khách. Hủy trước 4 tiếng hoàn 100%.',
   },
 ]
 
@@ -139,15 +139,12 @@ export function HomePage() {
 
           <div className="relative z-10 max-w-6xl mx-auto w-full px-4 sm:px-6 py-16">
             <div className="max-w-xl space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-                VinDining
-              </p>
               <h1 className="font-serif text-3xl sm:text-5xl font-semibold text-ink leading-tight">
                 Một bữa tối trọn vẹn, từng Course một
               </h1>
               <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-                Đặt bàn trực tuyến, chọn trước Set Menu — đến nơi chỉ việc
-                thưởng thức.
+                Đặt bàn trực tuyến, chọn trước Set Menu để sẵn sàng dùng bữa khi
+                đến nơi.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Button size="lg" onClick={() => navigate('/dat-ban')}>
@@ -224,9 +221,9 @@ export function HomePage() {
                     .map((item) => (
                       <li key={item.id}>
                         <span className="text-ink">
-                          {COURSE_TYPE_LABELS[item.courseType]}
+                          {COURSE_TYPE_LABELS[item.courseType]}:
                         </span>{' '}
-                        — {item.menuItemName}
+                        {item.menuItemName}
                       </li>
                     ))}
                 </ul>
@@ -358,7 +355,7 @@ export function HomePage() {
               if (items.length === 0) return null
               return (
                 <div key={course} className="space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-accent">
+                  <h3 className="text-sm font-semibold text-accent">
                     {COURSE_TYPE_LABELS[course]}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -407,7 +404,7 @@ export function HomePage() {
 
             {drinkItems.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-accent">
+                <h3 className="text-sm font-semibold text-accent">
                   {COURSE_TYPE_LABELS.Beverage}
                 </h3>
                 <Card padding="sm" className="divide-y divide-line max-w-lg">

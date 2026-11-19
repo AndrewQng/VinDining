@@ -163,11 +163,8 @@ export function EMenuPage() {
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
       <div className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-          Thực đơn tại bàn
-        </p>
         <h1 className="font-serif text-2xl font-semibold text-ink">
-          VinDining · Bàn {data.tableNumber}
+          Thực đơn · Bàn {data.tableNumber}
         </h1>
       </div>
 
@@ -264,7 +261,7 @@ export function EMenuPage() {
           if (items.length === 0) return null
           return (
             <Card key={course} padding="sm" className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+              <h3 className="text-sm font-semibold text-accent">
                 {COURSE_TYPE_LABELS[course]}
               </h3>
               <div className="divide-y divide-line">
@@ -312,7 +309,7 @@ export function EMenuPage() {
 
         {drinks.length > 0 && (
           <Card padding="sm" className="space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+            <h3 className="text-sm font-semibold text-accent">
               {COURSE_TYPE_LABELS.Beverage}
             </h3>
             <div className="divide-y divide-line">

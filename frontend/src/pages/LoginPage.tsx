@@ -102,7 +102,9 @@ export function LoginPage() {
         <Card padding="lg" className="space-y-6 shadow-xl">
           <div className="text-center space-y-1.5">
             <Wordmark size="lg" className="items-center" />
-            <p className="text-sm text-ink-muted">Đăng nhập hệ thống nội bộ</p>
+            <h1 className="text-sm font-medium text-ink-muted">
+              Đăng nhập hệ thống nội bộ
+            </h1>
           </div>
 
           {errorMessage && (

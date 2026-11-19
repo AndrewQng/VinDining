@@ -137,7 +137,7 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
 
       {area === 'manager' && (
         <div className="pt-4 border-t border-line space-y-2">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-subtle">
+          <p className="px-3 text-xs font-medium text-ink-subtle">
             Phân hệ vận hành
           </p>
           <nav aria-label="Liên kết phân hệ khác" className="space-y-1">
@@ -207,7 +207,7 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
             >
               <Menu className="w-4 h-4" aria-hidden="true" />
             </button>
-            <span className="text-xs font-medium uppercase tracking-wider text-ink-muted truncate">
+            <span className="text-xs font-medium text-ink-muted truncate">
               {subtitle}
             </span>
           </div>

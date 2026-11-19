@@ -113,9 +113,9 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
 
     // Step 7: Confirmation shows reservation code
     await expect(
-      page.getByRole('heading', { name: /Đặt bàn thành công!/i })
+      page.getByRole('heading', { name: 'Đặt bàn thành công' })
     ).toBeVisible()
-    await expect(page.getByText(/MÃ ĐẶT BÀN: VD-/i)).toBeVisible()
+    await expect(page.getByText(/Mã đặt bàn:\s*VD-/i)).toBeVisible()
 
     // Verify slot availability: B06 for tomorrow 19:00 is now taken and not selectable
     await page.getByRole('button', { name: /Đặt bàn mới/i }).click()
@@ -143,8 +143,8 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await page.getByTestId('booking-nav-next').click()
     await page.getByRole('button', { name: /Xác nhận thanh toán/i }).click()
 
-    const codeText = await page.getByText(/MÃ ĐẶT BÀN: VD-/i).textContent()
-    const freshCode = codeText!.replace(/MÃ ĐẶT BÀN:\s*/i, '').trim()
+    const codeText = await page.getByText(/Mã đặt bàn:\s*VD-/i).textContent()
+    const freshCode = codeText!.replace(/Mã đặt bàn:\s*/i, '').trim()
 
     // Cancel >= 4h fresh booking -> refunded
     await page.goto('/tra-cuu')
@@ -188,7 +188,7 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await page.goto('/menu/VD-QR-B03')
 
     await expect(
-      page.getByRole('heading', { name: /VinDining · Bàn B03/i })
+      page.getByRole('heading', { name: /Thực đơn · Bàn B03/i })
     ).toBeVisible()
     await page.getByRole('button', { name: /Châm nước/i }).click()
     await expect(
@@ -225,7 +225,7 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await page.getByRole('button', { name: /Gửi đánh giá/i }).click()
 
     await expect(
-      page.getByRole('heading', { name: /Cảm ơn quý khách!/i })
+      page.getByRole('heading', { name: 'Cảm ơn quý khách' })
     ).toBeVisible()
     expect(errors).toEqual([])
   })

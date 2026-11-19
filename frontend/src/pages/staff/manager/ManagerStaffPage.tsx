@@ -88,10 +88,6 @@ export function ManagerStaffPage() {
           <h1 className="font-serif text-2xl font-bold text-ink">
             Quản lý tài khoản nhân viên
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Phân quyền và quản lý tài khoản theo 4 chức vụ: Phục vụ, Điều
-            phối, Thu ngân, Quản lý
-          </p>
         </div>
 
         <Button
@@ -121,7 +117,7 @@ export function ManagerStaffPage() {
           {(isMockMode() || Boolean(import.meta.env.VITEST)) &&
             credentialBanner.temporaryPassword && (
             <p className="text-xs text-ink-muted">
-              Môi trường thử nghiệm — Tài khoản{' '}
+              Dữ liệu thử nghiệm, tài khoản{' '}
               <strong className="font-mono text-ink">
                 {credentialBanner.username}
               </strong>{' '}
@@ -178,7 +174,7 @@ export function ManagerStaffPage() {
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[840px] text-left text-sm">
-              <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                 <tr>
                   <th className="px-4 py-3">Họ và tên</th>
                   <th className="px-4 py-3">Tên đăng nhập</th>

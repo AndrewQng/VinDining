@@ -676,13 +676,13 @@ describe('buildBillLineItems', () => {
       label: 'Bánh Soufflé',
       isServed: false,
       lineTotal: 0,
-      unservedNote: 'Chưa phục vụ — không tính',
+      unservedNote: 'Chưa phục vụ, không tính',
     })
     expect(lines[3]).toMatchObject({
       label: 'Nước khoáng có ga',
       isServed: false,
       lineTotal: 0,
-      unservedNote: 'Chưa phục vụ — không tính',
+      unservedNote: 'Chưa phục vụ, không tính',
     })
     const lineSum = lines.reduce((sum, l) => sum + l.lineTotal, 0)
     expect(lineSum).toBe(calculateInvoiceTotals(items, 0).subtotal)

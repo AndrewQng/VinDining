@@ -182,7 +182,7 @@ export function ManagerRefundsPage() {
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                 <tr>
                   <th className="px-4 py-3">Mã đặt bàn</th>
                   <th className="px-4 py-3">Khách hàng</th>

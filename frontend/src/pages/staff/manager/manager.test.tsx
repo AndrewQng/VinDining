@@ -188,7 +188,7 @@ describe('Manager M1–M5 backoffice components', () => {
     expect(await screen.findByTestId('kpi-total-revenue')).not.toHaveTextContent(
       /^0 ₫$/
     )
-    expect(screen.getByText(/Chất lượng dịch vụ & đánh giá khách hàng/i)).toBeInTheDocument()
+    expect(screen.getByText('Đánh giá khách hàng')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Kỳ sau' }))
     expect(await screen.findByTestId('m5x-empty-report')).toHaveTextContent(

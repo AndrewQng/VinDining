@@ -46,9 +46,9 @@ const COURSE_KEY_MAP: Record<CourseType, TicketCourseKey> = {
 }
 
 const COURSE_TITLES: Record<TicketCourseKey, string> = {
-  Course1: 'Course 1 — Khai vị & Đồ uống',
-  Course2: 'Course 2 — Món chính',
-  Course3: 'Course 3 — Tráng miệng',
+  Course1: 'Course 1: Khai vị & Đồ uống',
+  Course2: 'Course 2: Món chính',
+  Course3: 'Course 3: Tráng miệng',
 }
 
 function getTicketLane(item: KitchenPendingTicketDto): KitchenLane {
