@@ -1,279 +1,339 @@
 import { useState } from 'react'
-import { Sparkles, Utensils, Wine, Cake, ShieldAlert, ShoppingBag, Check } from 'lucide-react'
-import type { CourseType, MenuItem } from '@/types/menu'
-import { Button, Badge, Card } from '@/components/ui'
-import { useCreateOrder } from '@/hooks/useOrders'
+import { Link, useParams } from 'react-router-dom'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
+import {
+  AlertTriangle,
+  Bell,
+  CheckCircle2,
+  Droplets,
+  Utensils,
+} from 'lucide-react'
+import {
+  Button,
+  Card,
+  Money,
+  Skeleton,
+  StatusBadge,
+  ThemedImage,
+} from '@/components/ui'
+import { COURSE_TYPE_LABELS, SERVICE_REQUEST_TYPE_LABELS } from '@/domain'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+import { menuApi } from '@/services/api'
+import { useRealtime } from '@/services/realtime/useRealtime'
+import { toast } from '@/stores/useToastStore'
+import type {
+  ApiErrorResponse,
+  CourseType,
+  ServiceRequestType,
+} from '@/types'
 
+const SERVICE_BUTTONS: {
+  type: ServiceRequestType
+  label: string
+  icon: typeof Bell
+}[] = [
+  {
+    type: 'CallStaff',
+    label: SERVICE_REQUEST_TYPE_LABELS.CallStaff,
+    icon: Bell,
+  },
+  {
+    type: 'RefillWater',
+    label: SERVICE_REQUEST_TYPE_LABELS.RefillWater,
+    icon: Droplets,
+  },
+  {
+    type: 'ChangeUtensils',
+    label: SERVICE_REQUEST_TYPE_LABELS.ChangeUtensils,
+    icon: Utensils,
+  },
+]
+
+const FOOD_COURSE_ORDER: readonly CourseType[] = [
+  'Appetizer',
+  'MainCourse',
+  'Dessert',
+]
+
+/** G3 — Phone-first view-only QR E-Menu with service request buttons (no cart/ordering). */
 export function EMenuPage() {
-  const [selectedCourse, setSelectedCourse] = useState<CourseType | 'All'>('All')
-  const [cart, setCart] = useState<{ item: MenuItem; count: number }[]>([])
-  const [orderPlaced, setOrderPlaced] = useState(false)
-  const createOrderMutation = useCreateOrder()
+  const { qrCode = '' } = useParams<{ qrCode: string }>()
+  useDocumentTitle('Thực đơn tại bàn')
 
-  const menuItems: MenuItem[] = [
-    {
-      id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      name: 'Hokkaido Scallop Carpaccio',
-      vietnameseName: 'Súp Bào Ngư Hải Sâm & Sò Điệp',
-      description: 'Sò điệp tươi nhập khẩu Hokkaido, dầu ô-liu nguyên chất, nấm truffle đen và trứng cá tầm Caviar.',
-      price: 350000,
-      categoryName: 'Hải Sản Cao Cấp',
-      courseType: 'Appetizer',
-      allergens: ['Hải sản có vỏ'],
-      isAvailable: true,
-      preparationTimeMinutes: 10,
-    },
-    {
-      id: '11111111-aaaa-bbbb-cccc-222222222222',
-      name: 'Foie Gras Poêlé au Truffle',
-      vietnameseName: 'Gan Ngỗng Áp Chảo Sốt Nấm Truffle & Rượu Port',
-      description: 'Gan ngỗng Pháp áp chảo hoàn hảo, bánh mì Brioche nướng bơ tỏi, sốt nấm Truffle đen Périgord.',
-      price: 680000,
-      categoryName: 'Món Khai Vị',
-      courseType: 'Appetizer',
-      allergens: ['Gluten', 'Sữa'],
-      isAvailable: true,
-      preparationTimeMinutes: 15,
-    },
-    {
-      id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
-      name: 'Bò Wagyu A5 Nướng Đá',
-      vietnameseName: 'Thịt Thăn Bò Wagyu A5 Kagoshima Nướng Than Binchotan',
-      description: 'Bò Wagyu A5 vân mỡ BMS 11, nướng than hoa Binchotan Nhật Bản, muối hồng Himalaya và tỏi đen lên men.',
-      price: 1200000,
-      categoryName: 'Bò Thượng Hạng',
-      courseType: 'MainCourse',
-      allergens: [],
-      isAvailable: true,
-      preparationTimeMinutes: 25,
-    },
-    {
-      id: '22222222-aaaa-bbbb-cccc-333333333333',
-      name: 'Chilean Seabass en Papillote',
-      vietnameseName: 'Cá Tuyết Chile Nướng Giấy Bạc Sốt Saffron',
-      description: 'Cá tuyết Chile đại dương sâu, nước hầm hải sản Bouillabaisse và nhụy hoa nghệ tây Saffron Iran.',
-      price: 1100000,
-      categoryName: 'Cá Biển Sâu',
-      courseType: 'MainCourse',
-      allergens: ['Cá'],
-      isAvailable: true,
-      preparationTimeMinutes: 20,
-    },
-    {
-      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
-      name: 'Bánh Souffle Socola Valrhona',
-      vietnameseName: 'Bánh Soufflé Sô-cô-la Valrhona 70% & Kem Vani Madagascar',
-      description: 'Bánh phồng Soufflé nướng nóng chảy cacao Valrhona Guanaja, phục vụ kèm kem Gelato vani tươi nguyên quả.',
-      price: 250000,
-      categoryName: 'Tráng Miệng',
-      courseType: 'Dessert',
-      allergens: ['Trứng', 'Sữa', 'Gluten'],
-      isAvailable: true,
-      preparationTimeMinutes: 15,
-    },
-    {
-      id: 'dddddddd-dddd-dddd-dddd-dddddddddddd',
-      name: 'Vang Đỏ Bordeaux Grand Cru',
-      vietnameseName: 'Vang Đỏ Bordeaux Grand Cru Thượng Hạng',
-      description: 'Niên vụ xuất sắc, hương thơm phức hợp lý chua đen, hoa violet, tuyết tùng và tannin mượt như nhung.',
-      price: 900000,
-      categoryName: 'Bộ Sưu Tập Vang',
-      courseType: 'Beverage',
-      allergens: ['Sulfites'],
-      isAvailable: true,
-      preparationTimeMinutes: 5,
-    },
-  ]
+  const [pendingType, setPendingType] = useState<ServiceRequestType | null>(null)
+  const [sentTypes, setSentTypes] = useState<Set<ServiceRequestType>>(
+    () => new Set()
+  )
+  const [lastSentType, setLastSentType] = useState<ServiceRequestType | null>(
+    null
+  )
 
-  const courseFilters = [
-    { id: 'All', label: 'Tất cả thực đơn', icon: Sparkles },
-    { id: 'Appetizer', label: 'Khai Vị (Appetizer)', icon: Utensils },
-    { id: 'MainCourse', label: 'Món Chính (Main Course)', icon: Utensils },
-    { id: 'Dessert', label: 'Tráng Miệng (Dessert)', icon: Cake },
-    { id: 'Beverage', label: 'Bộ Sưu Tập Vang & Thức Uống', icon: Wine },
-  ]
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['table-emenu', qrCode],
+    queryFn: () => menuApi.getTableMenu(qrCode),
+    enabled: Boolean(qrCode),
+    retry: false,
+  })
 
-  const filteredItems =
-    selectedCourse === 'All' ? menuItems : menuItems.filter((i) => i.courseType === selectedCourse)
+  useRealtime('menu:updated')
 
-  const addToCart = (item: MenuItem) => {
-    setCart((prev) => {
-      const existing = prev.find((c) => c.item.id === item.id)
-      if (existing) {
-        return prev.map((c) => (c.item.id === item.id ? { ...c, count: c.count + 1 } : c))
-      }
-      return [...prev, { item, count: 1 }]
-    })
-  }
-
-  const totalCartPrice = cart.reduce((sum, c) => sum + c.item.price * c.count, 0)
-  const totalCartCount = cart.reduce((sum, c) => sum + c.count, 0)
-
-  const handlePlaceOrder = async () => {
-    if (cart.length === 0) return
-    try {
-      await createOrderMutation.mutateAsync({
-        tableId: '99999999-9999-9999-9999-999999999999', // VIP-01 default demo table
-        items: cart.map((c) => ({
-          menuItemId: c.item.id,
-          quantity: c.count,
-          note: 'Gọi món qua E-Menu QR tại bàn',
-        })),
+  const serviceMutation = useMutation({
+    mutationFn: (requestType: ServiceRequestType) => {
+      if (!data) throw new Error('Chưa tải được thông tin bàn')
+      return menuApi.callService(data.tableId, requestType)
+    },
+    onSuccess: (_, requestType) => {
+      setSentTypes((prev) => {
+        const next = new Set(prev)
+        next.add(requestType)
+        return next
       })
-      setOrderPlaced(true)
-      setCart([])
-    } catch {
-      // If table id doesn't match or seed isn't run, fallback to demo confirmation
-      setOrderPlaced(true)
-      setCart([])
+      setLastSentType(requestType)
+      toast.success(
+        'Đã gửi yêu cầu phục vụ',
+        SERVICE_REQUEST_TYPE_LABELS[requestType]
+      )
+    },
+    onError: (err, requestType) => {
+      if (isAxiosError<ApiErrorResponse>(err)) {
+        if (err.response?.status === 409) {
+          setSentTypes((prev) => new Set(prev).add(requestType))
+          setLastSentType(requestType)
+          return
+        }
+        toast.error(err.response?.data?.message ?? 'Không thể gửi yêu cầu')
+      } else {
+        toast.error('Không thể gửi yêu cầu')
+      }
+    },
+    onSettled: () => {
+      setPendingType(null)
+    },
+  })
+
+  const handleCallService = (type: ServiceRequestType) => {
+    if (!data || pendingType !== null || sentTypes.has(type)) {
+      return
     }
+    setPendingType(type)
+    serviceMutation.mutate(type)
   }
+
+  if (isLoading) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-6 space-y-4">
+        <Skeleton className="h-8 w-44" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-44 w-full" />
+        <Skeleton className="h-56 w-full" />
+      </div>
+    )
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-10 space-y-6">
+        <h1 className="font-serif text-2xl font-semibold text-ink">
+          Thực đơn tại bàn
+        </h1>
+        <Card className="text-center space-y-4 py-8">
+          <div className="w-12 h-12 rounded-xl bg-card border border-line flex items-center justify-center text-accent mx-auto">
+            <AlertTriangle className="w-6 h-6" aria-hidden="true" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-base font-semibold text-ink">
+              Không thể mở thực đơn
+            </h2>
+            <p className="text-sm text-ink-muted">
+              Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân
+              viên phục vụ.
+            </p>
+          </div>
+          <Link to="/" className="inline-block">
+            <Button variant="secondary">Về trang chủ</Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  const drinks = data.items.filter((i) => i.courseType === 'Beverage')
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 w-full">
-      <div className="text-center mb-10">
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-gold-500/10 text-gold-300 border border-gold-500/20 mb-3">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Taste of Excellence</span>
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-100 tracking-tight">
-          Thực Đơn Tinh Hoa E-Menu
-        </h1>
-        <p className="text-sm text-neutral-400 mt-2 max-w-lg mx-auto">
-          Mỗi đĩa món là một tác phẩm nghệ thuật vị giác do Bếp trưởng sáng tạo, phục vụ chuẩn mực theo nhịp điệu Course Fine Dining.
+    <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+      <div className="space-y-1">
+        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+          Thực đơn tại bàn
         </p>
+        <h1 className="font-serif text-2xl font-semibold text-ink">
+          VinDining · Bàn {data.tableNumber}
+        </h1>
       </div>
 
-      {orderPlaced && (
-        <Card className="max-w-lg mx-auto mb-8 p-6 text-center border-emerald-500/30 bg-emerald-950/20">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3">
-            <Check className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-neutral-100 mb-1">Đã Gửi Đơn Gọi Món Đến Bếp & Quầy Pass</h3>
-          <p className="text-xs text-neutral-400 mb-4">
-            Đơn món của quý khách đang được chuyển đến hệ thống điều phối bếp.
-          </p>
-          <div className="flex justify-center gap-3">
-            <Button size="sm" onClick={() => setOrderPlaced(false)} variant="outline">
-              Tiếp tục xem thực đơn
-            </Button>
-            <a href="/expediter" className="inline-block">
-              <Button size="sm">Xem trên Quầy Pass</Button>
-            </a>
-          </div>
-        </Card>
-      )}
-
-      {/* Cart Summary Bar if items selected */}
-      {cart.length > 0 && !orderPlaced && (
-        <div className="sticky top-20 z-20 mb-8 p-4 rounded-2xl bg-dark-surface/95 border border-gold-500/40 backdrop-blur shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-neutral-200">
-                Đã chọn {totalCartCount} món ăn & thức uống
-              </p>
-              <p className="text-sm font-black text-gold-400 font-mono">
-                {totalCartPrice.toLocaleString('vi-VN')} VNĐ
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setCart([])} className="text-xs text-neutral-400">
-              Xóa giỏ
-            </Button>
-            <Button
-              size="sm"
-              loading={createOrderMutation.isPending}
-              onClick={handlePlaceOrder}
-              className="text-xs"
-            >
-              Gửi Thực Đơn Vào Bếp (Gọi Món)
-            </Button>
-          </div>
+      {/* 3 Service Request Buttons */}
+      <section aria-label="Yêu cầu phục vụ" className="space-y-3">
+        <div className="grid grid-cols-3 gap-2">
+          {SERVICE_BUTTONS.map((btn) => {
+            const Icon = btn.icon
+            const isBusy = pendingType === btn.type
+            const isSent = sentTypes.has(btn.type)
+            return (
+              <Button
+                key={btn.type}
+                variant={isSent ? 'primary' : 'secondary'}
+                size="sm"
+                loading={isBusy}
+                disabled={pendingType !== null || isSent}
+                onClick={() => handleCallService(btn.type)}
+                icon={!isBusy ? <Icon className="w-3.5 h-3.5" /> : undefined}
+                className="h-auto py-2.5 px-2 flex-col gap-1 text-xs text-center"
+              >
+                <span>{isSent ? `Đã gửi · ${btn.label}` : btn.label}</span>
+              </Button>
+            )
+          })}
         </div>
-      )}
 
-      {/* Course Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-        {courseFilters.map((tab) => {
-          const Icon = tab.icon
-          const isSelected = selectedCourse === tab.id
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setSelectedCourse(tab.id as CourseType | 'All')}
-              className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium border transition-all ${
-                isSelected
-                  ? 'bg-gold-500 text-neutral-950 border-gold-400 shadow-md font-bold'
-                  : 'bg-dark-card border-dark-border text-neutral-300 hover:border-gold-500/40 hover:text-neutral-100'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Menu Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredItems.map((dish) => (
+        {/* G3.2 Sent State Banner */}
+        {lastSentType && (
           <div
-            key={dish.id}
-            className="rounded-2xl border border-dark-border bg-dark-surface/80 p-6 flex flex-col justify-between hover:border-gold-500/40 transition-all duration-200 group"
+            role="status"
+            className="rounded-xl border border-primary/50 bg-surface p-3.5 flex items-start gap-2.5 text-sm"
           >
-            <div>
-              <div className="flex justify-between items-start gap-4 mb-2">
-                <div>
-                  <h3 className="font-bold text-neutral-100 text-base group-hover:text-gold-300 transition-colors">
-                    {dish.name}
-                  </h3>
-                  {dish.vietnameseName && (
-                    <p className="text-xs text-neutral-400 mt-0.5">{dish.vietnameseName}</p>
-                  )}
-                </div>
-                <span className="text-sm font-black text-gold-400 font-mono shrink-0">
-                  {dish.price.toLocaleString('vi-VN')} VNĐ
+            <CheckCircle2
+              className="w-4 h-4 text-accent shrink-0 mt-0.5"
+              aria-hidden="true"
+            />
+            <div className="space-y-0.5">
+              <p className="font-medium text-ink">
+                Đã gửi yêu cầu: {SERVICE_REQUEST_TYPE_LABELS[lastSentType]}
+              </p>
+              <p className="text-xs text-ink-muted">
+                Nhân viên phục vụ sẽ hỗ trợ Bàn {data.tableNumber} trong giây lát.
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Set Menu Section First */}
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-accent">Set Menu</h2>
+          <p className="text-xs text-ink-muted">
+            Được phục vụ theo trình tự từng course
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {data.tastingMenus.map((set) => (
+            <Card key={set.id} padding="sm" className="space-y-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-serif text-base font-semibold text-ink">
+                  {set.name}
+                </h3>
+                <span className="text-xs font-semibold text-accent shrink-0">
+                  <Money amount={set.price} tone="accent" /> / khách
                 </span>
               </div>
+              <ul className="space-y-1 text-xs text-ink-muted">
+                {set.items
+                  .slice()
+                  .sort((a, b) => a.courseOrder - b.courseOrder)
+                  .map((item) => (
+                    <li key={item.id}>
+                      • {COURSE_TYPE_LABELS[item.courseType]}:{' '}
+                      {item.menuItemName}
+                    </li>
+                  ))}
+              </ul>
+            </Card>
+          ))}
+        </div>
+      </section>
 
-              <p className="text-xs text-neutral-400 leading-relaxed mt-2 mb-4">
-                {dish.description}
-              </p>
-            </div>
+      {/* À la carte by Course */}
+      <section className="space-y-4">
+        <h2 className="text-base font-semibold text-accent">
+          Thực đơn món lẻ
+        </h2>
 
-            <div className="space-y-3 pt-3 border-t border-dark-border/60">
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                <Badge variant="outline" className="text-neutral-400">
-                  {dish.categoryName} &bull; {dish.preparationTimeMinutes} phút chế biến
-                </Badge>
-
-                {dish.allergens.length > 0 && (
-                  <span className="flex items-center gap-1 text-amber-400/90 font-medium">
-                    <ShieldAlert className="w-3 h-3" />
-                    <span>Dị ứng: {dish.allergens.join(', ')}</span>
-                  </span>
-                )}
+        {FOOD_COURSE_ORDER.map((course) => {
+          const items = data.items.filter((i) => i.courseType === course)
+          if (items.length === 0) return null
+          return (
+            <Card key={course} padding="sm" className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+                {COURSE_TYPE_LABELS[course]}
+              </h3>
+              <div className="divide-y divide-line">
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="py-2.5 first:pt-0 last:pb-0 flex items-center gap-3"
+                  >
+                    {item.imageUrl && (
+                      <ThemedImage
+                        name={item.imageUrl}
+                        alt={item.name}
+                        width={56}
+                        height={56}
+                        loading="lazy"
+                        className="w-12 h-12 rounded-lg object-cover shrink-0 border border-line"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium text-ink">
+                          {item.name}
+                        </p>
+                        {item.status === 'SoldOut' && (
+                          <StatusBadge status="SoldOut" domain="menuItem" />
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="text-xs text-ink-muted line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                    <Money
+                      amount={item.price}
+                      tone="accent"
+                      className="text-sm shrink-0"
+                    />
+                  </div>
+                ))}
               </div>
+            </Card>
+          )
+        })}
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => addToCart(dish)}
-                className="w-full text-xs text-gold-400 border-gold-500/30 hover:bg-gold-500/10"
-              >
-                + Thêm Vào Đơn Gọi Món
-              </Button>
+        {drinks.length > 0 && (
+          <Card padding="sm" className="space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+              {COURSE_TYPE_LABELS.Beverage}
+            </h3>
+            <div className="divide-y divide-line">
+              {drinks.map((drink) => (
+                <div
+                  key={drink.id}
+                  className="py-2 first:pt-0 last:pb-0 flex items-center justify-between gap-2 text-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-ink">{drink.name}</span>
+                    {drink.status === 'SoldOut' && (
+                      <StatusBadge status="SoldOut" domain="menuItem" />
+                    )}
+                  </div>
+                  <Money amount={drink.price} tone="accent" />
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
+          </Card>
+        )}
+      </section>
     </div>
   )
 }
-
-export default EMenuPage

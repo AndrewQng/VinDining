@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using API.Data;
 using API.Hubs;
 using API.Middlewares;
@@ -92,6 +94,27 @@ builder.Services.AddAuthentication(options =>
                 context.Token = accessToken;
             }
             return Task.CompletedTask;
+        },
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            if (!context.Response.HasStarted)
+            {
+                await GlobalExceptionMiddleware.WriteErrorResponseAsync(
+                    context.HttpContext,
+                    StatusCodes.Status401Unauthorized,
+                    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
+            }
+        },
+        OnForbidden = async context =>
+        {
+            if (!context.Response.HasStarted)
+            {
+                await GlobalExceptionMiddleware.WriteErrorResponseAsync(
+                    context.HttpContext,
+                    StatusCodes.Status403Forbidden,
+                    "Bạn không có quyền thực hiện thao tác này.");
+            }
         }
     };
 });
@@ -135,6 +158,10 @@ if (!builder.Environment.IsEnvironment("Testing"))
 }
 
 builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new VinDiningEnumJsonConverterFactory());
+    })
     .ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
@@ -236,8 +263,100 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<TableHub>("/hubs/table");
 app.MapHub<TableHub>("/hubs/tables");
+app.MapHub<TableHub>("/hubs/FloorPlanHub");
+app.MapHub<TableHub>("/hubs/ServingHub");
 app.MapHub<KitchenHub>("/hubs/kitchen");
+app.MapHub<KitchenHub>("/hubs/KitchenHub");
 
 app.Run();
 
 public partial class Program { }
+
+internal sealed class VinDiningEnumJsonConverterFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;
+
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        var converterType = typeof(VinDiningEnumJsonConverter<>).MakeGenericType(typeToConvert);
+        return (JsonConverter)Activator.CreateInstance(converterType)!;
+    }
+}
+
+internal sealed class VinDiningEnumJsonConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, Enum
+{
+    public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out var intVal))
+        {
+            return (TEnum)Enum.ToObject(typeof(TEnum), intVal);
+        }
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var raw = reader.GetString()?.Trim();
+            if (!string.IsNullOrEmpty(raw))
+            {
+                if (Enum.TryParse<TEnum>(raw, ignoreCase: true, out var parsed))
+                {
+                    return parsed;
+                }
+
+                if (typeof(TEnum) == typeof(PaymentMethod) && string.Equals(raw, "VietQR", StringComparison.OrdinalIgnoreCase))
+                {
+                    return (TEnum)(object)PaymentMethod.BankTransfer;
+                }
+
+                if (typeof(TEnum) == typeof(TableStatus))
+                {
+                    if (string.Equals(raw, "Locked", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)TableStatus.LockedForPayment;
+                    if (string.Equals(raw, "PaymentPending", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)TableStatus.Occupied;
+                }
+
+                if (typeof(TEnum) == typeof(StaffRole) &&
+                    (string.Equals(raw, "Manager", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(raw, "Cashier", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return (TEnum)(object)StaffRole.Admin;
+                }
+
+                if (typeof(TEnum) == typeof(OrderItemStatus))
+                {
+                    if (string.Equals(raw, "OnHold", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)OrderItemStatus.Hold;
+                    if (string.Equals(raw, "Cooking", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)OrderItemStatus.Preparing;
+                }
+
+                if (typeof(TEnum) == typeof(OrderStatus))
+                {
+                    if (string.Equals(raw, "Active", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)OrderStatus.Processing;
+                    if (string.Equals(raw, "Paid", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)OrderStatus.Completed;
+                }
+
+                if (typeof(TEnum) == typeof(ReservationStatus))
+                {
+                    if (string.Equals(raw, "PendingDeposit", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)ReservationStatus.Pending;
+                    if (string.Equals(raw, "Reserved", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)ReservationStatus.Confirmed;
+                    if (raw.StartsWith("Cancelled", StringComparison.OrdinalIgnoreCase) ||
+                        raw.StartsWith("Expired", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(raw, "RefundRejected", StringComparison.OrdinalIgnoreCase))
+                        return (TEnum)(object)ReservationStatus.Cancelled;
+                }
+            }
+        }
+
+        throw new JsonException($"Không thể chuyển đổi giá trị sang kiểu {typeof(TEnum).Name}.");
+    }
+
+    public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString());
+    }
+}

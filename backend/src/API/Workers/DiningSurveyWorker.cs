@@ -54,6 +54,7 @@ public class DiningSurveyWorker : BackgroundService
             .AsNoTracking()
             .Where(i => i.IsPaid &&
                         i.CreatedAt >= recentCutoff &&
+                        i.Order.Status == OrderStatus.Completed &&
                         i.Order.ReservationId != null)
             .ToListAsync(ct);
 
@@ -61,7 +62,13 @@ public class DiningSurveyWorker : BackgroundService
         foreach (var invoice in recentPaidInvoices)
         {
             var reservation = invoice.Order.Reservation;
-            if (reservation == null) continue;
+            if (reservation == null ||
+                reservation.Status != ReservationStatus.Completed ||
+                reservation.BookingCode.StartsWith("WALKIN-", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (string.IsNullOrWhiteSpace(reservation.Guest?.Email) && string.IsNullOrWhiteSpace(reservation.Guest?.PhoneNumber))
+                continue;
 
             var alreadyHasFeedback = await dbContext.Feedbacks
                 .AsNoTracking()
@@ -69,7 +76,7 @@ public class DiningSurveyWorker : BackgroundService
 
             if (alreadyHasFeedback) continue;
 
-            if (_sentSurveys.TryAdd(invoice.Id, now))
+            if (_sentSurveys.TryAdd(reservation.Id, now))
             {
                 _logger.LogInformation(
                     "Dispatched post-dining CSAT survey link (/feedback/{InvoiceId}) to Guest {Email} for Booking {BookingCode}.",

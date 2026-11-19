@@ -1,82 +1,80 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { UserProfile, StaffRole } from '@/types/auth'
+import type { CurrentUserDto, StaffRole } from '@/types'
 
 interface AuthState {
   token: string | null
-  refreshToken: string | null
-  user: UserProfile | null
+  user: CurrentUserDto | null
   isAuthenticated: boolean
-
-  // Actions
-  setAuth: (token: string, refreshToken: string, user: UserProfile) => void
+  justLoggedOut: boolean
+  setAuth: (token: string, user: CurrentUserDto) => void
   logout: () => void
-  updateUser: (user: Partial<UserProfile>) => void
-
-  // Role check helpers
+  updateUser: (user: Partial<CurrentUserDto>) => void
   hasRole: (role: StaffRole | StaffRole[]) => boolean
-  isWaitstaff: () => boolean
-  isExpediter: () => boolean
-  isManager: () => boolean
-  isAdmin: () => boolean
 }
 
+/** Persisted staff authentication store (401 responses clear this session). */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       token: null,
-      refreshToken: null,
       user: null,
       isAuthenticated: false,
+      justLoggedOut: false,
 
-      setAuth: (token: string, refreshToken: string, user: UserProfile) => {
-        set({
-          token,
-          refreshToken,
-          user,
-          isAuthenticated: true,
-        })
+      setAuth: (token, user) => {
+        set({ token, user, isAuthenticated: true, justLoggedOut: false })
       },
 
       logout: () => {
-        set({
-          token: null,
-          refreshToken: null,
-          user: null,
-          isAuthenticated: false,
-        })
+        set({ token: null, user: null, isAuthenticated: false, justLoggedOut: true })
       },
 
-      updateUser: (updatedFields: Partial<UserProfile>) => {
-        const currentUser = get().user
-        if (!currentUser) return
-        set({
-          user: { ...currentUser, ...updatedFields },
-        })
+      updateUser: (updated) => {
+        const current = get().user
+        if (!current) return
+        set({ user: { ...current, ...updated } })
       },
 
-      hasRole: (requiredRole: StaffRole | StaffRole[]) => {
-        const userRole = get().user?.role
-        if (!userRole) return false
-        if (Array.isArray(requiredRole)) {
-          return requiredRole.includes(userRole)
-        }
-        return userRole === requiredRole
+      hasRole: (requiredRole) => {
+        const role = get().user?.role
+        if (!role) return false
+        return Array.isArray(requiredRole)
+          ? requiredRole.includes(role)
+          : role === requiredRole
       },
-
-      isWaitstaff: () => get().user?.role === 'Waitstaff',
-      isExpediter: () => get().user?.role === 'Expediter',
-      isManager: () => get().user?.role === 'Manager',
-      isAdmin: () => get().user?.role === 'Admin',
     }),
     {
-      name: 'vindining-auth-storage',
+      name: 'vd-auth-storage',
       partialize: (state) => ({
         token: state.token,
-        refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
     }
   )
 )
+
+/** Returns the default workspace path for a given staff role. */
+export function getRoleHomeRoute(role: StaffRole): string {
+  const map: Record<StaffRole, string> = {
+    Waitstaff: '/phuc-vu',
+    Expediter: '/dieu-phoi',
+    Cashier: '/thu-ngan',
+    Manager: '/quan-ly',
+  }
+  return map[role]
+}
+
+/** Checks whether a staff role is permitted to enter a given pathname after login. */
+export function isRouteAllowedForRole(pathname: string, role: StaffRole): boolean {
+  if (role === 'Manager') {
+    return (
+      pathname.startsWith('/phuc-vu') ||
+      pathname.startsWith('/dieu-phoi') ||
+      pathname.startsWith('/thu-ngan') ||
+      pathname.startsWith('/quan-ly')
+    )
+  }
+  return pathname.startsWith(getRoleHomeRoute(role))
+}

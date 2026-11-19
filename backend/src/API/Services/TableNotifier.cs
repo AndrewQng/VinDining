@@ -17,15 +17,19 @@ public class TableNotifier : ITableNotifier
 
     public async Task NotifyTableStatusChangedAsync(Guid tableId, string tableNumber, TableStatus newStatus, CancellationToken cancellationToken = default)
     {
+        var frontendStatus = newStatus == TableStatus.LockedForPayment ? "Locked" : newStatus.ToString();
+        var payload = new
+        {
+            TableId = tableId,
+            TableNumber = tableNumber,
+            Status = newStatus.ToString(),
+            FrontendStatus = frontendStatus,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _tableHub.Clients.All.SendAsync("TableStatusChanged", payload, cancellationToken);
         await _tableHub.Clients.All.SendAsync(
-            "TableStatusChanged",
-            new
-            {
-                TableId = tableId,
-                TableNumber = tableNumber,
-                Status = newStatus.ToString(),
-                UpdatedAt = DateTime.UtcNow
-            },
+            "table:status-changed",
+            new { tableId, tableNumber, status = frontendStatus },
             cancellationToken);
     }
 
@@ -44,6 +48,16 @@ public class TableNotifier : ITableNotifier
     public async Task NotifyServiceCallCreatedAsync(ServiceCallResponseDto serviceCall, CancellationToken cancellationToken = default)
     {
         await _tableHub.Clients.All.SendAsync("ServiceCallCreated", serviceCall, cancellationToken);
+        await _tableHub.Clients.All.SendAsync(
+            "service-request:created",
+            new
+            {
+                requestId = serviceCall.Id,
+                tableId = serviceCall.TableId,
+                tableNumber = serviceCall.TableNumber,
+                requestType = serviceCall.RequestType
+            },
+            cancellationToken);
     }
 
     public async Task NotifyServiceCallCompletedAsync(Guid serviceCallId, Guid tableId, string tableNumber, CancellationToken cancellationToken = default)
@@ -56,6 +70,14 @@ public class TableNotifier : ITableNotifier
                 TableId = tableId,
                 TableNumber = tableNumber,
                 CompletedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+        await _tableHub.Clients.All.SendAsync(
+            "service-request:completed",
+            new
+            {
+                requestId = serviceCallId,
+                tableId
             },
             cancellationToken);
     }
@@ -71,6 +93,14 @@ public class TableNotifier : ITableNotifier
                 OrderId = orderId,
                 EstimatedSubtotal = estimatedSubtotal,
                 RequestedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+        await _tableHub.Clients.All.SendAsync(
+            "checkout:requested",
+            new
+            {
+                tableId,
+                tableNumber
             },
             cancellationToken);
     }

@@ -1,76 +1,92 @@
-import React, { useEffect } from 'react'
+import { useId, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useDialogBehavior } from './useDialogBehavior'
 
 export interface ModalProps {
-  isOpen: boolean
+  open: boolean
   onClose: () => void
-  title?: string
+  title: string
   description?: string
-  children: React.ReactNode
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl'
+  children: ReactNode
+  footer?: ReactNode
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
 }
 
+const SIZE_MAP = {
+  sm: 'max-w-sm',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+} as const
+
+/** Accessible modal dialog with focus trap, Esc dismissal, and body scroll lock. */
 export function Modal({
-  isOpen,
+  open,
   onClose,
   title,
   description,
   children,
-  maxWidth = 'md',
+  footer,
+  size = 'md',
+  className,
 }: ModalProps) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      window.addEventListener('keydown', handleKeyDown)
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isOpen, onClose])
+  const titleId = useId()
+  const descId = useId()
+  const panelRef = useRef<HTMLDivElement>(null)
 
-  if (!isOpen) return null
+  useDialogBehavior(open, onClose, panelRef)
 
-  const maxWidths = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-2xl',
-  }
+  if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-scrim backdrop-blur-xs"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Modal Dialog */}
-      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={description ? descId : undefined}
+        tabIndex={-1}
         className={cn(
-          'relative w-full rounded-2xl border border-neutral-700/80 bg-neutral-900 p-6 shadow-2xl transition-all duration-200 z-10',
-          maxWidths[maxWidth]
+          'w-full rounded-2xl bg-surface border border-line shadow-2xl overflow-hidden',
+          SIZE_MAP[size],
+          className
         )}
       >
-        <div className="flex items-start justify-between pb-4 border-b border-neutral-800">
+        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-line">
           <div>
-            {title && <h3 className="text-lg font-bold text-neutral-100">{title}</h3>}
-            {description && <p className="text-xs text-neutral-400 mt-1">{description}</p>}
+            <h2 id={titleId} className="text-base font-semibold text-ink">
+              {title}
+            </h2>
+            {description && (
+              <p id={descId} className="text-xs text-ink-muted mt-0.5">
+                {description}
+              </p>
+            )}
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-neutral-400 hover:text-neutral-100 transition-colors p-1 rounded-lg hover:bg-neutral-800 cursor-pointer"
+            aria-label="Đóng hộp thoại"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-card-hover cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="mt-4">{children}</div>
+        <div className="px-5 py-4 max-h-[70vh] overflow-y-auto">{children}</div>
+
+        {footer && (
+          <div className="px-5 py-3.5 border-t border-line bg-card/50 flex items-center justify-end gap-2.5">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )

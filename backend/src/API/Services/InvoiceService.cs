@@ -32,6 +32,12 @@ public class InvoiceService : IInvoiceService
         if (table == null)
             throw new KeyNotFoundException($"Không tìm thấy bàn {tableId}.");
 
+        if (!table.IsActive)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng hoạt động.");
+
+        if (table.Status != TableStatus.Occupied)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} không ở trạng thái đang phục vụ, chưa thể gửi yêu cầu thanh toán.");
+
         var order = await _context.Orders
             .Include(o => o.OrderItems)
             .AsNoTracking()
@@ -40,13 +46,11 @@ public class InvoiceService : IInvoiceService
         if (order == null)
             throw new InvalidOperationException("Bàn hiện chưa có đơn gọi món đang phục vụ để yêu cầu thanh toán.");
 
-        var hasServedItem = order.OrderItems.Any(oi => oi.Status == OrderItemStatus.Served);
-        if (!hasServedItem)
+        var hasServedDish = order.OrderItems.Any(oi => oi.MenuItemId != null && oi.Status == OrderItemStatus.Served);
+        if (!hasServedDish)
             throw new InvalidOperationException("Bàn chưa có món ăn nào được phục vụ lên bàn, chưa thể gửi yêu cầu thanh toán.");
 
-        var estimatedSubtotal = order.OrderItems
-            .Where(oi => oi.Status == OrderItemStatus.Served)
-            .Sum(oi => oi.Quantity * oi.UnitPrice);
+        var estimatedSubtotal = CalculateBillableSubtotal(order);
 
         await _tableNotifier.NotifyCheckoutRequestedAsync(table.Id, table.TableNumber, order.Id, estimatedSubtotal, ct);
         return true;
@@ -56,6 +60,7 @@ public class InvoiceService : IInvoiceService
     {
         var order = await _context.Orders
             .Include(o => o.Table)
+            .Include(o => o.CreateBy)
             .Include(o => o.Reservation)
                 .ThenInclude(r => r!.Deposit)
             .Include(o => o.OrderItems)
@@ -73,32 +78,49 @@ public class InvoiceService : IInvoiceService
                          (oi.Status == OrderItemStatus.Hold || oi.Status == OrderItemStatus.Preparing))
             .ToList();
 
-        var servedBillableItems = order.OrderItems
-            .Where(oi => oi.Status == OrderItemStatus.Served && oi.UnitPrice > 0m)
-            .ToList();
-
-        var subtotal = servedBillableItems.Sum(oi => oi.Quantity * oi.UnitPrice);
+        var subtotal = CalculateBillableSubtotal(order);
         var serviceCharge = Math.Round(subtotal * ServiceChargeRate, 2);
         var vatAmount = Math.Round((subtotal + serviceCharge) * VatRate, 2);
 
         var deductedDeposit = ResolvePaidDepositAmount(order);
         var finalAmount = Math.Max(0m, (subtotal + serviceCharge + vatAmount) - deductedDeposit);
 
+        var tastingMenuNames = order.OrderItems
+            .Where(oi => oi.TastingMenuId.HasValue && oi.TastingMenu != null)
+            .GroupBy(oi => oi.TastingMenuId!.Value)
+            .ToDictionary(g => g.Key.ToString(), g => g.First().TastingMenu!.Name);
+
         // Display billable lines (regular items or TastingMenu package headers) that aren't cancelled
         var displayItems = order.OrderItems
             .Where(oi => oi.Status != OrderItemStatus.Cancelled &&
-                         (oi.UnitPrice > 0m || oi.TastingMenuId == null))
+                         (oi.UnitPrice > 0m || oi.TastingMenuId == null) &&
+                         !IsFullyCancelledTastingMenuHeader(order, oi))
             .Select(oi => new InvoicePreviewItemDto(
                 oi.MenuItem?.Name ?? oi.TastingMenu?.Name ?? "Món phục vụ",
                 oi.Quantity,
                 oi.UnitPrice,
                 oi.Quantity * oi.UnitPrice,
                 oi.Id,
-                oi.Status.ToString()
+                ResolveEffectiveBillableStatus(order, oi).ToString(),
+                order.Id,
+                oi.MenuItemId,
+                oi.TastingMenuId,
+                oi.MenuItem?.CourseType ?? CourseType.Appetizer,
+                oi.Note,
+                oi.IsRush && oi.Note != null && oi.Note.Contains("[LÀM LẠI:", StringComparison.OrdinalIgnoreCase),
+                0,
+                oi.IsRush,
+                oi.MenuItem?.PrepTimeMinutes ?? 15,
+                oi.FiredAt,
+                oi.ServedAt,
+                oi.ServedById
             ))
             .ToList();
 
         var vietQrUrl = BuildVietQrUrl(order.Id, order.Table?.TableNumber ?? "BAN", finalAmount);
+        var guestCount = order.Reservation?.PartySize
+            ?? order.OrderItems.Where(oi => oi.TastingMenuId != null).Select(oi => (int?)oi.Quantity).FirstOrDefault()
+            ?? 2;
 
         return new InvoicePreviewDto(
             order.Id,
@@ -112,7 +134,12 @@ public class InvoiceService : IInvoiceService
             finalAmount,
             HasUnservedItems: unservedKitchenItems.Count > 0,
             UnservedItemCount: unservedKitchenItems.Count,
-            VietQrUrl: vietQrUrl
+            VietQrUrl: vietQrUrl,
+            GuestCount: guestCount,
+            WaiterName: order.CreateBy?.FullName,
+            OpenedAt: order.OpenedAt,
+            CheckoutRequestedAt: null,
+            TastingMenuNames: tastingMenuNames
         );
     }
 
@@ -143,7 +170,10 @@ public class InvoiceService : IInvoiceService
                 .ThenInclude(r => r!.Deposit)
             .Include(o => o.OrderItems)
             .Include(o => o.Invoice)
-            .FirstOrDefaultAsync(o => o.Id == dto.OrderId && o.TableId == tableId, ct);
+            .FirstOrDefaultAsync(
+                o => o.TableId == tableId &&
+                     (dto.OrderId != Guid.Empty ? o.Id == dto.OrderId : o.Status == OrderStatus.Processing),
+                ct);
 
         if (order == null)
             throw new KeyNotFoundException($"Không tìm thấy đơn hàng với mã {dto.OrderId} tại bàn {tableId}.");
@@ -165,13 +195,19 @@ public class InvoiceService : IInvoiceService
         }
 
         // Synchronize TastingMenu billing header status if all child courses were served or cancelled
-        foreach (var header in order.OrderItems.Where(oi => oi.TastingMenuId != null && oi.MenuItemId == null && oi.Status == OrderItemStatus.Hold))
+        foreach (var header in order.OrderItems.Where(oi => oi.TastingMenuId != null && oi.MenuItemId == null && oi.Status != OrderItemStatus.Cancelled))
         {
             var children = order.OrderItems
                 .Where(oi => oi.TastingMenuId == header.TastingMenuId && oi.MenuItemId != null)
                 .ToList();
 
-            if (children.Any(c => c.Status == OrderItemStatus.Served) && children.All(c => c.Status == OrderItemStatus.Served || c.Status == OrderItemStatus.Cancelled))
+            if (children.Count > 0 && children.All(c => c.Status == OrderItemStatus.Cancelled))
+            {
+                header.Status = OrderItemStatus.Cancelled;
+                header.ServedAt = null;
+            }
+            else if (children.Any(c => c.Status == OrderItemStatus.Served) &&
+                     children.All(c => c.Status == OrderItemStatus.Served || c.Status == OrderItemStatus.Cancelled))
             {
                 header.Status = OrderItemStatus.Served;
                 header.ServedAt ??= DateTime.UtcNow;
@@ -235,35 +271,44 @@ public class InvoiceService : IInvoiceService
     public async Task<InvoiceDto> GetInvoiceByIdAsync(Guid id, CancellationToken ct = default)
     {
         var invoice = await _context.Invoices
+            .Include(i => i.SettleBy)
             .Include(i => i.Order)
                 .ThenInclude(o => o.Table)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.CreateBy)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.Reservation)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.OrderItems)
+                    .ThenInclude(oi => oi.TastingMenu)
             .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == id, ct);
 
         if (invoice == null)
             throw new KeyNotFoundException($"Không tìm thấy hóa đơn {id}.");
 
-        var finalTotal = Math.Max(0m, (invoice.Subtotal + invoice.ServiceCharge + invoice.VatAmount) - invoice.DeductedDeposit);
-
-        return new InvoiceDto(
-            invoice.Id,
-            invoice.OrderId,
-            invoice.Order?.Table?.TableNumber ?? "N/A",
-            invoice.Subtotal,
-            invoice.ServiceCharge,
-            invoice.VatAmount,
-            invoice.DeductedDeposit,
-            finalTotal,
-            invoice.PaymentMethod,
-            invoice.CreatedAt
-        );
+        return MapInvoiceDto(invoice);
     }
 
     public async Task<List<InvoiceDto>> GetInvoicesAsync(DateTime? date = null, CancellationToken ct = default)
     {
         var query = _context.Invoices
+            .Include(i => i.SettleBy)
             .Include(i => i.Order)
                 .ThenInclude(o => o.Table)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.CreateBy)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.Reservation)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+            .Include(i => i.Order)
+                .ThenInclude(o => o.OrderItems)
+                    .ThenInclude(oi => oi.TastingMenu)
             .AsNoTracking();
 
         if (date.HasValue)
@@ -275,18 +320,161 @@ public class InvoiceService : IInvoiceService
 
         var invoices = await query.OrderByDescending(i => i.CreatedAt).ToListAsync(ct);
 
-        return invoices.Select(i => new InvoiceDto(
-            i.Id,
-            i.OrderId,
-            i.Order?.Table?.TableNumber ?? "N/A",
-            i.Subtotal,
-            i.ServiceCharge,
-            i.VatAmount,
-            i.DeductedDeposit,
-            Math.Max(0m, (i.Subtotal + i.ServiceCharge + i.VatAmount) - i.DeductedDeposit),
-            i.PaymentMethod,
-            i.CreatedAt
-        )).ToList();
+        return invoices.Select(MapInvoiceDto).ToList();
+    }
+
+    private static InvoiceDto MapInvoiceDto(Invoice invoice)
+    {
+        var finalTotal = Math.Max(0m, (invoice.Subtotal + invoice.ServiceCharge + invoice.VatAmount) - invoice.DeductedDeposit);
+        var order = invoice.Order;
+        var guestCount = order?.Reservation?.PartySize
+            ?? order?.OrderItems.Where(oi => oi.TastingMenuId != null).Select(oi => (int?)oi.Quantity).FirstOrDefault()
+            ?? 2;
+
+        var tastingMenuNames = order?.OrderItems
+            .Where(oi => oi.TastingMenuId.HasValue && oi.TastingMenu != null)
+            .GroupBy(oi => oi.TastingMenuId!.Value)
+            .ToDictionary(g => g.Key.ToString(), g => g.First().TastingMenu!.Name)
+            ?? new Dictionary<string, string>();
+
+        var items = order?.OrderItems
+            .Where(oi => oi.Status != OrderItemStatus.Cancelled &&
+                         (oi.UnitPrice > 0m || oi.TastingMenuId == null))
+            .Select(oi => new InvoicePreviewItemDto(
+                oi.MenuItem?.Name ?? oi.TastingMenu?.Name ?? "Món phục vụ",
+                oi.Quantity,
+                oi.UnitPrice,
+                oi.Quantity * oi.UnitPrice,
+                oi.Id,
+                "Served",
+                order.Id,
+                oi.MenuItemId,
+                oi.TastingMenuId,
+                oi.MenuItem?.CourseType ?? CourseType.Appetizer,
+                oi.Note,
+                false,
+                0,
+                oi.IsRush,
+                oi.MenuItem?.PrepTimeMinutes ?? 15,
+                oi.FiredAt,
+                oi.ServedAt,
+                oi.ServedById
+            ))
+            .ToList();
+
+        return new InvoiceDto(
+            invoice.Id,
+            invoice.OrderId,
+            order?.Table?.TableNumber ?? "N/A",
+            invoice.Subtotal,
+            invoice.ServiceCharge,
+            invoice.VatAmount,
+            invoice.DeductedDeposit,
+            finalTotal,
+            invoice.PaymentMethod,
+            invoice.CreatedAt,
+            order?.TableId ?? Guid.Empty,
+            invoice.SettleById,
+            invoice.SettleBy?.FullName ?? "Thu ngân",
+            guestCount,
+            order?.CreateBy?.FullName,
+            items,
+            tastingMenuNames,
+            invoice.IsPaid,
+            $"survey-{invoice.Id}",
+            null
+        );
+    }
+
+    public static List<decimal> AllocateSetMenuUnitPrices(decimal setMenuPrice, IReadOnlyList<decimal> componentPrices)
+    {
+        if (componentPrices == null || componentPrices.Count == 0)
+            return new List<decimal>();
+
+        var target = Math.Max(0m, Math.Round(setMenuPrice, 0));
+        var rawTotal = componentPrices.Sum(p => Math.Max(0m, p));
+
+        if (rawTotal <= 0m)
+        {
+            var basePrice = Math.Floor(target / componentPrices.Count);
+            var remainder = target - (basePrice * componentPrices.Count);
+            return componentPrices.Select((_, i) => i == 0 ? basePrice + remainder : basePrice).ToList();
+        }
+
+        var allocated = componentPrices
+            .Select(p => Math.Floor((Math.Max(0m, p) / rawTotal) * target))
+            .ToList();
+
+        var allocatedSum = allocated.Sum();
+        allocated[0] += target - allocatedSum;
+        return allocated;
+    }
+
+    private static decimal CalculateBillableSubtotal(Order order)
+    {
+        decimal subtotal = 0m;
+        foreach (var oi in order.OrderItems)
+        {
+            if (oi.Status == OrderItemStatus.Cancelled || oi.UnitPrice <= 0m)
+                continue;
+
+            if (oi.TastingMenuId.HasValue && oi.MenuItemId == null)
+            {
+                var hasServedCourse = oi.Status == OrderItemStatus.Served ||
+                    order.OrderItems.Any(c =>
+                        c.TastingMenuId == oi.TastingMenuId &&
+                        c.MenuItemId != null &&
+                        c.Status == OrderItemStatus.Served);
+
+                if (hasServedCourse)
+                {
+                    subtotal += oi.Quantity * oi.UnitPrice;
+                }
+            }
+            else if (oi.Status == OrderItemStatus.Served)
+            {
+                subtotal += oi.Quantity * oi.UnitPrice;
+            }
+        }
+
+        return subtotal;
+    }
+
+    private static bool IsFullyCancelledTastingMenuHeader(Order order, OrderItem item)
+    {
+        if (!item.TastingMenuId.HasValue || item.MenuItemId != null)
+            return false;
+
+        var children = order.OrderItems
+            .Where(c => c.TastingMenuId == item.TastingMenuId && c.MenuItemId != null)
+            .ToList();
+
+        return children.Count > 0 && children.All(c => c.Status == OrderItemStatus.Cancelled);
+    }
+
+    private static OrderItemStatus ResolveEffectiveBillableStatus(Order order, OrderItem item)
+    {
+        if (!item.TastingMenuId.HasValue || item.MenuItemId != null)
+            return item.Status;
+
+        if (item.Status == OrderItemStatus.Served || item.Status == OrderItemStatus.Cancelled)
+            return item.Status;
+
+        var children = order.OrderItems
+            .Where(c => c.TastingMenuId == item.TastingMenuId && c.MenuItemId != null)
+            .ToList();
+
+        if (children.Count > 0 && children.All(c => c.Status == OrderItemStatus.Cancelled))
+            return OrderItemStatus.Cancelled;
+
+        if (children.Any(c => c.Status == OrderItemStatus.Served) &&
+            children.All(c => c.Status == OrderItemStatus.Served || c.Status == OrderItemStatus.Cancelled))
+            return OrderItemStatus.Served;
+
+        if (children.Any(c => c.Status == OrderItemStatus.Preparing || c.Status == OrderItemStatus.Served))
+            return OrderItemStatus.Preparing;
+
+        return OrderItemStatus.Hold;
     }
 
     private static decimal ResolvePaidDepositAmount(Order order)

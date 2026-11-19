@@ -9,7 +9,14 @@ public record TableDto(
     int PosX = 0,
     int PosY = 0,
     Guid? CurrentOrderId = null,
-    bool IsActive = true
+    bool IsActive = true,
+    string? QrCode = null,
+    Guid? AssignedStaffId = null,
+    string? AssignedStaffName = null,
+    string? CurrentReservationCode = null,
+    int? GuestCount = null,
+    DateTime? HoldExpiresAt = null,
+    DateTime? CheckoutRequestedAt = null
 )
 {
     public int PositionX => PosX;
@@ -19,14 +26,16 @@ public record TableDto(
 
 public record CheckInDto(
     string? BookingCode = null,
-    Guid? ReservationId = null
+    Guid? ReservationId = null,
+    string? ReservationCode = null
 );
 
 public record WalkInDto(
-    string GuestName,
+    string GuestName = "",
     string PhoneNumber = "",
     int PartySize = 2,
-    string? Note = null
+    string? Note = null,
+    int? GuestCount = null
 );
 
 public record TransferTableDto(

@@ -1,36 +1,60 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuthStore } from '@/stores/useAuthStore'
-import type { StaffRole } from '@/types/auth'
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { ShieldAlert } from 'lucide-react'
+import { STAFF_ROLE_LABELS } from '@/domain'
+import { Button, Card } from '@/components/ui'
+import { getRoleHomeRoute, useAuthStore } from '@/stores/useAuthStore'
+import type { StaffRole } from '@/types'
 
-interface ProtectedRouteProps {
+export interface ProtectedRouteProps {
   allowedRoles?: StaffRole[]
 }
 
+/** Enforces staff authentication and RBAC matrix (Manager has access to all staff areas). */
 export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const location = useLocation()
-  const { isAuthenticated, user, hasRole } = useAuthStore()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const user = useAuthStore((s) => s.user)
+  const justLoggedOut = useAuthStore((s) => s.justLoggedOut)
 
   if (!isAuthenticated || !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return (
+      <Navigate
+        to="/dang-nhap"
+        state={justLoggedOut ? undefined : { from: location }}
+        replace
+      />
+    )
   }
 
-  if (allowedRoles && allowedRoles.length > 0 && !hasRole(allowedRoles)) {
+  const isAllowed =
+    !allowedRoles ||
+    allowedRoles.length === 0 ||
+    user.role === 'Manager' ||
+    allowedRoles.includes(user.role)
+
+  if (!isAllowed) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-4">
-          <ShieldAlert className="w-8 h-8" />
-        </div>
-        <h2 className="text-xl font-bold text-neutral-100 mb-2">Quyền truy cập bị giới hạn</h2>
-        <p className="text-neutral-400 text-sm max-w-md mb-6">
-          Tài khoản vai trò <span className="text-amber-400 font-semibold">{user.role}</span> không có thẩm quyền truy cập phân hệ này.
-        </p>
-        <Navigate to="/pos/tables" replace />
+      <div className="min-h-screen bg-bg text-ink flex items-center justify-center p-6">
+        <Card className="max-w-md w-full text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-card border border-line flex items-center justify-center text-accent mx-auto">
+            <ShieldAlert className="w-6 h-6" aria-hidden="true" />
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-lg font-semibold text-ink">
+              Không có quyền truy cập
+            </h1>
+            <p className="text-sm text-ink-muted">
+              Vai trò {STAFF_ROLE_LABELS[user.role]} không được phép truy cập khu
+              vực này.
+            </p>
+          </div>
+          <Link to={getRoleHomeRoute(user.role)} className="inline-block">
+            <Button>Quay lại màn hình chính</Button>
+          </Link>
+        </Card>
       </div>
     )
   }
 
   return <Outlet />
 }
-
-export default ProtectedRoute

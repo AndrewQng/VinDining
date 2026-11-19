@@ -7,16 +7,20 @@ public record StaffDto(
     string Email,
     StaffRole Role,
     bool IsActive,
-    string PhoneNumber = ""
+    string PhoneNumber = "",
+    int FailedLoginCount = 0,
+    DateTime? LockoutEnd = null,
+    DateTime CreatedAt = default
 );
 
 public record CreateStaffDto(
     string FullName,
     string Username,
-    string Password,
-    string Email,
-    StaffRole Role,
-    string PhoneNumber = "0900000000"
+    string Password = "",
+    string Email = "",
+    StaffRole Role = StaffRole.Waitstaff,
+    string PhoneNumber = "0900000000",
+    string? InitialPassword = null
 );
 
 public record UpdateStaffDto(
@@ -27,7 +31,7 @@ public record UpdateStaffDto(
 );
 
 public record ResetPasswordDto(
-    string NewPassword
+    string? NewPassword = null
 );
 
 public record ToggleStatusDto(

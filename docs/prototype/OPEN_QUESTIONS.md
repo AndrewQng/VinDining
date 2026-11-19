@@ -13,6 +13,12 @@ Things the docs don't settle. Agents add rows here instead of guessing. The proj
 | 7 | Can guests pre-order à la carte items when booking, or only a Set Menu? | UC-U1 says Set Menu only | Set Menu only |
 | 8 | How should the KDS handle more tickets than fit on screen? | No doc covers KDS overflow | Answered below: page buttons |
 | 9 | Should the deposit rule (30% of the set, or 500.000 ₫ per guest) be added to the analysis report as a business rule? | Report BR-02 / BR-04 give no amount | Answered below: added as BR-06 |
+| 10 | Guests need a public list of Set Menus (home page, booking, QR menu); docs/api.md only has the Manager-only GET /api/manager/tasting-menus. | docs/api.md vs UC-U1 / UC-U2 | Website calls a public GET /api/menu/tasting-menus (mock only until the backend adds it) |
+| 11 | Waitstaff W2 check-in supports looking up a reservation by booking code or phone number; docs/api.md lists GET /api/reservations as Cashier/Manager only. | docs/api.md vs UC-E6 / W2 | Website allows Waitstaff on GET /api/reservations?search=... (mock until backend extends role access) |
+| 12 | How is the SLA of a course ticket with several dishes measured on the KDS? | Report UC-S4 (per dish) | Ticket deadline = longest Prep SLA among its dishes, from the course start |
+| 13 | How is a pre-ordered Set Menu billed when some of its courses were not served? | Report BR-02 (Subtotal = served dishes) has no rule for sets | Bill only the served courses, split by their à la carte prices |
+| 14 | UC-A5 lists a "ca phục vụ" filter, but no doc defines the shifts. | Report UC-A5 vs PROTOTYPE_RULES §3 row 11 | Zone filter only until the shifts are defined |
+| 15 | Occupancy rate and cancellation rate KPI formulas are not specified in the report. | UC-A5 vs BR-01..BR-06 | Occupancy = occupied table-slots / (active tables × days × seatings per evening), where seatings per evening (2) is derived from booking slots 18:00–20:00 and DurationMinutes (120); Cancellation rate = cancelled reservations / all reservations in the period |
 
 ## Answers from the project lead (29/10/2026)
 

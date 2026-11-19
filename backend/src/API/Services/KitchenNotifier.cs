@@ -25,6 +25,15 @@ public class KitchenNotifier : IKitchenNotifier
                 CreatedAt = DateTime.UtcNow
             },
             cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "order:updated",
+            new
+            {
+                orderId,
+                tableId = string.Empty,
+                tableNumber
+            },
+            cancellationToken);
     }
 
     public async Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, CourseType courseType, CancellationToken cancellationToken = default)
@@ -37,6 +46,16 @@ public class KitchenNotifier : IKitchenNotifier
                 TableNumber = tableNumber,
                 CourseType = courseType.ToString(),
                 FiredAt = DateTime.UtcNow
+            },
+            cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "course:activated",
+            new
+            {
+                orderId,
+                tableId = string.Empty,
+                courseType = courseType.ToString(),
+                isPriority = false
             },
             cancellationToken);
     }
@@ -56,6 +75,16 @@ public class KitchenNotifier : IKitchenNotifier
                 RemakeAt = DateTime.UtcNow
             },
             cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "item:remake-requested",
+            new
+            {
+                orderId,
+                orderItemId,
+                tableId = string.Empty,
+                itemName = menuItemName
+            },
+            cancellationToken);
     }
 
     public async Task NotifyItemServedAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, Guid? servedById, CancellationToken cancellationToken = default)
@@ -70,6 +99,16 @@ public class KitchenNotifier : IKitchenNotifier
                 MenuItemName = menuItemName,
                 ServedById = servedById,
                 ServedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "item:served",
+            new
+            {
+                orderId,
+                orderItemId,
+                tableId = string.Empty,
+                itemName = menuItemName
             },
             cancellationToken);
     }
@@ -88,6 +127,15 @@ public class KitchenNotifier : IKitchenNotifier
                 CancelledAt = DateTime.UtcNow
             },
             cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "order:updated",
+            new
+            {
+                orderId,
+                tableId = string.Empty,
+                tableNumber
+            },
+            cancellationToken);
     }
 
     public async Task NotifySlaAlertAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string slaStatus, int elapsedSeconds, int prepTimeMinutes, CancellationToken cancellationToken = default)
@@ -104,6 +152,14 @@ public class KitchenNotifier : IKitchenNotifier
                 ElapsedSeconds = elapsedSeconds,
                 PrepTimeMinutes = prepTimeMinutes,
                 AlertedAt = DateTime.UtcNow
+            },
+            cancellationToken);
+        await _kitchenHub.Clients.All.SendAsync(
+            "sla:alert",
+            new
+            {
+                overdueCount = string.Equals(slaStatus, "Overdue", StringComparison.OrdinalIgnoreCase) ? 1 : 0,
+                warningCount = string.Equals(slaStatus, "Warning", StringComparison.OrdinalIgnoreCase) ? 1 : 0
             },
             cancellationToken);
     }

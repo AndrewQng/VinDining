@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [Route("api/service-calls")]
+[Authorize]
 public class ServiceCallController : ApiControllerBase
 {
     private readonly IServiceCallService _serviceCallService;
@@ -17,7 +18,22 @@ public class ServiceCallController : ApiControllerBase
     public async Task<IActionResult> CreateFromBodyAsync([FromBody] ServiceCallDto dto, CancellationToken ct)
     {
         var requestId = await _serviceCallService.CreateServiceCallAsync(dto.TableId, dto, ct);
-        return Ok(new { success = true, requestId, message = "Đã gửi yêu cầu gọi phục vụ." });
+        var active = await _serviceCallService.GetActiveServiceCallsAsync(ct);
+        var created = active.FirstOrDefault(s => s.Id == requestId);
+        return Ok(new
+        {
+            success = true,
+            requestId,
+            message = "Đã gửi yêu cầu gọi phục vụ.",
+            id = requestId,
+            tableId = created?.TableId ?? dto.TableId,
+            tableNumber = created?.TableNumber ?? "",
+            requestType = created?.RequestType ?? dto.RequestType,
+            status = created?.Status ?? "Pending",
+            completedById = (Guid?)null,
+            completedAt = (DateTime?)null,
+            createdAt = created?.CreatedAt ?? DateTime.UtcNow
+        });
     }
 
     [HttpPost("/api/tables/{id}/call-service")]
@@ -25,17 +41,41 @@ public class ServiceCallController : ApiControllerBase
     public async Task<IActionResult> CreateServiceCallAsync(Guid id, [FromBody] ServiceCallDto dto, CancellationToken ct)
     {
         var requestId = await _serviceCallService.CreateServiceCallAsync(id, dto, ct);
-        return Ok(new { success = true, requestId, message = "Đã gửi yêu cầu gọi phục vụ." });
+        var active = await _serviceCallService.GetActiveServiceCallsAsync(ct);
+        var created = active.FirstOrDefault(s => s.Id == requestId);
+        return Ok(new
+        {
+            success = true,
+            requestId,
+            message = "Đã gửi yêu cầu gọi phục vụ.",
+            id = requestId,
+            tableId = created?.TableId ?? id,
+            tableNumber = created?.TableNumber ?? "",
+            requestType = created?.RequestType ?? dto.RequestType,
+            status = created?.Status ?? "Pending",
+            completedById = (Guid?)null,
+            completedAt = (DateTime?)null,
+            createdAt = created?.CreatedAt ?? DateTime.UtcNow
+        });
     }
 
     [HttpPatch("{id}/complete")]
+    [Authorize(Roles = "Waitstaff,Admin,Manager")]
     public async Task<IActionResult> CompleteServiceCallAsync(Guid id, CancellationToken ct)
     {
         var result = await _serviceCallService.CompleteServiceCallAsync(id, ct);
-        return Ok(new { success = result, message = "Đã hoàn tất hỗ trợ yêu cầu." });
+        return Ok(new
+        {
+            success = result,
+            message = "Đã hoàn tất hỗ trợ yêu cầu.",
+            id,
+            status = "Completed",
+            completedAt = DateTime.UtcNow
+        });
     }
 
     [HttpGet("active")]
+    [Authorize(Roles = "Waitstaff,Admin,Manager")]
     public async Task<IActionResult> GetActiveServiceCallsAsync(CancellationToken ct)
     {
         var result = await _serviceCallService.GetActiveServiceCallsAsync(ct);

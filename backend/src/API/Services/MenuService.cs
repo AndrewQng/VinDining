@@ -19,9 +19,15 @@ public class MenuService : IMenuService
 
     public async Task<List<CategoryDto>> GetTableMenuAsync(Guid tableId, CancellationToken ct = default)
     {
-        var tableExists = await _context.Tables.AsNoTracking().AnyAsync(t => t.Id == tableId && t.IsActive, ct);
-        if (!tableExists)
-            throw new KeyNotFoundException($"Không tìm thấy bàn phục vụ {tableId} cho thực đơn QR.");
+        var table = await _context.Tables.AsNoTracking().FirstOrDefaultAsync(t => t.Id == tableId, ct);
+        if (table == null)
+            throw new KeyNotFoundException($"Mã QR bàn ăn không hợp lệ ({tableId}). Vui lòng liên hệ nhân viên phục vụ.");
+
+        if (!table.IsActive)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng phục vụ. Vui lòng liên hệ nhân viên phục vụ.");
+
+        if (table.Status != TableStatus.Occupied)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} chưa hoàn tất thủ tục check-in. Vui lòng liên hệ nhân viên phục vụ.");
 
         return await GetCategoriesAsync(ct);
     }
@@ -40,11 +46,9 @@ public class MenuService : IMenuService
             .OrderBy(c => c.Name)
             .ToListAsync(ct);
 
-        var result = categories.Select(c => new CategoryDto(
-            c.Id,
-            c.Name,
-            c.Description,
-            c.MenuItems
+        var result = categories.Select(c =>
+        {
+            var items = c.MenuItems
                 .Where(m => m.Status == "Available")
                 .OrderBy(m => m.CourseType)
                 .ThenBy(m => m.Name)
@@ -58,9 +62,20 @@ public class MenuService : IMenuService
                     m.CourseType,
                     m.CategoryId,
                     c.Name,
-                    m.PrepTimeMinutes
-                )).ToList()
-        )).ToList();
+                    m.PrepTimeMinutes,
+                    m.CreatedAt
+                )).ToList();
+
+            var catCourse = items.Count > 0 ? items[0].CourseType : CourseType.Appetizer;
+            return new CategoryDto(
+                c.Id,
+                c.Name,
+                c.Description,
+                items,
+                catCourse,
+                c.IsActive
+            );
+        }).ToList();
 
         _cache?.Set(CategoriesCacheKey, result, CacheTtl);
         return result;
@@ -93,8 +108,13 @@ public class MenuService : IMenuService
                     i.MenuItemId,
                     i.MenuItem?.Name ?? "N/A",
                     i.CourseType,
-                    i.CourseOrder
-                )).ToList()
+                    i.CourseOrder,
+                    i.Id,
+                    m.Id,
+                    i.MenuItem?.PrepTimeMinutes ?? 15
+                )).ToList(),
+            m.ImageUrl,
+            m.CreatedAt
         )).ToList();
 
         _cache?.Set(TastingMenusCacheKey, result, CacheTtl);
@@ -121,7 +141,8 @@ public class MenuService : IMenuService
             m.CourseType,
             m.CategoryId,
             m.Category?.Name ?? "N/A",
-            m.PrepTimeMinutes
+            m.PrepTimeMinutes,
+            m.CreatedAt
         );
     }
 }

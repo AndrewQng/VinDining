@@ -29,7 +29,7 @@ Repo --> Service: targetStatus
 alt Bàn đích khả dụng 
     group Transaction 
         Service -> Repo: MoveOrderAndDeposit\n(sourceId, dto.TargetTableId)
-        Repo -> DB: UPDATE Orders, Deposits \n        SET TableId = @targetId\n        UPDATE Tables \nSET Status (Source = Available, Target = Occupied)
+        Repo -> DB: UPDATE Orders, Deposits \n        SET TableId = @targetId\n        UPDATE Tables \nSET Status (Source = Cleaning, Target = Occupied)
         DB --> Repo: Rows affected
         Repo --> Service: true
     end

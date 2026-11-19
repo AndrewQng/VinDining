@@ -10,11 +10,16 @@ public class StaffService : IStaffService
 {
     private readonly IApplicationDbContext _context;
     private readonly IPasswordHasher<Staff> _passwordHasher;
+    private readonly ICurrentUserService? _currentUserService;
 
-    public StaffService(IApplicationDbContext context, IPasswordHasher<Staff> passwordHasher)
+    public StaffService(
+        IApplicationDbContext context,
+        IPasswordHasher<Staff> passwordHasher,
+        ICurrentUserService? currentUserService = null)
     {
         _context = context;
         _passwordHasher = passwordHasher;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Guid> CreateStaffAsync(CreateStaffDto dto, CancellationToken ct = default)
@@ -46,7 +51,11 @@ public class StaffService : IStaffService
             IsActive = true
         };
 
-        var rawPassword = string.IsNullOrWhiteSpace(dto.Password) ? "Staff@123" : dto.Password;
+        var rawPassword = !string.IsNullOrWhiteSpace(dto.Password)
+            ? dto.Password
+            : !string.IsNullOrWhiteSpace(dto.InitialPassword)
+                ? dto.InitialPassword
+                : "Staff@123";
         if (rawPassword.Length < 6)
             throw new ArgumentException("Mật khẩu khởi tạo phải có tối thiểu 6 ký tự.");
 
@@ -74,6 +83,20 @@ public class StaffService : IStaffService
 
         if (emailDuplicate)
             throw new ConflictException($"Email '{normalizedEmail}' đã thuộc về một nhân sự khác.");
+
+        if (staff.Role == StaffRole.Admin && dto.Role != StaffRole.Admin)
+        {
+            if (_currentUserService?.UserId.HasValue == true && _currentUserService.UserId.Value == staff.Id)
+                throw new InvalidOperationException("Quản lý không thể tự hạ quyền tài khoản đang đăng nhập của chính mình.");
+
+            if (staff.IsActive)
+            {
+                var otherActiveAdmins = await _context.Staffs
+                    .CountAsync(s => s.Id != staff.Id && s.Role == StaffRole.Admin && s.IsActive, ct);
+                if (otherActiveAdmins == 0)
+                    throw new InvalidOperationException("Không thể hạ quyền tài khoản Quản lý duy nhất đang hoạt động trên hệ thống.");
+            }
+        }
 
         staff.FullName = dto.FullName.Trim();
         staff.Email = normalizedEmail;
@@ -111,6 +134,20 @@ public class StaffService : IStaffService
         if (staff == null)
             throw new KeyNotFoundException($"Không tìm thấy nhân viên {id}.");
 
+        if (!dto.IsActive)
+        {
+            if (_currentUserService?.UserId.HasValue == true && _currentUserService.UserId.Value == staff.Id)
+                throw new InvalidOperationException("Quản lý không thể tự khóa tài khoản đang đăng nhập của chính mình.");
+
+            if (staff.IsActive && staff.Role == StaffRole.Admin)
+            {
+                var otherActiveAdmins = await _context.Staffs
+                    .CountAsync(s => s.Id != staff.Id && s.Role == StaffRole.Admin && s.IsActive, ct);
+                if (otherActiveAdmins == 0)
+                    throw new InvalidOperationException("Không thể khóa tài khoản Quản lý duy nhất đang hoạt động trên hệ thống.");
+            }
+        }
+
         staff.IsActive = dto.IsActive;
         if (!dto.IsActive)
         {
@@ -131,7 +168,7 @@ public class StaffService : IStaffService
             .ThenBy(s => s.FullName)
             .ToListAsync(ct);
 
-        return list.Select(s => new StaffDto(s.Id, s.FullName, s.Username, s.Email, s.Role, s.IsActive, s.PhoneNumber)).ToList();
+        return list.Select(s => new StaffDto(s.Id, s.FullName, s.Username, s.Email, s.Role, s.IsActive, s.PhoneNumber, CreatedAt: s.CreatedAt)).ToList();
     }
 
     public async Task<StaffDto> GetStaffByIdAsync(Guid id, CancellationToken ct = default)
@@ -140,6 +177,6 @@ public class StaffService : IStaffService
         if (s == null)
             throw new KeyNotFoundException($"Không tìm thấy nhân viên {id}.");
 
-        return new StaffDto(s.Id, s.FullName, s.Username, s.Email, s.Role, s.IsActive, s.PhoneNumber);
+        return new StaffDto(s.Id, s.FullName, s.Username, s.Email, s.Role, s.IsActive, s.PhoneNumber, CreatedAt: s.CreatedAt);
     }
 }

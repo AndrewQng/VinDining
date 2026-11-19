@@ -1,73 +1,88 @@
 import type { CourseType } from './menu'
 
-export type OrderStatus = 'Active' | 'Completed' | 'Cancelled'
+/** Canonical order header statuses. */
+export type OrderStatus = 'Active' | 'Paid'
 
-export type OrderItemStatus =
-  | 'Pending'
-  | 'Fired'
-  | 'Cooking'
-  | 'Ready'
-  | 'Served'
-  | 'Cancelled'
-  | 'Remake'
+/** Canonical order item statuses (Remake is Cooking + isRemake === true). */
+export type OrderItemStatus = 'OnHold' | 'Cooking' | 'Served'
 
-export interface OrderItem {
+/** Individual line item inside an Order. */
+export interface OrderItemDto {
   id: string
   orderId: string
-  menuItemId: string
-  menuItemName: string
-  unitPrice: number
-  quantity: number
+  menuItemId: string | null
+  tastingMenuId: string | null
+  itemName: string
   courseType: CourseType
+  quantity: number
+  unitPrice: number
   status: OrderItemStatus
-  specialInstructions?: string | null
-  firedAtUtc?: string | null
-  readyAtUtc?: string | null
-  servedAtUtc?: string | null
-  remakeReason?: string | null
+  note: string | null
+  isRemake: boolean
+  remakeCount: number
+  isPriority: boolean
+  prepTimeMinutes: number
+  cookingStartedAt: string | null
+  servedAt: string | null
+  servedById: string | null
 }
 
-export interface Order {
+/** Order DTO matching the Orders ERD table. */
+export interface OrderDto {
   id: string
   tableId: string
   tableNumber: string
-  guestCount: number
+  reservationId: string | null
+  createById: string
+  createByName: string
   status: OrderStatus
-  waitstaffId?: string
-  waitstaffName?: string
-  items: OrderItem[]
-  subtotal: number
-  serviceCharge: number // 5%
-  vat: number // 10%
-  depositDeducted: number
-  totalAmount: number
-  createdAtUtc: string
-  updatedAtUtc?: string
+  guestCount: number
+  openedAt: string
+  closedAt: string | null
+  items: OrderItemDto[]
 }
 
-export interface CreateOrderItemDto {
-  menuItemId: string
+/** Line item input for creating an order or adding items. */
+export interface OrderItemInput {
+  menuItemId: string | null
+  tastingMenuId?: string | null
   quantity: number
-  note?: string
+  note?: string | null
 }
 
-export interface CreateOrderCommand {
+/** Payload for POST /api/orders. */
+export interface CreateOrderRequest {
   tableId: string
-  reservationId?: string
-  staffId?: string
-  items: CreateOrderItemDto[]
+  guestCount: number
+  tastingMenuId?: string | null
+  items: OrderItemInput[]
 }
 
-export interface CourseFiringRequest {
-  courseType: number // 0 = Appetizer, 1 = MainCourse, 2 = Dessert, 3 = Beverage
+/** Payload for POST /api/orders/{id}/fire-course. */
+export interface FireCourseRequest {
+  courseType: CourseType
   isPriority?: boolean
 }
 
-export interface RemakeItemRequest {
-  reason?: string
+/** Payload for POST /api/orders/{id}/items. */
+export interface AddOrderItemsRequest {
+  items: OrderItemInput[]
 }
 
-export interface CancelItemRequest {
-  reason?: string
+/** Ticket DTO displayed on KDS Bếp and Pass (GET /api/orders/kitchen/pending). */
+export interface KitchenPendingTicketDto {
+  orderItemId: string
+  orderId: string
+  tableId: string
+  tableNumber: string
+  itemName: string
+  quantity: number
+  courseType: CourseType
+  status: OrderItemStatus
+  note: string | null
+  isRemake: boolean
+  remakeCount: number
+  isPriority: boolean
+  prepTimeMinutes: number
+  cookingStartedAt: string | null
 }
-
