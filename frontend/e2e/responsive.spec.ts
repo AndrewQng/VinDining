@@ -315,4 +315,36 @@ test.describe('Phase 6 Item 4: Responsive sweep & shots-p6', () => {
       390
     )
   })
+
+  test('Staff sidebar fits 1440x900 viewport and Đăng xuất stays visible after scrolling to bottom of /quan-ly/bao-cao', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await loginAs(page, 'long.dh', /\/quan-ly$/)
+    await page.getByRole('link', { name: 'Báo cáo', exact: true }).click()
+    await expect(page).toHaveURL(/\/quan-ly\/bao-cao$/)
+    await expect(page.getByTestId('kpi-total-revenue')).not.toHaveText(/^0 ₫$/)
+
+    // Ensure page actually scrolls at 1440x900, then scroll to the very bottom
+    const scrollHeight = await page.evaluate(
+      () => document.documentElement.scrollHeight
+    )
+    expect(scrollHeight).toBeGreaterThan(900)
+    await page.evaluate(() =>
+      window.scrollTo({ top: document.documentElement.scrollHeight })
+    )
+    await page.waitForTimeout(100)
+
+    const sidebarBox = await page
+      .getByTestId('staff-desktop-sidebar')
+      .boundingBox()
+    const logoutBox = await page
+      .getByTestId('sidebar-logout-btn')
+      .boundingBox()
+    expect(sidebarBox).not.toBeNull()
+    expect(logoutBox).not.toBeNull()
+    expect(sidebarBox!.height).toBeLessThanOrEqual(900)
+    expect(logoutBox!.y).toBeGreaterThanOrEqual(0)
+    expect(logoutBox!.y + logoutBox!.height).toBeLessThanOrEqual(900)
+  })
 })

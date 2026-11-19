@@ -160,30 +160,39 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
 
   return (
     <div className="min-h-screen bg-bg text-ink flex">
-      <aside className="no-print hidden lg:flex w-64 shrink-0 flex-col justify-between bg-surface border-r border-line p-5">
-        <div className="space-y-6">
+      <aside
+        data-testid="staff-desktop-sidebar"
+        className="no-print hidden lg:flex sticky top-0 h-dvh w-64 shrink-0 flex-col bg-surface border-r border-line p-5"
+      >
+        <div className="shrink-0 pb-6">
           <Wordmark subtitle={subtitle} size="md" />
+        </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto pr-1">
           {navList()}
         </div>
 
-        <div className="rounded-xl bg-card border border-line p-3.5 space-y-3">
-          {user && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-ink truncate">
-                {user.fullName}
-              </p>
-              <p className="text-xs text-ink-muted">{roleLabel}</p>
-            </div>
-          )}
-          <Button
-            variant="secondary"
-            size="sm"
-            fullWidth
-            icon={<LogOut className="w-3.5 h-3.5" />}
-            onClick={handleLogout}
-          >
-            Đăng xuất
-          </Button>
+        <div className="shrink-0 pt-4">
+          <div className="rounded-xl bg-card border border-line p-3.5 space-y-3">
+            {user && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink truncate">
+                  {user.fullName}
+                </p>
+                <p className="text-xs text-ink-muted">{roleLabel}</p>
+              </div>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              fullWidth
+              data-testid="sidebar-logout-btn"
+              icon={<LogOut className="w-3.5 h-3.5" />}
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </Button>
+          </div>
         </div>
       </aside>
 
