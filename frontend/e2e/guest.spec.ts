@@ -148,6 +148,7 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
 
     // Cancel >= 4h fresh booking -> refunded
     await page.goto('/tra-cuu')
+    await expect(page.getByTestId('guest-photo-bg')).toBeVisible()
     await page.getByLabel(/Mã đặt bàn/i).fill(freshCode)
     await page.getByLabel(/Số điện thoại/i).fill('0901 234 567')
     await page.getByRole('button', { name: /Tra cứu đặt bàn/i }).click()
