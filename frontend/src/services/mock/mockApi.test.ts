@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getHistorical120DayData } from './historicalSeed'
+import { createInitialMockDb } from './seed'
 import {
   ALL_MOCK_ROUTES,
   DEMO_STAFF_ACCOUNTS,
@@ -461,5 +463,46 @@ describe('Mock API §10 end-to-end stories', () => {
     )
     expect(approvedSeed.decisionAction).toBe('ManualRefundApproved')
     expect(approvedSeed.processedAt).toBeTruthy()
+  })
+
+  it('restricts all person names and guest phones in static seed and 120-day history to §10 identities', () => {
+    const allowedNames = new Set([
+      'Nguyễn Văn An',
+      'Trần Thị Mai',
+      'Lê Minh Quân',
+      'Phạm Thu Hà',
+      'Đỗ Hoàng Long',
+    ])
+    const now = new Date()
+    const seed = createInitialMockDb(now)
+    const history = getHistorical120DayData(now)
+
+    const observedNames = new Set<string>()
+    const addName = (name?: string | null) => {
+      if (name && name.trim()) observedNames.add(name.trim())
+    }
+
+    for (const staff of seed.staffs) addName(staff.fullName)
+    for (const table of seed.tables) addName(table.assignedStaffName)
+
+    for (const res of [...seed.reservations, ...history.reservations]) {
+      addName(res.guest.fullName)
+      expect(res.guest.phoneNumber).toBe('0901 234 567')
+    }
+    for (const order of [...seed.orders, ...history.orders]) {
+      addName(order.createByName)
+    }
+    for (const inv of [...seed.invoices, ...history.invoices]) {
+      addName(inv.settleByName)
+      addName(inv.waiterName)
+    }
+    for (const fb of [...seed.feedbacks, ...history.feedbacks]) {
+      addName(fb.guestName)
+    }
+
+    const unexpected = Array.from(observedNames).filter(
+      (name) => !allowedNames.has(name)
+    )
+    expect(unexpected).toEqual([])
   })
 })

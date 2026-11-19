@@ -376,6 +376,10 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     await page.getByRole('link', { name: 'Báo cáo' }).click()
     await expect(page).toHaveURL(/\/quan-ly\/bao-cao$/)
     await expect(page.getByTestId('kpi-total-revenue')).not.toHaveText(/^0 ₫$/)
+    await expect(page.getByTestId('m5-feedback-card')).toContainText('Bàn V02')
+    await expect(page.getByTestId('m5-feedback-card')).not.toContainText(
+      'Nguyễn Văn An'
+    )
     await saveShot(page, 'm5-month-dark.png', true)
 
     // Excel export triggers a real .xlsx file download

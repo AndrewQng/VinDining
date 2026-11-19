@@ -319,7 +319,7 @@ export function ManagerReportsPage() {
                   <ZoneRevenueSvgChart zones={report.revenueByZone} />
                 </Card>
 
-                <Card className="print-card space-y-4">
+                <Card data-testid="m5-feedback-card" className="print-card space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h2 className="text-sm font-semibold text-ink">
                       Chất lượng dịch vụ & đánh giá khách hàng
@@ -367,8 +367,7 @@ export function ManagerReportsPage() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold text-ink">
-                            Bàn {fb.tableNumber ?? '—'} ·{' '}
-                            {fb.guestName ?? 'Khách hàng'}
+                            Bàn {fb.tableNumber ?? '—'}
                           </span>
                           <span className="print-muted text-ink-muted tabular-nums">
                             {formatDateTime(fb.createdAt)}

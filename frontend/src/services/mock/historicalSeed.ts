@@ -133,16 +133,9 @@ const ALL_TABLES: readonly TableSpec[] = [
   { id: 'tbl-c04', num: 'C04', zone: 'Balcony', capacity: 4 },
 ]
 
-const GUEST_NAMES: readonly string[] = [
-  'Nguyễn Văn An',
-  'Trần Minh Khôi',
-  'Lê Thảo Vy',
-  'Phạm Quốc Bảo',
-  'Hoàng Gia Hân',
-  'Vũ Đức Anh',
-  'Đặng Ngọc Linh',
-  'Bùi Quang Huy',
-]
+const DEMO_GUEST_FULL_NAME = 'Nguyễn Văn An'
+const DEMO_GUEST_PHONE = '0901 234 567'
+const DEMO_GUEST_EMAIL = 'an.nguyen@email.com'
 
 const COMMENTS: readonly string[] = [
   'Bò Wagyu nướng đúng độ, phục vụ tinh tế và lên món đều nhịp.',
@@ -368,7 +361,6 @@ function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
       const slotIso = slotDate.toISOString()
       const closedIso = new Date(slotDate.getTime() + 95 * 60_000).toISOString()
       const guestCount = pickPartySize(slotChoice.table.capacity, rng)
-      const guestName = pick(GUEST_NAMES, rng)
       const useSetMenu = rng() < 0.4
       const chosenSet = useSetMenu ? pick(SET_MENUS, rng) : null
 
@@ -393,9 +385,9 @@ function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
         bookingCode: `VD-H${String(idx).padStart(4, '0')}`,
         guest: {
           id: `guest-hist-${idx}`,
-          fullName: guestName,
-          phoneNumber: `0901${String(100000 + (idx % 899999))}`,
-          email: `khach.${idx}@email.com`,
+          fullName: DEMO_GUEST_FULL_NAME,
+          phoneNumber: DEMO_GUEST_PHONE,
+          email: DEMO_GUEST_EMAIL,
         },
         tableId: slotChoice.table.id,
         tableNumber: slotChoice.table.num,
@@ -462,7 +454,7 @@ function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
           id: `fb-hist-${idx}`,
           reservationId: resId,
           invoiceId,
-          guestName,
+          guestName: null,
           tableNumber: slotChoice.table.num,
           foodRating: rng() < 0.65 ? 5 : 4,
           ambienceRating: rng() < 0.7 ? 5 : 4,
@@ -505,9 +497,9 @@ function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
         bookingCode: `VD-C${String(idx).padStart(4, '0')}`,
         guest: {
           id: `guest-hist-c-${idx}`,
-          fullName: pick(GUEST_NAMES, rng),
-          phoneNumber: `0902${String(100000 + (idx % 899999))}`,
-          email: `huy.${idx}@email.com`,
+          fullName: DEMO_GUEST_FULL_NAME,
+          phoneNumber: DEMO_GUEST_PHONE,
+          email: DEMO_GUEST_EMAIL,
         },
         tableId: slotChoice.table.id,
         tableNumber: slotChoice.table.num,
