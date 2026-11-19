@@ -1,4 +1,8 @@
-import type { CourseType, KitchenPendingTicketDto } from '@/types'
+import type {
+  CourseType,
+  KitchenPendingTicketDto,
+  PassHistoryItemDto,
+} from '@/types'
 import { evaluateSla, type SlaState } from './sla'
 
 export type TicketCourseKey = 'Course1' | 'Course2' | 'Course3'
@@ -185,4 +189,58 @@ export function paginateKdsLanes(
     cookingLaterCount: Math.max(0, cooking.length - cookingEnd),
     onHoldLaterCount: Math.max(0, onHold.length - onHoldEnd),
   }
+}
+
+export interface GroupedPassHistoryTicket {
+  id: string
+  orderId: string
+  tableId: string
+  tableNumber: string
+  courseKey: TicketCourseKey
+  courseTitle: string
+  servedAt: string
+  confirmedByName: string
+  items: PassHistoryItemDto[]
+}
+
+/**
+ * Groups today's served Pass history items by (orderId, courseKey),
+ * sorted newest served time first.
+ */
+export function groupPassHistory(
+  items: ReadonlyArray<PassHistoryItemDto>
+): GroupedPassHistoryTicket[] {
+  const buckets = new Map<string, PassHistoryItemDto[]>()
+  for (const item of items) {
+    const courseKey = COURSE_KEY_MAP[item.courseType]
+    const key = `${item.orderId}::${courseKey}`
+    const existing = buckets.get(key)
+    if (existing) {
+      existing.push(item)
+    } else {
+      buckets.set(key, [item])
+    }
+  }
+
+  const groups: GroupedPassHistoryTicket[] = []
+  for (const [id, groupItems] of buckets.entries()) {
+    const sortedItems = [...groupItems].sort(
+      (a, b) => Date.parse(b.servedAt) - Date.parse(a.servedAt)
+    )
+    const latest = sortedItems[0]
+    const courseKey = COURSE_KEY_MAP[latest.courseType]
+    groups.push({
+      id,
+      orderId: latest.orderId,
+      tableId: latest.tableId,
+      tableNumber: latest.tableNumber,
+      courseKey,
+      courseTitle: COURSE_TITLES[courseKey],
+      servedAt: latest.servedAt,
+      confirmedByName: latest.servedByName,
+      items: sortedItems,
+    })
+  }
+
+  return groups.sort((a, b) => Date.parse(b.servedAt) - Date.parse(a.servedAt))
 }

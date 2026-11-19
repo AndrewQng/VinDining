@@ -133,6 +133,16 @@ describe('Expediter E1 Pass & KDS K1 components', () => {
     await user.click(serveBtn)
 
     expect(serveSpy).toHaveBeenCalledTimes(1)
+
+    // E2 Lịch sử tab shows today's served items, remake count badge, table filter, and newly served B08 item
+    await user.click(screen.getByRole('tab', { name: /Lịch sử/i }))
+    expect(await screen.findByTestId('pass-history-B08-Course2')).toBeInTheDocument()
+    expect(screen.getByTestId('pass-history-B01-Course2')).toBeInTheDocument()
+    expect(screen.getAllByText(/Làm lại ×1/i).length).toBeGreaterThanOrEqual(2)
+
+    await user.selectOptions(screen.getByLabelText('Lọc theo bàn'), 'B03')
+    expect(screen.getByTestId('pass-history-B03-Course1')).toBeInTheDocument()
+    expect(screen.queryByTestId('pass-history-B01-Course2')).not.toBeInTheDocument()
   })
 
   it('KDS renders no data controls, paginates when full, and repeats Làm lại on page 2', async () => {

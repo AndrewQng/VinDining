@@ -144,6 +144,10 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await scanAxe(page, 'E1', 'dark', collected)
     await scanAxe(page, 'E1', 'light', collected)
+    await page.getByRole('tab', { name: /Lịch sử/i }).click()
+    await expect(page.getByTestId('pass-history-B03-Course1')).toBeVisible()
+    await scanAxe(page, 'E2', 'dark', collected)
+    await scanAxe(page, 'E2', 'light', collected)
 
     assertZeroViolations(collected)
   })

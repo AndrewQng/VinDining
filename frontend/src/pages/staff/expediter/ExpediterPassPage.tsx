@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { Check, RotateCcw } from 'lucide-react'
+import { Check, Clock, RotateCcw } from 'lucide-react'
 import {
   formatMinutesSeconds,
+  formatSlotTime,
   groupKitchenTickets,
+  groupPassHistory,
   type GroupedKitchenTicket,
+  type GroupedPassHistoryTicket,
 } from '@/domain'
 import {
   Button,
@@ -15,6 +18,7 @@ import {
   Modal,
   Skeleton,
   StatusBadge,
+  Tabs,
 } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn, isMockMode } from '@/lib/utils'
@@ -22,6 +26,8 @@ import { orderApi } from '@/services/api'
 import { seedFullKitchenDemo } from '@/services/mock'
 import { useRealtime } from '@/services/realtime'
 import type { ApiErrorResponse, KitchenPendingTicketDto } from '@/types'
+
+type PassTab = 'active' | 'history'
 
 interface RemakeDialogTarget {
   orderId: string
@@ -70,6 +76,8 @@ export function ExpediterPassPage() {
   useDocumentTitle('Quầy Pass')
   const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
+  const [tab, setTab] = useState<PassTab>('active')
+  const [tableFilter, setTableFilter] = useState<string>('ALL')
   const [now, setNow] = useState(() => new Date())
   const [feedbackBanner, setFeedbackBanner] = useState<{
     tone: 'success' | 'warning' | 'danger'
@@ -101,17 +109,30 @@ export function ExpediterPassPage() {
     queryFn: () => orderApi.getKitchenPending(),
   })
 
+  const {
+    data: historyItems = [],
+    isLoading: historyLoading,
+    isError: historyError,
+    refetch: refetchHistory,
+  } = useQuery({
+    queryKey: ['pass-history'],
+    queryFn: () => orderApi.getPassHistory(),
+  })
+
   useRealtime('order:updated', () => {
     void queryClient.invalidateQueries({ queryKey: ['kitchen-pending'] })
+    void queryClient.invalidateQueries({ queryKey: ['pass-history'] })
   })
   useRealtime('course:activated', () => {
     void queryClient.invalidateQueries({ queryKey: ['kitchen-pending'] })
   })
   useRealtime('item:served', () => {
     void queryClient.invalidateQueries({ queryKey: ['kitchen-pending'] })
+    void queryClient.invalidateQueries({ queryKey: ['pass-history'] })
   })
   useRealtime('item:remake-requested', () => {
     void queryClient.invalidateQueries({ queryKey: ['kitchen-pending'] })
+    void queryClient.invalidateQueries({ queryKey: ['pass-history'] })
   })
 
   const passTickets = useMemo(
@@ -126,6 +147,21 @@ export function ExpediterPassPage() {
     () => passTickets.reduce((sum, t) => sum + t.items.length, 0),
     [passTickets]
   )
+
+  const allHistoryGroups = useMemo(
+    () => groupPassHistory(historyItems),
+    [historyItems]
+  )
+
+  const historyTables = useMemo(() => {
+    const set = new Set(allHistoryGroups.map((g) => g.tableNumber))
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [allHistoryGroups])
+
+  const filteredHistoryGroups = useMemo(() => {
+    if (tableFilter === 'ALL') return allHistoryGroups
+    return allHistoryGroups.filter((g) => g.tableNumber === tableFilter)
+  }, [allHistoryGroups, tableFilter])
 
   const serveItemsMutation = useMutation({
     mutationFn: async (input: {
@@ -148,6 +184,7 @@ export function ExpediterPassPage() {
           : `${tableNumber} · ${courseTitle} · Đã ra món`
       setFeedbackBanner({ tone: 'success', message: label })
       void queryClient.invalidateQueries({ queryKey: ['kitchen-pending'] })
+      void queryClient.invalidateQueries({ queryKey: ['pass-history'] })
     },
     onError: (err) => {
       setBusyTicketId(null)
@@ -202,6 +239,42 @@ export function ExpediterPassPage() {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Tabs
+          value={tab}
+          onChange={setTab}
+          items={[
+            { value: 'active', label: 'Đang chế biến', badge: totalDishes },
+            { value: 'history', label: 'Lịch sử', badge: allHistoryGroups.length },
+          ]}
+        />
+
+        {tab === 'history' && (
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="pass-history-table-filter"
+              className="text-xs font-medium text-ink-muted"
+            >
+              Bàn:
+            </label>
+            <select
+              id="pass-history-table-filter"
+              aria-label="Lọc theo bàn"
+              value={tableFilter}
+              onChange={(e) => setTableFilter(e.target.value)}
+              className="h-10 rounded-lg border border-line bg-card px-3 text-sm text-ink"
+            >
+              <option value="ALL">Tất cả bàn</option>
+              {historyTables.map((tbl) => (
+                <option key={tbl} value={tbl}>
+                  Bàn {tbl}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
       {feedbackBanner && (
         <div
           role="status"
@@ -220,7 +293,34 @@ export function ExpediterPassPage() {
         </div>
       )}
 
-      {isLoading ? (
+      {tab === 'history' ? (
+        historyLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Skeleton className="h-44" />
+            <Skeleton className="h-44" />
+          </div>
+        ) : historyError ? (
+          <Card className="space-y-3 text-center py-8">
+            <p className="text-sm text-danger">
+              Không thể tải lịch sử ra món hôm nay.
+            </p>
+            <Button variant="secondary" onClick={() => refetchHistory()}>
+              Thử lại
+            </Button>
+          </Card>
+        ) : filteredHistoryGroups.length === 0 ? (
+          <EmptyState
+            title="Chưa có món nào đã ra trong hôm nay"
+            description="Khi xác nhận đi món tại quầy Pass, lịch sử phục vụ sẽ được ghi nhận tại đây."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredHistoryGroups.map((group) => (
+              <PassHistoryCard key={group.id} group={group} />
+            ))}
+          </div>
+        )
+      ) : isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Skeleton className="h-52" />
           <Skeleton className="h-52" />
@@ -455,6 +555,65 @@ function PassTicketCard({
             </Button>
           )}
         </div>
+      </div>
+    </Card>
+  )
+}
+
+function PassHistoryCard({ group }: { group: GroupedPassHistoryTicket }) {
+  return (
+    <Card
+      data-testid={`pass-history-${group.tableNumber}-${group.courseKey}`}
+      className="flex flex-col justify-between gap-4 border border-line"
+    >
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h2 className="text-base font-bold text-ink">
+              Bàn {group.tableNumber} · {group.courseTitle}
+            </h2>
+            <p className="text-xs text-ink-muted mt-0.5">
+              Xác nhận: {group.confirmedByName}
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1 rounded-full border border-success/40 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success tabular-nums shrink-0">
+            <Clock className="w-3.5 h-3.5" aria-hidden="true" />
+            {formatSlotTime(group.servedAt)}
+          </span>
+        </div>
+
+        <ul className="space-y-2">
+          {group.items.map((item) => (
+            <li
+              key={item.orderItemId}
+              className="rounded-lg bg-card border border-line px-3 py-2 flex items-start justify-between gap-2"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink">
+                  {item.quantity}× {item.itemName}
+                </p>
+                {item.note && (
+                  <p className="text-xs text-accent mt-0.5">
+                    Ghi chú: {item.note}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {item.remakeCount > 0 && (
+                  <span
+                    data-testid={`history-remake-${item.orderItemId}`}
+                    className="rounded-full border border-danger/50 bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger tabular-nums"
+                  >
+                    Làm lại ×{item.remakeCount}
+                  </span>
+                )}
+                <span className="text-xs text-ink-muted tabular-nums">
+                  {formatSlotTime(item.servedAt)}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </Card>
   )

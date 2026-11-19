@@ -382,4 +382,38 @@ describe('Mock API §10 end-to-end stories', () => {
     })
     expect(dacTuyenBooking.data.depositAmount).toBe(2_220_000)
   })
+
+  it('serves today Pass history on GET /orders/pass/history with RBAC and newest-first order', async () => {
+    const client = createTestClient()
+    await expect(client.get('/orders/pass/history')).rejects.toMatchObject({
+      response: { status: 401 },
+    })
+
+    const waiterToken = await loginAs(client, 'mai.tt')
+    await expect(
+      client.get('/orders/pass/history', {
+        headers: { Authorization: `Bearer ${waiterToken}` },
+      })
+    ).rejects.toMatchObject({ response: { status: 403 } })
+
+    const expediterToken = await loginAs(client, 'quan.lm')
+    const res = await client.get('/orders/pass/history', {
+      headers: { Authorization: `Bearer ${expediterToken}` },
+    })
+    expect(res.status).toBe(200)
+    expect(res.data.length).toBeGreaterThanOrEqual(5)
+    expect(res.data[0].servedByName).toBe('Lê Minh Quân')
+    for (let i = 1; i < res.data.length; i += 1) {
+      expect(Date.parse(res.data[i - 1].servedAt)).toBeGreaterThanOrEqual(
+        Date.parse(res.data[i].servedAt)
+      )
+    }
+
+    const b01Only = await client.get('/orders/pass/history', {
+      params: { tableNumber: 'B01' },
+      headers: { Authorization: `Bearer ${expediterToken}` },
+    })
+    expect(b01Only.data.every((item: { tableNumber: string }) => item.tableNumber === 'B01')).toBe(true)
+    expect(b01Only.data.some((item: { remakeCount: number }) => item.remakeCount === 1)).toBe(true)
+  })
 })

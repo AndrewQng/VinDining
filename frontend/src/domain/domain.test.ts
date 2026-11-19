@@ -33,6 +33,7 @@ import {
   getRemainingHoldSeconds,
   getReportPeriodWindow,
   groupKitchenTickets,
+  groupPassHistory,
   hasAnyServedItem,
   isHoldExpired,
   isOrderLockedForTable,
@@ -822,5 +823,60 @@ describe('manager domain rules and report KPIs', () => {
         nextIsActive: false,
       }).allowed
     ).toBe(true)
+  })
+})
+
+describe('groupPassHistory', () => {
+  it('groups served dishes by order + course, preserves remakeCount, and sorts newest first', () => {
+    const groups = groupPassHistory([
+      {
+        orderItemId: 'oi-1',
+        orderId: 'ord-1',
+        tableId: 'tbl-b01',
+        tableNumber: 'B01',
+        itemName: 'Súp bào ngư thượng hạng',
+        quantity: 2,
+        courseType: 'Appetizer',
+        note: null,
+        remakeCount: 0,
+        servedAt: '2026-11-19T18:10:00.000Z',
+        servedById: 'staff-expediter-1',
+        servedByName: 'Lê Minh Quân',
+      },
+      {
+        orderItemId: 'oi-2',
+        orderId: 'ord-2',
+        tableId: 'tbl-b03',
+        tableNumber: 'B03',
+        itemName: 'Cá tuyết nướng Miso mật ong',
+        quantity: 2,
+        courseType: 'MainCourse',
+        note: 'Da giòn',
+        remakeCount: 2,
+        servedAt: '2026-11-19T18:35:00.000Z',
+        servedById: 'staff-expediter-1',
+        servedByName: 'Lê Minh Quân',
+      },
+      {
+        orderItemId: 'oi-3',
+        orderId: 'ord-1',
+        tableId: 'tbl-b01',
+        tableNumber: 'B01',
+        itemName: 'Nước khoáng có ga',
+        quantity: 2,
+        courseType: 'Beverage',
+        note: null,
+        remakeCount: 0,
+        servedAt: '2026-11-19T18:05:00.000Z',
+        servedById: 'staff-expediter-1',
+        servedByName: 'Lê Minh Quân',
+      },
+    ])
+
+    expect(groups).toHaveLength(2)
+    expect(groups[0].tableNumber).toBe('B03')
+    expect(groups[0].items[0].remakeCount).toBe(2)
+    expect(groups[1].tableNumber).toBe('B01')
+    expect(groups[1].items).toHaveLength(2)
   })
 })

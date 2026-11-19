@@ -30,6 +30,7 @@ import type {
   MenuItemStatus,
   OrderDto,
   OrderItemDto,
+  PassHistoryItemDto,
   PrintPreviewResponse,
   RefundRequestDto,
   ReportDateRangeQuery,
@@ -273,6 +274,15 @@ export const orderApi = {
   getKitchenPending: async (): Promise<KitchenPendingTicketDto[]> => {
     const { data } = await apiClient.get<KitchenPendingTicketDto[]>(
       '/orders/kitchen/pending'
+    )
+    return data
+  },
+  getPassHistory: async (params?: {
+    tableNumber?: string
+  }): Promise<PassHistoryItemDto[]> => {
+    const { data } = await apiClient.get<PassHistoryItemDto[]>(
+      '/orders/pass/history',
+      { params }
     )
     return data
   },
