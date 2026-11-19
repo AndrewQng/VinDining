@@ -151,6 +151,7 @@ export function LookupReservationPage() {
             title="Tra cứu & hủy đặt bàn"
             backTo="/"
             backLabel="Về trang chủ"
+            className="pb-0 border-b-0"
           />
         </div>
 
