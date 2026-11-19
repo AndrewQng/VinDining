@@ -5,6 +5,13 @@ import { GripVertical, Plus, Printer, QrCode, Save, Trash2 } from 'lucide-react'
 import QRCode from 'qrcode'
 import { TABLE_ZONE_LABELS, validateFloorPlanLayout } from '@/domain'
 import {
+  FLOOR_CANVAS_H,
+  FLOOR_CANVAS_W,
+  FLOOR_SNAP_GRID,
+  FloorPlanCanvas,
+  getTableGeometry,
+} from '@/components/floor-plan/FloorPlanCanvas'
+import {
   Button,
   Card,
   EmptyState,
@@ -20,11 +27,9 @@ import { managerApi, tableApi } from '@/services/api'
 import { useToastStore } from '@/stores/useToastStore'
 import type { ApiErrorResponse, TableDto, TableZone } from '@/types'
 
-const SNAP_GRID = 20
-const CANVAS_W = 680
-const CANVAS_H = 580
-const NODE_W = 132
-const NODE_H = 104
+const SNAP_GRID = FLOOR_SNAP_GRID
+const CANVAS_W = FLOOR_CANVAS_W
+const CANVAS_H = FLOOR_CANVAS_H
 
 const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
 
@@ -46,7 +51,6 @@ export function ManagerFloorPlanPage() {
   const [qrModalOpen, setQrModalOpen] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
-  const canvasRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{
     tableId: string
     startX: number
@@ -165,8 +169,9 @@ export function ManagerFloorPlanPage() {
     const delta = stepMap[e.key]
     if (!delta) return
     e.preventDefault()
-    const nextX = snap(table.posX + delta[0], CANVAS_W - NODE_W - 20)
-    const nextY = snap(table.posY + delta[1], CANVAS_H - NODE_H - 20)
+    const geom = getTableGeometry(table.capacity)
+    const nextX = snap(table.posX + delta[0], CANVAS_W - geom.width - 16)
+    const nextY = snap(table.posY + delta[1], CANVAS_H - geom.height - 16)
     setHasUnsaved(true)
     setDrafts((prev) => ({
       ...prev,
@@ -174,16 +179,18 @@ export function ManagerFloorPlanPage() {
     }))
   }
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (e: React.PointerEvent, scale: number) => {
     const drag = dragRef.current
     if (!drag) return
+    const draggedTable = drafts[drag.tableId]
+    const geom = getTableGeometry(draggedTable?.capacity ?? 4)
     const nextX = snap(
-      drag.origX + (e.clientX - drag.startX),
-      CANVAS_W - NODE_W - 20
+      drag.origX + (e.clientX - drag.startX) / scale,
+      CANVAS_W - geom.width - 16
     )
     const nextY = snap(
-      drag.origY + (e.clientY - drag.startY),
-      CANVAS_H - NODE_H - 20
+      drag.origY + (e.clientY - drag.startY) / scale,
+      CANVAS_H - geom.height - 16
     )
     setHasUnsaved(true)
     setDrafts((prev) => ({
@@ -268,80 +275,70 @@ export function ManagerFloorPlanPage() {
               <span>Lưới {SNAP_GRID}px · Kéo thả hoặc dùng phím mũi tên</span>
             </div>
 
-            <div
-              ref={canvasRef}
+            <FloorPlanCanvas
+              tables={zoneTables}
+              showGrid
+              snapGrid={SNAP_GRID}
               onPointerMove={handlePointerMove}
               onPointerUp={stopDragging}
               onPointerLeave={stopDragging}
-              className="relative w-full overflow-x-auto rounded-xl border border-line bg-bg"
-              style={{ height: `${CANVAS_H}px`, minHeight: `${CANVAS_H}px` }}
-            >
-              <div
-                className="relative h-full"
-                style={{
-                  minWidth: `${CANVAS_W}px`,
-                  backgroundImage:
-                    'radial-gradient(circle, var(--line-strong) 1px, transparent 1px)',
-                  backgroundSize: `${SNAP_GRID}px ${SNAP_GRID}px`,
-                }}
-              >
-                {zoneTables.map((table) => {
-                  const selected = selectedTable?.id === table.id
-                  return (
-                    <div
-                      key={table.id}
-                      role="button"
-                      tabIndex={0}
-                      data-testid={`floor-node-${table.tableNumber}`}
-                      onClick={() => {
-                        setSelectedId(table.id)
-                        setDeleteError(null)
-                      }}
-                      onKeyDown={(e) => handleKeyMove(table, e)}
-                      onPointerDown={(e) => {
-                        setSelectedId(table.id)
-                        setDeleteError(null)
-                        dragRef.current = {
-                          tableId: table.id,
-                          startX: e.clientX,
-                          startY: e.clientY,
-                          origX: table.posX,
-                          origY: table.posY,
-                        }
-                      }}
-                      style={{
-                        left: `${Math.min(CANVAS_W - NODE_W - 20, Math.max(16, table.posX))}px`,
-                        top: `${Math.min(CANVAS_H - NODE_H - 20, Math.max(16, table.posY))}px`,
-                        width: `${NODE_W}px`,
-                        height: `${NODE_H}px`,
-                      }}
-                      className={cn(
-                        'absolute select-none rounded-xl border p-2.5 flex flex-col justify-between transition-shadow cursor-grab active:cursor-grabbing',
-                        selected
-                          ? 'border-accent bg-card ring-2 ring-accent/40 shadow-lg'
-                          : 'border-line bg-surface hover:border-accent/60'
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="inline-flex items-center gap-1 text-sm font-bold text-ink">
-                          <GripVertical className="w-3.5 h-3.5 text-ink-subtle" />
-                          {table.tableNumber}
-                        </span>
-                        <span className="rounded bg-card px-1.5 py-0.5 text-[11px] font-medium text-ink-muted tabular-nums">
-                          {table.capacity} ghế
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <StatusBadge status={table.status} />
-                      </div>
-                      <span className="text-[10px] font-mono text-ink-subtle tabular-nums">
-                        {table.posX}, {table.posY} px
+              renderTable={(table, { left, top, width, height, shapeClass }) => {
+                const selected = selectedTable?.id === table.id
+                return (
+                  <div
+                    key={table.id}
+                    role="button"
+                    tabIndex={0}
+                    data-testid={`floor-node-${table.tableNumber}`}
+                    onClick={() => {
+                      setSelectedId(table.id)
+                      setDeleteError(null)
+                    }}
+                    onKeyDown={(e) => handleKeyMove(table, e)}
+                    onPointerDown={(e) => {
+                      setSelectedId(table.id)
+                      setDeleteError(null)
+                      dragRef.current = {
+                        tableId: table.id,
+                        startX: e.clientX,
+                        startY: e.clientY,
+                        origX: table.posX,
+                        origY: table.posY,
+                      }
+                    }}
+                    style={{
+                      left: `${left}px`,
+                      top: `${top}px`,
+                      width: `${width}px`,
+                      height: `${height}px`,
+                    }}
+                    className={cn(
+                      'absolute select-none border p-2.5 flex flex-col justify-between transition-shadow cursor-grab active:cursor-grabbing',
+                      shapeClass,
+                      selected
+                        ? 'border-accent bg-card ring-2 ring-accent/40 shadow-lg'
+                        : 'border-line bg-surface hover:border-accent/60'
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="inline-flex items-center gap-0.5 text-sm font-bold text-ink">
+                        <GripVertical className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
+                        {table.tableNumber}
+                      </span>
+                      <span className="rounded bg-card px-1.5 py-0.5 text-[11px] font-medium text-ink-muted tabular-nums">
+                        {table.capacity} ghế
                       </span>
                     </div>
-                  )
-                })}
-              </div>
-            </div>
+                    <div className="flex items-center justify-center">
+                      <StatusBadge status={table.status} />
+                    </div>
+                    <span className="text-[10px] font-mono text-ink-subtle tabular-nums text-center">
+                      {table.posX}, {table.posY} px
+                    </span>
+                  </div>
+                )
+              }}
+            />
           </Card>
 
           <Card className="min-w-0 space-y-5">

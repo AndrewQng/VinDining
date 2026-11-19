@@ -31,6 +31,10 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await expect(page).toHaveURL(/\/dat-ban\?set=set-thuong-hang/)
 
     // Step 1: 4 khách (default) -> Tìm bàn trống
+    await expect(page.locator('[data-bg-photo]')).toHaveAttribute(
+      'data-bg-photo',
+      'hero_desktop.jpg'
+    )
     await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
 
     // Step 2: Guest floor plan must NOT display internal statuses
@@ -38,11 +42,43 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await expect(page.getByText(/Chờ thanh toán/i)).toHaveCount(0)
     await expect(page.getByText(/Đang phục vụ/i)).toHaveCount(0)
 
+    // Keyboard arrow + Enter selection on floor plan
+    const b03Radio = page.getByRole('radio', { name: /B03/i })
+    await b03Radio.focus()
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('Enter')
+
     // Pick free table B06 (6 ghế, Còn trống) -> booked tomorrow -> B03 is also free tomorrow
     await page.getByRole('radio', { name: /B06/i }).click()
     await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
 
-    // Step 3: Set Menu Thượng Hạng already pre-selected -> shows 7.200.000 & 2.160.000
+    // Step 3: Set Menu Thượng Hạng already pre-selected -> background crossfades to set photo
+    await expect(page.locator('[data-bg-photo]')).toHaveAttribute(
+      'data-bg-photo',
+      'set_thuong_hang.jpg'
+    )
+    await page.getByRole('button', { name: /Gọi món tại nhà hàng/i }).click()
+    await expect(page.locator('[data-bg-photo]')).toHaveAttribute(
+      'data-bg-photo',
+      'hero_desktop.jpg'
+    )
+    await page.getByRole('button', { name: /Set Menu Thượng Hạng/i }).click()
+    await expect(page.locator('[data-bg-photo]')).toHaveAttribute(
+      'data-bg-photo',
+      'set_thuong_hang.jpg'
+    )
+
+    // Clickable completed stepper dot goes back to Step 2 and preserves selection
+    await page
+      .getByRole('button', { name: /Quay lại bước 2: Chọn bàn/i })
+      .click()
+    await expect(page.getByRole('radio', { name: /B06/i })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+    await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
+
+    // Step 3: shows 7.200.000 & 2.160.000
     await expect(page.getByText(/7\.200\.000 ₫/)).toBeVisible()
     await expect(page.getByText(/2\.160\.000 ₫/).first()).toBeVisible()
     await page

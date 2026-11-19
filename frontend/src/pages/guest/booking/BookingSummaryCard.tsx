@@ -19,7 +19,7 @@ export function BookingSummaryCard({
   })
 
   return (
-    <Card className="lg:sticky lg:top-24 space-y-4">
+    <Card className="bg-surface/95 backdrop-blur-md lg:sticky lg:top-24 space-y-4">
       <h2 className="text-base font-semibold text-accent">Tóm tắt đặt bàn</h2>
       <ul className="space-y-2 text-sm text-ink-muted">
         <li className="flex justify-between gap-2">

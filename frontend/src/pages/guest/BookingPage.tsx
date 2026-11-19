@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
@@ -23,6 +23,7 @@ import {
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { menuApi, reservationApi } from '@/services/api'
+import { useThemeStore } from '@/stores/useThemeStore'
 import type { ApiErrorResponse, TableZone } from '@/types'
 import {
   BOOKING_TIMES,
@@ -36,18 +37,24 @@ import {
   type BookingDraft,
   type BookingStep,
 } from './bookingState'
+import {
+  BookingProgressStepper,
+  type StepItem,
+} from './booking/BookingProgressStepper'
 import { BookingStepFloorPlan } from './booking/BookingStepFloorPlan'
 import { BookingStepSetMenu } from './booking/BookingStepSetMenu'
 import { BookingSummaryCard } from './booking/BookingSummaryCard'
 
-const STEPPER_ITEMS: { step: BookingStep; label: string }[] = [
-  { step: 'time-zone', label: '1. Thời gian & khu vực' },
-  { step: 'table', label: '2. Chọn bàn' },
-  { step: 'set-menu', label: '3. Set Menu' },
-  { step: 'contact', label: '4. Liên hệ' },
-  { step: 'hold', label: '5. Giữ chỗ & cọc' },
-  { step: 'confirmed', label: '6. Xác nhận' },
+const STEPPER_ITEMS: StepItem[] = [
+  { step: 'time-zone', label: 'Thời gian & khu vực' },
+  { step: 'table', label: 'Chọn bàn' },
+  { step: 'set-menu', label: 'Set Menu' },
+  { step: 'contact', label: 'Liên hệ' },
+  { step: 'hold', label: 'Giữ chỗ & cọc' },
+  { step: 'confirmed', label: 'Xác nhận' },
 ]
+
+const DEFAULT_BOOKING_PHOTO = 'hero_desktop.jpg'
 
 const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
 
@@ -57,6 +64,7 @@ export function BookingPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
+  const theme = useThemeStore((s) => s.theme)
 
   const querySetId = searchParams.get('set')
   const queryZone = searchParams.get('zone') as TableZone | null
@@ -160,44 +168,76 @@ export function BookingPage() {
     navigate('/dat-ban', { replace: true })
   }
 
-  const currentIdx = STEPPER_ITEMS.findIndex((s) => s.step === draft.step)
+  const activeBgPhoto =
+    draft.step === 'set-menu' && selectedSet?.imageUrl
+      ? selectedSet.imageUrl.replace(/^.*\//, '')
+      : DEFAULT_BOOKING_PHOTO
+
+  const backgroundPhotos = useMemo(() => {
+    const names = new Set<string>([DEFAULT_BOOKING_PHOTO])
+    for (const set of tastingMenus) {
+      if (set.imageUrl) {
+        names.add(set.imageUrl.replace(/^.*\//, ''))
+      }
+    }
+    return Array.from(names)
+  }, [tastingMenus])
+
   const showSummarySidebar =
     draft.step !== 'confirmed' && draft.step !== 'expired'
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      <PageHeader
-        title="Đặt bàn trực tuyến"
-        subtitle="Chọn thời gian, khu vực, bàn ăn và Set Menu đặt trước"
-        backTo="/"
-        backLabel="Về trang chủ"
-      />
+    <div
+      data-bg-photo={activeBgPhoto}
+      className="relative min-h-[calc(100dvh-4rem)] overflow-x-clip"
+    >
+      {/* Full-bleed restaurant / Set Menu background with smooth crossfade and readable overlay */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute inset-0 z-0 overflow-hidden"
+      >
+        {backgroundPhotos.map((photo) => {
+          const isCurrent = photo === activeBgPhoto
+          return (
+            <img
+              key={photo}
+              src={`/images/${theme}/${photo}`}
+              alt=""
+              className={cn(
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none',
+                isCurrent ? 'opacity-100' : 'opacity-0'
+              )}
+            />
+          )
+        })}
+        <div
+          className={cn(
+            'absolute inset-0 transition-colors duration-300 motion-reduce:transition-none',
+            theme === 'dark'
+              ? 'bg-gradient-to-b from-bg/85 via-bg/75 to-bg/90'
+              : 'bg-gradient-to-b from-bg/88 via-bg/78 to-bg/90'
+          )}
+        />
+      </div>
 
-      {/* Visible Stepper */}
-      <nav aria-label="Tiến trình đặt bàn">
-        <ol className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          {STEPPER_ITEMS.map((item, idx) => {
-            const active = item.step === draft.step
-            const completed = currentIdx > idx || draft.step === 'confirmed'
-            return (
-              <li
-                key={item.step}
-                aria-current={active ? 'step' : undefined}
-                className={cn(
-                  'px-3 py-2 rounded-lg border text-xs font-medium transition-colors',
-                  active
-                    ? 'border-primary bg-card text-accent'
-                    : completed
-                      ? 'border-line bg-surface text-ink'
-                      : 'border-line bg-surface/50 text-ink-subtle'
-                )}
-              >
-                {item.label}
-              </li>
-            )
-          })}
-        </ol>
-      </nav>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md p-4 sm:p-6 space-y-5">
+          <PageHeader
+            title="Đặt bàn trực tuyến"
+            subtitle="Chọn thời gian, khu vực, bàn ăn và Set Menu đặt trước"
+            backTo="/"
+            backLabel="Về trang chủ"
+          />
+
+          <BookingProgressStepper
+            steps={STEPPER_ITEMS}
+            currentStep={draft.step}
+            onSelectStep={(targetStep: BookingStep) => {
+              setSubmitError(null)
+              setDraft((d) => ({ ...d, step: targetStep }))
+            }}
+          />
+        </div>
 
       <div
         className={cn(
@@ -208,7 +248,7 @@ export function BookingPage() {
         <div className={cn(showSummarySidebar && 'lg:col-span-2', 'space-y-6')}>
           {/* Step 1: Date, Time, Guests, Zone */}
           {draft.step === 'time-zone' && (
-            <Card className="space-y-6">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-6">
               <h2 className="text-base font-semibold text-accent">
                 Chọn thời gian & khu vực
               </h2>
@@ -369,7 +409,7 @@ export function BookingPage() {
 
           {/* Step 4: Contact info */}
           {draft.step === 'contact' && (
-            <Card className="space-y-5">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-5">
               <div>
                 <h2 className="text-base font-semibold text-accent">
                   Thông tin liên hệ
@@ -445,7 +485,7 @@ export function BookingPage() {
 
           {/* Step 5: 17-minute Hold */}
           {draft.step === 'hold' && draft.holdReservation && (
-            <Card className="space-y-6">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-6">
               <div className="rounded-xl bg-card border border-line p-6 text-center space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                   Thời gian giữ chỗ còn lại
@@ -518,7 +558,7 @@ export function BookingPage() {
 
           {/* Error G1.4x: Hold expired */}
           {draft.step === 'expired' && (
-            <Card className="text-center space-y-5 py-8">
+            <Card className="bg-surface/95 backdrop-blur-md text-center space-y-5 py-8">
               <div className="w-12 h-12 rounded-xl bg-card border border-line flex items-center justify-center text-danger mx-auto">
                 <Clock className="w-6 h-6" aria-hidden="true" />
               </div>
@@ -540,7 +580,7 @@ export function BookingPage() {
 
           {/* Step 6/7: Confirmed */}
           {draft.step === 'confirmed' && draft.confirmedReservation && (
-            <Card className="space-y-6 py-8">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-6 py-8">
               <div className="text-center space-y-2">
                 <CheckCircle2
                   className="w-10 h-10 text-accent mx-auto"
@@ -617,6 +657,7 @@ export function BookingPage() {
             <BookingSummaryCard draft={draft} selectedSet={selectedSet} />
           </div>
         )}
+      </div>
       </div>
     </div>
   )

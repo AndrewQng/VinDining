@@ -25,7 +25,7 @@ export function BookingStepSetMenu({
   const noSetDeposit = calculateDepositAmount({ guestCount: partySize })
 
   return (
-    <Card className="space-y-5">
+    <Card className="bg-surface/95 backdrop-blur-md space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-accent">
