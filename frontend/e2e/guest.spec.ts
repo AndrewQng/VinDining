@@ -36,13 +36,13 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await expect(page.getByTestId('guest-photo-bg')).toBeVisible()
     await page.getByTestId('booking-nav-next').click()
 
-    // Step 2: Guest floor plan must NOT display internal statuses and must center fitted tables
+    // Step 2: Guest floor plan must NOT display internal statuses and must keep the room's tables centred
     await expect(page.getByText(/Đang dọn/i)).toHaveCount(0)
     await expect(page.getByText(/Chờ thanh toán/i)).toHaveCount(0)
     await expect(page.getByText(/Đang phục vụ/i)).toHaveCount(0)
 
     const floorBalance = await page
-      .getByRole('radiogroup', { name: /Chọn bàn tại Sảnh chính/i })
+      .getByRole('radiogroup', { name: /Sơ đồ bàn Sảnh chính/i })
       .evaluate((canvas) => {
         const cb = canvas.getBoundingClientRect()
         const nodes = Array.from(canvas.querySelectorAll('[role="radio"]'))

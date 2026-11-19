@@ -1,17 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import {
   FLOOR_CANVAS_H,
   FLOOR_CANVAS_W,
   FLOOR_SNAP_GRID,
-  computeFittedFloorTransform,
   getClampedTablePosition,
   type FloorPlanTableBase,
 } from './floorPlanGeometry'
 
 export interface FloorPlanCanvasProps<T extends FloorPlanTableBase> {
   tables: T[]
-  fit?: boolean
   showGrid?: boolean
   snapGrid?: number
   role?: string
@@ -27,12 +25,11 @@ export interface FloorPlanCanvasProps<T extends FloorPlanTableBase> {
 }
 
 /**
- * Shared responsive 2D floor plan canvas used by both Manager M2 editor and Guest G1 booking.
- * M2 keeps exact canonical 680x580 coordinates; G1 opts into `fit` to scale and center a zone's tables.
+ * M2 editor canvas: tables at their canonical 680x580 coordinates, scaled down to the container width.
+ * The guest picker (G1.2) draws the same coordinates through `GuestRoomPlan`.
  */
 export function FloorPlanCanvas<T extends FloorPlanTableBase>({
   tables,
-  fit = false,
   showGrid = false,
   snapGrid = FLOOR_SNAP_GRID,
   role,
@@ -60,24 +57,7 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
     return () => observer.disconnect()
   }, [])
 
-  const transform = useMemo(() => {
-    if (fit) {
-      return computeFittedFloorTransform(tables, containerWidth)
-    }
-    const scale =
-      containerWidth > 0 ? Math.min(1, containerWidth / FLOOR_CANVAS_W) : 1
-    const scaledWidth = Math.round(FLOOR_CANVAS_W * scale)
-    return {
-      scale,
-      contentWidth: FLOOR_CANVAS_W,
-      contentHeight: FLOOR_CANVAS_H,
-      scaledWidth,
-      scaledHeight: Math.round(FLOOR_CANVAS_H * scale),
-      offsetX: 0,
-      originX: 0,
-      originY: 0,
-    }
-  }, [fit, tables, containerWidth])
+  const scale = containerWidth > 0 ? Math.min(1, containerWidth / FLOOR_CANVAS_W) : 1
 
   return (
     <div
@@ -85,7 +65,7 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
       role={role}
       aria-label={ariaLabel}
       onPointerMove={
-        onPointerMove ? (e) => onPointerMove(e, transform.scale) : undefined
+        onPointerMove ? (e) => onPointerMove(e, scale) : undefined
       }
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerLeave}
@@ -93,15 +73,14 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
         'relative w-full overflow-hidden rounded-xl border border-line bg-bg',
         className
       )}
-      style={{ height: `${transform.scaledHeight}px` }}
+      style={{ height: `${Math.round(FLOOR_CANVAS_H * scale)}px` }}
     >
       <div
         className="relative"
         style={{
-          width: `${transform.contentWidth}px`,
-          height: `${transform.contentHeight}px`,
-          marginLeft: `${transform.offsetX}px`,
-          transform: `scale(${transform.scale})`,
+          width: `${FLOOR_CANVAS_W}px`,
+          height: `${FLOOR_CANVAS_H}px`,
+          transform: `scale(${scale})`,
           transformOrigin: 'top left',
           backgroundImage: showGrid
             ? 'radial-gradient(circle, var(--line-strong) 1px, transparent 1px)'
@@ -111,12 +90,7 @@ export function FloorPlanCanvas<T extends FloorPlanTableBase>({
       >
         {tables.map((table) => {
           const pos = getClampedTablePosition(table)
-          return renderTable(table, {
-            ...pos,
-            left: pos.left - transform.originX,
-            top: pos.top - transform.originY,
-            scale: transform.scale,
-          })
+          return renderTable(table, { ...pos, scale })
         })}
       </div>
     </div>

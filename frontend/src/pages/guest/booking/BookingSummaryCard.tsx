@@ -3,19 +3,14 @@ import { calculateDepositAmount, formatDate, TABLE_ZONE_LABELS } from '@/domain'
 import { Card, Money } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { useThemeStore } from '@/stores/useThemeStore'
-import type { TableZone, TastingMenuDto } from '@/types'
+import type { TastingMenuDto } from '@/types'
 import { type BookingDraft } from '../bookingState'
+import { ZONE_PHOTOS } from './useBookingAvailability'
 
 export interface BookingSummaryCardProps {
   draft: BookingDraft
   selectedSet: TastingMenuDto | null
   tastingMenus: TastingMenuDto[]
-}
-
-const ZONE_PHOTOS: Record<TableZone, string> = {
-  MainHall: 'zone_sanh_chinh.jpg',
-  VIP: 'zone_vip.jpg',
-  Balcony: 'zone_ban_cong.jpg',
 }
 
 /** Fixed-height booking summary card with 16:9 zone/set preview photo and single-line rows. */
@@ -78,6 +73,8 @@ export function BookingSummaryCard({
       data-testid="booking-summary-card"
       className="bg-surface/95 backdrop-blur-md space-y-4"
     >
+      <h2 className="text-base font-semibold text-accent">Tóm tắt đặt bàn</h2>
+
       <div
         data-testid="booking-summary-photo"
         className="relative aspect-video w-full overflow-hidden rounded-xl border border-line bg-card"
@@ -98,8 +95,6 @@ export function BookingSummaryCard({
           )
         })}
       </div>
-
-      <h2 className="text-base font-semibold text-accent">Tóm tắt đặt bàn</h2>
 
       <ul className="space-y-2 text-sm text-ink-muted">
         {rows.map((row) => (

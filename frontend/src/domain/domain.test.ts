@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { computeFittedFloorTransform } from '@/components/floor-plan/floorPlanGeometry'
 import {
   areAllItemsServed,
   buildBillLineItems,
@@ -879,24 +878,5 @@ describe('groupPassHistory', () => {
     expect(groups[0].items[0].remakeCount).toBe(2)
     expect(groups[1].tableNumber).toBe('B01')
     expect(groups[1].items).toHaveLength(2)
-  })
-})
-
-describe('FloorPlanCanvas fit view transform', () => {
-  it('centers zone bounding box symmetrically on desktop and scales down to fit mobile', () => {
-    const tables = [
-      { id: 'b01', capacity: 2, posX: 80, posY: 80 },
-      { id: 'b08', capacity: 8, posX: 220, posY: 440 },
-    ]
-    const desktop = computeFittedFloorTransform(tables, 676)
-    expect(desktop.scaledWidth).toBeLessThanOrEqual(676)
-    expect(desktop.offsetX).toBeGreaterThan(0)
-    expect(
-      Math.abs(desktop.offsetX - (676 - desktop.scaledWidth - desktop.offsetX))
-    ).toBeLessThanOrEqual(1)
-
-    const mobile = computeFittedFloorTransform(tables, 310)
-    expect(mobile.scaledWidth).toBeLessThanOrEqual(310)
-    expect(mobile.scale).toBeLessThan(1)
   })
 })

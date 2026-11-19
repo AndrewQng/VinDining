@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
@@ -10,7 +10,6 @@ import {
   Countdown,
   Input,
   Money,
-  NumberStepper,
   StatusBadge,
   Textarea,
 } from '@/components/ui'
@@ -25,7 +24,6 @@ import { cn } from '@/lib/utils'
 import { menuApi, reservationApi } from '@/services/api'
 import type { ApiErrorResponse, TableZone } from '@/types'
 import {
-  BOOKING_TIMES,
   buildReservationIso,
   clearBookingDraft,
   createInitialBookingDraft,
@@ -41,8 +39,9 @@ import {
   BookingProgressStepper,
   type StepItem,
 } from './booking/BookingProgressStepper'
-import { BookingStepFloorPlan } from './booking/BookingStepFloorPlan'
 import { BookingStepSetMenu } from './booking/BookingStepSetMenu'
+import { BookingStepTable } from './booking/BookingStepTable'
+import { BookingStepTimeZone } from './booking/BookingStepTimeZone'
 import { BookingSummaryCard } from './booking/BookingSummaryCard'
 
 const STEPPER_ITEMS: StepItem[] = [
@@ -56,7 +55,7 @@ const STEPPER_ITEMS: StepItem[] = [
 
 const BOOKING_CONTACT_FORM_ID = 'booking-contact-form'
 
-const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
+const NO_TABLE = { tableId: null, tableNumber: null, tableCapacity: null } as const
 
 /** G1 — Multi-step guest reservation & deposit booking flow. */
 export function BookingPage() {
@@ -88,6 +87,25 @@ export function BookingPage() {
   useEffect(() => {
     saveBookingDraft(draft)
   }, [draft])
+
+  // A new step starts at the top of its card: if the card begins above the
+  // screen (the guest scrolled down to the buttons on a phone), jump back to it.
+  // Focus moves to the new step so keyboard and screen-reader users land on it.
+  const stepCardRef = useRef<HTMLDivElement>(null)
+  const firstStepRender = useRef(true)
+  useEffect(() => {
+    const card = stepCardRef.current
+    if (!card) return
+    if (firstStepRender.current) {
+      firstStepRender.current = false
+      return
+    }
+    const top = card.getBoundingClientRect().top
+    if (top < 0) {
+      window.scrollTo({ top: Math.max(0, window.scrollY + top - 80) })
+    }
+    card.focus({ preventScroll: true })
+  }, [draft.step])
 
   useEffect(() => {
     if (
@@ -198,121 +216,27 @@ export function BookingPage() {
       >
         <div
           key={draft.step}
+          ref={stepCardRef}
+          tabIndex={-1}
+          role="region"
+          aria-label={STEPPER_ITEMS.find((i) => i.step === draft.step)?.label}
           data-testid="booking-step-card"
-          className={cn(showSummarySidebar && 'lg:col-span-2', 'animate-step-fade space-y-6')}
+          className={cn(showSummarySidebar && 'lg:col-span-2', 'animate-step-fade space-y-6 outline-none')}
         >
-          {/* Step 1: Date, Time, Guests, Zone */}
           {draft.step === 'time-zone' && (
-            <Card className="bg-surface/95 backdrop-blur-md space-y-6">
-              <h2 className="text-base font-semibold text-accent">
-                Chọn thời gian & khu vực
-              </h2>
-
-              <Input
-                label="Ngày dùng bữa"
-                type="date"
-                value={draft.date}
-                onChange={(e) =>
-                  setDraft((d) => ({
-                    ...d,
-                    date: e.target.value,
-                    tableId: null,
-                    tableNumber: null,
-                  }))
-                }
-              />
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Khung giờ đặt bàn
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {BOOKING_TIMES.map((t) => {
-                    const selected = draft.time === t
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setDraft((d) => ({ ...d, time: t }))}
-                        aria-pressed={selected}
-                        className={cn(
-                          'px-4 py-2 rounded-lg border text-sm font-medium tabular-nums transition-colors cursor-pointer',
-                          selected
-                            ? 'bg-primary text-on-primary border-transparent'
-                            : 'bg-card border-line text-ink hover:bg-card-hover'
-                        )}
-                      >
-                        {t}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Số lượng khách
-                </span>
-                <div className="flex items-center gap-3">
-                  <NumberStepper
-                    value={draft.partySize}
-                    min={1}
-                    max={10}
-                    label="Số lượng khách"
-                    onChange={(next) =>
-                      setDraft((d) => ({
-                        ...d,
-                        partySize: next,
-                        tableId: null,
-                        tableNumber: null,
-                      }))
-                    }
-                  />
-                  <span className="text-sm text-ink-muted">
-                    {draft.partySize} khách
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Khu vực dùng bữa
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  {ZONES.map((z) => {
-                    const selected = draft.zone === z
-                    return (
-                      <button
-                        key={z}
-                        type="button"
-                        onClick={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            zone: z,
-                            tableId: null,
-                            tableNumber: null,
-                          }))
-                        }
-                        aria-pressed={selected}
-                        className={cn(
-                          'px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer',
-                          selected
-                            ? 'border-primary ring-1 ring-primary bg-card text-accent'
-                            : 'border-line bg-card text-ink-muted hover:text-ink'
-                        )}
-                      >
-                        {TABLE_ZONE_LABELS[z]}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </Card>
+            <BookingStepTimeZone
+              date={draft.date}
+              time={draft.time}
+              partySize={draft.partySize}
+              zone={draft.zone}
+              onChange={(patch) =>
+                setDraft((d) => ({ ...d, ...patch, ...NO_TABLE }))
+              }
+            />
           )}
 
-          {/* Step 2: Floor plan */}
           {draft.step === 'table' && (
-            <BookingStepFloorPlan
+            <BookingStepTable
               date={draft.date}
               time={draft.time}
               partySize={draft.partySize}
@@ -326,17 +250,8 @@ export function BookingPage() {
                   tableCapacity: table.capacity,
                 }))
               }
-              onSwitchSuggestion={(nextTime, nextZone) =>
-                setDraft((d) => ({
-                  ...d,
-                  time: nextTime,
-                  zone: nextZone,
-                  tableId: null,
-                  tableNumber: null,
-                }))
-              }
-              onBack={handleBack}
-              onNext={() => setDraft((d) => ({ ...d, step: 'set-menu' }))}
+              onChangeZone={(zone) => setDraft((d) => ({ ...d, zone, ...NO_TABLE }))}
+              onChangeTime={(time) => setDraft((d) => ({ ...d, time, ...NO_TABLE }))}
             />
           )}
 
