@@ -8,11 +8,13 @@ import { cn } from '@/lib/utils'
 import { authApi, serviceCallApi, tableApi } from '@/services/api'
 import { useRealtime } from '@/services/realtime'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 import { useToastStore } from '@/stores/useToastStore'
 import { useWaitstaffNotificationsStore } from '@/stores/useWaitstaffNotificationsStore'
 
 /** Waitstaff smartphone shell with top bar, staff identity strip, realtime notifications, and bottom navigation. */
 export function StaffMobileLayout() {
+  useThemeArea('staff')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const user = useAuthStore((s) => s.user)

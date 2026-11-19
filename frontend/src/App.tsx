@@ -10,6 +10,7 @@ import {
   WallLayout,
 } from '@/layouts'
 import { isMockMode } from '@/lib/utils'
+import { useThemeArea } from '@/stores/useThemeStore'
 
 const HomePage = lazy(() =>
   import('@/pages/guest/HomePage').then((m) => ({ default: m.HomePage }))
@@ -149,6 +150,7 @@ function PageFallback() {
 }
 
 function QrMenuShell() {
+  useThemeArea('guest')
   return (
     <div className="min-h-screen bg-bg text-ink flex flex-col">
       <header className="border-b border-line bg-surface/90 backdrop-blur-md">

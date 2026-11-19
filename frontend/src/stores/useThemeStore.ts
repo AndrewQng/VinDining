@@ -1,6 +1,8 @@
+import { useLayoutEffect } from 'react'
 import { create } from 'zustand'
 
 export type ThemeMode = 'dark' | 'light'
+export type ThemeArea = 'guest' | 'staff'
 
 const THEME_STORAGE_KEY = 'vd-theme'
 
@@ -50,3 +52,12 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     set({ theme: next })
   },
 }))
+
+/** Sets <html data-area="guest|staff"> synchronously before paint so light mode selects white-gold or white-blue. */
+export function useThemeArea(area: ThemeArea): void {
+  useLayoutEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-area', area)
+    }
+  }, [area])
+}

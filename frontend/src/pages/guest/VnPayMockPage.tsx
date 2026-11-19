@@ -125,7 +125,7 @@ export function VnPayMockPage() {
             className={cn(
               'p-3.5 rounded-xl border text-left transition-colors space-y-1 cursor-pointer',
               method === 'VietQR'
-                ? 'border-primary bg-card-hover text-accent'
+                ? 'border-primary ring-1 ring-primary bg-card text-accent'
                 : 'border-line bg-card text-ink-muted hover:text-ink'
             )}
           >
@@ -142,7 +142,7 @@ export function VnPayMockPage() {
             className={cn(
               'p-3.5 rounded-xl border text-left transition-colors space-y-1 cursor-pointer',
               method === 'Card'
-                ? 'border-primary bg-card-hover text-accent'
+                ? 'border-primary ring-1 ring-primary bg-card text-accent'
                 : 'border-line bg-card text-ink-muted hover:text-ink'
             )}
           >

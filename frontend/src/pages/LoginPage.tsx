@@ -13,11 +13,13 @@ import {
   isRouteAllowedForRole,
   useAuthStore,
 } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 import { toast } from '@/stores/useToastStore'
 import type { ApiErrorResponse } from '@/types'
 
 /** S1 — Shared staff login page with lockout feedback and mock demo account helper. */
 export function LoginPage() {
+  useThemeArea('staff')
   useDocumentTitle('Đăng nhập')
   const navigate = useNavigate()
   const location = useLocation()

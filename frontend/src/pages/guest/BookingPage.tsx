@@ -186,7 +186,7 @@ export function BookingPage() {
                 className={cn(
                   'px-3 py-2 rounded-lg border text-xs font-medium transition-colors',
                   active
-                    ? 'border-primary bg-card-hover text-accent'
+                    ? 'border-primary bg-card text-accent'
                     : completed
                       ? 'border-line bg-surface text-ink'
                       : 'border-line bg-surface/50 text-ink-subtle'
@@ -302,7 +302,7 @@ export function BookingPage() {
                         className={cn(
                           'px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer',
                           selected
-                            ? 'border-primary bg-card-hover text-accent'
+                            ? 'border-primary ring-1 ring-primary bg-card text-accent'
                             : 'border-line bg-card text-ink-muted hover:text-ink'
                         )}
                       >

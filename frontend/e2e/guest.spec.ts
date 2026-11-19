@@ -205,12 +205,19 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     ]) {
       await page.goto(path)
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
       await page
         .getByRole('button', { name: /Chuyển sang giao diện sáng/i })
         .click()
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
+      const primaryToken = await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--primary').trim().toLowerCase()
+      )
+      expect(primaryToken).toBe('#c68e27')
       await page.reload()
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
       // Toggle back to dark for next iteration
       await page
         .getByRole('button', { name: /Chuyển sang giao diện tối/i })

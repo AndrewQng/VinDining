@@ -17,6 +17,7 @@ import { Button, Drawer, ThemeToggle, Wordmark } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { authApi } from '@/services/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 
 export interface StaffDesktopLayoutProps {
   area: 'cashier' | 'manager'
@@ -90,6 +91,7 @@ const OTHER_STAFF_LINKS: NavEntry[] = [
 
 /** Desktop workspace shell with sidebar navigation for Cashier and Manager areas. */
 export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
+  useThemeArea('staff')
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)

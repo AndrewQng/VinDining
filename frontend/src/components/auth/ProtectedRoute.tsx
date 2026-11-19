@@ -3,6 +3,7 @@ import { ShieldAlert } from 'lucide-react'
 import { STAFF_ROLE_LABELS } from '@/domain'
 import { Button, Card } from '@/components/ui'
 import { getRoleHomeRoute, useAuthStore } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 import type { StaffRole } from '@/types'
 
 export interface ProtectedRouteProps {
@@ -11,6 +12,7 @@ export interface ProtectedRouteProps {
 
 /** Enforces staff authentication and RBAC matrix (Manager has access to all staff areas). */
 export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
+  useThemeArea('staff')
   const location = useLocation()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const user = useAuthStore((s) => s.user)

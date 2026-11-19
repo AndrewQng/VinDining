@@ -24,6 +24,7 @@ import {
   ThemedImage,
   Wordmark,
 } from '@/components/ui'
+import { useThemeArea } from '@/stores/useThemeStore'
 import { toast } from '@/stores/useToastStore'
 import type {
   MenuItemStatus,
@@ -60,6 +61,7 @@ const SERVICE_STATUSES: ServiceRequestStatus[] = ['Pending', 'Completed']
 
 /** Mock-mode component and status-badge gallery (/dev/ui). */
 export function UiGalleryPage() {
+  useThemeArea('staff')
   const [stepperVal, setStepperVal] = useState(4)
   const [activeTab, setActiveTab] = useState('tat-ca')
   const [modalOpen, setModalOpen] = useState(false)

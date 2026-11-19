@@ -107,8 +107,13 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.goto('/dang-nhap')
     await expect(page.getByRole('textbox', { name: /Tên đăng nhập/i })).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('data-area', 'staff')
     await scanAxe(page, '/dang-nhap', 'dark', collected)
     await scanAxe(page, '/dang-nhap', 'light', collected)
+    const staffPrimary = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--primary').trim().toLowerCase()
+    )
+    expect(staffPrimary).toBe('#1f5fbf')
 
     assertZeroViolations(collected)
   })

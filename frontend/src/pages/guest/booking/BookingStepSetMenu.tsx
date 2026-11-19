@@ -63,7 +63,7 @@ export function BookingStepSetMenu({
               className={cn(
                 'p-4 rounded-xl border text-left transition-colors flex flex-col justify-between gap-4 cursor-pointer',
                 isSelected
-                  ? 'border-primary ring-1 ring-primary bg-card-hover'
+                  ? 'border-primary ring-1 ring-primary bg-card'
                   : 'border-line bg-card hover:bg-card-hover'
               )}
             >
@@ -118,7 +118,7 @@ export function BookingStepSetMenu({
         className={cn(
           'w-full p-4 rounded-xl border text-left transition-colors cursor-pointer flex items-center justify-between gap-4',
           selectedSetId === null
-            ? 'border-primary ring-1 ring-primary bg-card-hover'
+            ? 'border-primary ring-1 ring-primary bg-card'
             : 'border-line bg-card hover:bg-card-hover'
         )}
       >
