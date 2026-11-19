@@ -1,14 +1,19 @@
 import axios from 'axios'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getHistorical120DayData } from './historicalSeed'
-import { createInitialMockDb } from './seed'
 import {
   ALL_MOCK_ROUTES,
   DEMO_STAFF_ACCOUNTS,
+  getMockDb,
   installMockAdapter,
   resetMockDb,
   runExpiryScan,
 } from './index'
+import { getHistorical120DayData } from './historicalSeed'
+import {
+  createInitialMockDb,
+  MOCK_DB_VERSION,
+  MOCK_SEED_VERSION,
+} from './seed'
 
 function createTestClient(nowProvider: () => Date = () => new Date()) {
   const client = axios.create({ baseURL: 'http://localhost/api' })
@@ -504,5 +509,55 @@ describe('Mock API §10 end-to-end stories', () => {
       (name) => !allowedNames.has(name)
     )
     expect(unexpected).toEqual([])
+  })
+
+  it('reseeds persisted mock DB when version is legacy or fingerprint mismatches and exposes 4 sets', () => {
+    expect(MOCK_DB_VERSION).toBe(2)
+    expect(MOCK_SEED_VERSION.startsWith('2-')).toBe(true)
+
+    const store = new Map<string, string>()
+    const prevStorage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => {
+          store.set(k, v)
+        },
+        removeItem: (k: string) => {
+          store.delete(k)
+        },
+        clear: () => {
+          store.clear()
+        },
+      },
+    })
+
+    try {
+      // 1. Old numeric version (1) with stale 2-set catalog
+      localStorage.setItem(
+        'vd-mock-db',
+        JSON.stringify({ version: 1, tastingMenus: [{ id: 'old-1' }, { id: 'old-2' }] })
+      )
+      const upgradedFromV1 = getMockDb()
+      expect(upgradedFromV1.version).toBe(MOCK_SEED_VERSION)
+      expect(upgradedFromV1.tastingMenus).toHaveLength(4)
+
+      // 2. Stale fingerprint (matching v2 prefix but different hash)
+      localStorage.setItem(
+        'vd-mock-db',
+        JSON.stringify({ version: '2-00000000', tastingMenus: [{ id: 'stale-1' }] })
+      )
+      const reseededFromHash = getMockDb()
+      expect(reseededFromHash.version).toBe(MOCK_SEED_VERSION)
+      expect(reseededFromHash.tastingMenus).toHaveLength(4)
+    } finally {
+      if (prevStorage) {
+        Object.defineProperty(globalThis, 'localStorage', prevStorage)
+      } else {
+        delete (globalThis as { localStorage?: unknown }).localStorage
+      }
+      resetMockDb()
+    }
   })
 })

@@ -79,7 +79,7 @@ export interface MockAuditLog {
 }
 
 export interface MockDatabase {
-  version: number
+  version: string
   staffs: MockStaffRecord[]
   sessions: Record<string, CurrentUserDto>
   categories: CategoryDto[]
@@ -94,7 +94,56 @@ export interface MockDatabase {
   auditLogs: MockAuditLog[]
 }
 
-export const MOCK_DB_VERSION = 1
+export const MOCK_DB_VERSION = 2
+
+function computeStaticSeedVersion(input: {
+  tables: readonly TableDto[]
+  tastingMenus: readonly TastingMenuDto[]
+  menuItems: readonly MenuItemDto[]
+  staffs: readonly MockStaffRecord[]
+}): string {
+  const canonical = JSON.stringify({
+    tables: input.tables.map((t) => ({
+      id: t.id,
+      tableNumber: t.tableNumber,
+      zone: t.zone,
+      capacity: t.capacity,
+      posX: t.posX,
+      posY: t.posY,
+    })),
+    tastingMenus: input.tastingMenus.map((s) => ({
+      id: s.id,
+      name: s.name,
+      price: s.price,
+      imageUrl: s.imageUrl,
+      items: s.items.map((i) => ({
+        menuItemId: i.menuItemId,
+        courseOrder: i.courseOrder,
+      })),
+    })),
+    menuItems: input.menuItems.map((m) => ({
+      id: m.id,
+      name: m.name,
+      price: m.price,
+      courseType: m.courseType,
+      status: m.status,
+      imageUrl: m.imageUrl,
+      prepTimeMinutes: m.prepTimeMinutes,
+    })),
+    staffs: input.staffs.map((s) => ({
+      id: s.id,
+      username: s.username,
+      fullName: s.fullName,
+      role: s.role,
+    })),
+  })
+  let hash = 2166136261
+  for (let i = 0; i < canonical.length; i += 1) {
+    hash ^= canonical.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return `${MOCK_DB_VERSION}-${(hash >>> 0).toString(16).padStart(8, '0')}`
+}
 
 export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   const nowIso = now.toISOString()
@@ -1328,7 +1377,12 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   ]
 
   return {
-    version: MOCK_DB_VERSION,
+    version: computeStaticSeedVersion({
+      tables,
+      tastingMenus,
+      menuItems,
+      staffs,
+    }),
     staffs,
     sessions: {},
     categories,
@@ -1371,3 +1425,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
     ],
   }
 }
+
+/** Stable version + static-catalog fingerprint so persisted mock DBs reseed when static seed changes. */
+export const MOCK_SEED_VERSION = createInitialMockDb(
+  new Date('2026-11-06T12:00:00.000Z')
+).version
