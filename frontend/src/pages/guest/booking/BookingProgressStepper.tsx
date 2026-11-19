@@ -1,4 +1,3 @@
-import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { BookingStep } from '../bookingState'
 
@@ -13,7 +12,7 @@ export interface BookingProgressStepperProps {
   onSelectStep: (step: BookingStep) => void
 }
 
-/** Progress line stepper with clickable completed dots, desktop labels, and compact mobile summary. */
+/** Progress line stepper matching Figma: thin track + numberless dots on desktop, compact fill bar on mobile. */
 export function BookingProgressStepper({
   steps,
   currentStep,
@@ -28,8 +27,10 @@ export function BookingProgressStepper({
         ? Math.max(0, steps.length - 2)
         : 0
 
-  const progressPct =
+  const desktopProgressPct =
     steps.length > 1 ? (activeIdx / (steps.length - 1)) * 100 : 0
+  const mobileProgressPct =
+    steps.length > 0 ? ((activeIdx + 1) / steps.length) * 100 : 0
 
   const currentLabel =
     currentStep === 'expired'
@@ -37,16 +38,16 @@ export function BookingProgressStepper({
       : (steps[activeIdx]?.label ?? '')
 
   return (
-    <nav aria-label="Tiến trình đặt bàn" className="space-y-3">
-      <div className="relative">
-        {/* Background & animated fill track spanning center of step 1 to center of step N */}
+    <nav aria-label="Tiến trình đặt bàn">
+      {/* Desktop: thin track with numberless dots and labels below */}
+      <div className="hidden sm:block relative">
         <div
           aria-hidden="true"
-          className="absolute top-3.5 sm:top-4 left-[8.3333%] right-[8.3333%] h-0.5 bg-line"
+          className="absolute top-[7px] left-[8.3333%] right-[8.3333%] h-0.5 bg-line"
         >
           <div
             className="h-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
-            style={{ width: `${progressPct}%` }}
+            style={{ width: `${desktopProgressPct}%` }}
           />
         </div>
 
@@ -58,33 +59,30 @@ export function BookingProgressStepper({
             const canClick = isCompleted && !isFinalized
 
             const dotNode = (
-              <span
-                className={cn(
-                  'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors motion-reduce:transition-none',
-                  isCompleted
-                    ? 'bg-primary border-primary text-on-primary'
-                    : isActive
-                      ? 'bg-surface border-primary text-accent ring-4 ring-primary/20'
-                      : 'bg-surface border-line-strong text-ink-subtle'
-                )}
-              >
-                {isCompleted ? (
-                  <Check className="w-3.5 h-3.5" aria-hidden="true" />
-                ) : (
-                  idx + 1
-                )}
+              <span className="h-4 flex items-center justify-center">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'rounded-full transition-all duration-300 motion-reduce:transition-none',
+                    isCompleted
+                      ? 'w-2.5 h-2.5 bg-primary'
+                      : isActive
+                        ? 'w-3.5 h-3.5 bg-primary ring-4 ring-primary/25'
+                        : 'w-2.5 h-2.5 border border-line-strong bg-surface'
+                  )}
+                />
               </span>
             )
 
             const labelNode = (
               <span
                 className={cn(
-                  'hidden sm:block mt-2 text-xs font-medium text-center leading-snug px-1',
+                  'mt-2 text-xs text-center leading-snug px-1',
                   isActive
                     ? 'text-accent font-semibold'
                     : isCompleted
-                      ? 'text-ink'
-                      : 'text-ink-subtle'
+                      ? 'text-ink-muted font-medium group-hover:text-ink'
+                      : 'text-ink-subtle font-medium'
                 )}
               >
                 {item.label}
@@ -119,13 +117,28 @@ export function BookingProgressStepper({
         </ol>
       </div>
 
-      {/* Compact mobile current step label */}
-      <p
-        data-testid="booking-mobile-step-label"
-        className="sm:hidden text-center text-xs font-semibold text-accent"
-      >
-        Bước {activeIdx + 1}/{steps.length} · {currentLabel}
-      </p>
+      {/* Mobile: label above one thin progress bar filling to the current step */}
+      <div className="sm:hidden space-y-2">
+        <p
+          data-testid="booking-mobile-step-label"
+          className="text-xs font-semibold text-accent"
+        >
+          Bước {activeIdx + 1}/{steps.length} · {currentLabel}
+        </p>
+        <div
+          role="progressbar"
+          aria-label="Tiến độ đặt bàn"
+          aria-valuemin={1}
+          aria-valuemax={steps.length}
+          aria-valuenow={activeIdx + 1}
+          className="h-1.5 w-full rounded-full bg-line overflow-hidden"
+        >
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            style={{ width: `${mobileProgressPct}%` }}
+          />
+        </div>
+      </div>
     </nav>
   )
 }

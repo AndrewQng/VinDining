@@ -30,7 +30,9 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
       .click()
     await expect(page).toHaveURL(/\/dat-ban\?set=set-thuong-hang/)
 
-    // Step 1: 4 khách (default) -> Tìm bàn trống
+    // Step 1: 4 khách (default) -> Tìm bàn trống; stepper has no numbered circles
+    const stepper = page.getByRole('navigation', { name: 'Tiến trình đặt bàn' })
+    await expect(stepper.getByText(/^[1-6]$/)).toHaveCount(0)
     await expect(page.locator('[data-bg-photo]')).toHaveAttribute(
       'data-bg-photo',
       'hero_desktop.jpg'
