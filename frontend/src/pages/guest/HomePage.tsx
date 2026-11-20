@@ -21,19 +21,19 @@ import { getDefaultBookingDate } from './bookingState'
 
 const BOOKING_STEPS = [
   {
-    num: '01',
+    num: 'Bước 1',
     title: 'Chọn ngày, giờ & bàn',
     desc: 'Sảnh chính, VIP hoặc Ban công',
   },
   {
-    num: '02',
+    num: 'Bước 2',
     title: 'Chọn trước Set Menu',
-    desc: 'Tùy chọn — Course 1 được chuẩn bị ngay khi nhận bàn',
+    desc: 'Tùy chọn, Course 1 chuẩn bị ngay khi nhận bàn',
   },
   {
-    num: '03',
+    num: 'Bước 3',
     title: 'Đặt cọc qua VNPAY',
-    desc: '30% giá Set Menu, hoặc 500.000 ₫ / khách · hủy trước 4 tiếng hoàn 100% tiền cọc',
+    desc: 'Cọc 30% Set Menu hoặc 500.000 ₫ mỗi khách. Hủy trước 4 tiếng hoàn 100%.',
   },
 ]
 
@@ -139,15 +139,12 @@ export function HomePage() {
 
           <div className="relative z-10 max-w-6xl mx-auto w-full px-4 sm:px-6 py-16">
             <div className="max-w-xl space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-                VinDining
-              </p>
               <h1 className="font-serif text-3xl sm:text-5xl font-semibold text-ink leading-tight">
                 Một bữa tối trọn vẹn, từng Course một
               </h1>
               <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-                Đặt bàn trực tuyến, chọn trước Set Menu — đến nơi chỉ việc
-                thưởng thức.
+                Đặt bàn trực tuyến, chọn trước Set Menu để sẵn sàng dùng bữa khi
+                đến nơi.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Button size="lg" onClick={() => navigate('/dat-ban')}>
@@ -191,12 +188,16 @@ export function HomePage() {
             </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            data-testid="home-set-grid"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             {tastingMenus.map((set) => (
               <Card
                 key={set.id}
                 padding="none"
-                className="overflow-hidden flex flex-col justify-between"
+                data-testid="home-set-card"
+                className="overflow-hidden grid grid-rows-[auto_auto_1fr_auto] md:row-span-4 md:grid-rows-[subgrid] md:gap-y-0"
               >
                 <div className="aspect-[16/10] w-full bg-card overflow-hidden">
                   <ThemedImage
@@ -208,41 +209,41 @@ export function HomePage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-6 flex-1 flex flex-col justify-between gap-5">
-                  <div className="space-y-3">
-                    <h3 className="font-serif text-xl sm:text-2xl font-semibold text-ink">
-                      {set.name}
-                    </h3>
-                    <ul className="space-y-1.5 text-sm text-ink-muted">
-                      {set.items
-                        .slice()
-                        .sort((a, b) => a.courseOrder - b.courseOrder)
-                        .map((item) => (
-                          <li key={item.id}>
-                            <span className="text-ink">
-                              {COURSE_TYPE_LABELS[item.courseType]}
-                            </span>{' '}
-                            — {item.menuItemName}
-                          </li>
-                        ))}
-                    </ul>
+                <div className="px-6 pt-6 pb-3">
+                  <h3 className="font-serif text-xl sm:text-2xl font-semibold text-ink line-clamp-2 min-h-[3.5rem]">
+                    {set.name}
+                  </h3>
+                </div>
+                <ul className="px-6 pb-5 space-y-1.5 text-sm text-ink-muted">
+                  {set.items
+                    .slice()
+                    .sort((a, b) => a.courseOrder - b.courseOrder)
+                    .map((item) => (
+                      <li key={item.id}>
+                        <span className="text-ink">
+                          {COURSE_TYPE_LABELS[item.courseType]}:
+                        </span>{' '}
+                        {item.menuItemName}
+                      </li>
+                    ))}
+                </ul>
+                <div className="mx-6 mb-6 pt-4 border-t border-line flex items-center justify-between gap-4 self-end">
+                  <div
+                    data-testid="home-set-price"
+                    className="text-base font-semibold"
+                  >
+                    <Money amount={set.price} tone="accent" />{' '}
+                    <span className="text-xs font-normal text-ink-muted">
+                      / khách
+                    </span>
                   </div>
-
-                  <div className="pt-4 border-t border-line flex items-center justify-between gap-4">
-                    <div className="text-base font-semibold">
-                      <Money amount={set.price} tone="accent" />{' '}
-                      <span className="text-xs font-normal text-ink-muted">
-                        / khách
-                      </span>
-                    </div>
-                    <Link
-                      to={`/dat-ban?set=${encodeURIComponent(set.id)}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
-                    >
-                      <span>Đặt bàn với set này</span>
-                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                    </Link>
-                  </div>
+                  <Link
+                    to={`/dat-ban?set=${encodeURIComponent(set.id)}`}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline shrink-0"
+                  >
+                    <span>Đặt bàn với set này</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </Link>
                 </div>
               </Card>
             ))}
@@ -257,11 +258,16 @@ export function HomePage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {BOOKING_STEPS.map((step) => (
-            <Card key={step.num} className="space-y-2">
+            <Card
+              key={step.num}
+              className="grid grid-rows-[auto_auto_1fr] md:row-span-3 md:grid-rows-[subgrid] md:gap-y-2 h-full"
+            >
               <p className="font-serif text-2xl font-semibold text-accent">
                 {step.num}
               </p>
-              <h3 className="text-base font-semibold text-ink">{step.title}</h3>
+              <h3 className="text-base font-semibold text-ink line-clamp-2 min-h-[1.5rem]">
+                {step.title}
+              </h3>
               <p className="text-sm text-ink-muted leading-relaxed">
                 {step.desc}
               </p>
@@ -283,7 +289,7 @@ export function HomePage() {
             <Card
               key={z.zone}
               padding="none"
-              className="overflow-hidden flex flex-col justify-between"
+              className="overflow-hidden grid grid-rows-[auto_1fr_auto] md:row-span-3 md:grid-rows-[subgrid] md:gap-y-0"
             >
               <div className="aspect-[16/10] w-full bg-card overflow-hidden">
                 <ThemedImage
@@ -295,17 +301,15 @@ export function HomePage() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-5 space-y-3">
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-ink">
-                    {z.title}
-                  </h3>
-                  {getZoneSeatRange(z.zone) && (
-                    <p className="text-xs text-ink-muted mt-0.5">
-                      {getZoneSeatRange(z.zone)}
-                    </p>
-                  )}
-                </div>
+              <div className="px-5 pt-5">
+                <h3 className="font-serif text-lg font-semibold text-ink line-clamp-1 min-h-[1.75rem]">
+                  {z.title}
+                </h3>
+                <p className="text-xs text-ink-muted mt-0.5 min-h-[1rem]">
+                  {getZoneSeatRange(z.zone) ?? ''}
+                </p>
+              </div>
+              <div className="px-5 pb-5 pt-3">
                 <Link
                   to={`/dat-ban?zone=${z.zone}`}
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
@@ -351,7 +355,7 @@ export function HomePage() {
               if (items.length === 0) return null
               return (
                 <div key={course} className="space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-accent">
+                  <h3 className="text-sm font-semibold text-accent">
                     {COURSE_TYPE_LABELS[course]}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -359,7 +363,7 @@ export function HomePage() {
                       <Card
                         key={item.id}
                         padding="none"
-                        className="overflow-hidden flex flex-col justify-between"
+                        className="overflow-hidden grid grid-rows-[auto_auto_1fr_auto] sm:row-span-4 sm:grid-rows-[subgrid] sm:gap-y-0"
                       >
                         <div className="aspect-[4/3] w-full bg-card overflow-hidden">
                           {item.imageUrl ? (
@@ -373,28 +377,23 @@ export function HomePage() {
                             />
                           ) : null}
                         </div>
-                        <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                          <div className="space-y-1.5">
-                            <div className="flex items-start justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-ink">
-                                {item.name}
-                              </h4>
-                              {item.status === 'SoldOut' && (
-                                <StatusBadge
-                                  status="SoldOut"
-                                  domain="menuItem"
-                                />
-                              )}
-                            </div>
-                            {item.description && (
-                              <p className="text-xs text-ink-muted line-clamp-2">
-                                {item.description}
-                              </p>
-                            )}
-                          </div>
-                          <div className="pt-2 text-sm">
-                            <Money amount={item.price} tone="accent" />
-                          </div>
+                        <div className="px-4 pt-4 flex items-start justify-between gap-2">
+                          <h4 className="text-sm font-semibold text-ink line-clamp-2 min-h-[2.5rem]">
+                            {item.name}
+                          </h4>
+                          {item.status === 'SoldOut' && (
+                            <StatusBadge
+                              status="SoldOut"
+                              domain="menuItem"
+                              className="shrink-0"
+                            />
+                          )}
+                        </div>
+                        <p className="px-4 pt-1.5 text-xs text-ink-muted line-clamp-2 min-h-[2rem]">
+                          {item.description ?? ''}
+                        </p>
+                        <div className="px-4 pb-4 pt-3 text-sm self-end">
+                          <Money amount={item.price} tone="accent" />
                         </div>
                       </Card>
                     ))}
@@ -405,7 +404,7 @@ export function HomePage() {
 
             {drinkItems.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-accent">
+                <h3 className="text-sm font-semibold text-accent">
                   {COURSE_TYPE_LABELS.Beverage}
                 </h3>
                 <Card padding="sm" className="divide-y divide-line max-w-lg">

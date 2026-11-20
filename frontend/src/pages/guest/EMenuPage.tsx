@@ -69,7 +69,7 @@ export function EMenuPage() {
     null
   )
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['table-emenu', qrCode],
     queryFn: () => menuApi.getTableMenu(qrCode),
     enabled: Boolean(qrCode),
@@ -146,8 +146,9 @@ export function EMenuPage() {
               Không thể mở thực đơn
             </h2>
             <p className="text-sm text-ink-muted">
-              Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân
-              viên phục vụ.
+              {(isAxiosError<ApiErrorResponse>(error) &&
+                error.response?.data?.message) ||
+                'Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân viên phục vụ.'}
             </p>
           </div>
           <Link to="/" className="inline-block">
@@ -163,11 +164,8 @@ export function EMenuPage() {
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
       <div className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-          Thực đơn tại bàn
-        </p>
         <h1 className="font-serif text-2xl font-semibold text-ink">
-          VinDining · Bàn {data.tableNumber}
+          Thực đơn · Bàn {data.tableNumber}
         </h1>
       </div>
 
@@ -229,15 +227,15 @@ export function EMenuPage() {
         <div className="space-y-3">
           {data.tastingMenus.map((set) => (
             <Card key={set.id} padding="sm" className="space-y-2.5">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-serif text-base font-semibold text-ink">
+              <div className="space-y-1">
+                <h3 className="font-serif text-base font-semibold text-ink leading-6">
                   {set.name}
                 </h3>
-                <span className="text-xs font-semibold text-accent shrink-0">
+                <span className="block text-xs font-semibold text-accent">
                   <Money amount={set.price} tone="accent" /> / khách
                 </span>
               </div>
-              <ul className="space-y-1 text-xs text-ink-muted">
+              <ul className="space-y-1 text-xs text-ink-muted min-h-[3.75rem]">
                 {set.items
                   .slice()
                   .sort((a, b) => a.courseOrder - b.courseOrder)
@@ -264,7 +262,7 @@ export function EMenuPage() {
           if (items.length === 0) return null
           return (
             <Card key={course} padding="sm" className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+              <h3 className="text-sm font-semibold text-accent">
                 {COURSE_TYPE_LABELS[course]}
               </h3>
               <div className="divide-y divide-line">
@@ -312,7 +310,7 @@ export function EMenuPage() {
 
         {drinks.length > 0 && (
           <Card padding="sm" className="space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">
+            <h3 className="text-sm font-semibold text-accent">
               {COURSE_TYPE_LABELS.Beverage}
             </h3>
             <div className="divide-y divide-line">

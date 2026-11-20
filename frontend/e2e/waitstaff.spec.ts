@@ -191,7 +191,7 @@ test.describe('VinDining Waitstaff Mobile App (W1–W9)', () => {
     await page.getByRole('button', { name: /Xác nhận chuyển sang C03/i }).click()
 
     await expect(
-      page.getByRole('heading', { name: /Đổi bàn thành công!/i })
+      page.getByRole('heading', { name: /Đã chuyển sang Bàn C03/i })
     ).toBeVisible()
     await expect(
       page.getByText(/Bàn B03 đã chuyển trạng thái sang Đang dọn/i)
@@ -231,7 +231,7 @@ test.describe('VinDining Waitstaff Mobile App (W1–W9)', () => {
       page.getByText(/Đã gửi yêu cầu tính tiền về quầy thu ngân/i)
     ).toBeVisible()
     await expect(
-      page.getByText(/Order đã khóa — không thể gọi thêm món/i)
+      page.getByText(/Order đã khóa, không thể gọi thêm món/i)
     ).toBeVisible()
     await saveShot(page, '14-w8b-payment-pending.png')
 

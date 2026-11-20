@@ -161,6 +161,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new VinDiningEnumJsonConverterFactory());
+        options.JsonSerializerOptions.Converters.Add(new VinDiningUtcDateTimeJsonConverter());
     })
     .ConfigureApiBehaviorOptions(options =>
     {
@@ -233,7 +234,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -241,6 +242,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await DatabaseSeeder.SeedAsync(app.Services);
+}
 
 // Configure Middleware Pipeline
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -253,8 +259,11 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "VinDining API v1");
     });
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
@@ -311,13 +320,10 @@ internal sealed class VinDiningEnumJsonConverter<TEnum> : JsonConverter<TEnum> w
                 {
                     if (string.Equals(raw, "Locked", StringComparison.OrdinalIgnoreCase))
                         return (TEnum)(object)TableStatus.LockedForPayment;
-                    if (string.Equals(raw, "PaymentPending", StringComparison.OrdinalIgnoreCase))
-                        return (TEnum)(object)TableStatus.Occupied;
                 }
 
                 if (typeof(TEnum) == typeof(StaffRole) &&
-                    (string.Equals(raw, "Manager", StringComparison.OrdinalIgnoreCase) ||
-                     string.Equals(raw, "Cashier", StringComparison.OrdinalIgnoreCase)))
+                    string.Equals(raw, "Manager", StringComparison.OrdinalIgnoreCase))
                 {
                     return (TEnum)(object)StaffRole.Admin;
                 }
@@ -358,5 +364,25 @@ internal sealed class VinDiningEnumJsonConverter<TEnum> : JsonConverter<TEnum> w
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value.ToString());
+    }
+}
+
+internal sealed class VinDiningUtcDateTimeJsonConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var dt = reader.GetDateTime();
+        return dt.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(dt, DateTimeKind.Utc) : dt.ToUniversalTime();
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        var utc = value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
+        writer.WriteStringValue(utc);
     }
 }

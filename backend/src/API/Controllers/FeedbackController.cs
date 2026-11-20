@@ -13,6 +13,14 @@ public class FeedbackController : ApiControllerBase
         _feedbackService = feedbackService;
     }
 
+    [HttpGet("validate/{token}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ValidateTokenAsync(string token, CancellationToken ct)
+    {
+        var result = await _feedbackService.ValidateSurveyTokenAsync(token, ct);
+        return Ok(result);
+    }
+
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> SubmitFeedbackAsync([FromBody] SubmitFeedbackDto dto, CancellationToken ct)

@@ -51,19 +51,7 @@ export function createSignalRRealtimeClient(
 
   return {
     async connect(): Promise<void> {
-      const names: HubName[] = ['tables', 'kitchen']
-      await Promise.all(
-        names.map(async (name) => {
-          const hub = getHub(name)
-          if (hub.state === signalR.HubConnectionState.Disconnected) {
-            try {
-              await hub.start()
-            } catch {
-              // Automatic reconnect handles transient failures
-            }
-          }
-        })
-      )
+      // Hubs are connected lazily per subscribed event in subscribe()
     },
 
     async disconnect(): Promise<void> {
@@ -81,6 +69,11 @@ export function createSignalRRealtimeClient(
       handler: RealtimeHandler<K>
     ): () => void {
       const hub = getHub(EVENT_HUB_MAP[event])
+      if (hub.state === signalR.HubConnectionState.Disconnected) {
+        void hub.start().catch(() => {
+          // Automatic reconnect handles transient failures
+        })
+      }
       const listener = (payload: RealtimePayloadMap[K]) => handler(payload)
       hub.on(event, listener)
       return () => {

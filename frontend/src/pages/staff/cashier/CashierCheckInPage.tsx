@@ -13,6 +13,7 @@ import {
   StatusBadge,
   Tabs,
 } from '@/components/ui'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import {
   ReservedCheckInPanel,
@@ -26,6 +27,7 @@ type CheckInMode = 'reserved' | 'walkin'
 
 /** C4 / C4b — Check-in khách đặt trước (mã / SĐT) hoặc khách vãng lai tại quầy Thu ngân. */
 export function CashierCheckInPage() {
+  useDocumentTitle('Check-in khách')
   const queryClient = useQueryClient()
   const [mode, setMode] = useState<CheckInMode>('reserved')
   const [searchInput, setSearchInput] = useState('')
@@ -195,10 +197,6 @@ export function CashierCheckInPage() {
           <h1 className="font-serif text-2xl font-bold text-ink">
             Check-in khách
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Nhận khách đặt trước bằng mã đặt bàn hoặc số điện thoại, hoặc mở bàn
-            cho khách vãng lai.
-          </p>
         </div>
 
         <Tabs

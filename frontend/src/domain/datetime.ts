@@ -8,12 +8,24 @@ const WEEKDAYS_VI = [
   'Thứ Bảy',
 ] as const
 
+const ISO_WITHOUT_TZ_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/
+
+/** Parses ISO timestamps, treating timezone-less server ISO strings as UTC. */
+export function parseUtcTimestamp(value: Date | string): number {
+  if (value instanceof Date) return value.getTime()
+  const trimmed = value.trim()
+  if (ISO_WITHOUT_TZ_RE.test(trimmed)) {
+    return Date.parse(`${trimmed}Z`)
+  }
+  return Date.parse(trimmed)
+}
+
 function toDate(value: Date | string): Date {
   if (value instanceof Date) return value
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return new Date(`${value}T12:00:00`)
   }
-  return new Date(value)
+  return new Date(parseUtcTimestamp(value))
 }
 
 /** Formats time as 24-hour "19:00" without seconds. */

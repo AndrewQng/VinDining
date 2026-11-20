@@ -117,10 +117,11 @@ public class AdminTableService : IAdminTableService
         if (!dto.IsActive)
         {
             if (table.Status == TableStatus.Occupied ||
+                table.Status == TableStatus.PaymentPending ||
                 table.Status == TableStatus.Reserved ||
                 table.Status == TableStatus.LockedForPayment)
             {
-                throw new InvalidOperationException($"Không thể ngưng hoạt động bàn {table.TableNumber} khi đang ở trạng thái {table.Status}.");
+                throw new InvalidOperationException($"Không thể ngưng hoạt động bàn {table.TableNumber} khi đang ở trạng thái {FormatTableStatusVi(table.Status)}.");
             }
 
             var hasActiveWork = await _context.Reservations
@@ -167,10 +168,11 @@ public class AdminTableService : IAdminTableService
             throw new KeyNotFoundException($"Không tìm thấy bàn {id}.");
 
         if (table.Status == TableStatus.Occupied ||
+            table.Status == TableStatus.PaymentPending ||
             table.Status == TableStatus.Reserved ||
             table.Status == TableStatus.LockedForPayment)
         {
-            throw new InvalidOperationException($"Không thể xóa bàn {table.TableNumber} đang ở trạng thái {table.Status}.");
+            throw new ConflictException($"Không thể xóa bàn {table.TableNumber} đang ở trạng thái {FormatTableStatusVi(table.Status)}.");
         }
 
         var hasActiveReservationOrOrder = await _context.Reservations
@@ -203,4 +205,14 @@ public class AdminTableService : IAdminTableService
 
         return true;
     }
+
+    private static string FormatTableStatusVi(TableStatus status) => status switch
+    {
+        TableStatus.Occupied => "Đang phục vụ",
+        TableStatus.PaymentPending => "Chờ thanh toán",
+        TableStatus.Reserved => "Đã đặt trước",
+        TableStatus.LockedForPayment => "Đang giữ chỗ thanh toán",
+        TableStatus.Cleaning => "Đang dọn",
+        _ => "Trống"
+    };
 }

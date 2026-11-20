@@ -184,7 +184,10 @@ public class RefundService : IRefundService
         return true;
     }
 
-    public async Task<List<RefundRequestDto>> GetRefundRequestsAsync(CancellationToken ct = default)
+    public Task<List<RefundRequestDto>> GetRefundRequestsAsync(CancellationToken ct = default)
+        => GetRefundRequestsAsync(includeProcessed: false, ct);
+
+    public async Task<List<RefundRequestDto>> GetRefundRequestsAsync(bool includeProcessed, CancellationToken ct = default)
     {
         var reservations = await _context.Reservations
             .Include(r => r.Guest)
@@ -194,22 +197,63 @@ public class RefundService : IRefundService
                 .ThenInclude(o => o.Invoice)
             .Where(r => r.Status == ReservationStatus.Cancelled &&
                         r.Deposit != null &&
-                        (r.Deposit.Status == DepositStatus.Forfeited || r.Deposit.Status == DepositStatus.Paid) &&
+                        (includeProcessed
+                            ? (r.Deposit.Status == DepositStatus.Forfeited || r.Deposit.Status == DepositStatus.Paid || r.Deposit.Status == DepositStatus.Refunded)
+                            : (r.Deposit.Status == DepositStatus.Forfeited || r.Deposit.Status == DepositStatus.Paid)) &&
                         !r.Orders.Any(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Processing || o.Invoice != null))
             .OrderByDescending(r => r.CancelledAt ?? r.CreatedAt)
             .AsNoTracking()
             .ToListAsync(ct);
 
         return reservations
-            .Where(r => !(r.CancelledReason ?? string.Empty).Contains(RefundRejectedMarker, StringComparison.Ordinal) &&
-                        !(r.Deposit!.Status == DepositStatus.Forfeited &&
-                          r.Deposit.PaidAt == null &&
-                          string.IsNullOrWhiteSpace(r.Deposit.TransactionId) &&
-                          IsUnpaidCancellationReason(r.CancelledReason)))
+            .Where(r =>
+            {
+                var isUnpaid = r.Deposit!.Status == DepositStatus.Forfeited &&
+                               r.Deposit.PaidAt == null &&
+                               (string.IsNullOrWhiteSpace(r.Deposit.TransactionId) || IsUnpaidCancellationReason(r.CancelledReason));
+                if (isUnpaid)
+                    return false;
+
+                var isRejected = (r.CancelledReason ?? string.Empty).Contains(RefundRejectedMarker, StringComparison.Ordinal);
+                if (!includeProcessed)
+                    return !isRejected;
+
+                if (r.Deposit.Status == DepositStatus.Refunded)
+                {
+                    var requestedAt = r.CancelledAt ?? r.CreatedAt;
+                    var hours = (r.ReservationTime - requestedAt).TotalHours;
+                    var reasonText = r.CancelledReason ?? string.Empty;
+                    return hours < 4.0 ||
+                           reasonText.Contains("Duyệt hoàn cọc:", StringComparison.OrdinalIgnoreCase) ||
+                           reasonText.Contains("ngoại lệ", StringComparison.OrdinalIgnoreCase);
+                }
+
+                return true;
+            })
             .Select(r =>
             {
                 var requestedAt = r.CancelledAt ?? r.CreatedAt;
                 var hours = Math.Max(0.0, Math.Round((r.ReservationTime - requestedAt).TotalHours, 1));
+                var isRejected = (r.CancelledReason ?? string.Empty).Contains(RefundRejectedMarker, StringComparison.Ordinal);
+                var isManualApproved = r.Deposit!.Status == DepositStatus.Refunded;
+
+                string? decisionAction = null;
+                string? auditReason = null;
+                DateTime? processedAt = null;
+
+                if (includeProcessed && isManualApproved)
+                {
+                    decisionAction = "ManualRefundApproved";
+                    auditReason = ExtractAuditReason(r.CancelledReason, "Duyệt hoàn cọc:");
+                    processedAt = requestedAt;
+                }
+                else if (includeProcessed && isRejected)
+                {
+                    decisionAction = "ManualRefundRejected";
+                    auditReason = ExtractAuditReason(r.CancelledReason, "Từ chối hoàn cọc:");
+                    processedAt = requestedAt;
+                }
+
                 return new RefundRequestDto(
                     r.Id,
                     r.BookingCode,
@@ -222,10 +266,33 @@ public class RefundService : IRefundService
                     ReservationService.MapToDetailDto(r),
                     hours,
                     requestedAt,
-                    null,
-                    null
+                    auditReason,
+                    processedAt,
+                    decisionAction
                 );
             }).ToList();
+    }
+
+    private static string? ExtractAuditReason(string? cancelledReason, string prefix)
+    {
+        if (string.IsNullOrWhiteSpace(cancelledReason))
+            return null;
+
+        var idx = cancelledReason.LastIndexOf(prefix, StringComparison.OrdinalIgnoreCase);
+        if (idx >= 0)
+        {
+            var extracted = cancelledReason[(idx + prefix.Length)..].Trim();
+            return string.IsNullOrWhiteSpace(extracted) ? null : extracted;
+        }
+
+        var pipeIdx = cancelledReason.LastIndexOf('|');
+        if (pipeIdx >= 0 && pipeIdx + 1 < cancelledReason.Length)
+        {
+            var trailing = cancelledReason[(pipeIdx + 1)..].Replace(RefundRejectedMarker, string.Empty, StringComparison.Ordinal).Trim();
+            return string.IsNullOrWhiteSpace(trailing) ? null : trailing;
+        }
+
+        return cancelledReason;
     }
 
     private static bool IsUnpaidCancellationReason(string? cancelledReason)

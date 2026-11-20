@@ -60,7 +60,7 @@ public class ReservationService : IReservationService
         if (table.Capacity < dto.PartySize)
             throw new InvalidOperationException($"Sức chứa của bàn {table.TableNumber} ({table.Capacity} người) nhỏ hơn số lượng khách ({dto.PartySize} người).");
 
-        if (table.Status == TableStatus.Cleaning)
+        if (table.Status == TableStatus.Cleaning && dto.ReservationTime < now.AddMinutes(60))
             throw new InvalidOperationException($"Bàn {table.TableNumber} đang dọn dẹp, không thể đặt lúc này.");
 
         if (table.Status == TableStatus.Occupied && dto.ReservationTime < now.AddMinutes(120))
@@ -179,7 +179,9 @@ public class ReservationService : IReservationService
             CreatedAt = now
         };
 
-        if (table.Status == TableStatus.Available)
+        var isImmediateServiceWindow = dto.ReservationTime <= now.AddHours(12) ||
+                                       dto.ReservationTime.AddHours(7).Date == now.AddHours(7).Date;
+        if (isImmediateServiceWindow && table.Status == TableStatus.Available)
         {
             table.Status = TableStatus.LockedForPayment;
         }
@@ -385,14 +387,27 @@ public class ReservationService : IReservationService
             {
                 reservation.Deposit.Status = DepositStatus.Paid;
                 reservation.Deposit.PaidAt = now;
+                if (!string.IsNullOrWhiteSpace(paramsDto.PaymentMethod))
+                {
+                    var pm = paramsDto.PaymentMethod.Trim();
+                    if (string.Equals(pm, "Card", StringComparison.OrdinalIgnoreCase))
+                        reservation.Deposit.PaymentMethod = PaymentMethod.Card;
+                    else if (string.Equals(pm, "VietQR", StringComparison.OrdinalIgnoreCase) ||
+                             string.Equals(pm, "BankTransfer", StringComparison.OrdinalIgnoreCase))
+                        reservation.Deposit.PaymentMethod = PaymentMethod.BankTransfer;
+                }
                 reservation.Deposit.TransactionId = !string.IsNullOrWhiteSpace(paramsDto.vnp_TransactionNo)
                     ? paramsDto.vnp_TransactionNo.Trim()
                     : $"VNPAY-{Guid.NewGuid():N}"[..18];
             }
 
             TableStatus? confirmedNotify = null;
-            if (reservation.Table != null &&
+            var isConfirmedImmediateWindow = reservation.ReservationTime <= now.AddHours(12) ||
+                                             reservation.ReservationTime.AddHours(7).Date == now.AddHours(7).Date;
+            if (isConfirmedImmediateWindow &&
+                reservation.Table != null &&
                 reservation.Table.Status != TableStatus.Occupied &&
+                reservation.Table.Status != TableStatus.PaymentPending &&
                 reservation.Table.Status != TableStatus.Cleaning)
             {
                 reservation.Table.Status = TableStatus.Reserved;
@@ -891,13 +906,14 @@ public class ReservationService : IReservationService
                          (r.Status == ReservationStatus.Pending && r.CreatedAt > lockCutoff)))
             .ToListAsync(ct);
 
+        var vnNowDate = now.AddHours(7).Date;
         var groups = new List<AvailableSlotGroupDto>(slotHours.Length);
         foreach (var time in slotHours)
         {
             var parts = time.Split(':');
-            var slotStart = new DateTime(date.Year, date.Month, date.Day, int.Parse(parts[0]), int.Parse(parts[1]), 0, DateTimeKind.Utc);
+            var slotStart = new DateTime(date.Year, date.Month, date.Day, int.Parse(parts[0]), int.Parse(parts[1]), 0, DateTimeKind.Utc).AddHours(-7);
             var slotEnd = slotStart.AddMinutes(120);
-            var excludeOccupied = slotStart < now.AddMinutes(120) && slotStart.Date == now.Date;
+            var excludeOccupied = slotStart < now.AddMinutes(120) && date.Date == vnNowDate;
 
             var zoneSlotTables = new List<SlotTableAvailabilityDto>(zoneTablesAll.Count);
             var availableTables = new List<AvailableTableDto>();
@@ -910,7 +926,7 @@ public class ReservationService : IReservationService
                     r.ReservationTime.AddMinutes(r.DurationMinutes > 0 ? r.DurationMinutes : 120) > slotStart);
 
                 var unavailable = hasOverlap ||
-                                  t.Status == TableStatus.Cleaning ||
+                                  (slotStart < now.AddMinutes(60) && t.Status == TableStatus.Cleaning) ||
                                   (excludeOccupied && t.Status != TableStatus.Available);
 
                 string availability;

@@ -3,10 +3,17 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   ALL_MOCK_ROUTES,
   DEMO_STAFF_ACCOUNTS,
+  getMockDb,
   installMockAdapter,
   resetMockDb,
   runExpiryScan,
 } from './index'
+import { getHistorical120DayData } from './historicalSeed'
+import {
+  createInitialMockDb,
+  MOCK_DB_VERSION,
+  MOCK_SEED_VERSION,
+} from './seed'
 
 function createTestClient(nowProvider: () => Date = () => new Date()) {
   const client = axios.create({ baseURL: 'http://localhost/api' })
@@ -31,10 +38,10 @@ describe('Mock API router & RBAC', () => {
     resetMockDb()
   })
 
-  it('registers all 59 unique routes from docs/api.md', () => {
-    expect(ALL_MOCK_ROUTES).toHaveLength(59)
+  it('registers all 60 unique routes from docs/api.md', () => {
+    expect(ALL_MOCK_ROUTES).toHaveLength(60)
     const ids = new Set(ALL_MOCK_ROUTES.map((r) => r.id))
-    expect(ids.size).toBe(59)
+    expect(ids.size).toBe(60)
   })
 
   it('enforces 401 for unauthenticated staff calls and 403 for disallowed roles', async () => {
@@ -340,5 +347,217 @@ describe('Mock API §10 end-to-end stories', () => {
     )
     expect(remade.status).toBe(200)
     expect(remade.data.isRemake).toBe(true)
+  })
+
+  it('serves all 4 §10 Set Menus and computes Tinh Hoa & Đặc Tuyển booking deposits', async () => {
+    const client = createTestClient()
+    const setsRes = await client.get('/menu/tasting-menus')
+    expect(setsRes.status).toBe(200)
+    expect(setsRes.data).toHaveLength(4)
+    expect(
+      setsRes.data.map((s: { id: string; price: number; imageUrl: string }) => ({
+        id: s.id,
+        price: s.price,
+        imageUrl: s.imageUrl,
+      }))
+    ).toEqual([
+      { id: 'set-thuong-hang', price: 1_800_000, imageUrl: 'set_thuong_hang.jpg' },
+      { id: 'set-hai-san', price: 1_250_000, imageUrl: 'set_hai_san.jpg' },
+      { id: 'set-tinh-hoa', price: 1_190_000, imageUrl: 'dish_sup_bao_ngu.jpg' },
+      { id: 'set-dac-tuyen', price: 1_850_000, imageUrl: 'dish_wagyu.jpg' },
+    ])
+
+    const tinhHoaBooking = await client.post('/reservations', {
+      tableId: 'tbl-b06',
+      reservationTime: '2026-11-08T19:00:00.000Z',
+      partySize: 4,
+      preOrderedTastingMenuId: 'set-tinh-hoa',
+      fullName: 'Nguyễn Văn An',
+      phoneNumber: '0901 234 567',
+      email: 'an.nguyen@email.com',
+    })
+    expect(tinhHoaBooking.data.depositAmount).toBe(1_428_000)
+
+    const dacTuyenBooking = await client.post('/reservations', {
+      tableId: 'tbl-v01',
+      reservationTime: '2026-11-08T19:00:00.000Z',
+      partySize: 4,
+      preOrderedTastingMenuId: 'set-dac-tuyen',
+      fullName: 'Nguyễn Văn An',
+      phoneNumber: '0901 234 567',
+      email: 'an.nguyen@email.com',
+    })
+    expect(dacTuyenBooking.data.depositAmount).toBe(2_220_000)
+  })
+
+  it('serves today Pass history on GET /orders/pass/history with RBAC and newest-first order', async () => {
+    const client = createTestClient()
+    await expect(client.get('/orders/pass/history')).rejects.toMatchObject({
+      response: { status: 401 },
+    })
+
+    const waiterToken = await loginAs(client, 'mai.tt')
+    await expect(
+      client.get('/orders/pass/history', {
+        headers: { Authorization: `Bearer ${waiterToken}` },
+      })
+    ).rejects.toMatchObject({ response: { status: 403 } })
+
+    const expediterToken = await loginAs(client, 'quan.lm')
+    const res = await client.get('/orders/pass/history', {
+      headers: { Authorization: `Bearer ${expediterToken}` },
+    })
+    expect(res.status).toBe(200)
+    expect(res.data.length).toBeGreaterThanOrEqual(5)
+    expect(res.data[0].servedByName).toBe('Lê Minh Quân')
+    for (let i = 1; i < res.data.length; i += 1) {
+      expect(Date.parse(res.data[i - 1].servedAt)).toBeGreaterThanOrEqual(
+        Date.parse(res.data[i].servedAt)
+      )
+    }
+
+    const b01Only = await client.get('/orders/pass/history', {
+      params: { tableNumber: 'B01' },
+      headers: { Authorization: `Bearer ${expediterToken}` },
+    })
+    expect(b01Only.data.every((item: { tableNumber: string }) => item.tableNumber === 'B01')).toBe(true)
+    expect(b01Only.data.some((item: { remakeCount: number }) => item.remakeCount === 1)).toBe(true)
+  })
+
+  it('excludes automatic >= 4h refunds from GET /manager/refunds and returns exception decisions', async () => {
+    const client = createTestClient()
+    const created = await client.post('/reservations', {
+      tableId: 'tbl-b06',
+      reservationTime: new Date(Date.now() + 30 * 3_600_000).toISOString(),
+      partySize: 2,
+      fullName: 'Khách Hủy Sớm',
+      phoneNumber: '0988776655',
+      email: 'early@email.com',
+    })
+    await client.post('/payments/vnpay-ipn', {
+      bookingCode: created.data.reservation.bookingCode,
+      transactionId: 'VNP-EARLY-001',
+      paymentMethod: 'Card',
+      responseCode: '00',
+    })
+    const autoCancel = await client.post('/reservations/cancel', {
+      bookingCode: created.data.reservation.bookingCode,
+      phoneNumber: '0988776655',
+      reason: 'Hủy trước 30 tiếng để test tự động hoàn 100%',
+    })
+    expect(autoCancel.data.refunded).toBe(true)
+    expect(autoCancel.data.reservation.status).toBe('Cancelled_Refunded')
+
+    const mgrToken = await loginAs(client, 'long.dh')
+    const refundsRes = await client.get('/manager/refunds', {
+      headers: { Authorization: `Bearer ${mgrToken}` },
+    })
+    expect(refundsRes.status).toBe(200)
+    const codes = refundsRes.data.map(
+      (r: { reservation: { bookingCode: string } }) => r.reservation.bookingCode
+    )
+    expect(codes).not.toContain(created.data.reservation.bookingCode)
+    expect(codes).toContain('VD-2C8N')
+    expect(codes).toContain('VD-8P4K')
+    expect(codes).toContain('VD-5E1M')
+    expect(codes).toContain('VD-6R2T')
+
+    const approvedSeed = refundsRes.data.find(
+      (r: { reservation: { bookingCode: string } }) =>
+        r.reservation.bookingCode === 'VD-5E1M'
+    )
+    expect(approvedSeed.decisionAction).toBe('ManualRefundApproved')
+    expect(approvedSeed.processedAt).toBeTruthy()
+  })
+
+  it('restricts all person names and guest phones in static seed and 120-day history to §10 identities', () => {
+    const allowedNames = new Set([
+      'Nguyễn Văn An',
+      'Trần Thị Mai',
+      'Lê Minh Quân',
+      'Phạm Thu Hà',
+      'Đỗ Hoàng Long',
+    ])
+    const now = new Date()
+    const seed = createInitialMockDb(now)
+    const history = getHistorical120DayData(now)
+
+    const observedNames = new Set<string>()
+    const addName = (name?: string | null) => {
+      if (name && name.trim()) observedNames.add(name.trim())
+    }
+
+    for (const staff of seed.staffs) addName(staff.fullName)
+    for (const table of seed.tables) addName(table.assignedStaffName)
+
+    for (const res of [...seed.reservations, ...history.reservations]) {
+      addName(res.guest.fullName)
+      expect(res.guest.phoneNumber).toBe('0901 234 567')
+    }
+    for (const order of [...seed.orders, ...history.orders]) {
+      addName(order.createByName)
+    }
+    for (const inv of [...seed.invoices, ...history.invoices]) {
+      addName(inv.settleByName)
+      addName(inv.waiterName)
+    }
+    for (const fb of [...seed.feedbacks, ...history.feedbacks]) {
+      addName(fb.guestName)
+    }
+
+    const unexpected = Array.from(observedNames).filter(
+      (name) => !allowedNames.has(name)
+    )
+    expect(unexpected).toEqual([])
+  })
+
+  it('reseeds persisted mock DB when version is legacy or fingerprint mismatches and exposes 4 sets', () => {
+    expect(MOCK_DB_VERSION).toBe(2)
+    expect(MOCK_SEED_VERSION.startsWith('2-')).toBe(true)
+
+    const store = new Map<string, string>()
+    const prevStorage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => {
+          store.set(k, v)
+        },
+        removeItem: (k: string) => {
+          store.delete(k)
+        },
+        clear: () => {
+          store.clear()
+        },
+      },
+    })
+
+    try {
+      // 1. Old numeric version (1) with stale 2-set catalog
+      localStorage.setItem(
+        'vd-mock-db',
+        JSON.stringify({ version: 1, tastingMenus: [{ id: 'old-1' }, { id: 'old-2' }] })
+      )
+      const upgradedFromV1 = getMockDb()
+      expect(upgradedFromV1.version).toBe(MOCK_SEED_VERSION)
+      expect(upgradedFromV1.tastingMenus).toHaveLength(4)
+
+      // 2. Stale fingerprint (matching v2 prefix but different hash)
+      localStorage.setItem(
+        'vd-mock-db',
+        JSON.stringify({ version: '2-00000000', tastingMenus: [{ id: 'stale-1' }] })
+      )
+      const reseededFromHash = getMockDb()
+      expect(reseededFromHash.version).toBe(MOCK_SEED_VERSION)
+      expect(reseededFromHash.tastingMenus).toHaveLength(4)
+    } finally {
+      if (prevStorage) {
+        Object.defineProperty(globalThis, 'localStorage', prevStorage)
+      } else {
+        delete (globalThis as { localStorage?: unknown }).localStorage
+      }
+      resetMockDb()
+    }
   })
 })

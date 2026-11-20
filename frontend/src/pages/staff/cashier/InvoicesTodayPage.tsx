@@ -11,6 +11,7 @@ import {
   Money,
   Skeleton,
 } from '@/components/ui'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { invoiceApi } from '@/services/api'
 import { useRealtime } from '@/services/realtime/useRealtime'
@@ -31,20 +32,31 @@ const FILTER_OPTIONS: ReadonlyArray<{ value: MethodFilter; label: string }> = [
   { value: 'VietQR', label: 'VietQR' },
 ]
 
+function getTodayDateString(): string {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
 /** Hóa đơn hôm nay — danh sách hóa đơn đã quyết toán trong ngày và in lại phiếu 80mm. */
 export function InvoicesTodayPage() {
+  useDocumentTitle('Hóa đơn hôm nay')
   const queryClient = useQueryClient()
   const [methodFilter, setMethodFilter] = useState<MethodFilter>('ALL')
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
   )
+  const todayDate = getTodayDateString()
 
   const invoicesQuery = useQuery({
-    queryKey: ['invoices', 'list', methodFilter],
+    queryKey: ['invoices', 'list', todayDate, methodFilter],
     queryFn: () =>
-      invoiceApi.list(
-        methodFilter === 'ALL' ? undefined : { paymentMethod: methodFilter }
-      ),
+      invoiceApi.list({
+        date: todayDate,
+        ...(methodFilter === 'ALL' ? {} : { paymentMethod: methodFilter }),
+      }),
   })
 
   const detailQuery = useQuery({
@@ -106,7 +118,7 @@ export function InvoicesTodayPage() {
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
-              <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                 <tr>
                   <th className="px-4 py-3">Mã hóa đơn</th>
                   <th className="px-4 py-3">Bàn</th>

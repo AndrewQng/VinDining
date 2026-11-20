@@ -150,3 +150,31 @@
     color: #475569 !important;
   }
 }
+
+@keyframes bookingStepFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-step-fade {
+  animation: bookingStepFadeIn 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-fade {
+    animation: none;
+  }
+}
+
+/* G1.2 floor plan: a booked table top is hatched so it reads as taken without colour alone. */
+@utility table-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--line) 0 2px,
+    transparent 2px 7px
+  );
+}

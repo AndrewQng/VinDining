@@ -11,7 +11,7 @@ import { authRoutes } from './handlers/authHandlers'
 import { invoiceRoutes } from './handlers/invoiceHandlers'
 import { managerRoutes } from './handlers/managerHandlers'
 import { extraPublicMenuRoutes, menuRoutes } from './handlers/menuHandlers'
-import { orderRoutes } from './handlers/orderHandlers'
+import { extraOrderRoutes, orderRoutes } from './handlers/orderHandlers'
 import { reservationRoutes } from './handlers/reservationHandlers'
 import { serviceAndFeedbackRoutes } from './handlers/serviceAndFeedbackHandlers'
 import { tableRoutes } from './handlers/tableHandlers'
@@ -139,7 +139,11 @@ export function dispatchMockRequest(
   const token = extractBearerToken(config.headers)
   const user = token ? db.sessions[token] ?? null : null
 
-  const routesToSearch = [...ALL_MOCK_ROUTES, ...extraPublicMenuRoutes]
+  const routesToSearch = [
+    ...ALL_MOCK_ROUTES,
+    ...extraPublicMenuRoutes,
+    ...extraOrderRoutes,
+  ]
   for (const route of routesToSearch) {
     if (route.method !== method) continue
     const params = matchPattern(route.pattern, path)

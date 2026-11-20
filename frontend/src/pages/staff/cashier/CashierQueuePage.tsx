@@ -16,6 +16,7 @@ import {
   StatusBadge,
   Tabs,
 } from '@/components/ui'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import {
   isCashierBellMuted,
   playCheckoutBell,
@@ -39,6 +40,7 @@ function sortNewestCheckoutFirst(tables: TableDto[]): TableDto[] {
 
 /** C1 — Hàng chờ thanh toán: live queue of PaymentPending & Occupied tables with chime & highlight. */
 export function CashierQueuePage() {
+  useDocumentTitle('Hàng chờ thanh toán')
   const queryClient = useQueryClient()
   const [tab, setTab] = useState<QueueTab>('pending')
   const [muted, setMuted] = useState<boolean>(() => isCashierBellMuted())
@@ -263,7 +265,7 @@ export function CashierQueuePage() {
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
-              <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                 <tr>
                   <th className="px-4 py-3">Bàn</th>
                   <th className="px-4 py-3">Số khách</th>

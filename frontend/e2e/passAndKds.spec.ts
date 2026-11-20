@@ -143,6 +143,19 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
       kdsPage.getByTestId('kds-ticket-B05-Course1-cooking')
     ).toHaveCount(0)
 
+    // E2 Lịch sử tab on Pass shows newly served B05 Course 1 live + remake history + table filter
+    await passPage.getByRole('tab', { name: /Lịch sử/i }).click()
+    const b05Hist = passPage.getByTestId('pass-history-B05-Course1')
+    await expect(b05Hist).toBeVisible()
+    await expect(b05Hist).toContainText('Lê Minh Quân')
+    await expect(
+      passPage.getByTestId('pass-history-B01-Course2')
+    ).toContainText('Làm lại ×1')
+
+    await passPage.getByLabel('Lọc theo bàn').selectOption('B01')
+    await expect(passPage.getByTestId('pass-history-B01-Course2')).toBeVisible()
+    await expect(passPage.getByTestId('pass-history-B05-Course1')).toHaveCount(0)
+
     expect(waiterErrors).toEqual([])
     expect(kdsErrors).toEqual([])
     expect(passErrors).toEqual([])
@@ -318,7 +331,7 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
     await waiter.waitForTimeout(250)
     await waiter.goto('/phuc-vu/goi-them/tbl-b04')
     await expect(
-      waiter.getByText(/Order đã khóa — không thể gọi thêm món/i)
+      waiter.getByText(/Order đã khóa, không thể gọi thêm món/i)
     ).toBeVisible()
     await waiter.waitForTimeout(200)
     await saveShot(waiter, 'w6-locked-light.png')
@@ -343,7 +356,7 @@ test.describe('Phase 4: Quầy Pass (E1) + KDS Bếp (K1) + Phase 2/3 Verificati
 
     await guest.setViewportSize({ width: 1440, height: 900 })
     await guest.goto('/dat-ban')
-    await guest.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await guest.getByTestId('booking-nav-next').click()
     await expect(guest.getByText(/Còn trống/i).first()).toBeVisible()
     await saveShot(guest, 'g1-floorplan-guest-desktop-dark.png')
 

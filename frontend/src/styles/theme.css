@@ -121,6 +121,69 @@ html[data-theme='light'] {
   --focus-ring: #1f5fbf;
 }
 
+/* White-gold light palette for guest-facing screens (G0–G4); zero blue */
+html[data-theme='light'][data-area='guest'] {
+  color-scheme: light;
+
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card-hover: #f6f0e4;
+  --line: #ece3d1;
+  --line-strong: #dccdb0;
+
+  --ink: #1c1a17;
+  --ink-muted: #5f574a;
+  --ink-subtle: #6b6152;
+
+  --accent: #8a6a1f;
+  --accent-soft: #a8801f;
+  --primary: #c68e27;
+  /* Darkened gold hover calibrated to >= 4.5:1 WCAG AA (4.98:1) with --on-primary #1c1a17 */
+  --primary-hover: #b57f22;
+  --on-primary: #1c1a17;
+
+  --danger: #dc2626;
+  --danger-fg: #991b1b;
+  --danger-hover: #b91c1c;
+  --on-danger: #ffffff;
+  --success: #15803d;
+  --success-fg: #166534;
+  --warning: #d97706;
+  --warning-fg: #92400e;
+
+  --badge-success-bg: #dcfce7;
+  --badge-success-fg: #166534;
+  --badge-success-border: #86efac;
+
+  --badge-warning-bg: #fef3c7;
+  --badge-warning-fg: #92400e;
+  --badge-warning-border: #fcd34d;
+
+  --badge-info-bg: #f6f0e4;
+  --badge-info-fg: #735616;
+  --badge-info-border: #dccdb0;
+
+  --badge-accent-bg: #f6f0e4;
+  --badge-accent-fg: #735616;
+  --badge-accent-border: #dccdb0;
+
+  --badge-purple-bg: #f6f0e4;
+  --badge-purple-fg: #735616;
+  --badge-purple-border: #dccdb0;
+
+  --badge-danger-bg: #fee2e2;
+  --badge-danger-fg: #991b1b;
+  --badge-danger-border: #fca5a5;
+
+  --badge-neutral-bg: #f5f2eb;
+  --badge-neutral-fg: #5f574a;
+  --badge-neutral-border: #dccdb0;
+
+  --scrim: rgba(28, 26, 23, 0.45);
+  --focus-ring: #8a6a1f;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);

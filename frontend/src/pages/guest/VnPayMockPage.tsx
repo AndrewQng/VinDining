@@ -27,6 +27,7 @@ export function VnPayMockPage() {
     queryKey: ['pending-reservation', code],
     queryFn: () => reservationApi.getByCode(code),
     enabled: Boolean(code),
+    retry: false,
   })
 
   const ipnMutation = useMutation({
@@ -41,6 +42,11 @@ export function VnPayMockPage() {
       void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
       void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
       const current = loadBookingDraft()
+      if (!res.success || res.reservation?.status !== 'Reserved') {
+        saveBookingDraft({ ...current, step: 'expired', holdReservation: null })
+        navigate('/dat-ban', { replace: true })
+        return
+      }
       saveBookingDraft({
         ...current,
         step: 'confirmed',
@@ -102,7 +108,6 @@ export function VnPayMockPage() {
     <div className="max-w-lg mx-auto px-4 py-10 space-y-6">
       <PageHeader
         title="Cổng thanh toán VNPAY (mô phỏng)"
-        subtitle="Môi trường mô phỏng thanh toán đặt cọc trực tuyến"
         backTo="/dat-ban"
         backLabel="Hủy giao dịch"
       />
@@ -111,7 +116,7 @@ export function VnPayMockPage() {
         <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-card border border-line text-xs text-ink-muted">
           <span className="inline-flex items-center gap-1.5 text-accent font-medium">
             <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-            Cổng thanh toán mô phỏng
+            Thanh toán đặt cọc
           </span>
           <span>Mã: {reservation.bookingCode}</span>
         </div>
@@ -125,7 +130,7 @@ export function VnPayMockPage() {
             className={cn(
               'p-3.5 rounded-xl border text-left transition-colors space-y-1 cursor-pointer',
               method === 'VietQR'
-                ? 'border-primary bg-card-hover text-accent'
+                ? 'border-primary ring-1 ring-primary bg-card text-accent'
                 : 'border-line bg-card text-ink-muted hover:text-ink'
             )}
           >
@@ -142,7 +147,7 @@ export function VnPayMockPage() {
             className={cn(
               'p-3.5 rounded-xl border text-left transition-colors space-y-1 cursor-pointer',
               method === 'Card'
-                ? 'border-primary bg-card-hover text-accent'
+                ? 'border-primary ring-1 ring-primary bg-card text-accent'
                 : 'border-line bg-card text-ink-muted hover:text-ink'
             )}
           >

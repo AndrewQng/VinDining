@@ -98,13 +98,31 @@ public class InvoiceController : ApiControllerBase
     [Authorize(Roles = "Cashier,Admin,Manager")]
     public async Task<IActionResult> GetInvoicesAsync(
         [FromQuery] DateTime? date = null,
-        [FromQuery] PaymentMethod? paymentMethod = null,
+        [FromQuery] string? paymentMethod = null,
         CancellationToken ct = default)
     {
-        var result = await _invoiceService.GetInvoicesAsync(date, ct);
-        if (paymentMethod.HasValue)
+        PaymentMethod? parsedMethod = null;
+        if (!string.IsNullOrWhiteSpace(paymentMethod))
         {
-            result = result.Where(i => i.PaymentMethod == paymentMethod.Value).ToList();
+            var raw = paymentMethod.Trim();
+            if (string.Equals(raw, "VietQR", StringComparison.OrdinalIgnoreCase))
+            {
+                parsedMethod = PaymentMethod.BankTransfer;
+            }
+            else if (Enum.TryParse<PaymentMethod>(raw, ignoreCase: true, out var m))
+            {
+                parsedMethod = m;
+            }
+            else
+            {
+                throw new ArgumentException($"Phương thức thanh toán '{raw}' không hợp lệ.");
+            }
+        }
+
+        var result = await _invoiceService.GetInvoicesAsync(date, ct);
+        if (parsedMethod.HasValue)
+        {
+            result = result.Where(i => i.PaymentMethod == parsedMethod.Value).ToList();
         }
         return Ok(result);
     }

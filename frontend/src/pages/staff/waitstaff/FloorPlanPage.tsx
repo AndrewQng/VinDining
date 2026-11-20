@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TABLE_STATUS_LABELS, TABLE_ZONE_LABELS } from '@/domain'
 import {
@@ -106,7 +106,15 @@ export function FloorPlanPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-semibold text-ink">Sơ đồ bàn</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-lg font-semibold text-ink">Sơ đồ bàn</h1>
+        <Link
+          to="/phuc-vu/check-in"
+          className="text-xs font-medium text-accent hover:underline whitespace-nowrap"
+        >
+          Tra cứu check-in →
+        </Link>
+      </div>
 
       <Tabs
         value={zone}

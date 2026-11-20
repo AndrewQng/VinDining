@@ -40,7 +40,7 @@ public class TableService : ITableService
         if (!table.IsActive)
             throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng hoạt động.");
 
-        if (table.Status == TableStatus.Occupied)
+        if (table.Status == TableStatus.Occupied || table.Status == TableStatus.PaymentPending)
             throw new ConflictException($"Bàn {table.TableNumber} đang có khách dùng bữa.");
 
         if (table.Status == TableStatus.Cleaning)
@@ -172,6 +172,8 @@ public class TableService : ITableService
 
         reservation.Status = ReservationStatus.Completed;
         table.Status = TableStatus.Occupied;
+        table.CurrentGuestCount = reservation.PartySize;
+        table.CheckoutRequestedAt = null;
 
         var autoOrder = await TryCreatePreOrderedSetMenuOrderAsync(table, reservation, now, ct);
 
@@ -388,6 +390,8 @@ public class TableService : ITableService
         }
 
         table.Status = TableStatus.Occupied;
+        table.CurrentGuestCount = partySize;
+        table.CheckoutRequestedAt = null;
         await _context.SaveChangesAsync(ct);
         await _tableNotifier.NotifyTableStatusChangedAsync(table.Id, table.TableNumber, table.Status, ct);
 
@@ -479,7 +483,11 @@ public class TableService : ITableService
         }
 
         targetTable.Status = TableStatus.Occupied;
+        targetTable.CurrentGuestCount = sourceTable.CurrentGuestCount;
+        targetTable.CheckoutRequestedAt = null;
         sourceTable.Status = TableStatus.Cleaning;
+        sourceTable.CurrentGuestCount = null;
+        sourceTable.CheckoutRequestedAt = null;
 
         await _context.SaveChangesAsync(ct);
 
@@ -585,8 +593,9 @@ public class TableService : ITableService
             orderLookup.TryGetValue(t.Id, out var ord);
             resLookup.TryGetValue(t.Id, out var res);
             var guestCount = ord?.Reservation?.PartySize
-                ?? (t.Status == TableStatus.Occupied || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment ? res?.PartySize : null);
-            var resCode = (t.Status == TableStatus.Occupied || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment)
+                ?? t.CurrentGuestCount
+                ?? (t.Status == TableStatus.Occupied || t.Status == TableStatus.PaymentPending || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment ? res?.PartySize : null);
+            var resCode = (t.Status == TableStatus.Occupied || t.Status == TableStatus.PaymentPending || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment)
                 ? (ord?.Reservation?.BookingCode ?? res?.BookingCode)
                 : null;
             var holdExp = t.Status == TableStatus.LockedForPayment && res != null
@@ -609,7 +618,7 @@ public class TableService : ITableService
                 resCode,
                 guestCount,
                 holdExp,
-                null
+                t.Status == TableStatus.PaymentPending ? t.CheckoutRequestedAt : null
             );
         }).ToList();
     }
@@ -635,8 +644,9 @@ public class TableService : ITableService
             .FirstOrDefaultAsync(ct);
 
         var guestCount = ord?.Reservation?.PartySize
-            ?? (t.Status == TableStatus.Occupied || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment ? res?.PartySize : null);
-        var resCode = (t.Status == TableStatus.Occupied || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment)
+            ?? t.CurrentGuestCount
+            ?? (t.Status == TableStatus.Occupied || t.Status == TableStatus.PaymentPending || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment ? res?.PartySize : null);
+        var resCode = (t.Status == TableStatus.Occupied || t.Status == TableStatus.PaymentPending || t.Status == TableStatus.Reserved || t.Status == TableStatus.LockedForPayment)
             ? (ord?.Reservation?.BookingCode ?? res?.BookingCode)
             : null;
         var holdExp = t.Status == TableStatus.LockedForPayment && res != null
@@ -659,7 +669,7 @@ public class TableService : ITableService
             resCode,
             guestCount,
             holdExp,
-            null);
+            t.Status == TableStatus.PaymentPending ? t.CheckoutRequestedAt : null);
     }
 
     public async Task<bool> UpdateTableStatusAsync(Guid id, UpdateTableStatusDto dto, CancellationToken ct = default)
@@ -673,7 +683,9 @@ public class TableService : ITableService
         if (!table.IsActive)
             throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng hoạt động.");
 
-        if (table.Status == TableStatus.Occupied && dto.Status != TableStatus.Occupied)
+        if ((table.Status == TableStatus.Occupied || table.Status == TableStatus.PaymentPending) &&
+            dto.Status != TableStatus.Occupied &&
+            dto.Status != TableStatus.PaymentPending)
         {
             var hasUnsettledOrder = await _context.Orders
                 .AnyAsync(o => o.TableId == id && o.Status == OrderStatus.Processing, ct);
@@ -701,6 +713,13 @@ public class TableService : ITableService
         }
 
         table.Status = dto.Status;
+        table.CheckoutRequestedAt = dto.Status == TableStatus.PaymentPending
+            ? (table.CheckoutRequestedAt ?? DateTime.UtcNow)
+            : null;
+        if (dto.Status == TableStatus.Available || dto.Status == TableStatus.Cleaning)
+        {
+            table.CurrentGuestCount = null;
+        }
         await _context.SaveChangesAsync(ct);
         await _tableNotifier.NotifyTableStatusChangedAsync(table.Id, table.TableNumber, table.Status, ct);
         return true;

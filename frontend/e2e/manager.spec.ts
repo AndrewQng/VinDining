@@ -135,20 +135,26 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     await expect(
       mgrPage.getByTestId('set-menu-card-set-thuong-hang')
     ).toBeVisible()
+    await expect(
+      mgrPage.getByTestId('set-menu-card-set-tinh-hoa')
+    ).toBeVisible()
+    await expect(
+      mgrPage.getByTestId('set-menu-card-set-dac-tuyen')
+    ).toBeVisible()
 
     await mgrPage.getByRole('button', { name: /Tạo Set Menu/i }).click()
-    await mgrPage.getByLabel('Tên Set Menu').fill('Set Menu Tinh Hoa')
+    await mgrPage.getByLabel('Tên Set Menu').fill('Set Menu Mùa Thu')
     await mgrPage.getByLabel(/Giá trọn gói/i).fill('1480000')
     await mgrPage
       .getByRole('dialog')
       .getByRole('button', { name: /Tạo Set Menu/i })
       .click()
 
-    await expect(mgrPage.getByText('Set Menu Tinh Hoa')).toBeVisible()
+    await expect(mgrPage.getByText('Set Menu Mùa Thu')).toBeVisible()
     await saveShot(mgrPage, 'm1s-dark.png')
 
     await expect(
-      guestPage.getByText('Set Menu Tinh Hoa').first()
+      guestPage.getByText('Set Menu Mùa Thu').first()
     ).toBeVisible()
 
     expect(guestErrors).toEqual([])
@@ -228,8 +234,14 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     const errors = attachErrorGuard(page)
     await loginAs(page, 'long.dh', /\/quan-ly$/)
 
-    await page.getByRole('link', { name: 'Duyệt hoàn cọc' }).click()
+    await page.getByRole('link', { name: 'Hoàn cọc ngoại lệ' }).click()
     await expect(page).toHaveURL(/\/quan-ly\/hoan-coc$/)
+    await expect(
+      page.getByRole('heading', { name: 'Hoàn cọc ngoại lệ' })
+    ).toBeVisible()
+    await expect(page.getByTestId('refund-policy-banner')).toContainText(
+      'tự động hoàn 100% cọc'
+    )
     await expect(page.getByTestId('refund-row-VD-2C8N')).toBeVisible()
     await expect(page.getByTestId('refund-row-VD-8P4K')).toBeVisible()
     await saveShot(page, 'm3-dark.png')
@@ -267,8 +279,15 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     )
     await page.getByRole('button', { name: 'Đóng hộp thoại' }).click()
 
-    await page.getByRole('tab', { name: /Tất cả/i }).click()
-    await expect(page.getByTestId('refund-row-VD-2C8N')).toContainText('Đã hủy')
+    await page.getByRole('tab', { name: /Đã xử lý/i }).click()
+    await expect(page.getByTestId('refund-row-VD-2C8N')).toContainText(
+      'Chấp thuận hoàn cọc'
+    )
+    await expect(page.getByTestId('refund-row-VD-8P4K')).toContainText(
+      'Từ chối hoàn cọc'
+    )
+    await expect(page.getByTestId('refund-row-VD-5E1M')).toBeVisible()
+    await expect(page.getByTestId('refund-row-VD-6R2T')).toBeVisible()
 
     expect(errors).toEqual([])
   })
@@ -357,6 +376,10 @@ test.describe('Phase 5b: Quản lý (/quan-ly/*, M1–M5)', () => {
     await page.getByRole('link', { name: 'Báo cáo' }).click()
     await expect(page).toHaveURL(/\/quan-ly\/bao-cao$/)
     await expect(page.getByTestId('kpi-total-revenue')).not.toHaveText(/^0 ₫$/)
+    await expect(page.getByTestId('m5-feedback-card')).toContainText('Bàn V02')
+    await expect(page.getByTestId('m5-feedback-card')).not.toContainText(
+      'Nguyễn Văn An'
+    )
     await saveShot(page, 'm5-month-dark.png', true)
 
     // Excel export triggers a real .xlsx file download

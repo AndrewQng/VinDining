@@ -106,7 +106,7 @@ public record OrderItemDetailDto(
         }
     }
 
-    private static int CountRemakeMarkers(string? note)
+    internal static int CountRemakeMarkers(string? note)
     {
         if (string.IsNullOrEmpty(note)) return 0;
         const string marker = "[LÀM LẠI:";
@@ -120,3 +120,18 @@ public record OrderItemDetailDto(
         return count;
     }
 }
+
+public record PassHistoryItemDto(
+    Guid OrderItemId,
+    Guid OrderId,
+    Guid TableId,
+    string TableNumber,
+    string ItemName,
+    int Quantity,
+    CourseType CourseType,
+    string? Note,
+    int RemakeCount,
+    DateTime ServedAt,
+    Guid? ServedById,
+    string ServedByName
+);

@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { Button, Drawer, ThemeToggle, Wordmark } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import { useThemeArea } from '@/stores/useThemeStore'
 
 const GUEST_NAV_ITEMS = [
   { label: 'Set Menu', to: '/#set-menu' },
@@ -13,6 +14,7 @@ const GUEST_NAV_ITEMS = [
 
 /** Public website layout with editorial header, mobile drawer, and minimal footer. */
 export function GuestLayout() {
+  useThemeArea('guest')
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -83,7 +85,7 @@ export function GuestLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-line bg-surface">
+      <footer className="relative z-10 border-t border-line bg-surface">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-2">
             <Wordmark size="sm" />

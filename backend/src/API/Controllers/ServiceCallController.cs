@@ -63,14 +63,20 @@ public class ServiceCallController : ApiControllerBase
     [Authorize(Roles = "Waitstaff,Admin,Manager")]
     public async Task<IActionResult> CompleteServiceCallAsync(Guid id, CancellationToken ct)
     {
+        var active = await _serviceCallService.GetActiveServiceCallsAsync(ct);
+        var target = active.FirstOrDefault(s => s.Id == id);
         var result = await _serviceCallService.CompleteServiceCallAsync(id, ct);
         return Ok(new
         {
             success = result,
             message = "Đã hoàn tất hỗ trợ yêu cầu.",
             id,
+            tableId = target?.TableId ?? Guid.Empty,
+            tableNumber = target?.TableNumber ?? "",
+            requestType = target?.RequestType ?? "",
             status = "Completed",
-            completedAt = DateTime.UtcNow
+            completedAt = DateTime.UtcNow,
+            createdAt = target?.CreatedAt ?? DateTime.UtcNow
         });
     }
 

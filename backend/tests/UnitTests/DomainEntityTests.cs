@@ -313,12 +313,13 @@ public class DomainEntityTests
     [Fact]
     public void Enums_ShouldContainOnlySpecifiedDrawIOValues()
     {
-        // StaffRole: waitstaff, expediter, admin
+        // StaffRole: waitstaff, expediter, admin, cashier
         var staffRoles = Enum.GetNames<StaffRole>();
-        Assert.Equal(3, staffRoles.Length);
+        Assert.Equal(4, staffRoles.Length);
         Assert.Contains("Waitstaff", staffRoles);
         Assert.Contains("Expediter", staffRoles);
         Assert.Contains("Admin", staffRoles);
+        Assert.Contains("Cashier", staffRoles);
 
         // PaymentMethod: cash, card, bank_transfer
         var paymentMethods = Enum.GetNames<PaymentMethod>();
@@ -358,14 +359,15 @@ public class DomainEntityTests
         Assert.Contains("Completed", orderStatuses);
         Assert.Contains("Cancelled", orderStatuses);
 
-        // TableStatus: available, locked_for_payment, reserved, occupied, cleaning
+        // TableStatus: available, locked_for_payment, reserved, occupied, cleaning, payment_pending
         var tableStatuses = Enum.GetNames<TableStatus>();
-        Assert.Equal(5, tableStatuses.Length);
+        Assert.Equal(6, tableStatuses.Length);
         Assert.Contains("Available", tableStatuses);
         Assert.Contains("LockedForPayment", tableStatuses);
         Assert.Contains("Reserved", tableStatuses);
         Assert.Contains("Occupied", tableStatuses);
         Assert.Contains("Cleaning", tableStatuses);
+        Assert.Contains("PaymentPending", tableStatuses);
 
         // TableZone: mainhall, vip, balcony
         var tableZones = Enum.GetNames<TableZone>();

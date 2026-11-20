@@ -126,7 +126,10 @@ public class ReportService : IReportService
         double occupancyRate = 0.0;
         if (activeTables.Count > 0)
         {
-            var busyCount = activeTables.Count(t => t.Status == TableStatus.Occupied || t.Status == TableStatus.Reserved);
+            var busyCount = activeTables.Count(t =>
+                t.Status == TableStatus.Occupied ||
+                t.Status == TableStatus.PaymentPending ||
+                t.Status == TableStatus.Reserved);
             occupancyRate = Math.Round((busyCount * 100.0) / activeTables.Count, 1);
         }
 
@@ -366,14 +369,24 @@ public class ReportService : IReportService
         DateTime to,
         List<Invoice> invoices)
     {
+        static DateTime ToVnLocal(DateTime dt) =>
+            (dt.Kind == DateTimeKind.Local ? dt.ToUniversalTime() : dt).AddHours(7);
+
+        var fromVn = ToVnLocal(from);
+        var toVn = ToVnLocal(to);
         var points = new List<RevenueSeriesPointDto>();
+
         if (period == "day")
         {
             for (int h = 10; h <= 22; h += 2)
             {
-                var start = new DateTime(from.Year, from.Month, from.Day, h, 0, 0, from.Kind);
-                var end = start.AddHours(2).AddTicks(-1);
-                var matching = invoices.Where(i => i.CreatedAt >= start && i.CreatedAt <= end).ToList();
+                var startVn = new DateTime(fromVn.Year, fromVn.Month, fromVn.Day, h, 0, 0, DateTimeKind.Unspecified);
+                var endVn = startVn.AddHours(2).AddTicks(-1);
+                var matching = invoices.Where(i =>
+                {
+                    var createdVn = ToVnLocal(i.CreatedAt);
+                    return createdVn >= startVn && createdVn <= endVn;
+                }).ToList();
                 points.Add(new RevenueSeriesPointDto(
                     $"{h:D2}h",
                     matching.Sum(i => Math.Max(i.Subtotal + i.ServiceCharge + i.VatAmount, i.DeductedDeposit)),
@@ -386,19 +399,23 @@ public class ReportService : IReportService
         {
             for (int m = 0; m < 3; m++)
             {
-                var monthStart = new DateTime(from.Year, from.Month, 1, 0, 0, 0, from.Kind).AddMonths(m);
-                var monthEnd = monthStart.AddMonths(1).AddTicks(-1);
-                var matching = invoices.Where(i => i.CreatedAt >= monthStart && i.CreatedAt <= monthEnd).ToList();
+                var monthStartVn = new DateTime(fromVn.Year, fromVn.Month, 1, 0, 0, 0, DateTimeKind.Unspecified).AddMonths(m);
+                var monthEndVn = monthStartVn.AddMonths(1).AddTicks(-1);
+                var matching = invoices.Where(i =>
+                {
+                    var createdVn = ToVnLocal(i.CreatedAt);
+                    return createdVn >= monthStartVn && createdVn <= monthEndVn;
+                }).ToList();
                 points.Add(new RevenueSeriesPointDto(
-                    $"T{monthStart.Month}",
+                    $"T{monthStartVn.Month}",
                     matching.Sum(i => Math.Max(i.Subtotal + i.ServiceCharge + i.VatAmount, i.DeductedDeposit)),
                     matching.Sum(i => i.Order?.Reservation?.PartySize ?? 2)));
             }
             return points;
         }
 
-        var cursor = from.Date;
-        var lastDate = to.Date < cursor ? cursor : to.Date;
+        var cursor = fromVn.Date;
+        var lastDate = toVn.Date < cursor ? cursor : toVn.Date;
         if ((lastDate - cursor).TotalDays > 35)
         {
             cursor = lastDate.AddDays(-29);
@@ -406,9 +423,13 @@ public class ReportService : IReportService
 
         while (cursor <= lastDate)
         {
-            var dayStart = cursor;
-            var dayEnd = cursor.AddDays(1).AddTicks(-1);
-            var matching = invoices.Where(i => i.CreatedAt >= dayStart && i.CreatedAt <= dayEnd).ToList();
+            var dayStartVn = cursor;
+            var dayEndVn = cursor.AddDays(1).AddTicks(-1);
+            var matching = invoices.Where(i =>
+            {
+                var createdVn = ToVnLocal(i.CreatedAt);
+                return createdVn >= dayStartVn && createdVn <= dayEndVn;
+            }).ToList();
             var label = period == "week" ? $"{cursor:dd/MM}" : cursor.Day.ToString();
             points.Add(new RevenueSeriesPointDto(
                 label,

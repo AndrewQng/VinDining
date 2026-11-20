@@ -18,42 +18,28 @@ public class TableNotifier : ITableNotifier
     public async Task NotifyTableStatusChangedAsync(Guid tableId, string tableNumber, TableStatus newStatus, CancellationToken cancellationToken = default)
     {
         var frontendStatus = newStatus == TableStatus.LockedForPayment ? "Locked" : newStatus.ToString();
-        var payload = new
-        {
-            TableId = tableId,
-            TableNumber = tableNumber,
-            Status = newStatus.ToString(),
-            FrontendStatus = frontendStatus,
-            UpdatedAt = DateTime.UtcNow
-        };
-        await _tableHub.Clients.All.SendAsync("TableStatusChanged", payload, cancellationToken);
         await _tableHub.Clients.All.SendAsync(
             "table:status-changed",
-            new { tableId, tableNumber, status = frontendStatus },
+            new { tableId = tableId.ToString(), tableNumber, status = frontendStatus },
             cancellationToken);
     }
 
     public async Task NotifyFloorPlanUpdatedAsync(int updatedCount, CancellationToken cancellationToken = default)
     {
         await _tableHub.Clients.All.SendAsync(
-            "FloorPlanUpdated",
-            new
-            {
-                UpdatedCount = updatedCount,
-                UpdatedAt = DateTime.UtcNow
-            },
+            "table:status-changed",
+            new { tableId = string.Empty, tableNumber = string.Empty, status = "Available" },
             cancellationToken);
     }
 
     public async Task NotifyServiceCallCreatedAsync(ServiceCallResponseDto serviceCall, CancellationToken cancellationToken = default)
     {
-        await _tableHub.Clients.All.SendAsync("ServiceCallCreated", serviceCall, cancellationToken);
         await _tableHub.Clients.All.SendAsync(
             "service-request:created",
             new
             {
-                requestId = serviceCall.Id,
-                tableId = serviceCall.TableId,
+                requestId = serviceCall.Id.ToString(),
+                tableId = serviceCall.TableId.ToString(),
                 tableNumber = serviceCall.TableNumber,
                 requestType = serviceCall.RequestType
             },
@@ -63,21 +49,11 @@ public class TableNotifier : ITableNotifier
     public async Task NotifyServiceCallCompletedAsync(Guid serviceCallId, Guid tableId, string tableNumber, CancellationToken cancellationToken = default)
     {
         await _tableHub.Clients.All.SendAsync(
-            "ServiceCallCompleted",
-            new
-            {
-                Id = serviceCallId,
-                TableId = tableId,
-                TableNumber = tableNumber,
-                CompletedAt = DateTime.UtcNow
-            },
-            cancellationToken);
-        await _tableHub.Clients.All.SendAsync(
             "service-request:completed",
             new
             {
-                requestId = serviceCallId,
-                tableId
+                requestId = serviceCallId.ToString(),
+                tableId = tableId.ToString()
             },
             cancellationToken);
     }
@@ -85,22 +61,35 @@ public class TableNotifier : ITableNotifier
     public async Task NotifyCheckoutRequestedAsync(Guid tableId, string tableNumber, Guid orderId, decimal estimatedSubtotal = 0m, CancellationToken cancellationToken = default)
     {
         await _tableHub.Clients.All.SendAsync(
-            "CheckoutRequested",
-            new
-            {
-                TableId = tableId,
-                TableNumber = tableNumber,
-                OrderId = orderId,
-                EstimatedSubtotal = estimatedSubtotal,
-                RequestedAt = DateTime.UtcNow
-            },
-            cancellationToken);
-        await _tableHub.Clients.All.SendAsync(
             "checkout:requested",
             new
             {
-                tableId,
+                tableId = tableId.ToString(),
                 tableNumber
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifyInvoiceSettledAsync(Guid invoiceId, Guid tableId, CancellationToken cancellationToken = default)
+    {
+        await _tableHub.Clients.All.SendAsync(
+            "invoice:settled",
+            new
+            {
+                invoiceId = invoiceId.ToString(),
+                tableId = tableId.ToString()
+            },
+            cancellationToken);
+    }
+
+    public async Task NotifyMenuUpdatedAsync(Guid menuItemId, bool isAvailable, CancellationToken cancellationToken = default)
+    {
+        await _tableHub.Clients.All.SendAsync(
+            "menu:updated",
+            new
+            {
+                menuItemId = menuItemId.ToString(),
+                status = isAvailable ? "Available" : "SoldOut"
             },
             cancellationToken);
     }

@@ -43,5 +43,6 @@ public record RefundRequestDto(
     double HoursBeforeReservation = 0.0,
     DateTime RequestedAt = default,
     string? AuditReason = null,
-    DateTime? ProcessedAt = null
+    DateTime? ProcessedAt = null,
+    string? DecisionAction = null
 );

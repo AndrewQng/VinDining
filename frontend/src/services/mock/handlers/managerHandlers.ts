@@ -140,7 +140,7 @@ export const managerRoutes: MockRouteDefinition[] = [
       ) {
         return fail(
           409,
-          'Bàn đang có khách hoặc đã đặt trước — vui lòng chuyển khách trước khi xóa'
+          'Bàn đang có khách hoặc đã đặt trước. Vui lòng chuyển khách trước khi xóa.'
         )
       }
 
@@ -160,29 +160,45 @@ export const managerRoutes: MockRouteDefinition[] = [
     pattern: '/manager/refunds',
     access: ['Manager'],
     handler: ({ db, now }) => {
-      const history = getHistorical120DayData(now)
-      const list = [...db.reservations, ...history.reservations]
-        .filter(
-          (r) =>
-            r.status === 'Cancelled_Forfeited' ||
-            r.status === 'Cancelled_Refunded' ||
-            r.status === 'RefundRejected'
-        )
+      const exceptionAuditByReservation = new Map<
+        string,
+        (typeof db.auditLogs)[number]
+      >()
+      for (const entry of db.auditLogs) {
+        if (
+          entry.entityName === 'Reservation' &&
+          (entry.action === 'ManualRefundApproved' ||
+            entry.action === 'ManualRefundRejected') &&
+          !exceptionAuditByReservation.has(entry.entityId)
+        ) {
+          exceptionAuditByReservation.set(entry.entityId, entry)
+        }
+      }
+
+      const list = db.reservations
+        .filter((r) => {
+          if (r.status === 'Cancelled_Forfeited') return true
+          return exceptionAuditByReservation.has(r.id)
+        })
         .map((r) => {
           const cancelledMs = r.cancelledAt
             ? Date.parse(r.cancelledAt)
             : now.getTime()
           const hours =
             (Date.parse(r.reservationTime) - cancelledMs) / 3_600_000
-          const log = db.auditLogs.find(
-            (a) => a.entityName === 'Reservation' && a.entityId === r.id
-          )
+          const log = exceptionAuditByReservation.get(r.id)
+          const decisionAction =
+            log?.action === 'ManualRefundApproved' ||
+            log?.action === 'ManualRefundRejected'
+              ? log.action
+              : null
           return {
             reservation: r,
             hoursBeforeReservation: Math.max(0, Number(hours.toFixed(1))),
             requestedAt: r.cancelledAt ?? r.createdAt,
             auditReason: log?.reason ?? null,
             processedAt: log?.createdAt ?? null,
+            decisionAction,
           }
         })
         .sort(

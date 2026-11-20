@@ -99,9 +99,15 @@ export function CheckInLookupPage() {
                     {res.guest.fullName} · {res.bookingCode}
                   </p>
                   <p className="text-xs text-ink-muted">
-                    Bàn {res.tableNumber} ({TABLE_ZONE_LABELS[res.zone]}) ·{' '}
-                    {res.partySize} khách · {formatSlotTime(res.reservationTime)}
+                    SĐT: {res.guest.phoneNumber} · Bàn {res.tableNumber} (
+                    {TABLE_ZONE_LABELS[res.zone]}) · {res.partySize} khách ·{' '}
+                    {formatSlotTime(res.reservationTime)}
                   </p>
+                  {res.preOrderedTastingMenuName && (
+                    <p className="text-xs font-medium text-accent mt-1">
+                      Đặt trước: {res.preOrderedTastingMenuName} × {res.partySize}
+                    </p>
+                  )}
                 </div>
                 <StatusBadge status={res.status} />
               </div>

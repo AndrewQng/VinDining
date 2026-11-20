@@ -13,11 +13,13 @@ import {
   isRouteAllowedForRole,
   useAuthStore,
 } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 import { toast } from '@/stores/useToastStore'
 import type { ApiErrorResponse } from '@/types'
 
 /** S1 — Shared staff login page with lockout feedback and mock demo account helper. */
 export function LoginPage() {
+  useThemeArea('staff')
   useDocumentTitle('Đăng nhập')
   const navigate = useNavigate()
   const location = useLocation()
@@ -100,7 +102,9 @@ export function LoginPage() {
         <Card padding="lg" className="space-y-6 shadow-xl">
           <div className="text-center space-y-1.5">
             <Wordmark size="lg" className="items-center" />
-            <p className="text-sm text-ink-muted">Đăng nhập hệ thống nội bộ</p>
+            <h1 className="text-sm font-medium text-ink-muted">
+              Đăng nhập hệ thống nội bộ
+            </h1>
           </div>
 
           {errorMessage && (

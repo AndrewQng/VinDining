@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" data-theme="dark">
+<html lang="vi" data-theme="dark" data-area="guest">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -7,6 +7,9 @@
     <title>VinDining</title>
     <script>
       (function () {
+        var p = (window.location && window.location.pathname) || '/';
+        var isStaff = /^\/(dang-nhap|login|kds|phuc-vu|pos|dieu-phoi|expediter|thu-ngan|cashier|quan-ly|manager|dev\/ui)(\/|$)/i.test(p);
+        document.documentElement.setAttribute('data-area', isStaff ? 'staff' : 'guest');
         try {
           var saved = localStorage.getItem('vd-theme');
           var theme = saved === 'light' ? 'light' : 'dark';

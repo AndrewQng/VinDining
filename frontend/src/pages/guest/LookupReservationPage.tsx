@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Search } from 'lucide-react'
+import { GuestPhotoBackground } from '@/components/guest/GuestPhotoBackground'
 import {
   Button,
   Card,
@@ -141,16 +142,21 @@ export function LookupReservationPage() {
   const depositAmount = reservation?.deposit?.amount ?? 0
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      <PageHeader
-        title="Tra cứu & hủy đặt bàn"
-        subtitle="Nhập mã đặt bàn và số điện thoại đã đăng ký để xem chi tiết"
-        backTo="/"
-        backLabel="Về trang chủ"
-      />
+    <div className="relative min-h-[calc(100dvh-4rem)] overflow-x-clip">
+      <GuestPhotoBackground />
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md px-5 py-4">
+          <PageHeader
+            title="Tra cứu & hủy đặt bàn"
+            backTo="/"
+            backLabel="Về trang chủ"
+            className="pb-0 border-b-0"
+          />
+        </div>
 
       {/* G2.1 Lookup Form */}
-      <Card className="max-w-xl">
+      <Card className="bg-surface/95 backdrop-blur-md max-w-xl">
         <form onSubmit={handleLookupSubmit} className="space-y-4">
           <Input
             label="Mã đặt bàn *"
@@ -191,7 +197,7 @@ export function LookupReservationPage() {
       {/* G2.2 / G2.4 / G2.4x Details */}
       {reservation && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <Card className="space-y-4">
+          <Card className="bg-surface/95 backdrop-blur-md space-y-4">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-serif text-xl font-semibold text-accent">
                 {reservation.bookingCode}
@@ -257,7 +263,7 @@ export function LookupReservationPage() {
           </Card>
 
           <div className="space-y-4">
-            <Card className="space-y-4">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-4">
               <h2 className="text-base font-semibold text-accent">
                 Chính sách hủy đặt bàn & hoàn cọc
               </h2>
@@ -284,7 +290,7 @@ export function LookupReservationPage() {
 
             {/* G2.3 >= 4h full refund confirmation */}
             {confirmMode === 'refund' && (
-              <Card className="space-y-4 border-primary/50">
+              <Card className="bg-surface/95 backdrop-blur-md space-y-4 border-primary/50">
                 <h3 className="text-base font-semibold text-ink">
                   Xác nhận hủy đặt bàn & hoàn cọc 100%
                 </h3>
@@ -324,8 +330,8 @@ export function LookupReservationPage() {
 
             {/* G2.2x < 4h forfeit warning */}
             {confirmMode === 'forfeit' && (
-              <Card className="space-y-4 border-danger/60">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-danger">
+              <Card className="bg-surface/95 backdrop-blur-md space-y-4 border-danger/60">
+                <h3 className="text-sm font-semibold text-danger">
                   Cảnh báo chính sách hủy
                 </h3>
                 <p className="text-sm text-ink">
@@ -362,6 +368,7 @@ export function LookupReservationPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

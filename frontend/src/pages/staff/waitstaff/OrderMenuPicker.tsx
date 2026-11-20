@@ -51,18 +51,18 @@ function buildCourseSections(menuItems: MenuItemDto[]): CourseSection[] {
   return [
     {
       key: 'course-1',
-      title: 'Course 1 — Khai vị & Đồ uống',
+      title: 'Course 1: Khai vị & Đồ uống',
       subtitle: 'Đồ uống phục vụ cùng Course 1',
       items: courseOne,
     },
     {
       key: 'course-2',
-      title: 'Course 2 — Món chính',
+      title: 'Course 2: Món chính',
       items: courseTwo,
     },
     {
       key: 'course-3',
-      title: 'Course 3 — Tráng miệng',
+      title: 'Course 3: Tráng miệng',
       items: courseThree,
     },
   ].filter((sec) => sec.items.length > 0)
@@ -114,9 +114,7 @@ export function OrderMenuPicker({
 
   const adjustQuantity = (item: MenuItemDto, delta: number) => {
     if (item.status === 'SoldOut') {
-      setSoldOutAlert(
-        `${item.name} tạm hết — vui lòng tư vấn món khác cho khách.`
-      )
+      setSoldOutAlert(`${item.name} tạm hết. Vui lòng tư vấn món khác cho khách.`)
       return
     }
     setSoldOutAlert(null)
@@ -164,7 +162,7 @@ export function OrderMenuPicker({
       )}
 
       {tab === 'set-menu' && allowSetMenu ? (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3">
           {tastingMenus
             .filter((m) => m.isActive)
             .map((setMenu) => {
@@ -177,18 +175,18 @@ export function OrderMenuPicker({
                     setSelectedSetMenuId(selected ? null : setMenu.id)
                   }
                   className={cn(
-                    'w-full text-left rounded-xl border p-4 transition-colors cursor-pointer space-y-2',
+                    'w-full min-h-[112px] text-left rounded-xl border p-4 transition-colors cursor-pointer flex flex-col justify-between gap-2',
                     selected
                       ? 'border-primary bg-primary/10'
                       : 'border-line bg-card hover:bg-card-hover'
                   )}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-bold text-ink">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-ink leading-5">
                         {setMenu.name}
                       </p>
-                      <p className="text-xs text-accent font-semibold mt-0.5">
+                      <p className="text-xs text-accent font-semibold mt-0.5 tabular-nums">
                         <Money amount={setMenu.price} /> / khách (× {guestCount}{' '}
                         khách)
                       </p>
@@ -200,7 +198,7 @@ export function OrderMenuPicker({
                       />
                     )}
                   </div>
-                  <p className="text-xs text-ink-muted">
+                  <p className="text-xs text-ink-muted line-clamp-2 min-h-[2rem]">
                     {setMenu.items.map((i) => i.menuItemName).join(' · ')}
                   </p>
                 </button>
@@ -212,7 +210,7 @@ export function OrderMenuPicker({
           {sections.map((section) => (
             <section key={section.key} className="space-y-2.5">
               <div className="space-y-0.5">
-                <h2 className="text-xs font-bold uppercase tracking-wide text-accent">
+                <h2 className="text-xs font-bold text-accent">
                   {section.title}
                 </h2>
                 {section.subtitle && (
@@ -228,11 +226,11 @@ export function OrderMenuPicker({
                     <Card
                       key={item.id}
                       padding="sm"
-                      className={cn('space-y-2', soldOut && 'opacity-70')}
+                      className={cn('min-h-[72px] flex flex-col justify-center space-y-2', soldOut && 'opacity-70')}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-ink">
+                          <p className="text-sm font-semibold text-ink line-clamp-2">
                             {item.name}
                           </p>
                           <p className="text-xs text-ink-muted">

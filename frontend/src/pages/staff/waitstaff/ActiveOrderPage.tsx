@@ -33,19 +33,19 @@ function groupOrderByCourse(order: OrderDto): CourseSectionGroup[] {
   const groups: CourseSectionGroup[] = [
     {
       key: 'Course1',
-      title: 'Course 1 — Khai vị & Đồ uống',
+      title: 'Course 1: Khai vị & Đồ uống',
       items: order.items.filter(
         (i) => i.courseType === 'Appetizer' || i.courseType === 'Beverage'
       ),
     },
     {
       key: 'MainCourse',
-      title: 'Course 2 — Món chính',
+      title: 'Course 2: Món chính',
       items: order.items.filter((i) => i.courseType === 'MainCourse'),
     },
     {
       key: 'Dessert',
-      title: 'Course 3 — Tráng miệng',
+      title: 'Course 3: Tráng miệng',
       items: order.items.filter((i) => i.courseType === 'Dessert'),
     },
   ]
@@ -209,8 +209,8 @@ export function ActiveOrderPage() {
 
   const activateTargetTitle =
     courseToActivate === 'MainCourse'
-      ? 'Course 2 — Món chính'
-      : 'Course 3 — Tráng miệng'
+      ? 'Course 2: Món chính'
+      : 'Course 3: Tráng miệng'
   const activateTargetItems = order.items.filter(
     (i) => i.courseType === courseToActivate && i.status === 'OnHold'
   )
@@ -261,7 +261,7 @@ export function ActiveOrderPage() {
           <div className="rounded-lg bg-card border border-line px-3 py-2.5 flex items-start gap-2 text-xs text-ink-muted">
             <Lock className="w-4 h-4 shrink-0 mt-0.5 text-warning" aria-hidden="true" />
             <span>
-              Order đã khóa — không thể gọi thêm món khi bàn chờ thanh toán.
+              Order đã khóa, không thể gọi thêm món khi bàn chờ thanh toán.
             </span>
           </div>
 
@@ -293,7 +293,7 @@ export function ActiveOrderPage() {
               className="space-y-2 border-b border-line pb-3 last:border-b-0 last:pb-0"
             >
               <div className="flex items-center justify-between gap-2">
-                <h2 className="text-xs font-bold uppercase tracking-wide text-accent">
+                <h2 className="text-xs font-bold text-accent">
                   {group.title}
                 </h2>
                 <StatusBadge status={aggregateStatus} />
@@ -475,8 +475,7 @@ export function ActiveOrderPage() {
         }
       >
         <p className="text-sm text-ink-muted">
-          Bàn chưa có món nào được phục vụ — không thể gửi yêu cầu tính tiền theo
-          quy định.
+          Bàn chưa có món nào được phục vụ, không thể gửi yêu cầu tính tiền.
         </p>
       </Modal>
     </div>

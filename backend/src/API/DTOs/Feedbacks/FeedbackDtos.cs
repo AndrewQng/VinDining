@@ -11,6 +11,12 @@ public record SubmitFeedbackDto(
     int? ServiceRating = null
 );
 
+public record FeedbackTokenValidationDto(
+    bool Valid,
+    Guid InvoiceId,
+    string? TableNumber = null
+);
+
 public record FeedbackDto(
     Guid Id,
     Guid InvoiceId,
@@ -22,7 +28,8 @@ public record FeedbackDto(
     string? TableNumber = null,
     int? FoodRating = null,
     int? AmbienceRating = null,
-    int? ServiceRating = null
+    int? ServiceRating = null,
+    string? Zone = null
 )
 {
     public int EffectiveFoodRating => FoodRating ?? Rating;

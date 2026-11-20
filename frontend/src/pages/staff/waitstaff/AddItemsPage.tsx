@@ -48,7 +48,7 @@ export function AddItemsPage() {
         const msg = err.response?.data?.message ?? 'Không thể thêm món vào order'
         setSubmitError(
           msg.includes('tạm hết')
-            ? `${msg} — vui lòng tư vấn món khác cho khách.`
+            ? `${msg}. Vui lòng tư vấn món khác cho khách.`
             : msg
         )
       } else {
@@ -107,7 +107,7 @@ export function AddItemsPage() {
       {locked ? (
         <Card className="space-y-3">
           <p className="text-sm text-danger">
-            Order đã khóa — không thể gọi thêm món khi bàn chờ thanh toán.
+            Order đã khóa, không thể gọi thêm món khi bàn chờ thanh toán.
           </p>
           <div className="space-y-2">
             <Button

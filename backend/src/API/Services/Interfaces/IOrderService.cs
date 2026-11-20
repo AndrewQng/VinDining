@@ -11,4 +11,5 @@ public interface IOrderService
     Task<OrderDetailDto> GetOrderDetailsAsync(Guid id, CancellationToken ct = default);
     Task<bool> CancelOrderItemAsync(Guid id, Guid itemId, string? reason = null, CancellationToken ct = default);
     Task<List<OrderItemDetailDto>> GetKitchenPendingOrdersAsync(CancellationToken ct = default);
+    Task<List<PassHistoryItemDto>> GetPassHistoryAsync(string? tableNumber = null, CancellationToken ct = default);
 }

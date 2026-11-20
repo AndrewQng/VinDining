@@ -26,7 +26,7 @@ public class MenuService : IMenuService
         if (!table.IsActive)
             throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng phục vụ. Vui lòng liên hệ nhân viên phục vụ.");
 
-        if (table.Status != TableStatus.Occupied)
+        if (table.Status != TableStatus.Occupied && table.Status != TableStatus.PaymentPending)
             throw new InvalidOperationException($"Bàn {table.TableNumber} chưa hoàn tất thủ tục check-in. Vui lòng liên hệ nhân viên phục vụ.");
 
         return await GetCategoriesAsync(ct);
@@ -49,7 +49,7 @@ public class MenuService : IMenuService
         var result = categories.Select(c =>
         {
             var items = c.MenuItems
-                .Where(m => m.Status == "Available")
+                .Where(m => m.Status == "Available" || m.Status == "SoldOut")
                 .OrderBy(m => m.CourseType)
                 .ThenBy(m => m.Name)
                 .Select(m => new MenuItemDto(
@@ -58,7 +58,7 @@ public class MenuService : IMenuService
                     m.Price,
                     m.Description,
                     m.ImageUrl,
-                    true,
+                    m.Status == "Available",
                     m.CourseType,
                     m.CategoryId,
                     c.Name,

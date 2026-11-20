@@ -80,7 +80,10 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await scanAxe(page, '/', 'light', collected)
 
     await page.goto('/dat-ban')
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await expect(page.getByTestId('booking-step-time-zone')).toBeVisible()
+    await scanAxe(page, '/dat-ban step 1', 'dark', collected)
+    await scanAxe(page, '/dat-ban step 1', 'light', collected)
+    await page.getByTestId('booking-nav-next').click()
     await expect(page.getByRole('radio').first()).toBeVisible()
     await scanAxe(page, '/dat-ban step 2', 'dark', collected)
     await scanAxe(page, '/dat-ban step 2', 'light', collected)
@@ -107,8 +110,13 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.goto('/dang-nhap')
     await expect(page.getByRole('textbox', { name: /Tên đăng nhập/i })).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('data-area', 'staff')
     await scanAxe(page, '/dang-nhap', 'dark', collected)
     await scanAxe(page, '/dang-nhap', 'light', collected)
+    const staffPrimary = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--primary').trim().toLowerCase()
+    )
+    expect(staffPrimary).toBe('#1f5fbf')
 
     assertZeroViolations(collected)
   })
@@ -139,6 +147,10 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await scanAxe(page, 'E1', 'dark', collected)
     await scanAxe(page, 'E1', 'light', collected)
+    await page.getByRole('tab', { name: /Lịch sử/i }).click()
+    await expect(page.getByTestId('pass-history-B03-Course1')).toBeVisible()
+    await scanAxe(page, 'E2', 'dark', collected)
+    await scanAxe(page, 'E2', 'light', collected)
 
     assertZeroViolations(collected)
   })
@@ -174,6 +186,16 @@ test.describe('Phase 6 Item 3: Accessibility audit (dark + light)', () => {
     await expect(page.getByTestId('floor-node-B03')).toBeVisible()
     await scanAxe(page, 'M2', 'dark', collected)
     await scanAxe(page, 'M2', 'light', collected)
+
+    await page.getByRole('link', { name: 'Hoàn cọc ngoại lệ', exact: true }).click()
+    await expect(page).toHaveURL(/\/quan-ly\/hoan-coc$/)
+    await expect(page.getByTestId('refund-row-VD-2C8N')).toBeVisible()
+    await scanAxe(page, 'M3 pending', 'dark', collected)
+    await scanAxe(page, 'M3 pending', 'light', collected)
+    await page.getByRole('tab', { name: /Đã xử lý/i }).click()
+    await expect(page.getByTestId('refund-row-VD-5E1M')).toBeVisible()
+    await scanAxe(page, 'M3 processed', 'dark', collected)
+    await scanAxe(page, 'M3 processed', 'light', collected)
 
     await page.getByRole('link', { name: 'Báo cáo', exact: true }).click()
     await expect(page).toHaveURL(/\/quan-ly\/bao-cao$/)

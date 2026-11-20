@@ -88,7 +88,7 @@ export function allocateSetMenuUnitPrices(
   return allocated
 }
 
-const UNSERVED_LINE_NOTE = 'Chưa phục vụ — không tính'
+const UNSERVED_LINE_NOTE = 'Chưa phục vụ, không tính'
 
 function formatSetMenuGroupLine(
   setMenuId: string,

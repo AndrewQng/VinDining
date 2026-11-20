@@ -1,5 +1,6 @@
 import type { DepositStatus, ReservationStatus } from '@/types'
 import { CANCELLATION_FULL_REFUND_HOURS } from './constants'
+import { parseUtcTimestamp } from './datetime'
 
 export interface CancellationPolicyEvaluation {
   hoursUntilReservation: number
@@ -13,7 +14,7 @@ export interface CancellationPolicyEvaluation {
 }
 
 function toTimestamp(value: Date | string): number {
-  return value instanceof Date ? value.getTime() : Date.parse(value)
+  return parseUtcTimestamp(value)
 }
 
 /** Evaluates cancellation refund eligibility against the 4-hour cutoff rule. */

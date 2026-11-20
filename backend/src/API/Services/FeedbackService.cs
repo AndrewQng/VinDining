@@ -11,6 +11,67 @@ public class FeedbackService : IFeedbackService
         _context = context;
     }
 
+    public async Task<FeedbackTokenValidationDto> ValidateSurveyTokenAsync(string token, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            throw new ArgumentException("Liên kết đánh giá không hợp lệ.");
+
+        var tokenTrimmed = token.Trim();
+        if (tokenTrimmed.StartsWith("survey-", StringComparison.OrdinalIgnoreCase))
+        {
+            tokenTrimmed = tokenTrimmed[7..].Trim();
+        }
+
+        if (!Guid.TryParse(tokenTrimmed, out var tokenGuid) || tokenGuid == Guid.Empty)
+            throw new ArgumentException("Liên kết đánh giá không hợp lệ.");
+
+        var invoice = await _context.Invoices
+            .Include(i => i.Order)
+                .ThenInclude(o => o.Table)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == tokenGuid, ct);
+
+        if (invoice != null)
+        {
+            if (!invoice.IsPaid || invoice.Order == null || invoice.Order.Status != OrderStatus.Completed)
+                throw new InvalidOperationException("Hóa đơn chưa hoàn tất thanh toán, chưa thể gửi đánh giá dịch vụ.");
+
+            if (invoice.Order.ReservationId.HasValue && invoice.Order.ReservationId.Value != Guid.Empty)
+            {
+                var duplicate = await _context.Feedbacks
+                    .AnyAsync(f => f.ReservationId == invoice.Order.ReservationId.Value, ct);
+                if (duplicate)
+                    throw new ConflictException("Phiên dùng bữa này đã được gửi đánh giá trước đó.");
+            }
+
+            return new FeedbackTokenValidationDto(true, invoice.Id, invoice.Order.Table?.TableNumber);
+        }
+
+        var reservation = await _context.Reservations
+            .Include(r => r.Table)
+            .Include(r => r.Orders)
+                .ThenInclude(o => o.Invoice)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == tokenGuid, ct);
+
+        if (reservation == null)
+            throw new KeyNotFoundException("Liên kết đánh giá không hợp lệ hoặc đã hết hạn.");
+
+        var settledInvoice = reservation.Orders
+            .FirstOrDefault(o => o.Status == OrderStatus.Completed && o.Invoice != null && o.Invoice.IsPaid)
+            ?.Invoice;
+
+        if (reservation.Status != ReservationStatus.Completed || settledInvoice == null)
+            throw new InvalidOperationException("Bàn ăn chưa hoàn tất thanh toán hóa đơn, không thể gửi đánh giá dịch vụ.");
+
+        var reservationDuplicate = await _context.Feedbacks
+            .AnyAsync(f => f.ReservationId == reservation.Id, ct);
+        if (reservationDuplicate)
+            throw new ConflictException("Phiên dùng bữa này đã được gửi đánh giá trước đó.");
+
+        return new FeedbackTokenValidationDto(true, settledInvoice.Id, reservation.Table?.TableNumber);
+    }
+
     public async Task<Guid> SubmitFeedbackAsync(SubmitFeedbackDto dto, CancellationToken ct = default)
     {
         int effectiveRating = dto.Rating;
@@ -117,7 +178,7 @@ public class FeedbackService : IFeedbackService
         {
             var candidateReservationId = dto.ReservationId.HasValue && dto.ReservationId.Value != Guid.Empty
                 ? dto.ReservationId.Value
-                : dto.InvoiceId;
+                : resolvedInvoiceId;
 
             if (candidateReservationId == Guid.Empty)
                 throw new InvalidOperationException("Vui lòng cung cấp mã hóa đơn hoặc mã đặt bàn hợp lệ để gửi đánh giá.");
@@ -151,6 +212,9 @@ public class FeedbackService : IFeedbackService
             Id = Guid.NewGuid(),
             ReservationId = reservationId,
             Rating = effectiveRating,
+            FoodRating = dto.FoodRating ?? effectiveRating,
+            AmbienceRating = dto.AmbienceRating ?? effectiveRating,
+            ServiceRating = dto.ServiceRating ?? effectiveRating,
             Comment = dto.Comment?.Trim(),
             CreatedAt = DateTime.UtcNow
         };
@@ -190,9 +254,10 @@ public class FeedbackService : IFeedbackService
                 f.ReservationId,
                 f.Reservation?.Guest?.FullName,
                 f.Reservation?.Table?.TableNumber,
-                rounded,
-                rounded,
-                rounded
+                f.FoodRating ?? rounded,
+                f.AmbienceRating ?? rounded,
+                f.ServiceRating ?? rounded,
+                f.Reservation?.Table?.Zone.ToString()
             );
         }).ToList();
     }

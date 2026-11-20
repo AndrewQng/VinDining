@@ -15,6 +15,7 @@ import type {
   OrderDto,
   OrderItemDto,
   OrderItemInput,
+  PassHistoryItemDto,
 } from '@/types'
 import { nextMockId, saveMockDb } from '../db'
 import type { MockDatabase } from '../seed'
@@ -323,6 +324,60 @@ export const orderRoutes: MockRouteDefinition[] = [
         itemName: order.items[idx].itemName,
       })
       return ok(order.items[idx])
+    },
+  },
+]
+
+function isSameLocalDay(iso: string, ref: Date): boolean {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return false
+  return (
+    d.getFullYear() === ref.getFullYear() &&
+    d.getMonth() === ref.getMonth() &&
+    d.getDate() === ref.getDate()
+  )
+}
+
+/** Pass history extension route beyond docs/api.md (OPEN_QUESTIONS #16). */
+export const extraOrderRoutes: MockRouteDefinition[] = [
+  {
+    id: 102,
+    method: 'GET',
+    pattern: '/orders/pass/history',
+    access: ['Expediter', 'Manager'],
+    handler: ({ db, query, now }) => {
+      const tableFilter = (query.get('tableNumber') || '').trim().toUpperCase()
+      const history: PassHistoryItemDto[] = []
+
+      for (const order of db.orders) {
+        if (tableFilter && order.tableNumber.toUpperCase() !== tableFilter) {
+          continue
+        }
+        for (const item of order.items) {
+          if (item.status !== 'Served' || !item.servedAt) continue
+          if (!isSameLocalDay(item.servedAt, now)) continue
+          const confirmer = item.servedById
+            ? db.staffs.find((s) => s.id === item.servedById)?.fullName
+            : undefined
+          history.push({
+            orderItemId: item.id,
+            orderId: order.id,
+            tableId: order.tableId,
+            tableNumber: order.tableNumber,
+            itemName: item.itemName,
+            quantity: item.quantity,
+            courseType: item.courseType,
+            note: item.note,
+            remakeCount: item.remakeCount,
+            servedAt: item.servedAt,
+            servedById: item.servedById,
+            servedByName: confirmer ?? 'Lê Minh Quân',
+          })
+        }
+      }
+
+      history.sort((a, b) => Date.parse(b.servedAt) - Date.parse(a.servedAt))
+      return ok(history)
     },
   },
 ]

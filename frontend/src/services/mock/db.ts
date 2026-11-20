@@ -1,4 +1,8 @@
-import { createInitialMockDb, MOCK_DB_VERSION, type MockDatabase } from './seed'
+import {
+  createInitialMockDb,
+  MOCK_SEED_VERSION,
+  type MockDatabase,
+} from './seed'
 
 const STORAGE_KEY = 'vd-mock-db'
 
@@ -19,7 +23,7 @@ export function getMockDb(): MockDatabase {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as MockDatabase
-        if (parsed && parsed.version === MOCK_DB_VERSION) {
+        if (parsed && parsed.version === MOCK_SEED_VERSION) {
           memoryDb = parsed
           return memoryDb
         }
@@ -28,7 +32,7 @@ export function getMockDb(): MockDatabase {
       // Corrupt JSON falls back to fresh seed
     }
   }
-  if (memoryDb) {
+  if (memoryDb && memoryDb.version === MOCK_SEED_VERSION) {
     return memoryDb
   }
 

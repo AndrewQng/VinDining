@@ -13,7 +13,7 @@ Applies to every agent building the Figma prototype (Gemini, Claude, others). Re
 
 ## 2. Source of truth (highest first)
 
-1. `docs/phase1/BAO_CAO_PHAN_TICH_HE_THONG.md` — newest analysis report (actors, RBAC, 21 use cases, BR-01…BR-05).
+1. `docs/Diagram/BAO_CAO_PHAN_TICH_HE_THONG.md` — newest analysis report (actors, RBAC, 21 use cases, BR-01…BR-05).
 2. `docs/adr/0004-retire-table-display-and-adopt-leather-folder-cashier-printing.md`
 3. `CONTEXT.md` — ubiquitous language (but its allergy mentions are overridden by section 3).
 4. `docs/use-cases/*.md` — extra detail only where it does not conflict with 1–3 or section 3.
@@ -72,7 +72,32 @@ Caught in review (hallucinations that actually happened — never repeat):
 **Guest (website: every screen in a mobile 390 and a desktop 1440 version, except G3)**
 - G0 Trang chủ (website home, the guest entry point): an editorial, photo-led page meant to make people want to book (see task 12 for the section list). Header (VinDining wordmark; nav: Set Menu · Không gian · Thực đơn · Tra cứu đặt bàn; gold pill "Đặt bàn"), full-bleed hero photo, **Set Menu first** (one large photo card per §10 set), the 3-step booking explainer, the three zones, the à la carte menu with dish photos, a closing booking call-to-action, and a footer with only "© VinDining" plus nav links. Images come from `docs/prototype/images/` (AI-generated, see CREDITS.md). No address, hotline, opening hours, chef names, awards, "chuẩn sao" or landmark claims (not in the docs).
 - G1 Đặt bàn & cọc (UC-U1): choose date, time, party size, zone (Sảnh chính / VIP / Ban công) → floor plan with available tables → **Chọn Set Menu đặt trước (tùy chọn)**: the §10 sets as cards + option "Gọi món tại nhà hàng"; picking a set shows "× 4 khách" and the set total, with the note that the meal is paid after dining and the deposit is deducted → contact info → 17-minute hold countdown (summary includes the chosen set) → VNPAY handoff (VietQR or bank card) → confirmation with reservation code and the pre-ordered set. Error states: no tables (suggest other time/zone), hold expired. Coming from a G0 set card, that set is pre-selected.
-- G2 Tra cứu & hủy đặt bàn (UC-U3): reservation code + phone → details (incl. pre-ordered set) + refund policy → reason → confirm. ≥4h: 100% refund via VNPAY. <4h: warning that deposit is not refunded.
+  - Design (owner feedback 19/11/2026, round 2 replaces round 1 where they differ):
+    - **Background**: one restaurant photo (`hero_desktop.jpg`, `hero_mobile.jpg` on phone), dimmed in dark and washed out in light, fixed to the screen. It is the same photo on every step and never changes size, zoom or position when the step or the content height changes. Choosing a Set Menu no longer changes the background.
+    - **Progress line** at the top: a thin track with step dots that fills up to the current step (labels under the dots on desktop; "Bước 2/6 · Chọn bàn" over a thin bar on phone). No numbered boxes.
+    - **Layout**: desktop has two columns, the current step on the left and, on the right, the **"Tóm tắt đặt bàn"** card with the **navigation directly below it** (Quay lại + the step's main button). Phone: step, then summary, then navigation. Steps carry no back/next buttons of their own.
+    - **Summary card**: a fixed-size photo at its top (16:9, no text on it): the chosen zone's photo, replaced by the chosen set's photo once a Set Menu is picked (short crossfade). Its rows are always present ("Chưa chọn" when empty), so the card never changes height.
+    - **No movement**: choosing a date, time, party size, zone, table or set changes colours and text only. Nothing moves, resizes or reflows. Step changes do not slide.
+    - **G1.1 Chọn thời gian & khu vực**: a label column and a control column, one row each:
+      - Ngày: the next 7 days as tiles (weekday, day, month; "Hôm nay" / "Ngày mai" on the first two), plus a "Ngày khác" tile that opens a date picker.
+      - Giờ: the 5 slots (18:00 to 20:00) as tiles showing how many fitting tables are free for that date and party size; a slot with none is disabled ("Hết bàn").
+      - Số khách: chips 1 to 10.
+      - Khu vực: three photo cards (zone photos) with the number of fitting free tables at the chosen time; a zone with none is disabled.
+    - **G1.2 Chọn bàn**: the real floor plan of the zone.
+      - A zone switch sits above the plan.
+      - The room outline shows its landmarks:
+        - Sảnh chính: "Cửa sổ" wall at the top, "Lối đi" between the two rows, "Lối vào" at the bottom left;
+        - VIP: "Lối vào";
+        - Ban công: "Lan can" at the top, "Lối vào".
+      - Tables sit at their `PosX/PosY` positions (Sảnh chính is 4 × 2: B01–B04 along the window, B05–B08 across the aisle, like M2), with one chair per seat, the table number and "N ghế".
+      - States:
+        - free and big enough: selectable, green chairs;
+        - selected: gold border and chairs;
+        - "Đã có người đặt" / "Không đủ chỗ": dimmed, not selectable.
+      - Legend under the plan.
+      - The whole room fits on screen without scrolling (1440 × 900 and 390 × 844). On phone the plan turns to portrait (rotated with its landmarks) when that makes the tables bigger.
+    - Set cards are symmetric: equal height, names on one line, price under the name, totals aligned on one baseline.
+- G2 Tra cứu & hủy đặt bàn (UC-U3): reservation code + phone → details (incl. pre-ordered set) + refund policy → reason → confirm. ≥4h: 100% refund via VNPAY. <4h: warning that deposit is not refunded. Same fixed restaurant-photo background as G1 (owner feedback round 2), the form and details on a card.
 - G3 QR E-Menu (UC-U2, phone only): view-only menu, **Set Menu section first**, then à la carte by course + 3 service buttons: Gọi phục vụ, Châm nước, Đổi dụng cụ. Error: invalid QR / table not checked in. Reached by scanning the table QR, not from G0.
 - G4 Đánh giá (UC-U4): opened from the QR on the invoice or the link in the thank-you email/SMS. Star rating for món ăn, không gian, thái độ phục vụ + comment → thank-you.
 
@@ -90,6 +115,7 @@ Caught in review (hallucinations that actually happened — never repeat):
 
 **Expediter (tablet)**
 - E1 Quầy Pass (UC-E3): dishes per table/course, Xác nhận đi món (Served), Yêu cầu làm lại (Remake), SLA colour warning.
+- E2 Lịch sử ra món (owner feedback 19/11/2026): today's dishes that went out, newest first, per table and course: items × quantity, time served, who confirmed it, and "Làm lại" with the count when a dish was remade. Filter by table. Reached from a tab on E1.
 
 **KDS Bếp (wall screen, no buttons)**
 - K1 Tickets by table/course in three lanes (Làm lại · Đang nấu · Chờ), every ticket the same size, most urgent first; Prep SLA countdown, 80%/overdue colour. When the board is full, a page bar at the bottom shows `Trang 1 / N` with two large touch buttons (‹ Trang trước / Trang sau ›; large because hands may be wet or gloved, so no swipe gestures). Each lane header shows its total and how many tickets are on later pages. The Làm lại lane is repeated on every page. K1p / K1p2 show a full kitchen on pages 1 and 2 (reached by a `Demo:` chip on K1).
@@ -103,7 +129,7 @@ Caught in review (hallucinations that actually happened — never repeat):
 **Manager (desktop)**
 - M1 Thực đơn (UC-A1): items (name, description, price, category, Prep SLA, Còn món / Tạm hết) and Set Menu (TastingMenu) create/edit/delete.
 - M2 Sơ đồ bàn (UC-A2): add/remove/drag tables, seats, zones, auto QR per table; block deleting occupied/reserved tables.
-- M3 Duyệt hoàn cọc (UC-A3): list, details, approve with reason / reject with reason.
+- M3 Hoàn cọc ngoại lệ (UC-A3, BR-04): cancellations are decided automatically (≥ 4 h before: 100% refund; < 4 h or no-show: deposit kept) and never need approval. This screen lists **only forfeited deposits** that the Manager may refund as an exception (force majeure): details, approve with reason / reject with reason, and a "Đã xử lý" list of past exception decisions. Never list automatic refunds or ask to approve a cancellation. The page explains the automatic policy in one line.
 - M4 Tài khoản (UC-A4): create (họ tên, email, chức vụ: Phục vụ, Điều phối, Thu ngân, Quản lý), edit, reset password, lock/unlock.
 - M5 Báo cáo (UC-A5): period (ngày/tuần/tháng/quý), zone/shift filter, revenue, guest count, occupancy rate, best sellers, cancellation rate, export Excel/PDF, empty state.
 
@@ -115,12 +141,28 @@ Caught in review (hallucinations that actually happened — never repeat):
 
 ## 7. Visual style
 
-- Dark Gold Luxury, taken from `frontend/src/index.css`:
+- Dark Gold Luxury (default for guests and staff), taken from `frontend/src/index.css`:
   - Backgrounds: `#0b0c10` (bg), `#12131a` (surface), `#181a24` (card), `#1f2230` (card hover); borders `#282b3d` / `#393d56`.
   - Gold: 300 `#dfc372`, 400 `#d4a946`, 500 `#c68e27` (primary), 600 `#aa701e`.
   - Text: `#f3f4f6`.
+- Light mode depends on the audience (owner decision 19/11/2026): **guest screens (G0–G4) use white + gold**, **staff screens (S1, W, E, C, M, K) use white + blue**. Never use blue on a guest screen.
+  - White-gold (guest): bg `#faf8f4`, surface / card `#ffffff`, card hover `#f6f0e4`, borders `#ece3d1` / `#dccdb0`, text `#1c1a17`, muted text `#5f574a`, accent text `#8a6a1f`, gold-400 `#a8801f`, primary `#c68e27` (text on primary `#1c1a17`), primary hover `#aa701e`. Photos: the light set in `docs/prototype/images/light/`.
+  - White-blue (staff): bg `#f4f7fb`, surface / card `#ffffff`, card hover `#eaf1fb`, borders `#dbe4f0` / `#c2d0e3`, text `#0f1e33`, accent text `#1d4f9c`, accent-400 `#2b62b8`, primary `#1f5fbf` (white text), primary hover `#174a96`.
+- Symmetry: cards in one row have equal height; titles that may wrap are clamped to the same number of lines so prices, badges and buttons line up across the row.
+- Staff desktop sidebars are as tall as the screen (viewport), never as tall as the page: the staff name and Đăng xuất stay visible at the bottom while the content scrolls.
 - UI copy in Vietnamese, using the report's terms.
 - **Tone: plain, neutral, informative.** Show status and numbers, not commentary: `Đang làm lại · 18:00 / 20:00`, not `Làm lại khẩn cấp · Đã chế biến 18:00 / Định mức 20:00`. No emoji (§3 row 16).
+- **Copy follows the unslop-ui rules U1 to U16** (`~/.claude/skills/unslop-ui/SKILL.md`, owner request 19/11/2026):
+  - no eyebrow labels over headings;
+  - no subtitle under a heading unless it adds a fact;
+  - no captions that explain what the screen visibly does ("Chọn bàn trên sơ đồ…", "dùng phím mũi tên…");
+  - no design notes in UI text;
+  - no decorative badges or icons;
+  - no em dash in UI sentences (use a comma or a new sentence; "—" for an empty value is fine);
+  - headings and card titles of 5 words or fewer;
+  - sentence case.
+  
+  Keep what a person needs to act: labels, values, prices, errors, policy lines that state a rule.
 - Never delete or rename existing Figma nodes you did not create in the current task.
 
 ## 8. Working protocol in Figma
@@ -133,7 +175,7 @@ Caught in review (hallucinations that actually happened — never repeat):
 ## 9. Prototype structure — page `Prototype` (formerly `Wireframe v2`)
 
 - Figma file pages (Starter plan = max 3 pages, all used): `Wireframe` (138:30) and `Prototype - Khánh` (0:1) belong to a teammate — **never touch**. Ours is `Prototype` (115:4).
-- On `Prototype` (115:4): the **dark clickable prototype** at y 0–21320 (93 screens, 7 flows), and below it the **low-fi wireframe** at y ≥ 24000: an exact greyscale copy generated by `scripts/build-variant.ts` (wire mode: no links, no Demo chips, photos shown as grey "Ảnh minh họa" boxes) plus a cover board and one yellow note per row from `wireframe_notes.json` (`scripts/finish-wireframe.ts`). Never edit the wireframe layout by hand: change the prototype, then regenerate the changed screens only (delete their wire copies, then `SRC_IDS=<ids> bun build-variant.ts <ch> wire 115:4 115:4 0 24000`; reset the flows to the 7 afterwards). Text-only fixes may be applied to both copies by script. Flow starting points stay on the 7 dark screens only. The older light copy / wireframe on `Prototype - Khánh` is stale — do not touch it.
+- On `Prototype` (115:4), top to bottom (since 04/11/2026): heading `Wireframe (Low-fi)` and the **low-fi wireframe** at y 0–21320; heading `Prototype · Tối (Dark mode)` and the **dark clickable prototype** at y 24000–45320; heading `Prototype · Sáng (Light mode)` and the **light copy** at y ≥ 47800 (white-gold for guest rows, white-blue for staff rows; flows named `… · Sáng`, dark flows `… · Tối`). Older description, offsets now differ: the wireframe is an exact greyscale copy generated by `scripts/build-variant.ts` (wire mode: no links, no Demo chips, photos shown as grey "Ảnh minh họa" boxes) plus a cover board and one yellow note per row from `wireframe_notes.json` (`scripts/finish-wireframe.ts`). Never edit the wireframe layout by hand: change the prototype, then regenerate the changed screens only (delete their wire copies, then `SRC_IDS=<ids> bun build-variant.ts <ch> wire 115:4 115:4 0 24000`; reset the flows to the 7 afterwards). Text-only fixes may be applied to both copies by script. Flow starting points stay on the 7 dark screens only. The older light copy / wireframe on `Prototype - Khánh` is stale — do not touch it.
 - Old rule kept for reference: never edit the archived old wireframe frames — it is old, kept for reference, and contains banned/undocumented features (Wine Cellar, Culinary Passport, Private Dining, table-bound invoice tablet, KDS stations, merging tables, a host role). Do not copy anything from it.
 - It must work as a clickable prototype: pressing **Present** in Figma lists these flow starting points, and every screen is reachable by clicking from its flow start.
 
@@ -201,8 +243,12 @@ Demo values only — they illustrate fields the docs define, they are not busine
 | :--- | :--- | :--- | :--- | ---: |
 | Set Menu Thượng Hạng | Súp bào ngư thượng hạng | Bò Wagyu A5 sốt nấm Truffle | Bánh Soufflé sô-cô-la | 1.800.000 ₫ |
 | Set Menu Hải Sản | Gỏi tôm hùm sốt chanh leo | Cá tuyết nướng Miso mật ong | Panna cotta chanh dây | 1.250.000 ₫ |
+| Set Menu Tinh Hoa | Súp bào ngư thượng hạng | Cá tuyết nướng Miso mật ong | Panna cotta chanh dây | 1.190.000 ₫ |
+| Set Menu Đặc Tuyển | Gỏi tôm hùm sốt chanh leo | Bò Wagyu A5 sốt nấm Truffle | Bánh Soufflé sô-cô-la | 1.850.000 ₫ |
 
-**Deposit rule (report BR-06, decided by the project owner on 29/10/2026):** booking with a pre-ordered Set Menu → deposit = 30% × set price × guests; booking without a set ("Gọi món tại nhà hàng") → 500.000 ₫ × guests (the 2026 survey found 500.000–1.000.000 ₫ per guest in practice). Walk-ins pay no deposit. Examples: Thượng Hạng × 4 = 2.160.000 ₫; Hải Sản × 4 = 1.500.000 ₫; no set, 4 khách = 2.000.000 ₫; no set, 2 khách = 1.000.000 ₫.
+Set photos (owner decision 19/11/2026, 4 sets in a 2 × 2 grid): Thượng Hạng `set_thuong_hang.jpg`, Hải Sản `set_hai_san.jpg`, Tinh Hoa `dish_sup_bao_ngu.jpg`, Đặc Tuyển `dish_wagyu.jpg`.
+
+**Deposit rule (report BR-06, decided by the project owner on 29/10/2026):** booking with a pre-ordered Set Menu → deposit = 30% × set price × guests; booking without a set ("Gọi món tại nhà hàng") → 500.000 ₫ × guests (the 2026 survey found 500.000–1.000.000 ₫ per guest in practice). Walk-ins pay no deposit. Examples: Thượng Hạng × 4 = 2.160.000 ₫; Hải Sản × 4 = 1.500.000 ₫; Tinh Hoa × 4 = 1.428.000 ₫; Đặc Tuyển × 4 = 2.220.000 ₫; no set, 4 khách = 2.000.000 ₫; no set, 2 khách = 1.000.000 ₫.
 
 **Main story — reservation VD-7K3Q, table B05**: Nguyễn Văn An books 4 khách, pre-orders **Set Menu Thượng Hạng × 4**, pays the 2.160.000 ₫ deposit. At check-in the Order is created automatically and Course 1 goes to the kitchen; the guests just eat, pay and leave.
 

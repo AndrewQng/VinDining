@@ -77,6 +77,9 @@ public class OrderService : IOrderService
         if (table.Status == TableStatus.Cleaning)
             throw new InvalidOperationException($"Bàn {table.TableNumber} đang dọn dẹp, chưa thể tạo đơn.");
 
+        if (table.Status == TableStatus.PaymentPending)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} đang chờ thanh toán. Vui lòng mở lại phục vụ trước khi tạo đơn.");
+
         var existingActiveOrder = await _context.Orders
             .AnyAsync(o => o.TableId == table.Id && o.Status == OrderStatus.Processing, ct);
 
@@ -238,7 +241,7 @@ public class OrderService : IOrderService
             await _tableNotifier.NotifyTableStatusChangedAsync(table.Id, table.TableNumber, table.Status, ct);
         }
 
-        await _kitchenNotifier.NotifyNewOrderAsync(order.Id, table.TableNumber, ct);
+        await _kitchenNotifier.NotifyNewOrderAsync(order.Id, order.TableId, table.TableNumber, ct);
 
         return order.Id;
     }
@@ -256,6 +259,9 @@ public class OrderService : IOrderService
 
         if (order.Status != OrderStatus.Processing)
             throw new InvalidOperationException("Chỉ có thể bắn lệnh chế biến cho đơn hàng đang phục vụ.");
+
+        if (order.Table?.Status == TableStatus.PaymentPending)
+            throw new InvalidOperationException($"Bàn {order.Table.TableNumber} đang chờ thanh toán. Vui lòng mở lại phục vụ trước khi kích hoạt món.");
 
         var itemsToFire = order.OrderItems
             .Where(oi => oi.MenuItemId != null &&
@@ -283,7 +289,7 @@ public class OrderService : IOrderService
         }
 
         await _context.SaveChangesAsync(ct);
-        await _kitchenNotifier.NotifyCourseFiredAsync(order.Id, order.Table?.TableNumber ?? "N/A", dto.CourseType, ct);
+        await _kitchenNotifier.NotifyCourseFiredAsync(order.Id, order.TableId, order.Table?.TableNumber ?? "N/A", dto.CourseType, dto.IsPriority, ct);
         return itemsToFire.Count;
     }
 
@@ -306,6 +312,9 @@ public class OrderService : IOrderService
 
         if (order.Status != OrderStatus.Processing)
             throw new InvalidOperationException("Đơn hàng đã hoàn tất hoặc đã hủy, không thể bổ sung món.");
+
+        if (order.Table?.Status == TableStatus.PaymentPending)
+            throw new InvalidOperationException($"Bàn {order.Table.TableNumber} đang chờ thanh toán. Vui lòng mở lại phục vụ trước khi bổ sung món.");
 
         var validInputItems = itemsDto.Items.Where(i => i.MenuItemId.HasValue && i.MenuItemId.Value != Guid.Empty).ToList();
         if (validInputItems.Count == 0)
@@ -365,7 +374,7 @@ public class OrderService : IOrderService
 
         if (newEntities.Any(i => i.Status == OrderItemStatus.Preparing))
         {
-            await _kitchenNotifier.NotifyNewOrderAsync(order.Id, order.Table?.TableNumber ?? "N/A", ct);
+            await _kitchenNotifier.NotifyNewOrderAsync(order.Id, order.TableId, order.Table?.TableNumber ?? "N/A", ct);
         }
 
         return newEntities.Count;
@@ -420,6 +429,7 @@ public class OrderService : IOrderService
 
         await _kitchenNotifier.NotifyItemServedAsync(
             id,
+            order.TableId,
             order.Table?.TableNumber ?? "N/A",
             itemId,
             orderItem.MenuItem?.Name ?? "Món Set Menu",
@@ -478,6 +488,7 @@ public class OrderService : IOrderService
 
         await _kitchenNotifier.NotifyItemRemakeAsync(
             order.Id,
+            order.TableId,
             order.Table?.TableNumber ?? "N/A",
             orderItem.Id,
             orderItem.MenuItem?.Name ?? "Món ăn",
@@ -540,6 +551,9 @@ public class OrderService : IOrderService
         if (order.Status != OrderStatus.Processing)
             throw new InvalidOperationException("Đơn hàng đã hoàn tất hoặc đã hủy, không thể hủy món.");
 
+        if (order.Table?.Status == TableStatus.PaymentPending)
+            throw new InvalidOperationException($"Bàn {order.Table.TableNumber} đang chờ thanh toán. Vui lòng mở lại phục vụ trước khi hủy món.");
+
         var orderItem = order.OrderItems.FirstOrDefault(oi => oi.Id == itemId);
         if (orderItem == null)
             throw new KeyNotFoundException("Món không tồn tại trong đơn hàng.");
@@ -585,6 +599,7 @@ public class OrderService : IOrderService
 
         await _kitchenNotifier.NotifyItemCancelledAsync(
             id,
+            order.TableId,
             order.Table?.TableNumber ?? "N/A",
             orderItem.Id,
             orderItem.MenuItem?.Name ?? orderItem.TastingMenu?.Name ?? "Món ăn",
@@ -678,6 +693,50 @@ public class OrderService : IOrderService
             oi.TastingMenuId,
             oi.Order?.TableId ?? Guid.Empty,
             oi.ServedById
+        )).ToList();
+    }
+
+    public async Task<List<PassHistoryItemDto>> GetPassHistoryAsync(string? tableNumber = null, CancellationToken ct = default)
+    {
+        var vnToday = DateTime.UtcNow.AddHours(7).Date;
+        var startUtc = vnToday.AddHours(-7);
+        var endUtc = startUtc.AddDays(1);
+
+        var query = _context.OrderItems
+            .Include(oi => oi.Order)
+                .ThenInclude(o => o.Table)
+            .Include(oi => oi.MenuItem)
+            .Include(oi => oi.ServedBy)
+            .AsNoTracking()
+            .Where(oi => oi.MenuItemId != null &&
+                         oi.Status == OrderItemStatus.Served &&
+                         oi.ServedAt != null &&
+                         oi.ServedAt >= startUtc &&
+                         oi.ServedAt < endUtc);
+
+        if (!string.IsNullOrWhiteSpace(tableNumber))
+        {
+            var normalizedTable = tableNumber.Trim().ToUpperInvariant();
+            query = query.Where(oi => oi.Order.Table != null && oi.Order.Table.TableNumber.ToUpper() == normalizedTable);
+        }
+
+        var servedItems = await query
+            .OrderByDescending(oi => oi.ServedAt)
+            .ToListAsync(ct);
+
+        return servedItems.Select(oi => new PassHistoryItemDto(
+            oi.Id,
+            oi.OrderId,
+            oi.Order?.TableId ?? Guid.Empty,
+            oi.Order?.Table?.TableNumber ?? "N/A",
+            oi.MenuItem?.Name ?? "N/A",
+            oi.Quantity,
+            oi.MenuItem?.CourseType ?? CourseType.MainCourse,
+            oi.Note,
+            OrderItemDetailDto.CountRemakeMarkers(oi.Note),
+            oi.ServedAt!.Value,
+            oi.ServedById,
+            oi.ServedBy?.FullName ?? "Điều phối"
         )).ToList();
     }
 

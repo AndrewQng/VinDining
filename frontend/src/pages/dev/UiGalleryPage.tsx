@@ -24,6 +24,7 @@ import {
   ThemedImage,
   Wordmark,
 } from '@/components/ui'
+import { useThemeArea } from '@/stores/useThemeStore'
 import { toast } from '@/stores/useToastStore'
 import type {
   MenuItemStatus,
@@ -60,6 +61,7 @@ const SERVICE_STATUSES: ServiceRequestStatus[] = ['Pending', 'Completed']
 
 /** Mock-mode component and status-badge gallery (/dev/ui). */
 export function UiGalleryPage() {
+  useThemeArea('staff')
   const [stepperVal, setStepperVal] = useState(4)
   const [activeTab, setActiveTab] = useState('tat-ca')
   const [modalOpen, setModalOpen] = useState(false)
@@ -71,7 +73,6 @@ export function UiGalleryPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <PageHeader
           title="Thư viện giao diện VinDining"
-          subtitle="Bộ thành phần UI nền tảng và bảng huy hiệu trạng thái trên cả hai giao diện tối / sáng"
           backTo="/dang-nhap"
           backLabel="Về đăng nhập"
           actions={

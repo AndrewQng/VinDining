@@ -23,11 +23,18 @@ import { managerApi } from '@/services/api'
 import { useToastStore } from '@/stores/useToastStore'
 import type { ApiErrorResponse, RefundRequestDto } from '@/types'
 
-type RefundTab = 'pending' | 'all'
+type RefundTab = 'pending' | 'processed'
 
-/** M3 / M3d / M3a / M3r — Duyệt hoặc từ chối yêu cầu hoàn tiền cọc ngoại lệ. */
+function formatDecisionLabel(item: RefundRequestDto): string {
+  const isApproved =
+    item.decisionAction === 'ManualRefundApproved' ||
+    item.reservation.status === 'Cancelled_Refunded'
+  return isApproved ? 'Chấp thuận hoàn cọc' : 'Từ chối hoàn cọc'
+}
+
+/** M3 / M3d / M3a / M3r — Hoàn cọc ngoại lệ (chỉ các đơn bất khả kháng). */
 export function ManagerRefundsPage() {
-  useDocumentTitle('Duyệt hoàn cọc')
+  useDocumentTitle('Hoàn cọc ngoại lệ')
   const queryClient = useQueryClient()
   const pushToast = useToastStore((s) => s.push)
   const [tab, setTab] = useState<RefundTab>('pending')
@@ -68,6 +75,10 @@ export function ManagerRefundsPage() {
               ...prev,
               reservation: updated,
               auditReason: vars.decisionReason,
+              processedAt: new Date().toISOString(),
+              decisionAction: vars.approved
+                ? 'ManualRefundApproved'
+                : 'ManualRefundRejected',
             }
           : null
       )
@@ -86,16 +97,31 @@ export function ManagerRefundsPage() {
     },
   })
 
-  const rows = useMemo(() => {
-    const all = refundsQuery.data ?? []
-    return tab === 'pending'
-      ? all.filter((r) => r.reservation.status === 'Cancelled_Forfeited')
-      : all
-  }, [refundsQuery.data, tab])
+  const pendingRows = useMemo(
+    () =>
+      (refundsQuery.data ?? []).filter(
+        (r) => r.reservation.status === 'Cancelled_Forfeited'
+      ),
+    [refundsQuery.data]
+  )
 
-  const pendingCount = (refundsQuery.data ?? []).filter(
-    (r) => r.reservation.status === 'Cancelled_Forfeited'
-  ).length
+  const processedRows = useMemo(
+    () =>
+      (refundsQuery.data ?? [])
+        .filter(
+          (r) =>
+            r.reservation.status === 'Cancelled_Refunded' ||
+            r.reservation.status === 'RefundRejected'
+        )
+        .sort(
+          (a, b) =>
+            Date.parse(b.processedAt ?? b.requestedAt) -
+            Date.parse(a.processedAt ?? a.requestedAt)
+        ),
+    [refundsQuery.data]
+  )
+
+  const rows = tab === 'pending' ? pendingRows : processedRows
 
   const openDetail = (item: RefundRequestDto) => {
     setSelected(item)
@@ -120,25 +146,33 @@ export function ManagerRefundsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="font-serif text-2xl font-bold text-ink">
-            Duyệt yêu cầu hoàn tiền cọc
+            Hoàn cọc ngoại lệ
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            Phê duyệt hoặc từ chối các trường hợp hủy đặt bàn cần xử lý thủ
-            công
-          </p>
+
+          <Tabs
+            value={tab}
+            onChange={setTab}
+            items={[
+              { value: 'pending', label: `Chờ xử lý (${pendingRows.length})` },
+              {
+                value: 'processed',
+                label: `Đã xử lý (${processedRows.length})`,
+              },
+            ]}
+          />
         </div>
 
-        <Tabs
-          value={tab}
-          onChange={setTab}
-          items={[
-            { value: 'pending', label: `Chờ xử lý (${pendingCount})` },
-            { value: 'all', label: `Tất cả (${refundsQuery.data?.length ?? 0})` },
-          ]}
-        />
+        <p
+          data-testid="refund-policy-banner"
+          className="rounded-xl border border-line bg-card/80 px-4 py-3 text-sm text-ink-muted"
+        >
+          Hủy trước giờ hẹn từ 4 tiếng: tự động hoàn 100% cọc. Hủy dưới 4 tiếng
+          hoặc vắng mặt: không hoàn cọc. Quản lý chỉ xét hoàn cọc ngoại lệ trong
+          trường hợp bất khả kháng.
+        </p>
       </div>
 
       {refundsQuery.isLoading ? (
@@ -152,13 +186,17 @@ export function ManagerRefundsPage() {
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="border-b border-line bg-card/70 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <thead className="border-b border-line bg-card/70 text-xs font-semibold text-ink-muted">
                 <tr>
                   <th className="px-4 py-3">Mã đặt bàn</th>
                   <th className="px-4 py-3">Khách hàng</th>
                   <th className="px-4 py-3">Bàn & Giờ hẹn</th>
                   <th className="px-4 py-3 text-right">Tiền cọc</th>
-                  <th className="px-4 py-3">Lý do khách nhập</th>
+                  <th className="px-4 py-3">
+                    {tab === 'processed'
+                      ? 'Quyết định & lý do ngoại lệ'
+                      : 'Lý do khách nhập'}
+                  </th>
                   <th className="px-4 py-3">Trạng thái</th>
                   <th className="px-4 py-3 text-right">Thao tác</th>
                 </tr>
@@ -187,8 +225,22 @@ export function ManagerRefundsPage() {
                       <td className="px-4 py-3.5 text-right font-semibold text-ink tabular-nums">
                         <Money amount={r.deposit?.amount ?? 0} />
                       </td>
-                      <td className="px-4 py-3.5 text-xs text-ink-muted max-w-xs">
-                        {r.cancelledReason ?? '—'}
+                      <td className="px-4 py-3.5 text-xs text-ink-muted max-w-xs space-y-1">
+                        {tab === 'processed' ? (
+                          <>
+                            <p className="font-semibold text-ink">
+                              {formatDecisionLabel(item)}
+                            </p>
+                            <p>{item.auditReason ?? '—'}</p>
+                            {item.processedAt && (
+                              <p className="text-[11px] text-ink-subtle tabular-nums">
+                                Xử lý lúc {formatDateTime(item.processedAt)}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          r.cancelledReason ?? '—'
+                        )}
                       </td>
                       <td className="px-4 py-3.5">
                         <StatusBadge status={r.status} />
@@ -315,10 +367,13 @@ export function ManagerRefundsPage() {
             ) : (
               <div className="rounded-xl border border-line bg-card px-4 py-3 text-xs text-ink-muted space-y-1">
                 <p className="font-semibold text-ink">
-                  Kết quả xử lý:{' '}
+                  Kết quả xử lý: {formatDecisionLabel(selected)} ·{' '}
                   {RESERVATION_STATUS_LABELS[selected.reservation.status]}
                 </p>
                 {selected.auditReason && <p>Lý do: {selected.auditReason}</p>}
+                {selected.processedAt && (
+                  <p>Thời điểm xử lý: {formatDateTime(selected.processedAt)}</p>
+                )}
               </div>
             )}
           </div>

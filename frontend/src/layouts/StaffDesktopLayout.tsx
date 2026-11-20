@@ -17,6 +17,7 @@ import { Button, Drawer, ThemeToggle, Wordmark } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { authApi } from '@/services/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 
 export interface StaffDesktopLayoutProps {
   area: 'cashier' | 'manager'
@@ -62,7 +63,7 @@ const MANAGER_NAV: NavEntry[] = [
   },
   {
     to: '/quan-ly/hoan-coc',
-    label: 'Duyệt hoàn cọc',
+    label: 'Hoàn cọc ngoại lệ',
     icon: <RotateCcw className="w-4 h-4" />,
   },
   {
@@ -90,6 +91,7 @@ const OTHER_STAFF_LINKS: NavEntry[] = [
 
 /** Desktop workspace shell with sidebar navigation for Cashier and Manager areas. */
 export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
+  useThemeArea('staff')
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
@@ -135,7 +137,7 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
 
       {area === 'manager' && (
         <div className="pt-4 border-t border-line space-y-2">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-subtle">
+          <p className="px-3 text-xs font-medium text-ink-subtle">
             Phân hệ vận hành
           </p>
           <nav aria-label="Liên kết phân hệ khác" className="space-y-1">
@@ -158,30 +160,39 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
 
   return (
     <div className="min-h-screen bg-bg text-ink flex">
-      <aside className="no-print hidden lg:flex w-64 shrink-0 flex-col justify-between bg-surface border-r border-line p-5">
-        <div className="space-y-6">
+      <aside
+        data-testid="staff-desktop-sidebar"
+        className="no-print hidden lg:flex sticky top-0 h-dvh w-64 shrink-0 flex-col bg-surface border-r border-line p-5"
+      >
+        <div className="shrink-0 pb-6">
           <Wordmark subtitle={subtitle} size="md" />
+        </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto pr-1">
           {navList()}
         </div>
 
-        <div className="rounded-xl bg-card border border-line p-3.5 space-y-3">
-          {user && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-ink truncate">
-                {user.fullName}
-              </p>
-              <p className="text-xs text-ink-muted">{roleLabel}</p>
-            </div>
-          )}
-          <Button
-            variant="secondary"
-            size="sm"
-            fullWidth
-            icon={<LogOut className="w-3.5 h-3.5" />}
-            onClick={handleLogout}
-          >
-            Đăng xuất
-          </Button>
+        <div className="shrink-0 pt-4">
+          <div className="rounded-xl bg-card border border-line p-3.5 space-y-3">
+            {user && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink truncate">
+                  {user.fullName}
+                </p>
+                <p className="text-xs text-ink-muted">{roleLabel}</p>
+              </div>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              fullWidth
+              data-testid="sidebar-logout-btn"
+              icon={<LogOut className="w-3.5 h-3.5" />}
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </Button>
+          </div>
         </div>
       </aside>
 
@@ -196,7 +207,7 @@ export function StaffDesktopLayout({ area }: StaffDesktopLayoutProps) {
             >
               <Menu className="w-4 h-4" aria-hidden="true" />
             </button>
-            <span className="text-xs font-medium uppercase tracking-wider text-ink-muted truncate">
+            <span className="text-xs font-medium text-ink-muted truncate">
               {subtitle}
             </span>
           </div>

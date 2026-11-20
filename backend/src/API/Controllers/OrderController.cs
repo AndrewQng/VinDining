@@ -224,4 +224,12 @@ public class OrderController : ApiControllerBase
         var result = await _orderService.GetKitchenPendingOrdersAsync(ct);
         return Ok(result);
     }
+
+    [HttpGet("pass/history")]
+    [Authorize(Roles = "Expediter,Admin,Manager")]
+    public async Task<IActionResult> GetPassHistoryAsync([FromQuery] string? tableNumber = null, CancellationToken ct = default)
+    {
+        var result = await _orderService.GetPassHistoryAsync(tableNumber, ct);
+        return Ok(result);
+    }
 }

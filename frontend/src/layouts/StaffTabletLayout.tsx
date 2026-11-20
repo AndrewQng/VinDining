@@ -5,9 +5,11 @@ import { STAFF_ROLE_LABELS } from '@/domain'
 import { Button, ThemeToggle } from '@/components/ui'
 import { authApi } from '@/services/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useThemeArea } from '@/stores/useThemeStore'
 
 /** Expediter tablet landscape shell for the Kitchen Pass station. */
 export function StaffTabletLayout() {
+  useThemeArea('staff')
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)

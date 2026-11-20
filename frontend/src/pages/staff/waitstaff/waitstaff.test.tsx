@@ -84,7 +84,7 @@ describe('Waitstaff W5, W8x, W8b, and W9 components', () => {
       await screen.findByText(/Bàn B04 · Chờ thanh toán/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/Order đã khóa — không thể gọi thêm món/i)
+      screen.getByText(/Order đã khóa, không thể gọi thêm món/i)
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: 'Gọi thêm món' })

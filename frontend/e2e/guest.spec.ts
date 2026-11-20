@@ -30,37 +30,79 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
       .click()
     await expect(page).toHaveURL(/\/dat-ban\?set=set-thuong-hang/)
 
-    // Step 1: 4 khách (default) -> Tìm bàn trống
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    // Step 1: 4 khách (default) -> Xem bàn trống; stepper has no numbered circles
+    const stepper = page.getByRole('navigation', { name: 'Tiến trình đặt bàn' })
+    await expect(stepper.getByText(/^[1-6]$/)).toHaveCount(0)
+    await expect(page.getByTestId('guest-photo-bg')).toBeVisible()
+    await page.getByTestId('booking-nav-next').click()
 
-    // Step 2: Guest floor plan must NOT display internal statuses
+    // Step 2: Guest floor plan must NOT display internal statuses and must keep the room's tables centred
     await expect(page.getByText(/Đang dọn/i)).toHaveCount(0)
     await expect(page.getByText(/Chờ thanh toán/i)).toHaveCount(0)
     await expect(page.getByText(/Đang phục vụ/i)).toHaveCount(0)
 
+    const floorBalance = await page
+      .getByRole('radiogroup', { name: /Sơ đồ bàn Sảnh chính/i })
+      .evaluate((canvas) => {
+        const cb = canvas.getBoundingClientRect()
+        const nodes = Array.from(canvas.querySelectorAll('[role="radio"]'))
+        const minL = Math.min(...nodes.map((n) => n.getBoundingClientRect().left))
+        const maxR = Math.max(...nodes.map((n) => n.getBoundingClientRect().right))
+        return { leftGap: minL - cb.left, rightGap: cb.right - maxR }
+      })
+    expect(Math.abs(floorBalance.leftGap - floorBalance.rightGap)).toBeLessThanOrEqual(6)
+
+    // Keyboard arrow + Enter selection on floor plan
+    const b03Radio = page.getByRole('radio', { name: /B03/i })
+    await b03Radio.focus()
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('Enter')
+
     // Pick free table B06 (6 ghế, Còn trống) -> booked tomorrow -> B03 is also free tomorrow
     await page.getByRole('radio', { name: /B06/i }).click()
-    await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
+    await page.getByTestId('booking-nav-next').click()
 
-    // Step 3: Set Menu Thượng Hạng already pre-selected -> shows 7.200.000 & 2.160.000
+    // Step 3: Set Menu Thượng Hạng pre-selected; background stays constant across selection
+    const initialBgSrc = await page
+      .getByTestId('guest-photo-bg')
+      .locator('img')
+      .evaluate((img: HTMLImageElement) => img.currentSrc)
+    await page.getByRole('button', { name: /Gọi món tại nhà hàng/i }).click()
+    await expect
+      .poll(() =>
+        page
+          .getByTestId('guest-photo-bg')
+          .locator('img')
+          .evaluate((img: HTMLImageElement) => img.currentSrc)
+      )
+      .toBe(initialBgSrc)
+    await page.getByRole('button', { name: /Set Menu Thượng Hạng/i }).click()
+
+    // Clickable completed stepper dot goes back to Step 2 and preserves selection
+    await page
+      .getByRole('button', { name: /Quay lại bước 2: Chọn bàn/i })
+      .click()
+    await expect(page.getByRole('radio', { name: /B06/i })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+    await page.getByTestId('booking-nav-next').click()
+
+    // Step 3: shows 7.200.000 & 2.160.000
     await expect(page.getByText(/7\.200\.000 ₫/)).toBeVisible()
     await expect(page.getByText(/2\.160\.000 ₫/).first()).toBeVisible()
-    await page
-      .getByRole('button', { name: /Tiếp tục thông tin liên hệ/i })
-      .click()
+    await page.getByTestId('booking-nav-next').click()
 
     // Step 4: Contact info
     await page.getByLabel(/Họ và tên/i).fill('Nguyễn Văn An')
     await page.getByLabel(/Số điện thoại/i).fill('0901 234 567')
     await page.getByLabel(/Email/i).fill('an.nguyen@email.com')
-    await page
-      .getByRole('button', { name: /Giữ chỗ & tiếp tục thanh toán/i })
-      .click()
+    await page.getByTestId('booking-nav-next').click()
 
     // Step 5: Hold shows 2.160.000 ₫
-    await expect(page.getByText(/THỜI GIAN GIỮ CHỖ CÒN LẠI/i)).toBeVisible()
+    await expect(page.getByText(/Thời gian giữ chỗ còn lại/i)).toBeVisible()
     await expect(page.getByText(/2\.160\.000 ₫/).first()).toBeVisible()
-    await page.getByRole('button', { name: /Thanh toán qua VNPAY/i }).click()
+    await page.getByTestId('booking-nav-next').click()
 
     // Step 6: VNPAY mock
     await expect(page).toHaveURL(/\/thanh-toan\/vnpay\/VD-/)
@@ -71,13 +113,13 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
 
     // Step 7: Confirmation shows reservation code
     await expect(
-      page.getByRole('heading', { name: /Đặt bàn thành công!/i })
+      page.getByRole('heading', { name: 'Đặt bàn thành công' })
     ).toBeVisible()
-    await expect(page.getByText(/MÃ ĐẶT BÀN: VD-/i)).toBeVisible()
+    await expect(page.getByText(/Mã đặt bàn:\s*VD-/i)).toBeVisible()
 
     // Verify slot availability: B06 for tomorrow 19:00 is now taken and not selectable
     await page.getByRole('button', { name: /Đặt bàn mới/i }).click()
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await page.getByTestId('booking-nav-next').click()
     await expect(page.getByRole('radio', { name: /B06/i })).toBeDisabled()
 
     expect(errors).toEqual([])
@@ -90,26 +132,23 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
 
     // Create a fresh >= 4h booking first via G1
     await page.goto('/dat-ban?zone=VIP')
-    await page.getByRole('button', { name: /Tìm bàn trống/i }).click()
+    await page.getByTestId('booking-nav-next').click()
     await page.getByRole('radio', { name: /V01/i }).click()
-    await page.getByRole('button', { name: /Tiếp tục chọn Set Menu/i }).click()
-    await page
-      .getByRole('button', { name: /Tiếp tục thông tin liên hệ/i })
-      .click()
+    await page.getByTestId('booking-nav-next').click()
+    await page.getByTestId('booking-nav-next').click()
     await page.getByLabel(/Họ và tên/i).fill('Nguyễn Văn An')
     await page.getByLabel(/Số điện thoại/i).fill('0901 234 567')
     await page.getByLabel(/Email/i).fill('an.nguyen@email.com')
-    await page
-      .getByRole('button', { name: /Giữ chỗ & tiếp tục thanh toán/i })
-      .click()
-    await page.getByRole('button', { name: /Thanh toán qua VNPAY/i }).click()
+    await page.getByTestId('booking-nav-next').click()
+    await page.getByTestId('booking-nav-next').click()
     await page.getByRole('button', { name: /Xác nhận thanh toán/i }).click()
 
-    const codeText = await page.getByText(/MÃ ĐẶT BÀN: VD-/i).textContent()
-    const freshCode = codeText!.replace(/MÃ ĐẶT BÀN:\s*/i, '').trim()
+    const codeText = await page.getByText(/Mã đặt bàn:\s*VD-/i).textContent()
+    const freshCode = codeText!.replace(/Mã đặt bàn:\s*/i, '').trim()
 
     // Cancel >= 4h fresh booking -> refunded
     await page.goto('/tra-cuu')
+    await expect(page.getByTestId('guest-photo-bg')).toBeVisible()
     await page.getByLabel(/Mã đặt bàn/i).fill(freshCode)
     await page.getByLabel(/Số điện thoại/i).fill('0901 234 567')
     await page.getByRole('button', { name: /Tra cứu đặt bàn/i }).click()
@@ -149,7 +188,7 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await page.goto('/menu/VD-QR-B03')
 
     await expect(
-      page.getByRole('heading', { name: /VinDining · Bàn B03/i })
+      page.getByRole('heading', { name: /Thực đơn · Bàn B03/i })
     ).toBeVisible()
     await page.getByRole('button', { name: /Châm nước/i }).click()
     await expect(
@@ -186,7 +225,7 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     await page.getByRole('button', { name: /Gửi đánh giá/i }).click()
 
     await expect(
-      page.getByRole('heading', { name: /Cảm ơn quý khách!/i })
+      page.getByRole('heading', { name: 'Cảm ơn quý khách' })
     ).toBeVisible()
     expect(errors).toEqual([])
   })
@@ -205,12 +244,19 @@ test.describe('VinDining Guest Website (G0–G4)', () => {
     ]) {
       await page.goto(path)
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
       await page
         .getByRole('button', { name: /Chuyển sang giao diện sáng/i })
         .click()
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
+      const primaryToken = await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--primary').trim().toLowerCase()
+      )
+      expect(primaryToken).toBe('#c68e27')
       await page.reload()
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await expect(page.locator('html')).toHaveAttribute('data-area', 'guest')
       // Toggle back to dark for next iteration
       await page
         .getByRole('button', { name: /Chuyển sang giao diện tối/i })

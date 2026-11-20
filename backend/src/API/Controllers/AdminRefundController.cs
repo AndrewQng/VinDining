@@ -68,7 +68,7 @@ public class AdminRefundController : ApiControllerBase
     [HttpGet("/api/manager/refunds")]
     public async Task<IActionResult> GetRefundRequestsAsync(CancellationToken ct)
     {
-        var result = await _refundService.GetRefundRequestsAsync(ct);
+        var result = await _refundService.GetRefundRequestsAsync(includeProcessed: true, ct);
         return Ok(result);
     }
 }

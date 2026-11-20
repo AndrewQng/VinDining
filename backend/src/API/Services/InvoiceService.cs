@@ -28,14 +28,16 @@ public class InvoiceService : IInvoiceService
 
     public async Task<bool> RequestCheckoutAsync(Guid tableId, CancellationToken ct = default)
     {
-        var table = await _context.Tables.AsNoTracking().FirstOrDefaultAsync(t => t.Id == tableId, ct);
+        await using var lockHandle = await _tableLock.AcquireAsync(tableId, ct);
+
+        var table = await _context.Tables.FirstOrDefaultAsync(t => t.Id == tableId, ct);
         if (table == null)
             throw new KeyNotFoundException($"Không tìm thấy bàn {tableId}.");
 
         if (!table.IsActive)
             throw new InvalidOperationException($"Bàn {table.TableNumber} hiện đang ngưng hoạt động.");
 
-        if (table.Status != TableStatus.Occupied)
+        if (table.Status != TableStatus.Occupied && table.Status != TableStatus.PaymentPending)
             throw new InvalidOperationException($"Bàn {table.TableNumber} không ở trạng thái đang phục vụ, chưa thể gửi yêu cầu thanh toán.");
 
         var order = await _context.Orders
@@ -50,8 +52,17 @@ public class InvoiceService : IInvoiceService
         if (!hasServedDish)
             throw new InvalidOperationException("Bàn chưa có món ăn nào được phục vụ lên bàn, chưa thể gửi yêu cầu thanh toán.");
 
+        var statusChanged = table.Status != TableStatus.PaymentPending;
+        table.Status = TableStatus.PaymentPending;
+        table.CheckoutRequestedAt ??= DateTime.UtcNow;
+        await _context.SaveChangesAsync(ct);
+
         var estimatedSubtotal = CalculateBillableSubtotal(order);
 
+        if (statusChanged)
+        {
+            await _tableNotifier.NotifyTableStatusChangedAsync(table.Id, table.TableNumber, table.Status, ct);
+        }
         await _tableNotifier.NotifyCheckoutRequestedAsync(table.Id, table.TableNumber, order.Id, estimatedSubtotal, ct);
         return true;
     }
@@ -138,7 +149,7 @@ public class InvoiceService : IInvoiceService
             GuestCount: guestCount,
             WaiterName: order.CreateBy?.FullName,
             OpenedAt: order.OpenedAt,
-            CheckoutRequestedAt: null,
+            CheckoutRequestedAt: order.Table?.CheckoutRequestedAt,
             TastingMenuNames: tastingMenuNames
         );
     }
@@ -256,6 +267,8 @@ public class InvoiceService : IInvoiceService
         if (order.Table != null)
         {
             order.Table.Status = TableStatus.Cleaning;
+            order.Table.CheckoutRequestedAt = null;
+            order.Table.CurrentGuestCount = null;
         }
 
         await _context.SaveChangesAsync(ct);
@@ -264,6 +277,7 @@ public class InvoiceService : IInvoiceService
         {
             await _tableNotifier.NotifyTableStatusChangedAsync(order.Table.Id, order.Table.TableNumber, order.Table.Status, ct);
         }
+        await _tableNotifier.NotifyInvoiceSettledAsync(invoice.Id, order.TableId, ct);
 
         return invoice.Id;
     }
@@ -313,9 +327,10 @@ public class InvoiceService : IInvoiceService
 
         if (date.HasValue)
         {
-            var start = date.Value.Date;
-            var end = start.AddDays(1);
-            query = query.Where(i => i.CreatedAt >= start && i.CreatedAt < end);
+            var vnDate = date.Value.Date;
+            var startUtc = vnDate.AddHours(-7);
+            var endUtc = startUtc.AddDays(1);
+            query = query.Where(i => i.CreatedAt >= startUtc && i.CreatedAt < endUtc);
         }
 
         var invoices = await query.OrderByDescending(i => i.CreatedAt).ToListAsync(ct);

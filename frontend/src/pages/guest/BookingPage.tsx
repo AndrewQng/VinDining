@@ -1,16 +1,15 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import { GuestPhotoBackground } from '@/components/guest/GuestPhotoBackground'
 import {
   Button,
   Card,
   Countdown,
   Input,
   Money,
-  NumberStepper,
-  PageHeader,
   StatusBadge,
   Textarea,
 } from '@/components/ui'
@@ -25,7 +24,6 @@ import { cn } from '@/lib/utils'
 import { menuApi, reservationApi } from '@/services/api'
 import type { ApiErrorResponse, TableZone } from '@/types'
 import {
-  BOOKING_TIMES,
   buildReservationIso,
   clearBookingDraft,
   createInitialBookingDraft,
@@ -36,20 +34,28 @@ import {
   type BookingDraft,
   type BookingStep,
 } from './bookingState'
-import { BookingStepFloorPlan } from './booking/BookingStepFloorPlan'
+import { BookingNav } from './booking/BookingNav'
+import {
+  BookingProgressStepper,
+  type StepItem,
+} from './booking/BookingProgressStepper'
 import { BookingStepSetMenu } from './booking/BookingStepSetMenu'
+import { BookingStepTable } from './booking/BookingStepTable'
+import { BookingStepTimeZone } from './booking/BookingStepTimeZone'
 import { BookingSummaryCard } from './booking/BookingSummaryCard'
 
-const STEPPER_ITEMS: { step: BookingStep; label: string }[] = [
-  { step: 'time-zone', label: '1. Thời gian & khu vực' },
-  { step: 'table', label: '2. Chọn bàn' },
-  { step: 'set-menu', label: '3. Set Menu' },
-  { step: 'contact', label: '4. Liên hệ' },
-  { step: 'hold', label: '5. Giữ chỗ & cọc' },
-  { step: 'confirmed', label: '6. Xác nhận' },
+const STEPPER_ITEMS: StepItem[] = [
+  { step: 'time-zone', label: 'Thời gian & khu vực' },
+  { step: 'table', label: 'Chọn bàn' },
+  { step: 'set-menu', label: 'Set Menu' },
+  { step: 'contact', label: 'Liên hệ' },
+  { step: 'hold', label: 'Giữ chỗ & cọc' },
+  { step: 'confirmed', label: 'Xác nhận' },
 ]
 
-const ZONES: TableZone[] = ['MainHall', 'VIP', 'Balcony']
+const BOOKING_CONTACT_FORM_ID = 'booking-contact-form'
+
+const NO_TABLE = { tableId: null, tableNumber: null, tableCapacity: null } as const
 
 /** G1 — Multi-step guest reservation & deposit booking flow. */
 export function BookingPage() {
@@ -81,6 +87,25 @@ export function BookingPage() {
   useEffect(() => {
     saveBookingDraft(draft)
   }, [draft])
+
+  // A new step starts at the top of its card: if the card begins above the
+  // screen (the guest scrolled down to the buttons on a phone), jump back to it.
+  // Focus moves to the new step so keyboard and screen-reader users land on it.
+  const stepCardRef = useRef<HTMLDivElement>(null)
+  const firstStepRender = useRef(true)
+  useEffect(() => {
+    const card = stepCardRef.current
+    if (!card) return
+    if (firstStepRender.current) {
+      firstStepRender.current = false
+      return
+    }
+    const top = card.getBoundingClientRect().top
+    if (top < 0) {
+      window.scrollTo({ top: Math.max(0, window.scrollY + top - 80) })
+    }
+    card.focus({ preventScroll: true })
+  }, [draft.step])
 
   useEffect(() => {
     if (
@@ -160,44 +185,28 @@ export function BookingPage() {
     navigate('/dat-ban', { replace: true })
   }
 
-  const currentIdx = STEPPER_ITEMS.findIndex((s) => s.step === draft.step)
   const showSummarySidebar =
     draft.step !== 'confirmed' && draft.step !== 'expired'
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      <PageHeader
-        title="Đặt bàn trực tuyến"
-        subtitle="Chọn thời gian, khu vực, bàn ăn và Set Menu đặt trước"
-        backTo="/"
-        backLabel="Về trang chủ"
-      />
+    <div className="relative min-h-[calc(100dvh-4rem)] overflow-x-clip">
+      <GuestPhotoBackground />
 
-      {/* Visible Stepper */}
-      <nav aria-label="Tiến trình đặt bàn">
-        <ol className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          {STEPPER_ITEMS.map((item, idx) => {
-            const active = item.step === draft.step
-            const completed = currentIdx > idx || draft.step === 'confirmed'
-            return (
-              <li
-                key={item.step}
-                aria-current={active ? 'step' : undefined}
-                className={cn(
-                  'px-3 py-2 rounded-lg border text-xs font-medium transition-colors',
-                  active
-                    ? 'border-primary bg-card-hover text-accent'
-                    : completed
-                      ? 'border-line bg-surface text-ink'
-                      : 'border-line bg-surface/50 text-ink-subtle'
-                )}
-              >
-                {item.label}
-              </li>
-            )
-          })}
-        </ol>
-      </nav>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4">
+        <div className="rounded-2xl border border-line bg-surface/92 backdrop-blur-md px-4 py-3 sm:px-5 sm:py-3.5 space-y-2.5">
+          <h1 className="font-serif text-xl sm:text-2xl font-bold text-ink">
+            Đặt bàn
+          </h1>
+
+          <BookingProgressStepper
+            steps={STEPPER_ITEMS}
+            currentStep={draft.step}
+            onSelectStep={(targetStep: BookingStep) => {
+              setSubmitError(null)
+              setDraft((d) => ({ ...d, step: targetStep }))
+            }}
+          />
+        </div>
 
       <div
         className={cn(
@@ -205,127 +214,29 @@ export function BookingPage() {
           showSummarySidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1 max-w-2xl mx-auto w-full'
         )}
       >
-        <div className={cn(showSummarySidebar && 'lg:col-span-2', 'space-y-6')}>
-          {/* Step 1: Date, Time, Guests, Zone */}
+        <div
+          key={draft.step}
+          ref={stepCardRef}
+          tabIndex={-1}
+          role="region"
+          aria-label={STEPPER_ITEMS.find((i) => i.step === draft.step)?.label}
+          data-testid="booking-step-card"
+          className={cn(showSummarySidebar && 'lg:col-span-2', 'animate-step-fade space-y-6 outline-none')}
+        >
           {draft.step === 'time-zone' && (
-            <Card className="space-y-6">
-              <h2 className="text-base font-semibold text-accent">
-                Chọn thời gian & khu vực
-              </h2>
-
-              <Input
-                label="Ngày dùng bữa"
-                type="date"
-                value={draft.date}
-                onChange={(e) =>
-                  setDraft((d) => ({
-                    ...d,
-                    date: e.target.value,
-                    tableId: null,
-                    tableNumber: null,
-                  }))
-                }
-              />
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Khung giờ đặt bàn
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {BOOKING_TIMES.map((t) => {
-                    const selected = draft.time === t
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setDraft((d) => ({ ...d, time: t }))}
-                        aria-pressed={selected}
-                        className={cn(
-                          'px-4 py-2 rounded-lg border text-sm font-medium tabular-nums transition-colors cursor-pointer',
-                          selected
-                            ? 'bg-primary text-on-primary border-transparent'
-                            : 'bg-card border-line text-ink hover:bg-card-hover'
-                        )}
-                      >
-                        {t}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Số lượng khách
-                </span>
-                <div className="flex items-center gap-3">
-                  <NumberStepper
-                    value={draft.partySize}
-                    min={1}
-                    max={10}
-                    label="Số lượng khách"
-                    onChange={(next) =>
-                      setDraft((d) => ({
-                        ...d,
-                        partySize: next,
-                        tableId: null,
-                        tableNumber: null,
-                      }))
-                    }
-                  />
-                  <span className="text-sm text-ink-muted">
-                    {draft.partySize} khách
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="block text-xs font-medium text-ink-muted">
-                  Khu vực dùng bữa
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  {ZONES.map((z) => {
-                    const selected = draft.zone === z
-                    return (
-                      <button
-                        key={z}
-                        type="button"
-                        onClick={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            zone: z,
-                            tableId: null,
-                            tableNumber: null,
-                          }))
-                        }
-                        aria-pressed={selected}
-                        className={cn(
-                          'px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer',
-                          selected
-                            ? 'border-primary bg-card-hover text-accent'
-                            : 'border-line bg-card text-ink-muted hover:text-ink'
-                        )}
-                      >
-                        {TABLE_ZONE_LABELS[z]}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-2 border-t border-line">
-                <Button
-                  onClick={() => setDraft((d) => ({ ...d, step: 'table' }))}
-                >
-                  Tìm bàn trống
-                </Button>
-              </div>
-            </Card>
+            <BookingStepTimeZone
+              date={draft.date}
+              time={draft.time}
+              partySize={draft.partySize}
+              zone={draft.zone}
+              onChange={(patch) =>
+                setDraft((d) => ({ ...d, ...patch, ...NO_TABLE }))
+              }
+            />
           )}
 
-          {/* Step 2: Floor plan */}
           {draft.step === 'table' && (
-            <BookingStepFloorPlan
+            <BookingStepTable
               date={draft.date}
               time={draft.time}
               partySize={draft.partySize}
@@ -339,17 +250,8 @@ export function BookingPage() {
                   tableCapacity: table.capacity,
                 }))
               }
-              onSwitchSuggestion={(nextTime, nextZone) =>
-                setDraft((d) => ({
-                  ...d,
-                  time: nextTime,
-                  zone: nextZone,
-                  tableId: null,
-                  tableNumber: null,
-                }))
-              }
-              onBack={handleBack}
-              onNext={() => setDraft((d) => ({ ...d, step: 'set-menu' }))}
+              onChangeZone={(zone) => setDraft((d) => ({ ...d, zone, ...NO_TABLE }))}
+              onChangeTime={(time) => setDraft((d) => ({ ...d, time, ...NO_TABLE }))}
             />
           )}
 
@@ -362,22 +264,15 @@ export function BookingPage() {
               onSelectSet={(setId) =>
                 setDraft((d) => ({ ...d, preOrderedTastingMenuId: setId }))
               }
-              onBack={handleBack}
-              onNext={() => setDraft((d) => ({ ...d, step: 'contact' }))}
             />
           )}
 
           {/* Step 4: Contact info */}
           {draft.step === 'contact' && (
-            <Card className="space-y-5">
-              <div>
-                <h2 className="text-base font-semibold text-accent">
-                  Thông tin liên hệ
-                </h2>
-                <p className="text-xs text-ink-muted mt-0.5">
-                  Dùng để gửi xác nhận đặt bàn và tra cứu khi cần thay đổi.
-                </p>
-              </div>
+            <Card className="bg-surface/95 backdrop-blur-md space-y-5">
+              <h2 className="text-base font-semibold text-accent">
+                Thông tin liên hệ
+              </h2>
 
               {submitError && (
                 <div
@@ -389,7 +284,11 @@ export function BookingPage() {
                 </div>
               )}
 
-              <form onSubmit={handleContactSubmit} className="space-y-4">
+              <form
+                id={BOOKING_CONTACT_FORM_ID}
+                onSubmit={handleContactSubmit}
+                className="space-y-4"
+              >
                 <Input
                   label="Họ và tên *"
                   required
@@ -430,24 +329,15 @@ export function BookingPage() {
                   }
                   placeholder="Yêu cầu vị trí bàn hoặc ghi chú phục vụ..."
                 />
-
-                <div className="flex items-center justify-between gap-3 pt-2 border-t border-line">
-                  <Button variant="secondary" onClick={handleBack}>
-                    Quay lại
-                  </Button>
-                  <Button type="submit" loading={createMutation.isPending}>
-                    Giữ chỗ & tiếp tục thanh toán
-                  </Button>
-                </div>
               </form>
             </Card>
           )}
 
           {/* Step 5: 17-minute Hold */}
           {draft.step === 'hold' && draft.holdReservation && (
-            <Card className="space-y-6">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-6">
               <div className="rounded-xl bg-card border border-line p-6 text-center space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                <p className="text-sm font-medium text-ink-muted">
                   Thời gian giữ chỗ còn lại
                 </p>
                 <div className="flex justify-center">
@@ -495,30 +385,12 @@ export function BookingPage() {
                   </p>
                 )}
               </div>
-
-              <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
-                <Button variant="secondary" onClick={handleBack}>
-                  Quay lại chỉnh sửa
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() =>
-                    navigate(
-                      `/thanh-toan/vnpay/${encodeURIComponent(
-                        draft.holdReservation!.bookingCode
-                      )}`
-                    )
-                  }
-                >
-                  Thanh toán qua VNPAY
-                </Button>
-              </div>
             </Card>
           )}
 
           {/* Error G1.4x: Hold expired */}
           {draft.step === 'expired' && (
-            <Card className="text-center space-y-5 py-8">
+            <Card className="bg-surface/95 backdrop-blur-md text-center space-y-5 py-8">
               <div className="w-12 h-12 rounded-xl bg-card border border-line flex items-center justify-center text-danger mx-auto">
                 <Clock className="w-6 h-6" aria-hidden="true" />
               </div>
@@ -527,11 +399,8 @@ export function BookingPage() {
                   Hết thời gian giữ chỗ
                 </h2>
                 <p className="text-sm text-ink-muted leading-relaxed">
-                  Thời gian giữ chỗ 17 phút đã kết thúc. Yêu cầu đặt bàn của quý
-                  khách đã tự động hủy để mở lại bàn cho khách hàng khác.
-                </p>
-                <p className="text-xs text-ink-subtle">
-                  Quý khách vui lòng thực hiện lại nếu vẫn muốn đặt bàn.
+                  Thời gian giữ chỗ 17 phút đã kết thúc. Yêu cầu đặt bàn đã hủy
+                  để mở lại bàn.
                 </p>
               </div>
               <Button onClick={handleRestart}>Thực hiện đặt lại</Button>
@@ -540,17 +409,20 @@ export function BookingPage() {
 
           {/* Step 6/7: Confirmed */}
           {draft.step === 'confirmed' && draft.confirmedReservation && (
-            <Card className="space-y-6 py-8">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-6 py-8">
               <div className="text-center space-y-2">
                 <CheckCircle2
                   className="w-10 h-10 text-accent mx-auto"
                   aria-hidden="true"
                 />
                 <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-ink">
-                  Đặt bàn thành công!
+                  Đặt bàn thành công
                 </h2>
-                <p className="text-base font-semibold text-accent tracking-wide">
-                  MÃ ĐẶT BÀN: {draft.confirmedReservation.bookingCode}
+                <p className="text-base text-ink-muted">
+                  Mã đặt bàn:{' '}
+                  <span className="font-mono font-semibold text-accent">
+                    {draft.confirmedReservation.bookingCode}
+                  </span>
                 </p>
                 <div className="pt-1">
                   <StatusBadge
@@ -561,9 +433,9 @@ export function BookingPage() {
               </div>
 
               <div className="rounded-xl bg-card border border-line p-5 space-y-2 text-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                <h3 className="text-sm font-semibold text-accent">
                   Chi tiết đặt hẹn
-                </p>
+                </h3>
                 <p className="text-ink">
                   Bàn {draft.confirmedReservation.tableNumber} ·{' '}
                   {TABLE_ZONE_LABELS[draft.confirmedReservation.zone]} ·{' '}
@@ -613,10 +485,37 @@ export function BookingPage() {
         </div>
 
         {showSummarySidebar && (
-          <div>
-            <BookingSummaryCard draft={draft} selectedSet={selectedSet} />
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <BookingSummaryCard
+              draft={draft}
+              selectedSet={selectedSet}
+              tastingMenus={tastingMenus}
+            />
+            <BookingNav
+              step={draft.step}
+              hasSelectedTable={Boolean(draft.tableId)}
+              isSubmittingContact={createMutation.isPending}
+              contactFormId={BOOKING_CONTACT_FORM_ID}
+              onBack={handleBack}
+              onNext={() => {
+                if (draft.step === 'time-zone') {
+                  setDraft((d) => ({ ...d, step: 'table' }))
+                } else if (draft.step === 'table') {
+                  setDraft((d) => ({ ...d, step: 'set-menu' }))
+                } else if (draft.step === 'set-menu') {
+                  setDraft((d) => ({ ...d, step: 'contact' }))
+                } else if (draft.step === 'hold' && draft.holdReservation) {
+                  navigate(
+                    `/thanh-toan/vnpay/${encodeURIComponent(
+                      draft.holdReservation.bookingCode
+                    )}`
+                  )
+                }
+              }}
+            />
           </div>
         )}
+      </div>
       </div>
     </div>
   )

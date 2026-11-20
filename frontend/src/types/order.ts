@@ -86,3 +86,19 @@ export interface KitchenPendingTicketDto {
   prepTimeMinutes: number
   cookingStartedAt: string | null
 }
+
+/** Served dish history row returned by GET /api/orders/pass/history (OPEN_QUESTIONS #16). */
+export interface PassHistoryItemDto {
+  orderItemId: string
+  orderId: string
+  tableId: string
+  tableNumber: string
+  itemName: string
+  quantity: number
+  courseType: CourseType
+  note: string | null
+  remakeCount: number
+  servedAt: string
+  servedById: string | null
+  servedByName: string
+}

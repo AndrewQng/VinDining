@@ -100,15 +100,25 @@ public class AdminStaffController : ApiControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetStaffListAsync(
-        [FromQuery] StaffRole? role = null,
+        [FromQuery] string? role = null,
         [FromQuery] bool? isActive = null,
         [FromQuery] string? search = null,
         CancellationToken ct = default)
     {
         var result = await _staffService.GetStaffListAsync(ct);
-        if (role.HasValue)
+        if (!string.IsNullOrWhiteSpace(role))
         {
-            result = result.Where(s => s.Role == role.Value).ToList();
+            var trimmedRole = role.Trim();
+            StaffRole? parsedRole = string.Equals(trimmedRole, "Manager", StringComparison.OrdinalIgnoreCase)
+                ? StaffRole.Admin
+                : Enum.TryParse<StaffRole>(trimmedRole, ignoreCase: true, out var r)
+                    ? r
+                    : null;
+
+            if (!parsedRole.HasValue)
+                throw new ArgumentException($"Vai trò '{trimmedRole}' không hợp lệ.");
+
+            result = result.Where(s => s.Role == parsedRole.Value).ToList();
         }
         if (isActive.HasValue)
         {

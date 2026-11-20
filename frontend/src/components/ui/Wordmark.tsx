@@ -29,7 +29,7 @@ export function Wordmark({
         VinDining
       </span>
       {subtitle && (
-        <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+        <span className="mt-1 text-[11px] font-medium text-ink-muted">
           {subtitle}
         </span>
       )}

@@ -300,7 +300,8 @@ public class OperationsOrderAndBillingTests
         // Mark 86'd (Unavailable) -> cache must invalidate immediately
         await adminMenu.UpdateAvailabilityAsync(itemId, new ToggleAvailabilityDto(false, "Hết hàng trong ca"));
         var secondRead = await publicMenu.GetCategoriesAsync();
-        Assert.Empty(secondRead.Single(c => c.Id == catId).Items);
+        var toggledItem = Assert.Single(secondRead.Single(c => c.Id == catId).Items);
+        Assert.False(toggledItem.IsAvailable);
     }
 
     [Fact]
@@ -485,6 +486,17 @@ public class OperationsOrderAndBillingTests
         // RequestCheckout succeeds once Course 1 is served, estimating package subtotal 7,200,000
         await invSvc.RequestCheckoutAsync(table1.Id);
         Assert.Equal(7_200_000m, notifier.CheckoutRequests.Single().Subtotal);
+
+        // Mutations are locked while table is PaymentPending until reopened
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            orderSvc.FireNextCourseAsync(orderId1, new FireCourseDto(CourseType.MainCourse)));
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            orderSvc.AddOrderItemsAsync(orderId1, new AddItemsDto(new List<OrderItemRequestDto> { new(soup.Id, 1) })));
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            orderSvc.CancelOrderItemAsync(orderId1, souffleItem1, "Khách xin bỏ món tráng miệng"));
+
+        var tableSvc = new TableService(context, notifier);
+        await tableSvc.UpdateTableStatusAsync(table1.Id, new UpdateTableStatusDto(TableStatus.Occupied));
 
         await orderSvc.FireNextCourseAsync(orderId1, new FireCourseDto(CourseType.MainCourse));
         await orderSvc.ConfirmServedAsync(orderId1, wagyuItem1);

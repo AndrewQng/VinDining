@@ -7,11 +7,13 @@ public class AdminMenuService : IAdminMenuService
 {
     private readonly IApplicationDbContext _context;
     private readonly IMemoryCache? _cache;
+    private readonly ITableNotifier? _tableNotifier;
 
-    public AdminMenuService(IApplicationDbContext context, IMemoryCache? cache = null)
+    public AdminMenuService(IApplicationDbContext context, IMemoryCache? cache = null, ITableNotifier? tableNotifier = null)
     {
         _context = context;
         _cache = cache;
+        _tableNotifier = tableNotifier;
     }
 
     public async Task<Guid> CreateCategoryAsync(CreateCategoryDto dto, CancellationToken ct = default)
@@ -80,8 +82,10 @@ public class AdminMenuService : IAdminMenuService
             throw new ArgumentException("Tên món ăn không được để trống.");
         if (dto.Price <= 0)
             throw new ArgumentException("Đơn giá món ăn phải lớn hơn 0.");
-        if (dto.PrepTimeMinutes <= 0)
-            throw new ArgumentException("Định mức thời gian chế biến (Prep SLA) phải lớn hơn 0 phút.");
+        if (dto.CourseType == CourseType.Beverage ? dto.PrepTimeMinutes < 0 : dto.PrepTimeMinutes <= 0)
+            throw new ArgumentException(dto.CourseType == CourseType.Beverage
+                ? "Định mức thời gian chế biến đồ uống không được âm."
+                : "Định mức thời gian chế biến (Prep SLA) phải lớn hơn 0 phút.");
 
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId, ct);
         if (!categoryExists)
@@ -121,8 +125,10 @@ public class AdminMenuService : IAdminMenuService
             throw new ArgumentException("Tên món ăn không được để trống.");
         if (dto.Price <= 0)
             throw new ArgumentException("Đơn giá món ăn phải lớn hơn 0.");
-        if (dto.PrepTimeMinutes <= 0)
-            throw new ArgumentException("Định mức thời gian chế biến (Prep SLA) phải lớn hơn 0 phút.");
+        if (dto.CourseType == CourseType.Beverage ? dto.PrepTimeMinutes < 0 : dto.PrepTimeMinutes <= 0)
+            throw new ArgumentException(dto.CourseType == CourseType.Beverage
+                ? "Định mức thời gian chế biến đồ uống không được âm."
+                : "Định mức thời gian chế biến (Prep SLA) phải lớn hơn 0 phút.");
 
         var item = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == id, ct);
         if (item == null)
@@ -149,13 +155,17 @@ public class AdminMenuService : IAdminMenuService
         {
             item.ImageUrl = dto.ImageUrl.Trim();
         }
-        item.Status = isAvailable ? "Available" : "Unavailable";
+        item.Status = isAvailable ? "Available" : "SoldOut";
         item.CourseType = dto.CourseType;
         item.CategoryId = targetCategoryId;
         item.PrepTimeMinutes = dto.PrepTimeMinutes;
 
         await _context.SaveChangesAsync(ct);
         InvalidateMenuCache();
+        if (_tableNotifier != null)
+        {
+            await _tableNotifier.NotifyMenuUpdatedAsync(item.Id, isAvailable, ct);
+        }
         return true;
     }
 
@@ -169,9 +179,13 @@ public class AdminMenuService : IAdminMenuService
             ? string.Equals(dto.Status.Trim(), "Available", StringComparison.OrdinalIgnoreCase)
             : dto.IsAvailable;
 
-        item.Status = isAvailable ? "Available" : "Unavailable";
+        item.Status = isAvailable ? "Available" : "SoldOut";
         await _context.SaveChangesAsync(ct);
         InvalidateMenuCache();
+        if (_tableNotifier != null)
+        {
+            await _tableNotifier.NotifyMenuUpdatedAsync(item.Id, isAvailable, ct);
+        }
         return true;
     }
 

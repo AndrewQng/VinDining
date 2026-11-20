@@ -79,7 +79,7 @@ export interface MockAuditLog {
 }
 
 export interface MockDatabase {
-  version: number
+  version: string
   staffs: MockStaffRecord[]
   sessions: Record<string, CurrentUserDto>
   categories: CategoryDto[]
@@ -94,11 +94,63 @@ export interface MockDatabase {
   auditLogs: MockAuditLog[]
 }
 
-export const MOCK_DB_VERSION = 1
+export const MOCK_DB_VERSION = 2
+
+function computeStaticSeedVersion(input: {
+  tables: readonly TableDto[]
+  tastingMenus: readonly TastingMenuDto[]
+  menuItems: readonly MenuItemDto[]
+  staffs: readonly MockStaffRecord[]
+}): string {
+  const canonical = JSON.stringify({
+    tables: input.tables.map((t) => ({
+      id: t.id,
+      tableNumber: t.tableNumber,
+      zone: t.zone,
+      capacity: t.capacity,
+      posX: t.posX,
+      posY: t.posY,
+    })),
+    tastingMenus: input.tastingMenus.map((s) => ({
+      id: s.id,
+      name: s.name,
+      price: s.price,
+      imageUrl: s.imageUrl,
+      items: s.items.map((i) => ({
+        menuItemId: i.menuItemId,
+        courseOrder: i.courseOrder,
+      })),
+    })),
+    menuItems: input.menuItems.map((m) => ({
+      id: m.id,
+      name: m.name,
+      price: m.price,
+      courseType: m.courseType,
+      status: m.status,
+      imageUrl: m.imageUrl,
+      prepTimeMinutes: m.prepTimeMinutes,
+    })),
+    staffs: input.staffs.map((s) => ({
+      id: s.id,
+      username: s.username,
+      fullName: s.fullName,
+      role: s.role,
+    })),
+  })
+  let hash = 2166136261
+  for (let i = 0; i < canonical.length; i += 1) {
+    hash ^= canonical.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return `${MOCK_DB_VERSION}-${(hash >>> 0).toString(16).padStart(8, '0')}`
+}
 
 export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   const nowIso = now.toISOString()
   const minsAgo = (m: number) => new Date(now.getTime() - m * 60_000).toISOString()
+  const todayStartMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 1, 0, 0).getTime()
+  const todayMinsAgo = (m: number) =>
+    new Date(Math.max(todayStartMs, now.getTime() - m * 60_000)).toISOString()
   const minsAhead = (m: number) => new Date(now.getTime() + m * 60_000).toISOString()
   const eveningSlotIso = (daysOffset: number, hour: number, minute: number) =>
     new Date(
@@ -361,6 +413,82 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         },
       ],
     },
+    {
+      id: 'set-tinh-hoa',
+      name: 'Set Menu Tinh Hoa',
+      description: 'Thực đơn nếm thử 3 Course cân bằng tinh tế.',
+      price: 1_190_000,
+      imageUrl: 'dish_sup_bao_ngu.jpg',
+      isActive: true,
+      createdAt: '2026-11-01T09:00:00.000Z',
+      items: [
+        {
+          id: 'smi-7',
+          tastingMenuId: 'set-tinh-hoa',
+          menuItemId: 'item-sup-bao-ngu',
+          menuItemName: 'Súp bào ngư thượng hạng',
+          courseOrder: 1,
+          courseType: 'Appetizer',
+          prepTimeMinutes: 12,
+        },
+        {
+          id: 'smi-8',
+          tastingMenuId: 'set-tinh-hoa',
+          menuItemId: 'item-ca-tuyet',
+          menuItemName: 'Cá tuyết nướng Miso mật ong',
+          courseOrder: 2,
+          courseType: 'MainCourse',
+          prepTimeMinutes: 20,
+        },
+        {
+          id: 'smi-9',
+          tastingMenuId: 'set-tinh-hoa',
+          menuItemId: 'item-panna-cotta',
+          menuItemName: 'Panna cotta chanh dây',
+          courseOrder: 3,
+          courseType: 'Dessert',
+          prepTimeMinutes: 8,
+        },
+      ],
+    },
+    {
+      id: 'set-dac-tuyen',
+      name: 'Set Menu Đặc Tuyển',
+      description: 'Thực đơn nếm thử 3 Course đặc sắc từ hải sản đến Wagyu.',
+      price: 1_850_000,
+      imageUrl: 'dish_wagyu.jpg',
+      isActive: true,
+      createdAt: '2026-11-01T09:00:00.000Z',
+      items: [
+        {
+          id: 'smi-10',
+          tastingMenuId: 'set-dac-tuyen',
+          menuItemId: 'item-goi-tom-hum',
+          menuItemName: 'Gỏi tôm hùm sốt chanh leo',
+          courseOrder: 1,
+          courseType: 'Appetizer',
+          prepTimeMinutes: 10,
+        },
+        {
+          id: 'smi-11',
+          tastingMenuId: 'set-dac-tuyen',
+          menuItemId: 'item-wagyu',
+          menuItemName: 'Bò Wagyu A5 sốt nấm Truffle',
+          courseOrder: 2,
+          courseType: 'MainCourse',
+          prepTimeMinutes: 25,
+        },
+        {
+          id: 'smi-12',
+          tastingMenuId: 'set-dac-tuyen',
+          menuItemId: 'item-souffle',
+          menuItemName: 'Bánh Soufflé sô-cô-la',
+          courseOrder: 3,
+          courseType: 'Dessert',
+          prepTimeMinutes: 15,
+        },
+      ],
+    },
   ]
 
   const tables: TableDto[] = [
@@ -371,8 +499,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 2,
       zone: 'MainHall',
       status: 'Available',
-      posX: 80,
-      posY: 80,
+      posX: 51,
+      posY: 66,
       isActive: true,
       assignedStaffId: null,
       assignedStaffName: null,
@@ -388,8 +516,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 2,
       zone: 'MainHall',
       status: 'Cleaning',
-      posX: 220,
-      posY: 80,
+      posX: 211,
+      posY: 66,
       isActive: true,
       assignedStaffId: null,
       assignedStaffName: null,
@@ -405,8 +533,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 4,
       zone: 'MainHall',
       status: 'Occupied',
-      posX: 80,
-      posY: 200,
+      posX: 363,
+      posY: 63,
       isActive: true,
       assignedStaffId: 'staff-waitstaff-1',
       assignedStaffName: 'Trần Thị Mai',
@@ -422,8 +550,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 4,
       zone: 'MainHall',
       status: 'PaymentPending',
-      posX: 220,
-      posY: 200,
+      posX: 523,
+      posY: 63,
       isActive: true,
       assignedStaffId: 'staff-waitstaff-1',
       assignedStaffName: 'Trần Thị Mai',
@@ -440,8 +568,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 4,
       zone: 'MainHall',
       status: 'Reserved',
-      posX: 80,
-      posY: 320,
+      posX: 43,
+      posY: 283,
       isActive: true,
       assignedStaffId: null,
       assignedStaffName: null,
@@ -457,8 +585,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 6,
       zone: 'MainHall',
       status: 'Available',
-      posX: 220,
-      posY: 320,
+      posX: 195,
+      posY: 280,
       isActive: true,
       assignedStaffId: null,
       assignedStaffName: null,
@@ -474,8 +602,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 6,
       zone: 'MainHall',
       status: 'Locked',
-      posX: 80,
-      posY: 440,
+      posX: 355,
+      posY: 280,
       isActive: true,
       assignedStaffId: null,
       assignedStaffName: null,
@@ -491,8 +619,8 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       capacity: 8,
       zone: 'MainHall',
       status: 'Occupied',
-      posX: 220,
-      posY: 440,
+      posX: 511,
+      posY: 277,
       isActive: true,
       assignedStaffId: 'staff-waitstaff-1',
       assignedStaffName: 'Trần Thị Mai',
@@ -813,6 +941,78 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         createdAt: minsAgo(320),
       },
     },
+    {
+      id: 'res-vd-5e1m',
+      bookingCode: 'VD-5E1M',
+      guest: {
+        id: 'guest-refund-3',
+        fullName: 'Nguyễn Văn An',
+        phoneNumber: '0901 234 567',
+        email: 'an.nguyen@email.com',
+      },
+      tableId: 'tbl-v01',
+      tableNumber: 'V01',
+      zone: 'VIP',
+      reservationTime: eveningSlotIso(-2, 19, 0),
+      partySize: 4,
+      preOrderedTastingMenuId: 'set-thuong-hang',
+      preOrderedTastingMenuName: 'Set Menu Thượng Hạng',
+      durationMinutes: 120,
+      status: 'Cancelled_Refunded',
+      note: null,
+      cancelledAt: minsAgo(2_940),
+      cancelledReason: 'Khách báo nhập viện đột xuất trước giờ hẹn',
+      holdExpiresAt: null,
+      reminderSentAt: null,
+      createdAt: minsAgo(3_200),
+      deposit: {
+        id: 'dep-vd-5e1m',
+        reservationId: 'res-vd-5e1m',
+        amount: 2_160_000,
+        transactionId: 'VNP-5E1M-001',
+        paymentMethod: 'VietQR',
+        status: 'Refunded',
+        paidAt: minsAgo(3_198),
+        refundAmount: 2_160_000,
+        createdAt: minsAgo(3_200),
+      },
+    },
+    {
+      id: 'res-vd-6r2t',
+      bookingCode: 'VD-6R2T',
+      guest: {
+        id: 'guest-refund-4',
+        fullName: 'Nguyễn Văn An',
+        phoneNumber: '0901 234 567',
+        email: 'an.nguyen@email.com',
+      },
+      tableId: 'tbl-b06',
+      tableNumber: 'B06',
+      zone: 'MainHall',
+      reservationTime: eveningSlotIso(-1, 20, 0),
+      partySize: 2,
+      preOrderedTastingMenuId: null,
+      preOrderedTastingMenuName: null,
+      durationMinutes: 120,
+      status: 'RefundRejected',
+      note: null,
+      cancelledAt: minsAgo(1_500),
+      cancelledReason: 'Khách báo hủy sát giờ 30 phút do đổi địa điểm',
+      holdExpiresAt: null,
+      reminderSentAt: null,
+      createdAt: minsAgo(1_700),
+      deposit: {
+        id: 'dep-vd-6r2t',
+        reservationId: 'res-vd-6r2t',
+        amount: b04Deposit,
+        transactionId: 'VNP-6R2T-001',
+        paymentMethod: 'Card',
+        status: 'Forfeited',
+        paidAt: minsAgo(1_698),
+        refundAmount: null,
+        createdAt: minsAgo(1_700),
+      },
+    },
   ]
 
   const orders: OrderDto[] = [
@@ -991,6 +1191,110 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         },
       ],
     },
+    {
+      id: 'ord-seed-b01',
+      tableId: 'tbl-b01',
+      tableNumber: 'B01',
+      reservationId: null,
+      createById: 'staff-waitstaff-1',
+      createByName: 'Trần Thị Mai',
+      status: 'Paid',
+      guestCount: 2,
+      openedAt: todayMinsAgo(75),
+      closedAt: todayMinsAgo(30),
+      items: [
+        {
+          id: 'oi-seed-b01-1',
+          orderId: 'ord-seed-b01',
+          menuItemId: 'item-sup-bao-ngu',
+          tastingMenuId: null,
+          itemName: 'Súp bào ngư thượng hạng',
+          courseType: 'Appetizer',
+          quantity: 2,
+          unitPrice: 350_000,
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 12,
+          cookingStartedAt: todayMinsAgo(70),
+          servedAt: todayMinsAgo(55),
+          servedById: 'staff-expediter-1',
+        },
+        {
+          id: 'oi-seed-b01-2',
+          orderId: 'ord-seed-b01',
+          menuItemId: 'item-ca-tuyet',
+          tastingMenuId: null,
+          itemName: 'Cá tuyết nướng Miso mật ong',
+          courseType: 'MainCourse',
+          quantity: 2,
+          unitPrice: 680_000,
+          status: 'Served',
+          note: 'Da giòn',
+          isRemake: true,
+          remakeCount: 1,
+          isPriority: true,
+          prepTimeMinutes: 20,
+          cookingStartedAt: todayMinsAgo(52),
+          servedAt: todayMinsAgo(38),
+          servedById: 'staff-expediter-1',
+        },
+        {
+          id: 'oi-seed-b01-3',
+          orderId: 'ord-seed-b01',
+          menuItemId: 'item-souffle',
+          tastingMenuId: null,
+          itemName: 'Bánh Soufflé sô-cô-la',
+          courseType: 'Dessert',
+          quantity: 2,
+          unitPrice: 220_000,
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 15,
+          cookingStartedAt: todayMinsAgo(40),
+          servedAt: todayMinsAgo(32),
+          servedById: 'staff-expediter-1',
+        },
+      ],
+    },
+    {
+      id: 'ord-seed-past',
+      tableId: 'tbl-v02',
+      tableNumber: 'V02',
+      reservationId: null,
+      createById: 'staff-waitstaff-1',
+      createByName: 'Trần Thị Mai',
+      status: 'Paid',
+      guestCount: 4,
+      openedAt: todayMinsAgo(130),
+      closedAt: todayMinsAgo(90),
+      items: [
+        {
+          id: 'oi-seed-v02-1',
+          orderId: 'ord-seed-past',
+          menuItemId: 'item-wagyu',
+          tastingMenuId: null,
+          itemName: 'Bò Wagyu A5 sốt nấm Truffle',
+          courseType: 'MainCourse',
+          quantity: 4,
+          unitPrice: 1_250_000,
+          status: 'Served',
+          note: 'Medium',
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 25,
+          cookingStartedAt: todayMinsAgo(115),
+          servedAt: todayMinsAgo(95),
+          servedById: 'staff-expediter-1',
+        },
+      ],
+    },
   ]
 
   const invoices: InvoiceDto[] = [
@@ -1073,7 +1377,12 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
   ]
 
   return {
-    version: MOCK_DB_VERSION,
+    version: computeStaticSeedVersion({
+      tables,
+      tastingMenus,
+      menuItems,
+      staffs,
+    }),
     staffs,
     sessions: {},
     categories,
@@ -1095,6 +1404,29 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
         reason: null,
         createdAt: nowIso,
       },
+      {
+        id: 'audit-seed-refund-1',
+        staffId: 'staff-manager-1',
+        action: 'ManualRefundApproved',
+        entityName: 'Reservation',
+        entityId: 'res-vd-5e1m',
+        reason: 'Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ',
+        createdAt: minsAgo(2_880),
+      },
+      {
+        id: 'audit-seed-refund-2',
+        staffId: 'staff-manager-1',
+        action: 'ManualRefundRejected',
+        entityName: 'Reservation',
+        entityId: 'res-vd-6r2t',
+        reason: 'Hủy sát giờ vì lý do cá nhân, không thuộc diện bất khả kháng',
+        createdAt: minsAgo(1_440),
+      },
     ],
   }
 }
+
+/** Stable version + static-catalog fingerprint so persisted mock DBs reseed when static seed changes. */
+export const MOCK_SEED_VERSION = createInitialMockDb(
+  new Date('2026-11-06T12:00:00.000Z')
+).version

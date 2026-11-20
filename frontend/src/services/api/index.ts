@@ -18,6 +18,7 @@ import type {
   DashboardMetricsDto,
   ExportReportFormat,
   FeedbackDto,
+  FeedbackTokenValidationDto,
   FireCourseRequest,
   InvoiceDto,
   InvoiceFilter,
@@ -32,6 +33,7 @@ import type {
   OrderItemDto,
   OrderItemStatus,
   OrderStatus,
+  PassHistoryItemDto,
   PaymentMethod,
   PrintPreviewResponse,
   RefundRequestDto,
@@ -464,6 +466,17 @@ export const orderApi = {
       status: normalizeOrderItemStatus(ticket.status),
     }))
   },
+  getPassHistory: async (
+    tableNumber?: string
+  ): Promise<PassHistoryItemDto[]> => {
+    const { data } = await apiClient.get<PassHistoryItemDto[]>(
+      '/orders/pass/history',
+      {
+        params: tableNumber ? { tableNumber } : undefined,
+      }
+    )
+    return data
+  },
   serveItem: async (
     orderId: string,
     itemId: string
@@ -524,8 +537,17 @@ export const invoiceApi = {
     }
   },
   list: async (filter?: InvoiceFilter): Promise<InvoiceDto[]> => {
+    const mappedFilter = filter
+      ? {
+          ...filter,
+          paymentMethod:
+            filter.paymentMethod === 'VietQR'
+              ? 'BankTransfer'
+              : filter.paymentMethod,
+        }
+      : undefined
     const { data } = await apiClient.get<InvoiceDto[]>('/invoices', {
-      params: filter,
+      params: mappedFilter,
     })
     return data.map((inv) => ({
       ...inv,
@@ -546,6 +568,12 @@ export const invoiceApi = {
 }
 
 export const feedbackApi = {
+  validateToken: async (token: string): Promise<FeedbackTokenValidationDto> => {
+    const { data } = await apiClient.get<FeedbackTokenValidationDto>(
+      `/feedbacks/validate/${encodeURIComponent(token)}`
+    )
+    return data
+  },
   submit: async (payload: SubmitFeedbackRequest): Promise<FeedbackDto> => {
     const { data } = await apiClient.post<FeedbackDto>('/feedbacks', payload)
     return data
