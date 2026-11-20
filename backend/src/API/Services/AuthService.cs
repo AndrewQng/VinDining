@@ -49,8 +49,9 @@ public class AuthService : IAuthService
                 lockedUntil);
         }
 
+        var trimmedInput = dto.Username.Trim();
         var staff = await _context.Staffs
-            .FirstOrDefaultAsync(s => s.Username == dto.Username.Trim(), ct);
+            .FirstOrDefaultAsync(s => s.Username == trimmedInput || s.Email == trimmedInput.ToLowerInvariant(), ct);
 
         if (staff == null)
         {
@@ -103,7 +104,15 @@ public class AuthService : IAuthService
         staff.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync(ct);
 
-        return new AuthResponseDto(token, staff.Username, staff.FullName, roleName, refreshToken, expiresAt);
+        var userProfile = new CurrentUserProfileDto(
+            staff.Id,
+            staff.Username,
+            staff.FullName,
+            staff.Email,
+            staff.PhoneNumber,
+            staff.Role == StaffRole.Admin ? "Manager" : roleName);
+
+        return new AuthResponseDto(token, staff.Username, staff.FullName, roleName, refreshToken, expiresAt, userProfile);
     }
 
     private void RecordFailedAttempt(string failKey, string lockKey)
@@ -152,7 +161,15 @@ public class AuthService : IAuthService
         staff.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync(ct);
 
-        return new AuthResponseDto(newAccessToken, staff.Username, staff.FullName, roleName, newRefreshToken, expiresAt);
+        var userProfile = new CurrentUserProfileDto(
+            staff.Id,
+            staff.Username,
+            staff.FullName,
+            staff.Email,
+            staff.PhoneNumber,
+            staff.Role == StaffRole.Admin ? "Manager" : roleName);
+
+        return new AuthResponseDto(newAccessToken, staff.Username, staff.FullName, roleName, newRefreshToken, expiresAt, userProfile);
     }
 
     public async Task<StaffDto?> GetCurrentUserAsync(CancellationToken ct = default)
@@ -163,7 +180,7 @@ public class AuthService : IAuthService
         var staff = await _context.Staffs.AsNoTracking().FirstOrDefaultAsync(s => s.Id == userId.Value, ct);
         if (staff == null) return null;
 
-        return new StaffDto(staff.Id, staff.FullName, staff.Username, staff.Email, staff.Role, staff.IsActive);
+        return new StaffDto(staff.Id, staff.FullName, staff.Username, staff.Email, staff.Role, staff.IsActive, staff.PhoneNumber, CreatedAt: staff.CreatedAt);
     }
 
     public async Task LogoutAsync(CancellationToken ct = default)

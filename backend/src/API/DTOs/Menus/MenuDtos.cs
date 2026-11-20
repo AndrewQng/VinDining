@@ -10,17 +10,21 @@ public record MenuItemDto(
     CourseType CourseType,
     Guid CategoryId,
     string CategoryName,
-    int PrepTimeMinutes = 15
+    int PrepTimeMinutes = 15,
+    DateTime CreatedAt = default
 )
 {
     public int PreparationTimeMinutes => PrepTimeMinutes;
+    public string Status => IsAvailable ? "Available" : "SoldOut";
 }
 
 public record CategoryDto(
     Guid Id,
     string Name,
     string? Description,
-    List<MenuItemDto> Items
+    List<MenuItemDto> Items,
+    CourseType CourseType = CourseType.Appetizer,
+    bool IsActive = true
 );
 
 public record CreateCategoryDto(
@@ -31,28 +35,31 @@ public record CreateCategoryDto(
 public record CreateMenuItemDto(
     string Name,
     decimal Price,
-    string? Description,
-    string? ImageUrl,
-    bool IsAvailable,
-    CourseType CourseType,
-    Guid CategoryId,
-    int PrepTimeMinutes = 15
+    string? Description = null,
+    string? ImageUrl = null,
+    bool IsAvailable = true,
+    CourseType CourseType = CourseType.Appetizer,
+    Guid CategoryId = default,
+    int PrepTimeMinutes = 15,
+    string? Status = null
 );
 
 public record UpdateMenuItemDto(
     string Name,
     decimal Price,
-    string? Description,
-    string? ImageUrl,
-    bool IsAvailable,
-    CourseType CourseType,
-    Guid CategoryId,
-    int PrepTimeMinutes = 15
+    string? Description = null,
+    string? ImageUrl = null,
+    bool IsAvailable = true,
+    CourseType CourseType = CourseType.Appetizer,
+    Guid CategoryId = default,
+    int PrepTimeMinutes = 15,
+    string? Status = null
 );
 
 public record ToggleAvailabilityDto(
-    bool IsAvailable,
-    string? Reason = null
+    bool IsAvailable = true,
+    string? Reason = null,
+    string? Status = null
 );
 
 public record TastingMenuDto(
@@ -61,7 +68,9 @@ public record TastingMenuDto(
     decimal Price,
     string? Description,
     bool IsActive,
-    List<TastingMenuItemDto> Items
+    List<TastingMenuItemDto> Items,
+    string? ImageUrl = null,
+    DateTime CreatedAt = default
 )
 {
     public decimal TotalPrice => Price;
@@ -73,21 +82,29 @@ public record TastingMenuItemDto(
     Guid MenuItemId,
     string MenuItemName,
     CourseType CourseType,
-    int SequenceOrder
-);
+    int SequenceOrder,
+    Guid Id = default,
+    Guid TastingMenuId = default,
+    int PrepTimeMinutes = 15
+)
+{
+    public int CourseOrder => SequenceOrder;
+}
 
 public record CreateTastingMenuDto(
     string Name,
     decimal Price,
     string? Description,
     List<CreateTastingMenuItemDto> Items,
-    bool IsActive = true
+    bool IsActive = true,
+    string? ImageUrl = null
 );
 
 public record CreateTastingMenuItemDto(
     Guid MenuItemId,
     CourseType CourseType,
-    int SequenceOrder
+    int SequenceOrder = 0,
+    int? CourseOrder = null
 );
 
 public record UpdateTastingMenuDto(
@@ -95,5 +112,6 @@ public record UpdateTastingMenuDto(
     decimal Price,
     string? Description,
     List<CreateTastingMenuItemDto> Items,
-    bool IsActive = true
+    bool IsActive = true,
+    string? ImageUrl = null
 );

@@ -69,7 +69,7 @@ export function EMenuPage() {
     null
   )
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['table-emenu', qrCode],
     queryFn: () => menuApi.getTableMenu(qrCode),
     enabled: Boolean(qrCode),
@@ -146,8 +146,9 @@ export function EMenuPage() {
               Không thể mở thực đơn
             </h2>
             <p className="text-sm text-ink-muted">
-              Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân
-              viên phục vụ.
+              {(isAxiosError<ApiErrorResponse>(error) &&
+                error.response?.data?.message) ||
+                'Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân viên phục vụ.'}
             </p>
           </div>
           <Link to="/" className="inline-block">

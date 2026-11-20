@@ -27,6 +27,7 @@ export function VnPayMockPage() {
     queryKey: ['pending-reservation', code],
     queryFn: () => reservationApi.getByCode(code),
     enabled: Boolean(code),
+    retry: false,
   })
 
   const ipnMutation = useMutation({
@@ -41,6 +42,11 @@ export function VnPayMockPage() {
       void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
       void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
       const current = loadBookingDraft()
+      if (!res.success || res.reservation?.status !== 'Reserved') {
+        saveBookingDraft({ ...current, step: 'expired', holdReservation: null })
+        navigate('/dat-ban', { replace: true })
+        return
+      }
       saveBookingDraft({
         ...current,
         step: 'confirmed',

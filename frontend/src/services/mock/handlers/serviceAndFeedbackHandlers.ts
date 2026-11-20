@@ -82,6 +82,36 @@ export const serviceAndFeedbackRoutes: MockRouteDefinition[] = [
       ok(db.serviceRequests.filter((s) => s.status === 'Pending')),
   },
   {
+    id: 60,
+    method: 'GET',
+    pattern: '/feedbacks/validate/:token',
+    access: 'Guest',
+    handler: ({ db, params }) => {
+      const token = (params.token ?? '').trim()
+      if (!token) {
+        return fail(400, 'Liên kết đánh giá không hợp lệ.')
+      }
+      const invoice = db.invoices.find((inv) => inv.surveyToken === token)
+      if (!invoice) {
+        return fail(404, 'Liên kết đánh giá không hợp lệ hoặc đã hết hạn.')
+      }
+      const alreadySubmitted = db.feedbacks.some(
+        (fb) => fb.invoiceId === invoice.id
+      )
+      if (alreadySubmitted) {
+        return fail(
+          409,
+          'Quý khách đã hoàn tất đánh giá cho hóa đơn này trước đó.'
+        )
+      }
+      return ok({
+        valid: true,
+        invoiceId: invoice.id,
+        tableNumber: invoice.tableNumber,
+      })
+    },
+  },
+  {
     id: 36,
     method: 'POST',
     pattern: '/feedbacks',

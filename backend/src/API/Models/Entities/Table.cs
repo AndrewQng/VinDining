@@ -14,6 +14,8 @@ public class Table : BaseEntity, IHasCreatedAt
 
     public int PosX { get; set; } = 0;
     public int PosY { get; set; } = 0;
+    public DateTime? CheckoutRequestedAt { get; set; }
+    public int? CurrentGuestCount { get; set; }
 
     public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();

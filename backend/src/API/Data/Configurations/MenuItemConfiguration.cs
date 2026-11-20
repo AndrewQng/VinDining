@@ -33,7 +33,6 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
             .IsRequired();
 
         builder.Property(m => m.PrepTimeMinutes)
-            .HasDefaultValue(15)
             .IsRequired();
 
         builder.Property(m => m.CourseType)

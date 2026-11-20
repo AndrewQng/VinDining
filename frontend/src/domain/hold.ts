@@ -1,7 +1,8 @@
 import { HOLD_DURATION_MINUTES } from './constants'
+import { parseUtcTimestamp } from './datetime'
 
 function toTimestamp(value: Date | string): number {
-  return value instanceof Date ? value.getTime() : Date.parse(value)
+  return parseUtcTimestamp(value)
 }
 
 /** Computes the 17-minute temporary hold expiration timestamp from creation time. */

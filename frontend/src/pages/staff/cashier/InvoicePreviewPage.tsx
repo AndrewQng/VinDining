@@ -21,6 +21,7 @@ import {
   hasAnyServedItem,
   type BillLineItem,
 } from '@/domain'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { ReceiptSlip80mm } from '@/components/ReceiptSlip80mm'
 import {
   Button,
@@ -76,6 +77,7 @@ const METHOD_LABELS: Record<PaymentMethod, string> = {
 
 /** C2 / C2x / C2p / C3 / C3b — Tạm tính 80mm, cấn trừ tiền cọc và xác nhận thanh toán. */
 export function InvoicePreviewPage() {
+  useDocumentTitle('Phiếu tạm tính')
   const { tableId = '' } = useParams<{ tableId: string }>()
   const queryClient = useQueryClient()
   const [stage, setStage] = useState<PreviewStage>('preview')
@@ -201,7 +203,8 @@ export function InvoicePreviewPage() {
     preview.items,
     preview.tastingMenuNames ?? {}
   )
-  const canSettle = hasAnyServedItem(preview.items)
+  const canSettle =
+    hasAnyServedItem(preview.items) && !preview.hasUnservedItems
 
   return (
     <div className="space-y-6">

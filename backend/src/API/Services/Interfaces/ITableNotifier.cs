@@ -18,4 +18,10 @@ public interface ITableNotifier
 
     Task NotifyCheckoutRequestedAsync(Guid tableId, string tableNumber, Guid orderId, decimal estimatedSubtotal = 0m, CancellationToken cancellationToken = default)
         => Task.CompletedTask;
+
+    Task NotifyInvoiceSettledAsync(Guid invoiceId, Guid tableId, CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
+
+    Task NotifyMenuUpdatedAsync(Guid menuItemId, bool isAvailable, CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
 }

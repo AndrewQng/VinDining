@@ -14,6 +14,7 @@ import {
   formatDateTime,
   formatVnd,
   getReportPeriodWindow,
+  parseUtcTimestamp,
 } from '@/domain'
 import { Button, Card, Money, Skeleton, Tabs } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
@@ -67,6 +68,27 @@ export function ManagerReportsPage() {
     queryKey: ['manager', 'feedbacks'],
     queryFn: managerApi.getFeedbacks,
   })
+
+  const filteredFeedbacks = useMemo(() => {
+    const fromMs = windowInfo.from.getTime()
+    const toMs = windowInfo.to.getTime()
+    return (feedbacksQuery.data ?? []).filter((fb) => {
+      const createdMs = parseUtcTimestamp(fb.createdAt)
+      if (!Number.isNaN(createdMs) && (createdMs < fromMs || createdMs > toMs)) {
+        return false
+      }
+      if (zone !== 'ALL') {
+        if (fb.zone) {
+          return fb.zone === zone
+        }
+        const tbl = (fb.tableNumber ?? '').toUpperCase()
+        if (zone === 'MainHall' && !tbl.startsWith('B')) return false
+        if (zone === 'VIP' && !tbl.startsWith('V')) return false
+        if (zone === 'Balcony' && !tbl.startsWith('C')) return false
+      }
+      return true
+    })
+  }, [feedbacksQuery.data, windowInfo.from, windowInfo.to, zone])
 
   const report = reportQuery.data
 
@@ -325,7 +347,7 @@ export function ManagerReportsPage() {
                       Đánh giá khách hàng
                     </h2>
                     <span className="print-muted text-xs text-ink-muted">
-                      {feedbacksQuery.data?.length ?? 0} phản hồi
+                      {filteredFeedbacks.length} phản hồi
                     </span>
                   </div>
 
@@ -334,7 +356,7 @@ export function ManagerReportsPage() {
                       <p className="print-muted text-xs text-ink-muted">Món ăn</p>
                       <p className="mt-1 inline-flex items-center gap-1 font-bold text-accent tabular-nums">
                         <Star className="w-4 h-4 fill-current" />
-                        {computeAverageRating(feedbacksQuery.data ?? [], 'foodRating')}
+                        {computeAverageRating(filteredFeedbacks, 'foodRating')}
                       </p>
                     </div>
                     <div className="rounded-xl border border-line bg-card p-3">
@@ -342,7 +364,7 @@ export function ManagerReportsPage() {
                       <p className="mt-1 inline-flex items-center gap-1 font-bold text-accent tabular-nums">
                         <Star className="w-4 h-4 fill-current" />
                         {computeAverageRating(
-                          feedbacksQuery.data ?? [],
+                          filteredFeedbacks,
                           'ambienceRating'
                         )}
                       </p>
@@ -352,7 +374,7 @@ export function ManagerReportsPage() {
                       <p className="mt-1 inline-flex items-center gap-1 font-bold text-accent tabular-nums">
                         <Star className="w-4 h-4 fill-current" />
                         {computeAverageRating(
-                          feedbacksQuery.data ?? [],
+                          filteredFeedbacks,
                           'serviceRating'
                         )}
                       </p>
@@ -360,7 +382,7 @@ export function ManagerReportsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    {(feedbacksQuery.data ?? []).slice(0, 4).map((fb) => (
+                    {filteredFeedbacks.slice(0, 4).map((fb) => (
                       <div
                         key={fb.id}
                         className="rounded-xl border border-line bg-card px-3.5 py-2.5 text-xs space-y-1"

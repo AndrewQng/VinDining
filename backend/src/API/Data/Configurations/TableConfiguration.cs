@@ -46,6 +46,9 @@ public class TableConfiguration : IEntityTypeConfiguration<Table>
         builder.Property(t => t.CreatedAt)
             .IsRequired();
 
+        builder.Property(t => t.CheckoutRequestedAt)
+            .IsRequired(false);
+
         builder.HasIndex(t => t.TableNumber)
             .IsUnique();
 

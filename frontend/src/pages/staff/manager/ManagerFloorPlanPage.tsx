@@ -438,7 +438,7 @@ export function ManagerFloorPlanPage() {
         <Modal
           open={qrModalOpen}
           onClose={() => setQrModalOpen(false)}
-          title={`Mã QR gọi món · Bàn ${selectedTable.tableNumber}`}
+          title={`Mã QR thực đơn · Bàn ${selectedTable.tableNumber}`}
           size="sm"
         >
           <TableQrPrintPreview table={selectedTable} />

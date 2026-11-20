@@ -72,8 +72,8 @@ function getEarliestStart(items: ReadonlyArray<KitchenPendingTicketDto>): string
 }
 
 function compareByUrgency(a: GroupedKitchenTicket, b: GroupedKitchenTicket): number {
-  if (b.ratio !== a.ratio) return b.ratio - a.ratio
   if (a.lane !== b.lane) return a.lane === 'remake' ? -1 : 1
+  if (b.ratio !== a.ratio) return b.ratio - a.ratio
   const aTime = a.cookingStartedAt ? Date.parse(a.cookingStartedAt) : Infinity
   const bTime = b.cookingStartedAt ? Date.parse(b.cookingStartedAt) : Infinity
   if (aTime !== bTime) return aTime - bTime

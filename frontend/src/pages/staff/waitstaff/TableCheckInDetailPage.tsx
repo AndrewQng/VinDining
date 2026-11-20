@@ -57,13 +57,20 @@ export function TableCheckInDetailPage() {
   const guestLabel = activeReservation
     ? `Khách: ${activeReservation.guest.fullName}`
     : 'Khách vãng lai'
-  const guestCount = table.guestCount ?? activeReservation?.partySize ?? 1
+  const guestCount =
+    table.guestCount ??
+    activeReservation?.partySize ??
+    activeOrder?.guestCount ??
+    1
 
   const courseOneItems = activeOrder
     ? activeOrder.items.filter(
         (i) => i.courseType === 'Appetizer' || i.courseType === 'Beverage'
       )
     : []
+  const allCourseOneServed =
+    courseOneItems.length > 0 &&
+    courseOneItems.every((i) => i.status === 'Served')
 
   return (
     <div className="space-y-4">
@@ -101,7 +108,7 @@ export function TableCheckInDetailPage() {
               {courseOneItems
                 .map((i) => `${i.quantity}× ${i.itemName}`)
                 .join(', ')}{' '}
-              đang nấu tại bếp.
+              {allCourseOneServed ? 'đã phục vụ lên bàn.' : 'đang nấu tại bếp.'}
             </p>
           )}
         </Card>

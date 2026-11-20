@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace API.Controllers;
 
 [Route("api/admin/staff")]
+[Route("api/manager/staff")]
 [Authorize(Roles = "Admin,Manager")]
 public class AdminStaffController : ApiControllerBase
 {
@@ -17,34 +19,119 @@ public class AdminStaffController : ApiControllerBase
     public async Task<IActionResult> CreateStaffAsync([FromBody] CreateStaffDto dto, CancellationToken ct)
     {
         var id = await _staffService.CreateStaffAsync(dto, ct);
-        return StatusCode(StatusCodes.Status201Created, new { id, success = true });
+        var staff = await _staffService.GetStaffByIdAsync(id, ct);
+        var temporaryPassword = !string.IsNullOrWhiteSpace(dto.Password)
+            ? dto.Password
+            : !string.IsNullOrWhiteSpace(dto.InitialPassword)
+                ? dto.InitialPassword
+                : "Staff@123";
+        return StatusCode(StatusCodes.Status201Created, new
+        {
+            id = staff.Id,
+            success = true,
+            fullName = staff.FullName,
+            phoneNumber = staff.PhoneNumber,
+            username = staff.Username,
+            email = staff.Email,
+            role = staff.Role,
+            isActive = staff.IsActive,
+            failedLoginCount = staff.FailedLoginCount,
+            lockoutEnd = staff.LockoutEnd,
+            createdAt = staff.CreatedAt,
+            temporaryPassword
+        });
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStaffAsync(Guid id, [FromBody] UpdateStaffDto dto, CancellationToken ct)
     {
         var result = await _staffService.UpdateStaffAsync(id, dto, ct);
-        return Ok(new { success = result, message = "Cập nhật nhân viên thành công." });
+        var staff = await _staffService.GetStaffByIdAsync(id, ct);
+        return Ok(new
+        {
+            success = result,
+            message = "Cập nhật nhân viên thành công.",
+            id = staff.Id,
+            fullName = staff.FullName,
+            phoneNumber = staff.PhoneNumber,
+            username = staff.Username,
+            email = staff.Email,
+            role = staff.Role,
+            isActive = staff.IsActive,
+            failedLoginCount = staff.FailedLoginCount,
+            lockoutEnd = staff.LockoutEnd,
+            createdAt = staff.CreatedAt
+        });
     }
 
     [HttpPost("{id}/reset-password")]
-    public async Task<IActionResult> ResetPasswordAsync(Guid id, [FromBody] ResetPasswordDto dto, CancellationToken ct)
+    public async Task<IActionResult> ResetPasswordAsync(
+        Guid id,
+        [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)] ResetPasswordDto? dto,
+        CancellationToken ct)
     {
-        var result = await _staffService.ResetPasswordAsync(id, dto, ct);
-        return Ok(new { success = result, message = "Cấp lại mật khẩu thành công." });
+        var effectiveDto = dto ?? new ResetPasswordDto(null);
+        var result = await _staffService.ResetPasswordAsync(id, effectiveDto, ct);
+        var temporaryPassword = string.IsNullOrWhiteSpace(effectiveDto.NewPassword) ? "Staff@123" : effectiveDto.NewPassword;
+        return Ok(new { success = result, temporaryPassword, message = "Cấp lại mật khẩu thành công." });
     }
 
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatusAsync(Guid id, [FromBody] ToggleStatusDto dto, CancellationToken ct)
     {
         var result = await _staffService.UpdateStatusAsync(id, dto, ct);
-        return Ok(new { success = result, message = "Cập nhật trạng thái tài khoản thành công." });
+        var staff = await _staffService.GetStaffByIdAsync(id, ct);
+        return Ok(new
+        {
+            success = result,
+            message = "Cập nhật trạng thái tài khoản thành công.",
+            id = staff.Id,
+            fullName = staff.FullName,
+            phoneNumber = staff.PhoneNumber,
+            username = staff.Username,
+            email = staff.Email,
+            role = staff.Role,
+            isActive = staff.IsActive,
+            failedLoginCount = staff.FailedLoginCount,
+            lockoutEnd = staff.LockoutEnd,
+            createdAt = staff.CreatedAt
+        });
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetStaffListAsync(CancellationToken ct)
+    public async Task<IActionResult> GetStaffListAsync(
+        [FromQuery] string? role = null,
+        [FromQuery] bool? isActive = null,
+        [FromQuery] string? search = null,
+        CancellationToken ct = default)
     {
         var result = await _staffService.GetStaffListAsync(ct);
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            var trimmedRole = role.Trim();
+            StaffRole? parsedRole = string.Equals(trimmedRole, "Manager", StringComparison.OrdinalIgnoreCase)
+                ? StaffRole.Admin
+                : Enum.TryParse<StaffRole>(trimmedRole, ignoreCase: true, out var r)
+                    ? r
+                    : null;
+
+            if (!parsedRole.HasValue)
+                throw new ArgumentException($"Vai trò '{trimmedRole}' không hợp lệ.");
+
+            result = result.Where(s => s.Role == parsedRole.Value).ToList();
+        }
+        if (isActive.HasValue)
+        {
+            result = result.Where(s => s.IsActive == isActive.Value).ToList();
+        }
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var q = search.Trim();
+            result = result.Where(s =>
+                s.FullName.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                s.Email.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                s.Username.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
         return Ok(result);
     }
 

@@ -1,9 +1,9 @@
 import { useState, type FormEvent, type KeyboardEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { AlertCircle, CheckCircle2, Star } from 'lucide-react'
-import { Button, Card, Textarea } from '@/components/ui'
+import { Button, Card, Skeleton, Textarea } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { feedbackApi } from '@/services/api'
@@ -76,10 +76,18 @@ export function FeedbackPage() {
   const [submitted, setSubmitted] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+  const trimmedToken = token.trim()
+  const validationQuery = useQuery({
+    queryKey: ['feedback-validate', trimmedToken],
+    queryFn: () => feedbackApi.validateToken(trimmedToken),
+    enabled: Boolean(trimmedToken) && !submitted,
+    retry: false,
+  })
+
   const submitMutation = useMutation({
     mutationFn: () =>
       feedbackApi.submit({
-        token,
+        token: trimmedToken,
         foodRating,
         ambienceRating,
         serviceRating,
@@ -103,7 +111,7 @@ export function FeedbackPage() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (!token.trim()) {
+    if (!trimmedToken) {
       setErrorMessage('Liên kết đánh giá không hợp lệ.')
       return
     }
@@ -129,6 +137,51 @@ export function FeedbackPage() {
           <Link to="/" className="inline-block">
             <Button>Về trang chủ</Button>
           </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!trimmedToken || validationQuery.isError) {
+    const validationError = !trimmedToken
+      ? 'Liên kết đánh giá không hợp lệ.'
+      : isAxiosError<ApiErrorResponse>(validationQuery.error)
+        ? (validationQuery.error.response?.data?.message ??
+          'Liên kết đánh giá không hợp lệ hoặc đã được sử dụng.')
+        : 'Không thể xác thực liên kết đánh giá lúc này.'
+
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        <Card className="text-center space-y-5 py-10">
+          <AlertCircle
+            className="w-10 h-10 text-danger mx-auto"
+            aria-hidden="true"
+          />
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl font-semibold text-ink">
+              Không thể mở biểu mẫu đánh giá
+            </h1>
+            <p role="alert" className="text-sm text-ink-muted">
+              {validationError}
+            </p>
+          </div>
+          <Link to="/" className="inline-block">
+            <Button>Về trang chủ</Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  if (validationQuery.isLoading) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-10">
+        <Card padding="lg" className="space-y-4">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-24 w-full" />
         </Card>
       </div>
     )

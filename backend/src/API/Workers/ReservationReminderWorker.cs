@@ -7,11 +7,11 @@ public class ReservationReminderWorker : BackgroundService
     private static readonly TimeSpan ScanInterval = TimeSpan.FromMinutes(15);
     private readonly ConcurrentDictionary<Guid, DateTime> _remindedReservations = new();
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<ReservationReminderWorker> _logger;
+    private readonly ILogger<ReservationReminderWorker>? _logger;
 
     public ReservationReminderWorker(
         IServiceScopeFactory scopeFactory,
-        ILogger<ReservationReminderWorker> logger)
+        ILogger<ReservationReminderWorker>? logger = null)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
@@ -26,11 +26,11 @@ public class ReservationReminderWorker : BackgroundService
             {
                 try
                 {
-                    await ScanAndSendRemindersAsync(stoppingToken);
+                    await ScanAndSendRemindersAsync(DateTime.UtcNow, stoppingToken);
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    _logger.LogError(ex, "Error while dispatching upcoming reservation reminders.");
+                    _logger?.LogError(ex, "Error while dispatching upcoming reservation reminders.");
                 }
             }
         }
@@ -39,33 +39,44 @@ public class ReservationReminderWorker : BackgroundService
         }
     }
 
-    public async Task<int> ScanAndSendRemindersAsync(CancellationToken ct = default)
+    public Task<int> ScanAndSendRemindersAsync(CancellationToken ct = default)
+        => ScanAndSendRemindersAsync(null, ct);
+
+    public async Task<int> ScanAndSendRemindersAsync(DateTime? utcNow, CancellationToken ct = default)
     {
         await using var scope = _scopeFactory.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
-        var now = DateTime.UtcNow;
+        var now = utcNow ?? DateTime.UtcNow;
         var windowEnd = now.AddHours(2);
 
         var upcoming = await dbContext.Reservations
             .Include(r => r.Guest)
             .Include(r => r.Table)
+            .Include(r => r.Deposit)
             .AsNoTracking()
             .Where(r => r.Status == ReservationStatus.Confirmed &&
                         r.ReservationTime > now &&
-                        r.ReservationTime <= windowEnd)
+                        r.ReservationTime <= windowEnd &&
+                        (r.Deposit == null || r.Deposit.Status == DepositStatus.Paid))
             .ToListAsync(ct);
 
         var sentCount = 0;
         foreach (var res in upcoming)
         {
+            if (res.Guest == null ||
+                (string.IsNullOrWhiteSpace(res.Guest.Email) && string.IsNullOrWhiteSpace(res.Guest.PhoneNumber)))
+            {
+                continue;
+            }
+
             if (_remindedReservations.TryAdd(res.Id, now))
             {
-                _logger.LogInformation(
+                _logger?.LogInformation(
                     "Dispatched 2-hour dining reminder for Booking {BookingCode} to Guest {Email} / {Phone} (Table {TableNumber} at {Time:u}).",
                     res.BookingCode,
-                    res.Guest?.Email,
-                    res.Guest?.PhoneNumber,
+                    res.Guest.Email,
+                    res.Guest.PhoneNumber,
                     res.Table?.TableNumber,
                     res.ReservationTime);
                 sentCount++;

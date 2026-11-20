@@ -15,10 +15,11 @@ public class AdminTableService : IAdminTableService
 
     public async Task<int> UpdateFloorPlanLayoutAsync(UpdateFloorPlanDto dto, CancellationToken ct = default)
     {
-        if (dto.Tables == null || dto.Tables.Count == 0)
+        var inputList = dto.Tables is { Count: > 0 } ? dto.Tables : dto.Positions;
+        if (inputList == null || inputList.Count == 0)
             return 0;
 
-        var posLookup = dto.Tables
+        var posLookup = inputList
             .GroupBy(t => t.TableId)
             .ToDictionary(g => g.Key, g => g.Last());
 
@@ -34,6 +35,18 @@ public class AdminTableService : IAdminTableService
 
                 t.PosX = pos.PosX;
                 t.PosY = pos.PosY;
+                if (pos.Capacity.HasValue && pos.Capacity.Value >= 1 && pos.Capacity.Value <= 20)
+                {
+                    t.Capacity = pos.Capacity.Value;
+                }
+                if (pos.Zone.HasValue)
+                {
+                    t.Zone = pos.Zone.Value;
+                }
+                if (!string.IsNullOrWhiteSpace(pos.TableNumber))
+                {
+                    t.TableNumber = pos.TableNumber.Trim().ToUpperInvariant();
+                }
             }
         }
 
@@ -101,8 +114,35 @@ public class AdminTableService : IAdminTableService
         if (duplicate)
             throw new ConflictException($"Số hiệu bàn '{normalizedNumber}' đã tồn tại trên sơ đồ.");
 
-        if (!dto.IsActive && table.Status == TableStatus.Occupied)
-            throw new InvalidOperationException($"Không thể ngưng hoạt động bàn {table.TableNumber} khi đang có khách dùng bữa.");
+        if (!dto.IsActive)
+        {
+            if (table.Status == TableStatus.Occupied ||
+                table.Status == TableStatus.PaymentPending ||
+                table.Status == TableStatus.Reserved ||
+                table.Status == TableStatus.LockedForPayment)
+            {
+                throw new InvalidOperationException($"Không thể ngưng hoạt động bàn {table.TableNumber} khi đang ở trạng thái {FormatTableStatusVi(table.Status)}.");
+            }
+
+            var hasActiveWork = await _context.Reservations
+                    .AnyAsync(r => r.TableId == id && (r.Status == ReservationStatus.Pending || r.Status == ReservationStatus.Confirmed), ct)
+                || await _context.Orders
+                    .AnyAsync(o => o.TableId == id && o.Status == OrderStatus.Processing, ct);
+
+            if (hasActiveWork)
+                throw new InvalidOperationException($"Bàn {table.TableNumber} đang có đơn đặt bàn hoặc đơn phục vụ chưa hoàn tất, không thể ngưng hoạt động.");
+        }
+
+        if (dto.Capacity < table.Capacity)
+        {
+            var exceedsNewCapacity = await _context.Reservations
+                .AnyAsync(r => r.TableId == id &&
+                               (r.Status == ReservationStatus.Pending || r.Status == ReservationStatus.Confirmed) &&
+                               r.PartySize > dto.Capacity, ct);
+
+            if (exceedsNewCapacity)
+                throw new InvalidOperationException($"Không thể giảm sức chứa bàn {table.TableNumber} xuống {dto.Capacity} do đang có lịch đặt trước với số khách lớn hơn.");
+        }
 
         table.TableNumber = normalizedNumber;
         table.Capacity = dto.Capacity;
@@ -128,10 +168,11 @@ public class AdminTableService : IAdminTableService
             throw new KeyNotFoundException($"Không tìm thấy bàn {id}.");
 
         if (table.Status == TableStatus.Occupied ||
+            table.Status == TableStatus.PaymentPending ||
             table.Status == TableStatus.Reserved ||
             table.Status == TableStatus.LockedForPayment)
         {
-            throw new InvalidOperationException($"Không thể xóa bàn {table.TableNumber} đang ở trạng thái {table.Status}.");
+            throw new ConflictException($"Không thể xóa bàn {table.TableNumber} đang ở trạng thái {FormatTableStatusVi(table.Status)}.");
         }
 
         var hasActiveReservationOrOrder = await _context.Reservations
@@ -164,4 +205,14 @@ public class AdminTableService : IAdminTableService
 
         return true;
     }
+
+    private static string FormatTableStatusVi(TableStatus status) => status switch
+    {
+        TableStatus.Occupied => "Đang phục vụ",
+        TableStatus.PaymentPending => "Chờ thanh toán",
+        TableStatus.Reserved => "Đã đặt trước",
+        TableStatus.LockedForPayment => "Đang giữ chỗ thanh toán",
+        TableStatus.Cleaning => "Đang dọn",
+        _ => "Trống"
+    };
 }

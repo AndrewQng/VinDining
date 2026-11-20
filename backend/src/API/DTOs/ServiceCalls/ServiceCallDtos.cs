@@ -1,8 +1,8 @@
 namespace API.DTOs;
 
 public record ServiceCallDto(
-    Guid TableId,
-    string RequestType,
+    Guid TableId = default,
+    string RequestType = "",
     string? Note = null
 );
 
@@ -12,5 +12,7 @@ public record ServiceCallResponseDto(
     string TableNumber,
     string RequestType,
     string Status,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid? CompletedById = null,
+    DateTime? CompletedAt = null
 );

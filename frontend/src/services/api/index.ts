@@ -18,6 +18,7 @@ import type {
   DashboardMetricsDto,
   ExportReportFormat,
   FeedbackDto,
+  FeedbackTokenValidationDto,
   FireCourseRequest,
   InvoiceDto,
   InvoiceFilter,
@@ -30,7 +31,10 @@ import type {
   MenuItemStatus,
   OrderDto,
   OrderItemDto,
+  OrderItemStatus,
+  OrderStatus,
   PassHistoryItemDto,
+  PaymentMethod,
   PrintPreviewResponse,
   RefundRequestDto,
   ReportDateRangeQuery,
@@ -43,6 +47,7 @@ import type {
   SettleInvoiceRequest,
   StaffDto,
   StaffFilter,
+  StaffRole,
   SubmitFeedbackRequest,
   TableDetailDto,
   TableDto,
@@ -57,18 +62,178 @@ import type {
   VnPayIpnRequest,
   WalkInRequest,
 } from '@/types'
+import { allocateSetMenuUnitPrices } from '@/domain/invoice'
 import { apiClient } from './client'
 
 export { apiClient } from './client'
 
+function normalizeStaffRole(role: string): StaffRole {
+  if (role === 'Admin') return 'Manager'
+  if (
+    role === 'Waitstaff' ||
+    role === 'Expediter' ||
+    role === 'Cashier' ||
+    role === 'Manager'
+  ) {
+    return role
+  }
+  return 'Manager'
+}
+
+function normalizeTableStatus(status: string): TableStatus {
+  if (status === 'LockedForPayment') return 'Locked'
+  return status as TableStatus
+}
+
+function normalizeOrderStatus(status: string): OrderStatus {
+  if (status === 'Processing') return 'Active'
+  if (status === 'Completed') return 'Paid'
+  return status as OrderStatus
+}
+
+function normalizeOrderItemStatus(status: string): OrderItemStatus {
+  if (status === 'Hold') return 'OnHold'
+  if (status === 'Preparing') return 'Cooking'
+  return status as OrderItemStatus
+}
+
+function normalizePaymentMethod(method: string): PaymentMethod {
+  if (method === 'BankTransfer') return 'VietQR'
+  return method as PaymentMethod
+}
+
+function normalizeReservationStatus(
+  raw: ReservationDto & { depositStatus?: string }
+): ReservationStatus {
+  const status = raw.status as string
+  if (status === 'Pending') return 'PendingDeposit'
+  if (status === 'Confirmed' || status === 'Completed') return 'Reserved'
+  if (status === 'Cancelled') {
+    const depStatus = raw.deposit?.status ?? raw.depositStatus
+    if (depStatus === 'Refunded') return 'Cancelled_Refunded'
+    if (
+      raw.cancelledReason?.includes('[REFUND_REJECTED]') ||
+      raw.cancelledReason?.includes('Từ chối hoàn cọc')
+    ) {
+      return 'RefundRejected'
+    }
+    if (
+      raw.cancelledReason?.includes('quá thời hạn thanh toán tiền cọc') ||
+      raw.cancelledReason?.includes('VNPAY không thành công')
+    ) {
+      return 'Expired_Cancelled'
+    }
+    return 'Cancelled_Forfeited'
+  }
+  return raw.status
+}
+
+function normalizeReservation(raw: ReservationDto): ReservationDto {
+  if (!raw) return raw
+  return {
+    ...raw,
+    status: normalizeReservationStatus(raw),
+  }
+}
+
+function normalizeTable(raw: TableDto): TableDto {
+  if (!raw) return raw
+  return {
+    ...raw,
+    status: normalizeTableStatus(raw.status),
+  }
+}
+
+function normalizeOrderItem(raw: OrderItemDto): OrderItemDto {
+  if (!raw) return raw
+  const isEmptyGuid = raw.menuItemId === '00000000-0000-0000-0000-000000000000'
+  return {
+    ...raw,
+    menuItemId: isEmptyGuid ? null : raw.menuItemId,
+    status: normalizeOrderItemStatus(raw.status),
+  }
+}
+
+function normalizeOrder(raw: OrderDto): OrderDto {
+  if (!raw) return raw
+  const normalizedItems = (raw.items ?? []).map(normalizeOrderItem)
+  const headers = normalizedItems.filter(
+    (i) => i.menuItemId === null && i.tastingMenuId !== null && i.unitPrice > 0
+  )
+  if (headers.length === 0) {
+    return {
+      ...raw,
+      status: normalizeOrderStatus(raw.status),
+      items: normalizedItems,
+    }
+  }
+
+  const headerPriceBySet = new Map<string, number>()
+  for (const h of headers) {
+    if (h.tastingMenuId) headerPriceBySet.set(h.tastingMenuId, h.unitPrice)
+  }
+
+  const dishItems = normalizedItems.filter((i) => i.menuItemId !== null)
+  for (const [setMenuId, setPrice] of headerPriceBySet.entries()) {
+    const children = dishItems.filter(
+      (i) => i.tastingMenuId === setMenuId && i.unitPrice === 0
+    )
+    if (children.length > 0) {
+      const allocated = allocateSetMenuUnitPrices(
+        setPrice,
+        children.map(() => 1)
+      )
+      children.forEach((child, idx) => {
+        child.unitPrice = allocated[idx] ?? 0
+      })
+    }
+  }
+
+  return {
+    ...raw,
+    status: normalizeOrderStatus(raw.status),
+    items: dishItems,
+  }
+}
+
 export const authApi = {
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
-    const { data } = await apiClient.post<LoginResponse>('/auth/login', payload)
-    return data
+    const { data } = await apiClient.post<
+      LoginResponse & {
+        id?: string
+        username?: string
+        fullName?: string
+        email?: string
+        phoneNumber?: string
+        role?: string
+        expiresAt?: string
+      }
+    >('/auth/login', payload)
+    const user: CurrentUserDto = data.user
+      ? {
+          ...data.user,
+          role: normalizeStaffRole(data.user.role),
+        }
+      : {
+          id: data.id ?? '',
+          username: data.username ?? payload.username,
+          fullName: data.fullName ?? payload.username,
+          email: data.email ?? '',
+          phoneNumber: data.phoneNumber ?? '',
+          role: normalizeStaffRole(data.role ?? 'Manager'),
+        }
+    return {
+      token: data.token,
+      expiresAtUtc: data.expiresAtUtc ?? data.expiresAt ?? new Date().toISOString(),
+      user,
+    }
   },
   me: async (): Promise<CurrentUserDto> => {
     const { data } = await apiClient.get<CurrentUserDto>('/auth/me')
-    return data
+    return {
+      ...data,
+      role: normalizeStaffRole(data.role),
+    }
   },
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout')
@@ -143,7 +308,10 @@ export const reservationApi = {
       '/reservations',
       payload
     )
-    return data
+    return {
+      ...data,
+      reservation: normalizeReservation(data.reservation),
+    }
   },
   getByCode: async (
     code: string,
@@ -153,7 +321,7 @@ export const reservationApi = {
       `/reservations/${encodeURIComponent(code)}`,
       { params: phone !== undefined ? { phone } : undefined }
     )
-    return data
+    return normalizeReservation(data)
   },
   processVnPayIpn: async (
     payload: VnPayIpnRequest
@@ -162,7 +330,10 @@ export const reservationApi = {
       success: boolean
       reservation: ReservationDto
     }>('/payments/vnpay-ipn', payload)
-    return data
+    return {
+      ...data,
+      reservation: normalizeReservation(data.reservation),
+    }
   },
   cancel: async (
     payload: CancelReservationRequest
@@ -171,7 +342,10 @@ export const reservationApi = {
       '/reservations/cancel',
       payload
     )
-    return data
+    return {
+      ...data,
+      reservation: normalizeReservation(data.reservation),
+    }
   },
   search: async (params?: {
     status?: ReservationStatus
@@ -180,20 +354,26 @@ export const reservationApi = {
     const { data } = await apiClient.get<ReservationDto[]>('/reservations', {
       params,
     })
-    return data
+    return data.map(normalizeReservation)
   },
 }
 
 export const tableApi = {
   getAll: async (): Promise<TableDto[]> => {
     const { data } = await apiClient.get<TableDto[]>('/tables')
-    return data
+    return data.map(normalizeTable)
   },
   getById: async (id: string): Promise<TableDetailDto> => {
     const { data } = await apiClient.get<TableDetailDto>(
       `/tables/${encodeURIComponent(id)}`
     )
-    return data
+    return {
+      table: normalizeTable(data.table),
+      activeOrder: data.activeOrder ? normalizeOrder(data.activeOrder) : null,
+      activeReservation: data.activeReservation
+        ? normalizeReservation(data.activeReservation)
+        : null,
+    }
   },
   checkIn: async (
     tableId: string,
@@ -203,14 +383,17 @@ export const tableApi = {
       table: TableDto
       order: OrderDto | null
     }>(`/tables/${encodeURIComponent(tableId)}/check-in`, payload)
-    return data
+    return {
+      table: normalizeTable(data.table),
+      order: data.order ? normalizeOrder(data.order) : null,
+    }
   },
   walkIn: async (tableId: string, payload: WalkInRequest): Promise<TableDto> => {
     const { data } = await apiClient.post<TableDto>(
       `/tables/${encodeURIComponent(tableId)}/walk-in`,
       payload
     )
-    return data
+    return normalizeTable(data)
   },
   transfer: async (
     sourceId: string,
@@ -220,7 +403,10 @@ export const tableApi = {
       sourceTable: TableDto
       targetTable: TableDto
     }>(`/tables/${encodeURIComponent(sourceId)}/transfer`, payload)
-    return data
+    return {
+      sourceTable: normalizeTable(data.sourceTable),
+      targetTable: normalizeTable(data.targetTable),
+    }
   },
   updateStatus: async (
     tableId: string,
@@ -230,7 +416,7 @@ export const tableApi = {
       `/tables/${encodeURIComponent(tableId)}/status`,
       { status }
     )
-    return data
+    return normalizeTable(data)
   },
 }
 
@@ -239,17 +425,17 @@ export const orderApi = {
     const { data } = await apiClient.get<OrderDto>(
       `/orders/table/${encodeURIComponent(tableId)}`
     )
-    return data
+    return normalizeOrder(data)
   },
   getById: async (orderId: string): Promise<OrderDto> => {
     const { data } = await apiClient.get<OrderDto>(
       `/orders/${encodeURIComponent(orderId)}`
     )
-    return data
+    return normalizeOrder(data)
   },
   create: async (payload: CreateOrderRequest): Promise<OrderDto> => {
     const { data } = await apiClient.post<OrderDto>('/orders', payload)
-    return data
+    return normalizeOrder(data)
   },
   activateCourse: async (
     orderId: string,
@@ -259,7 +445,7 @@ export const orderApi = {
       `/orders/${encodeURIComponent(orderId)}/fire-course`,
       payload
     )
-    return data
+    return normalizeOrder(data)
   },
   addItems: async (
     orderId: string,
@@ -269,20 +455,25 @@ export const orderApi = {
       `/orders/${encodeURIComponent(orderId)}/items`,
       payload
     )
-    return data
+    return normalizeOrder(data)
   },
   getKitchenPending: async (): Promise<KitchenPendingTicketDto[]> => {
     const { data } = await apiClient.get<KitchenPendingTicketDto[]>(
       '/orders/kitchen/pending'
     )
-    return data
+    return data.map((ticket) => ({
+      ...ticket,
+      status: normalizeOrderItemStatus(ticket.status),
+    }))
   },
-  getPassHistory: async (params?: {
+  getPassHistory: async (
     tableNumber?: string
-  }): Promise<PassHistoryItemDto[]> => {
+  ): Promise<PassHistoryItemDto[]> => {
     const { data } = await apiClient.get<PassHistoryItemDto[]>(
       '/orders/pass/history',
-      { params }
+      {
+        params: tableNumber ? { tableNumber } : undefined,
+      }
     )
     return data
   },
@@ -293,13 +484,13 @@ export const orderApi = {
     const { data } = await apiClient.patch<OrderItemDto>(
       `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/serve`
     )
-    return data
+    return normalizeOrderItem(data)
   },
   remakeItem: async (orderId: string, itemId: string): Promise<OrderItemDto> => {
     const { data } = await apiClient.post<OrderItemDto>(
       `/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(itemId)}/remake`
     )
-    return data
+    return normalizeOrderItem(data)
   },
 }
 
@@ -314,13 +505,22 @@ export const invoiceApi = {
     const { data } = await apiClient.get<InvoicePreviewDto>(
       `/invoices/preview/${encodeURIComponent(tableId)}`
     )
-    return data
+    return {
+      ...data,
+      items: (data.items ?? []).map(normalizeOrderItem),
+    }
   },
   printPreview: async (tableId: string): Promise<PrintPreviewResponse> => {
     const { data } = await apiClient.post<PrintPreviewResponse>(
       `/invoices/${encodeURIComponent(tableId)}/print-preview`
     )
-    return data
+    return {
+      ...data,
+      preview: {
+        ...data.preview,
+        items: (data.preview?.items ?? []).map(normalizeOrderItem),
+      },
+    }
   },
   settle: async (
     tableId: string,
@@ -330,23 +530,50 @@ export const invoiceApi = {
       `/invoices/${encodeURIComponent(tableId)}/settle`,
       payload
     )
-    return data
+    return {
+      ...data,
+      paymentMethod: normalizePaymentMethod(data.paymentMethod),
+      items: data.items ? data.items.map(normalizeOrderItem) : data.items,
+    }
   },
   list: async (filter?: InvoiceFilter): Promise<InvoiceDto[]> => {
+    const mappedFilter = filter
+      ? {
+          ...filter,
+          paymentMethod:
+            filter.paymentMethod === 'VietQR'
+              ? 'BankTransfer'
+              : filter.paymentMethod,
+        }
+      : undefined
     const { data } = await apiClient.get<InvoiceDto[]>('/invoices', {
-      params: filter,
+      params: mappedFilter,
     })
-    return data
+    return data.map((inv) => ({
+      ...inv,
+      paymentMethod: normalizePaymentMethod(inv.paymentMethod),
+      items: inv.items ? inv.items.map(normalizeOrderItem) : inv.items,
+    }))
   },
   getById: async (invoiceId: string): Promise<InvoiceDto> => {
     const { data } = await apiClient.get<InvoiceDto>(
       `/invoices/${encodeURIComponent(invoiceId)}`
     )
-    return data
+    return {
+      ...data,
+      paymentMethod: normalizePaymentMethod(data.paymentMethod),
+      items: data.items ? data.items.map(normalizeOrderItem) : data.items,
+    }
   },
 }
 
 export const feedbackApi = {
+  validateToken: async (token: string): Promise<FeedbackTokenValidationDto> => {
+    const { data } = await apiClient.get<FeedbackTokenValidationDto>(
+      `/feedbacks/validate/${encodeURIComponent(token)}`
+    )
+    return data
+  },
   submit: async (payload: SubmitFeedbackRequest): Promise<FeedbackDto> => {
     const { data } = await apiClient.post<FeedbackDto>('/feedbacks', payload)
     return data
@@ -429,15 +656,16 @@ export const managerApi = {
   saveFloorPlanLayout: async (
     payload: UpdateFloorPlanLayoutRequest
   ): Promise<TableDto[]> => {
-    const { data } = await apiClient.put<TableDto[]>(
+    const { data } = await apiClient.put<TableDto[] | { tables: TableDto[] }>(
       '/manager/tables/layout',
       payload
     )
-    return data
+    const list = Array.isArray(data) ? data : data.tables
+    return list.map(normalizeTable)
   },
   createTable: async (payload: CreateTableRequest): Promise<TableDto> => {
     const { data } = await apiClient.post<TableDto>('/manager/tables', payload)
-    return data
+    return normalizeTable(data)
   },
   deleteTable: async (id: string): Promise<{ deleted: boolean }> => {
     const { data } = await apiClient.delete<{ deleted: boolean }>(
@@ -447,7 +675,10 @@ export const managerApi = {
   },
   getRefunds: async (): Promise<RefundRequestDto[]> => {
     const { data } = await apiClient.get<RefundRequestDto[]>('/manager/refunds')
-    return data
+    return data.map((row) => ({
+      ...row,
+      reservation: normalizeReservation(row.reservation),
+    }))
   },
   processManualRefund: async (
     reservationId: string,
@@ -457,13 +688,13 @@ export const managerApi = {
       `/manager/reservations/${encodeURIComponent(reservationId)}/manual-refund`,
       payload
     )
-    return data
+    return normalizeReservation(data)
   },
   getStaffList: async (filter?: StaffFilter): Promise<StaffDto[]> => {
     const { data } = await apiClient.get<StaffDto[]>('/manager/staff', {
       params: filter,
     })
-    return data
+    return data.map((s) => ({ ...s, role: normalizeStaffRole(s.role) }))
   },
   createStaff: async (
     payload: CreateStaffRequest
@@ -472,7 +703,7 @@ export const managerApi = {
       '/manager/staff',
       payload
     )
-    return data
+    return { ...data, role: normalizeStaffRole(data.role) }
   },
   updateStaff: async (
     id: string,
@@ -482,7 +713,7 @@ export const managerApi = {
       `/manager/staff/${encodeURIComponent(id)}`,
       payload
     )
-    return data
+    return { ...data, role: normalizeStaffRole(data.role) }
   },
   resetStaffPassword: async (
     id: string,
@@ -502,7 +733,7 @@ export const managerApi = {
       `/manager/staff/${encodeURIComponent(id)}/status`,
       { isActive }
     )
-    return data
+    return { ...data, role: normalizeStaffRole(data.role) }
   },
   getDashboardReport: async (
     params: ReportDateRangeQuery & { label?: string }

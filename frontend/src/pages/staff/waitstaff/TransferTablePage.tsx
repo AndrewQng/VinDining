@@ -59,7 +59,7 @@ export function TransferTablePage() {
       void queryClient.invalidateQueries({ queryKey: ['tables'] })
       if (isAxiosError<ApiErrorResponse>(err)) {
         const msg = err.response?.data?.message ?? ''
-        if (err.response?.status === 409 && msg.includes('không còn trống')) {
+        if (err.response?.status === 409) {
           setConflictTableNumber(selectedTarget?.tableNumber ?? '')
           return
         }
@@ -99,9 +99,12 @@ export function TransferTablePage() {
     )
   }
 
-  const { table: sourceTable, activeReservation } = detailQuery.data
+  const { table: sourceTable, activeOrder, activeReservation } = detailQuery.data
   const guestCount =
-    sourceTable.guestCount ?? activeReservation?.partySize ?? 1
+    sourceTable.guestCount ??
+    activeReservation?.partySize ??
+    activeOrder?.guestCount ??
+    1
   const paidDeposit =
     activeReservation?.deposit?.status === 'Paid'
       ? activeReservation.deposit.amount

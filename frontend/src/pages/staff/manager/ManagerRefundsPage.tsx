@@ -108,7 +108,11 @@ export function ManagerRefundsPage() {
   const processedRows = useMemo(
     () =>
       (refundsQuery.data ?? [])
-        .filter((r) => r.reservation.status !== 'Cancelled_Forfeited')
+        .filter(
+          (r) =>
+            r.reservation.status === 'Cancelled_Refunded' ||
+            r.reservation.status === 'RefundRejected'
+        )
         .sort(
           (a, b) =>
             Date.parse(b.processedAt ?? b.requestedAt) -

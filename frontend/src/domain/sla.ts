@@ -1,4 +1,5 @@
 import { SLA_WARNING_RATIO } from './constants'
+import { parseUtcTimestamp } from './datetime'
 
 export type SlaState = 'normal' | 'warning' | 'overdue'
 
@@ -20,10 +21,7 @@ export function evaluateSla(
     return { status: 'normal', elapsedSeconds: 0, slaSeconds, ratio: 0 }
   }
 
-  const startedMs =
-    cookingStartedAt instanceof Date
-      ? cookingStartedAt.getTime()
-      : Date.parse(cookingStartedAt)
+  const startedMs = parseUtcTimestamp(cookingStartedAt)
   const elapsedSeconds = Math.max(0, Math.floor((now.getTime() - startedMs) / 1000))
   const ratio = elapsedSeconds / slaSeconds
 

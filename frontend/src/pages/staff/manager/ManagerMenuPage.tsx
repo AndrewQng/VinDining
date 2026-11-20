@@ -16,6 +16,7 @@ import {
   Money,
   Skeleton,
   Tabs,
+  ThemedImage,
 } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
@@ -241,12 +242,23 @@ export function ManagerMenuPage() {
                         className="transition-colors hover:bg-card-hover"
                       >
                         <td className="px-4 py-3.5">
-                          <p className="font-semibold text-ink">{item.name}</p>
-                          {item.description && (
-                            <p className="mt-0.5 text-xs text-ink-muted">
-                              {item.description}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-3">
+                            {item.imageUrl && (
+                              <ThemedImage
+                                name={item.imageUrl}
+                                alt={item.name}
+                                className="w-11 h-11 rounded-lg object-cover border border-line shrink-0"
+                              />
+                            )}
+                            <div className="min-w-0">
+                              <p className="font-semibold text-ink">{item.name}</p>
+                              {item.description && (
+                                <p className="mt-0.5 text-xs text-ink-muted line-clamp-2">
+                                  {item.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-4 py-3.5">
                           <span className="inline-flex rounded-lg border border-line bg-card px-2.5 py-1 text-xs font-medium text-ink">
@@ -339,16 +351,25 @@ export function ManagerMenuPage() {
               className="grid grid-rows-[auto_1fr] md:row-span-2 md:grid-rows-[subgrid] gap-y-4 h-full"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 space-y-1">
-                  <h2 className="font-serif text-lg font-bold text-ink line-clamp-2 min-h-[1.75rem]">
-                    {setMenu.name}
-                  </h2>
-                  <p className="text-sm font-semibold text-accent tabular-nums">
-                    Giá trọn gói: {formatVnd(setMenu.price)} / khách
-                  </p>
-                  <p className="text-xs text-ink-muted line-clamp-2 min-h-[2rem]">
-                    {setMenu.description ?? ''}
-                  </p>
+                <div className="flex items-start gap-3 min-w-0">
+                  {setMenu.imageUrl && (
+                    <ThemedImage
+                      name={setMenu.imageUrl}
+                      alt={setMenu.name}
+                      className="w-16 h-16 rounded-xl object-cover border border-line shrink-0"
+                    />
+                  )}
+                  <div className="min-w-0 space-y-1">
+                    <h2 className="font-serif text-lg font-bold text-ink line-clamp-2 min-h-[1.75rem]">
+                      {setMenu.name}
+                    </h2>
+                    <p className="text-sm font-semibold text-accent tabular-nums">
+                      Giá trọn gói: {formatVnd(setMenu.price)} / khách
+                    </p>
+                    <p className="text-xs text-ink-muted line-clamp-2 min-h-[2rem]">
+                      {setMenu.description ?? ''}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">

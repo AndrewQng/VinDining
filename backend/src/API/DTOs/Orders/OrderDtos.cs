@@ -6,11 +6,13 @@ public record CreateOrderDto(
     Guid? StaffId = null,
     List<OrderItemRequestDto>? Items = null,
     List<OrderTastingMenuRequestDto>? TastingMenus = null,
-    bool IsPriority = false
+    bool IsPriority = false,
+    Guid? TastingMenuId = null,
+    int? GuestCount = null
 );
 
 public record OrderItemRequestDto(
-    Guid MenuItemId,
+    Guid? MenuItemId,
     int Quantity,
     string? Note = null,
     Guid? TastingMenuId = null
@@ -49,7 +51,10 @@ public record OrderDetailDto(
     DateTime? ClosedAt,
     List<OrderItemDetailDto> Items,
     Guid? ReservationId = null,
-    bool IsPriority = false
+    bool IsPriority = false,
+    Guid CreateById = default,
+    string CreateByName = "Nhân viên",
+    int GuestCount = 2
 )
 {
     public Guid OrderId => Id;
@@ -70,9 +75,18 @@ public record OrderItemDetailDto(
     bool IsRush = false,
     int PrepTimeMinutes = 15,
     DateTime? ServedAt = null,
-    Guid? TastingMenuId = null
+    Guid? TastingMenuId = null,
+    Guid TableId = default,
+    Guid? ServedById = null
 )
 {
+    public Guid OrderItemId => Id;
+    public string ItemName => MenuItemName;
+    public DateTime? CookingStartedAt => FiredAt;
+    public bool IsPriority => IsRush;
+    public bool IsRemake => IsRush && Note != null && Note.Contains("[LÀM LẠI:", StringComparison.OrdinalIgnoreCase);
+    public int RemakeCount => CountRemakeMarkers(Note);
+
     public int ElapsedSeconds => FiredAt.HasValue && Status == OrderItemStatus.Preparing
         ? Math.Max(0, (int)(DateTime.UtcNow - FiredAt.Value).TotalSeconds)
         : 0;
@@ -91,4 +105,33 @@ public record OrderItemDetailDto(
             return "Normal";
         }
     }
+
+    internal static int CountRemakeMarkers(string? note)
+    {
+        if (string.IsNullOrEmpty(note)) return 0;
+        const string marker = "[LÀM LẠI:";
+        int count = 0;
+        int idx = 0;
+        while ((idx = note.IndexOf(marker, idx, StringComparison.OrdinalIgnoreCase)) >= 0)
+        {
+            count++;
+            idx += marker.Length;
+        }
+        return count;
+    }
 }
+
+public record PassHistoryItemDto(
+    Guid OrderItemId,
+    Guid OrderId,
+    Guid TableId,
+    string TableNumber,
+    string ItemName,
+    int Quantity,
+    CourseType CourseType,
+    string? Note,
+    int RemakeCount,
+    DateTime ServedAt,
+    Guid? ServedById,
+    string ServedByName
+);

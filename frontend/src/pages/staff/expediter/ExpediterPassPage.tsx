@@ -135,7 +135,7 @@ export function ExpediterPassPage() {
     void queryClient.invalidateQueries({ queryKey: ['pass-history'] })
   })
 
-  const passTickets = useMemo(
+  const allPassTickets = useMemo(
     () =>
       groupKitchenTickets(pendingItems, now).filter(
         (t) => t.lane === 'remake' || t.lane === 'cooking'
@@ -143,9 +143,22 @@ export function ExpediterPassPage() {
     [pendingItems, now]
   )
 
+  const activeTables = useMemo(() => {
+    const set = new Set(allPassTickets.map((t) => t.tableNumber))
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [allPassTickets])
+
+  const passTickets = useMemo(
+    () =>
+      tableFilter === 'ALL'
+        ? allPassTickets
+        : allPassTickets.filter((t) => t.tableNumber === tableFilter),
+    [allPassTickets, tableFilter]
+  )
+
   const totalDishes = useMemo(
-    () => passTickets.reduce((sum, t) => sum + t.items.length, 0),
-    [passTickets]
+    () => allPassTickets.reduce((sum, t) => sum + t.items.length, 0),
+    [allPassTickets]
   )
 
   const allHistoryGroups = useMemo(
@@ -244,35 +257,33 @@ export function ExpediterPassPage() {
           value={tab}
           onChange={setTab}
           items={[
-            { value: 'active', label: 'Đang chế biến', badge: totalDishes },
+            { value: 'active', label: 'Đang chế biến', badge: allPassTickets.length },
             { value: 'history', label: 'Lịch sử', badge: allHistoryGroups.length },
           ]}
         />
 
-        {tab === 'history' && (
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor="pass-history-table-filter"
-              className="text-xs font-medium text-ink-muted"
-            >
-              Bàn:
-            </label>
-            <select
-              id="pass-history-table-filter"
-              aria-label="Lọc theo bàn"
-              value={tableFilter}
-              onChange={(e) => setTableFilter(e.target.value)}
-              className="h-10 rounded-lg border border-line bg-card px-3 text-sm text-ink"
-            >
-              <option value="ALL">Tất cả bàn</option>
-              {historyTables.map((tbl) => (
-                <option key={tbl} value={tbl}>
-                  Bàn {tbl}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="pass-history-table-filter"
+            className="text-xs font-medium text-ink-muted"
+          >
+            Bàn:
+          </label>
+          <select
+            id="pass-history-table-filter"
+            aria-label="Lọc theo bàn"
+            value={tableFilter}
+            onChange={(e) => setTableFilter(e.target.value)}
+            className="h-10 rounded-lg border border-line bg-card px-3 text-sm text-ink"
+          >
+            <option value="ALL">Tất cả bàn</option>
+            {(tab === 'active' ? activeTables : historyTables).map((tbl) => (
+              <option key={tbl} value={tbl}>
+                Bàn {tbl}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {feedbackBanner && (
@@ -492,7 +503,7 @@ function PassTicketCard({
                     icon={<Check className="w-3.5 h-3.5 text-success" />}
                     onClick={() => onServeItem(item)}
                   >
-                    Xác nhận đi món
+                    Đi món này
                   </Button>
                   <Button
                     type="button"
@@ -540,7 +551,7 @@ function PassTicketCard({
             icon={<Check className="w-4 h-4" />}
             onClick={onServeAll}
           >
-            Xác nhận đi món
+            {ticket.items.length > 1 ? 'Xác nhận đi cả lượt' : 'Xác nhận đi món'}
           </Button>
           {ticket.items.length === 1 && (
             <Button

@@ -8,6 +8,9 @@ public class Feedback : BaseEntity, IHasCreatedAt
     public Reservation Reservation { get; set; } = null!;
 
     public double Rating { get; set; }
+    public int? FoodRating { get; set; }
+    public int? AmbienceRating { get; set; }
+    public int? ServiceRating { get; set; }
     public string? Comment { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

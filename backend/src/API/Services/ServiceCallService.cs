@@ -7,6 +7,7 @@ public interface IServiceCallStore
     void Add(ServiceCallEntry entry);
     bool TryComplete(Guid id, out ServiceCallEntry? completed);
     List<ServiceCallResponseDto> GetActive();
+    void RelocateTable(Guid sourceTableId, Guid targetTableId, string targetTableNumber) { }
 }
 
 public sealed record ServiceCallEntry(
@@ -56,6 +57,21 @@ public sealed class InMemoryServiceCallStore : IServiceCallStore
                 e.CreatedAt))
             .ToList();
     }
+
+    public void RelocateTable(Guid sourceTableId, Guid targetTableId, string targetTableNumber)
+    {
+        foreach (var kvp in _entries)
+        {
+            if (kvp.Value.TableId == sourceTableId && kvp.Value.Status == "Pending")
+            {
+                _entries[kvp.Key] = kvp.Value with
+                {
+                    TableId = targetTableId,
+                    TableNumber = targetTableNumber
+                };
+            }
+        }
+    }
 }
 
 public class ServiceCallService : IServiceCallService
@@ -88,11 +104,21 @@ public class ServiceCallService : IServiceCallService
         if (!table.IsActive)
             throw new InvalidOperationException($"Bàn {table.TableNumber} hiện không hoạt động.");
 
+        if (table.Status != TableStatus.Occupied && table.Status != TableStatus.PaymentPending)
+            throw new InvalidOperationException($"Bàn {table.TableNumber} chưa hoàn tất thủ tục check-in. Vui lòng liên hệ nhân viên phục vụ.");
+
+        var normalizedType = dto.RequestType.Trim();
+        var duplicate = _store.GetActive().Any(s =>
+            s.TableId == table.Id &&
+            string.Equals(s.RequestType, normalizedType, StringComparison.OrdinalIgnoreCase));
+        if (duplicate)
+            throw new ConflictException("Yêu cầu hỗ trợ này đã được gửi và đang chờ nhân viên phục vụ.");
+
         var entry = new ServiceCallEntry(
             Id: Guid.NewGuid(),
             TableId: table.Id,
             TableNumber: table.TableNumber,
-            RequestType: dto.RequestType.Trim(),
+            RequestType: normalizedType,
             Note: dto.Note?.Trim(),
             Status: "Pending",
             CreatedAt: DateTime.UtcNow

@@ -38,10 +38,10 @@ describe('Mock API router & RBAC', () => {
     resetMockDb()
   })
 
-  it('registers all 59 unique routes from docs/api.md', () => {
-    expect(ALL_MOCK_ROUTES).toHaveLength(59)
+  it('registers all 60 unique routes from docs/api.md', () => {
+    expect(ALL_MOCK_ROUTES).toHaveLength(60)
     const ids = new Set(ALL_MOCK_ROUTES.map((r) => r.id))
-    expect(ids.size).toBe(59)
+    expect(ids.size).toBe(60)
   })
 
   it('enforces 401 for unauthenticated staff calls and 403 for disallowed roles', async () => {

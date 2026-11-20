@@ -50,10 +50,8 @@ public class GlobalExceptionMiddleware
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-
         var (statusCode, message, errors) = exception switch
         {
             ValidationException validationEx => (
@@ -69,6 +67,11 @@ public class GlobalExceptionMiddleware
             InvalidOperationException invalidOpEx => (
                 (int)HttpStatusCode.BadRequest,
                 invalidOpEx.Message,
+                null),
+
+            BadHttpRequestException badReqEx => (
+                (int)HttpStatusCode.BadRequest,
+                badReqEx.Message,
                 null),
 
             UnauthorizedAccessException unauthorizedEx => (
@@ -99,7 +102,12 @@ public class GlobalExceptionMiddleware
             AccountLockedException lockedEx => (
                 StatusCodes.Status423Locked,
                 lockedEx.Message,
-                null),
+                lockedEx.LockedUntil.HasValue
+                    ? new Dictionary<string, string[]>
+                    {
+                        ["lockedUntil"] = new[] { lockedEx.LockedUntil.Value.UtcDateTime.ToString("O") }
+                    }
+                    : null),
 
             _ => (
                 (int)HttpStatusCode.InternalServerError,
@@ -109,7 +117,26 @@ public class GlobalExceptionMiddleware
                 null)
         };
 
+        return WriteErrorResponseAsync(context, statusCode, message, errors);
+    }
+
+    /// <summary>
+    /// Serializes a standardized camelCase <see cref="ApiErrorResponse"/> directly to the HTTP response.
+    /// </summary>
+    internal static async Task WriteErrorResponseAsync(
+        HttpContext context,
+        int statusCode,
+        string message,
+        IDictionary<string, string[]>? errors = null)
+    {
+        if (context.Response.HasStarted)
+        {
+            return;
+        }
+
+        context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;
+
         var payload = new ApiErrorResponse(
             Success: false,
             StatusCode: statusCode,

@@ -4,6 +4,8 @@ public class ExpiredReservationLockService : IExpiredReservationLockService
 {
     public const int LockExpiryMinutes = 17;
 
+    private static readonly ITableConcurrencyLock DefaultTableLock = new TableConcurrencyLock();
+
     private readonly IApplicationDbContext _context;
     private readonly ITableNotifier _tableNotifier;
     private readonly ITableConcurrencyLock _tableLock;
@@ -17,7 +19,7 @@ public class ExpiredReservationLockService : IExpiredReservationLockService
     {
         _context = context;
         _tableNotifier = tableNotifier;
-        _tableLock = tableLock ?? new TableConcurrencyLock();
+        _tableLock = tableLock ?? DefaultTableLock;
         _logger = logger;
     }
 
@@ -35,18 +37,21 @@ public class ExpiredReservationLockService : IExpiredReservationLockService
         if (expiredReservations.Count == 0)
             return 0;
 
-        var releasedCount = 0;
         var tableIds = expiredReservations.Select(r => r.TableId).Distinct().ToList();
-
         await using var lockHandle = await _tableLock.AcquireManyAsync(tableIds, ct);
 
-        var releasedTables = new List<(Guid TableId, string TableNumber, TableStatus Status)>();
+        var activeExpired = expiredReservations
+            .Where(r => r.Status == ReservationStatus.Pending)
+            .ToList();
 
-        foreach (var reservation in expiredReservations)
+        if (activeExpired.Count == 0)
+            return 0;
+
+        var excludedIds = activeExpired.Select(r => r.Id).ToHashSet();
+        var affectedTables = new Dictionary<Guid, Table>();
+
+        foreach (var reservation in activeExpired)
         {
-            if (reservation.Status != ReservationStatus.Pending)
-                continue;
-
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
             reservation.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockExpiryMinutes} phút.";
@@ -57,27 +62,39 @@ public class ExpiredReservationLockService : IExpiredReservationLockService
                 reservation.Deposit.RefundAmount = 0m;
             }
 
-            if (reservation.Table != null && reservation.Table.Status == TableStatus.LockedForPayment)
+            if (reservation.Table != null &&
+                (reservation.Table.Status == TableStatus.LockedForPayment || reservation.Table.Status == TableStatus.Reserved))
             {
-                reservation.Table.Status = TableStatus.Available;
-                releasedTables.Add((reservation.Table.Id, reservation.Table.TableNumber, reservation.Table.Status));
+                affectedTables.TryAdd(reservation.Table.Id, reservation.Table);
             }
-
-            releasedCount++;
         }
 
-        if (releasedCount > 0)
+        var changedTables = new List<(Guid TableId, string TableNumber, TableStatus Status)>();
+        foreach (var table in affectedTables.Values)
         {
-            await _context.SaveChangesAsync(ct);
+            var nextStatus = await ReservationService.ResolveSafeTableStatusAfterReleaseAsync(
+                _context,
+                table,
+                excludedIds,
+                now,
+                ct);
 
-            foreach (var table in releasedTables.DistinctBy(t => t.TableId))
+            if (table.Status != nextStatus)
             {
-                await _tableNotifier.NotifyTableStatusChangedAsync(table.TableId, table.TableNumber, table.Status, ct);
+                table.Status = nextStatus;
+                changedTables.Add((table.Id, table.TableNumber, table.Status));
             }
-
-            _logger?.LogInformation("Released {Count} expired pending reservations older than {Minutes} minutes.", releasedCount, LockExpiryMinutes);
         }
 
-        return releasedCount;
+        await _context.SaveChangesAsync(ct);
+
+        foreach (var table in changedTables)
+        {
+            await _tableNotifier.NotifyTableStatusChangedAsync(table.TableId, table.TableNumber, table.Status, ct);
+        }
+
+        _logger?.LogInformation("Released {Count} expired pending reservations older than {Minutes} minutes.", activeExpired.Count, LockExpiryMinutes);
+
+        return activeExpired.Count;
     }
 }

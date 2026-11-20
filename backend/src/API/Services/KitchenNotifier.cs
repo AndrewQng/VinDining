@@ -14,78 +14,86 @@ public class KitchenNotifier : IKitchenNotifier
         _kitchenHub = kitchenHub;
     }
 
-    public async Task NotifyNewOrderAsync(Guid orderId, string tableNumber, CancellationToken cancellationToken = default)
+    public Task NotifyNewOrderAsync(Guid orderId, string tableNumber, CancellationToken cancellationToken = default)
+        => NotifyNewOrderAsync(orderId, Guid.Empty, tableNumber, cancellationToken);
+
+    public async Task NotifyNewOrderAsync(Guid orderId, Guid tableId, string tableNumber, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "ReceiveNewOrder",
+            "order:updated",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                CreatedAt = DateTime.UtcNow
+                orderId,
+                tableId = tableId == Guid.Empty ? string.Empty : tableId.ToString(),
+                tableNumber
             },
             cancellationToken);
     }
 
-    public async Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, CourseType courseType, CancellationToken cancellationToken = default)
+    public Task NotifyCourseFiredAsync(Guid orderId, string tableNumber, CourseType courseType, CancellationToken cancellationToken = default)
+        => NotifyCourseFiredAsync(orderId, Guid.Empty, tableNumber, courseType, false, cancellationToken);
+
+    public async Task NotifyCourseFiredAsync(Guid orderId, Guid tableId, string tableNumber, CourseType courseType, bool isPriority = false, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "CourseFired",
+            "course:activated",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                CourseType = courseType.ToString(),
-                FiredAt = DateTime.UtcNow
+                orderId,
+                tableId = tableId == Guid.Empty ? string.Empty : tableId.ToString(),
+                courseType = courseType.ToString(),
+                isPriority
             },
             cancellationToken);
     }
 
-    public async Task NotifyItemRemakeAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+    public Task NotifyItemRemakeAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+        => NotifyItemRemakeAsync(orderId, Guid.Empty, tableNumber, orderItemId, menuItemName, reason, cancellationToken);
+
+    public async Task NotifyItemRemakeAsync(Guid orderId, Guid tableId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "ItemRemake",
+            "item:remake-requested",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                OrderItemId = orderItemId,
-                MenuItemName = menuItemName,
-                Reason = reason,
-                IsRush = true,
-                RemakeAt = DateTime.UtcNow
+                orderId,
+                orderItemId,
+                tableId = tableId == Guid.Empty ? string.Empty : tableId.ToString(),
+                itemName = menuItemName
             },
             cancellationToken);
     }
 
-    public async Task NotifyItemServedAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, Guid? servedById, CancellationToken cancellationToken = default)
+    public Task NotifyItemServedAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, Guid? servedById, CancellationToken cancellationToken = default)
+        => NotifyItemServedAsync(orderId, Guid.Empty, tableNumber, orderItemId, menuItemName, servedById, cancellationToken);
+
+    public async Task NotifyItemServedAsync(Guid orderId, Guid tableId, string tableNumber, Guid orderItemId, string menuItemName, Guid? servedById, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "ItemServed",
+            "item:served",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                OrderItemId = orderItemId,
-                MenuItemName = menuItemName,
-                ServedById = servedById,
-                ServedAt = DateTime.UtcNow
+                orderId,
+                orderItemId,
+                tableId = tableId == Guid.Empty ? string.Empty : tableId.ToString(),
+                tableNumber,
+                itemName = menuItemName
             },
             cancellationToken);
     }
 
-    public async Task NotifyItemCancelledAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+    public Task NotifyItemCancelledAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
+        => NotifyItemCancelledAsync(orderId, Guid.Empty, tableNumber, orderItemId, menuItemName, reason, cancellationToken);
+
+    public async Task NotifyItemCancelledAsync(Guid orderId, Guid tableId, string tableNumber, Guid orderItemId, string menuItemName, string? reason, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "ItemCancelled",
+            "order:updated",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                OrderItemId = orderItemId,
-                MenuItemName = menuItemName,
-                Reason = reason,
-                CancelledAt = DateTime.UtcNow
+                orderId,
+                tableId = tableId == Guid.Empty ? string.Empty : tableId.ToString(),
+                tableNumber
             },
             cancellationToken);
     }
@@ -93,17 +101,11 @@ public class KitchenNotifier : IKitchenNotifier
     public async Task NotifySlaAlertAsync(Guid orderId, string tableNumber, Guid orderItemId, string menuItemName, string slaStatus, int elapsedSeconds, int prepTimeMinutes, CancellationToken cancellationToken = default)
     {
         await _kitchenHub.Clients.All.SendAsync(
-            "SlaAlert",
+            "sla:alert",
             new
             {
-                OrderId = orderId,
-                TableNumber = tableNumber,
-                OrderItemId = orderItemId,
-                MenuItemName = menuItemName,
-                SlaStatus = slaStatus,
-                ElapsedSeconds = elapsedSeconds,
-                PrepTimeMinutes = prepTimeMinutes,
-                AlertedAt = DateTime.UtcNow
+                overdueCount = string.Equals(slaStatus, "Overdue", StringComparison.OrdinalIgnoreCase) ? 1 : 0,
+                warningCount = string.Equals(slaStatus, "Warning", StringComparison.OrdinalIgnoreCase) ? 1 : 0
             },
             cancellationToken);
     }

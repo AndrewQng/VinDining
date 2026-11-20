@@ -6,5 +6,6 @@ public enum TableStatus
     LockedForPayment = 1,
     Reserved = 2,
     Occupied = 3,
-    Cleaning = 4
+    Cleaning = 4,
+    PaymentPending = 5
 }

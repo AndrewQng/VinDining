@@ -1,3 +1,5 @@
+import type { TableZone } from './table'
+
 /** Guest CSAT feedback DTO matching the Feedbacks ERD table. */
 export interface FeedbackDto {
   id: string
@@ -5,11 +7,19 @@ export interface FeedbackDto {
   invoiceId: string | null
   guestName: string | null
   tableNumber: string | null
+  zone?: TableZone | null
   foodRating: number
   ambienceRating: number
   serviceRating: number
   comment: string | null
   createdAt: string
+}
+
+/** Response from GET /api/feedbacks/validate/{token}. */
+export interface FeedbackTokenValidationDto {
+  valid: boolean
+  invoiceId: string
+  tableNumber?: string | null
 }
 
 /** Payload for POST /api/feedbacks. */
