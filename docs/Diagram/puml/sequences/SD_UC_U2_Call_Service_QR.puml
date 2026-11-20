@@ -18,7 +18,7 @@ database "SQL Server" as DB
 
 Guest -> UI: Quét QR tại bàn
 activate UI
-UI -> Controller: GET /api/tables/{qrCode}/menu
+UI -> Controller: GET /api/menu/table/{id}
 activate Controller
 Controller -> Service: ValidateTable(qrCode)
 activate Service

@@ -27,7 +27,7 @@ activate Service
 
 Service -> Repo: SaveInvoice & CompleteTableSession(dto)
 activate Repo
-Repo -> DB: INSERT Invoices\nUPDATE Orders SET Status = 'Paid'\nUPDATE Tables SET Status = 'Available'
+Repo -> DB: INSERT Invoices\nUPDATE Orders SET Status = 'Paid'\nUPDATE Tables SET Status = 'Cleaning' (-> 'Available')
 activate DB
 DB --> Repo: OK
 deactivate DB
@@ -39,7 +39,7 @@ activate Printer
 Printer --> Service: OK
 deactivate Printer
 
-Service -> WebPOS: PushSignalR("Table_Available")
+Service -> WebPOS: PushSignalR("Table_Cleaning / Table_Available")
 
 Service --> Controller: Result(Success)
 deactivate Service
