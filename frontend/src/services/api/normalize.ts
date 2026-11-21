@@ -1,4 +1,3 @@
-import { allocateSetMenuUnitPrices } from '@/domain/invoice'
 import type {
   OrderDto,
   OrderItemDto,
@@ -86,42 +85,12 @@ export function normalizeOrderItem(raw: OrderItemDto): OrderItemDto {
 
 export function normalizeOrder(raw: OrderDto): OrderDto {
   if (!raw) return raw
-  const normalizedItems = (raw.items ?? []).map(normalizeOrderItem)
-  const headers = normalizedItems.filter(
-    (i) => i.menuItemId === null && i.tastingMenuId !== null && i.unitPrice > 0
-  )
-  if (headers.length === 0) {
-    return {
-      ...raw,
-      status: normalizeOrderStatus(raw.status),
-      items: normalizedItems,
-    }
-  }
-
-  const headerPriceBySet = new Map<string, number>()
-  for (const h of headers) {
-    if (h.tastingMenuId) headerPriceBySet.set(h.tastingMenuId, h.unitPrice)
-  }
-
-  const dishItems = normalizedItems.filter((i) => i.menuItemId !== null)
-  for (const [setMenuId, setPrice] of headerPriceBySet.entries()) {
-    const children = dishItems.filter(
-      (i) => i.tastingMenuId === setMenuId && i.unitPrice === 0
-    )
-    if (children.length > 0) {
-      const allocated = allocateSetMenuUnitPrices(
-        setPrice,
-        children.map(() => 1)
-      )
-      children.forEach((child, idx) => {
-        child.unitPrice = allocated[idx] ?? 0
-      })
-    }
-  }
-
+  const normalizedItems = (raw.items ?? [])
+    .map(normalizeOrderItem)
+    .filter((i) => i.menuItemId !== null)
   return {
     ...raw,
     status: normalizeOrderStatus(raw.status),
-    items: dishItems,
+    items: normalizedItems,
   }
 }

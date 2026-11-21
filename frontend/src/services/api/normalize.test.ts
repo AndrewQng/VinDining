@@ -1,5 +1,9 @@
 import { AxiosHeaders } from 'axios'
 import { describe, expect, it } from 'vitest'
+import {
+  allocateSetMenuUnitPrices,
+  calculateInvoiceTotals,
+} from '@/domain/invoice'
 import type { OrderDto, ReservationDto, TableDto } from '@/types'
 import {
   apiClient,
@@ -279,5 +283,131 @@ describe('Live backend enum & DTO normalizers', () => {
     const normalized = normalizeOrder(rawOrder)
     expect(normalized.status).toBe('Active')
     expect(normalized.items[0].status).toBe('Cooking')
+  })
+
+  it('preserves backend-allocated Set Menu unit prices in normalizeOrder and matches §10 B05 totals (all served & Course 3 cancelled)', () => {
+    const allocated = allocateSetMenuUnitPrices(
+      1_800_000,
+      [350_000, 1_250_000, 220_000]
+    )
+
+    const backendB05Order: OrderDto = {
+      id: 'ord-b05',
+      tableId: 'tbl-b05',
+      tableNumber: 'B05',
+      reservationId: 'res-vd-7k3q',
+      createById: 'staff-waitstaff-1',
+      createByName: 'Trần Thị Mai',
+      status: 'Processing' as unknown as OrderDto['status'],
+      guestCount: 4,
+      openedAt: '2026-11-21T12:00:00Z',
+      closedAt: null,
+      items: [
+        {
+          id: 'oi-header',
+          orderId: 'ord-b05',
+          menuItemId: '00000000-0000-0000-0000-000000000000',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Set Menu Thượng Hạng',
+          courseType: 'Appetizer',
+          quantity: 4,
+          unitPrice: 1_800_000,
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 15,
+          cookingStartedAt: null,
+          servedAt: null,
+          servedById: null,
+        },
+        {
+          id: 'oi-c1',
+          orderId: 'ord-b05',
+          menuItemId: 'item-sup-bao-ngu',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Súp bào ngư thượng hạng',
+          courseType: 'Appetizer',
+          quantity: 4,
+          unitPrice: allocated[0],
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 12,
+          cookingStartedAt: '2026-11-21T12:00:00Z',
+          servedAt: '2026-11-21T12:10:00Z',
+          servedById: 'staff-expediter-1',
+        },
+        {
+          id: 'oi-c2',
+          orderId: 'ord-b05',
+          menuItemId: 'item-wagyu',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Bò Wagyu A5 sốt nấm Truffle',
+          courseType: 'MainCourse',
+          quantity: 4,
+          unitPrice: allocated[1],
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 25,
+          cookingStartedAt: '2026-11-21T12:15:00Z',
+          servedAt: '2026-11-21T12:35:00Z',
+          servedById: 'staff-expediter-1',
+        },
+        {
+          id: 'oi-c3',
+          orderId: 'ord-b05',
+          menuItemId: 'item-souffle',
+          tastingMenuId: 'set-thuong-hang',
+          itemName: 'Bánh Soufflé sô-cô-la',
+          courseType: 'Dessert',
+          quantity: 4,
+          unitPrice: allocated[2],
+          status: 'Served',
+          note: null,
+          isRemake: false,
+          remakeCount: 0,
+          isPriority: false,
+          prepTimeMinutes: 15,
+          cookingStartedAt: '2026-11-21T12:40:00Z',
+          servedAt: '2026-11-21T12:52:00Z',
+          servedById: 'staff-expediter-1',
+        },
+      ],
+    }
+
+    const normalized = normalizeOrder(backendB05Order)
+    expect(normalized.items).toHaveLength(3)
+    expect(normalized.items.map((i) => i.unitPrice)).toEqual(allocated)
+
+    const allServedTotals = calculateInvoiceTotals(normalized.items, 2_160_000)
+    expect(allServedTotals).toEqual({
+      subtotal: 7_200_000,
+      serviceCharge: 360_000,
+      vatAmount: 756_000,
+      totalAmount: 8_316_000,
+      deductedDeposit: 2_160_000,
+      amountDue: 6_156_000,
+    })
+
+    // Course 3 cancelled / unserved -> only Course 1 & Course 2 billed
+    const course3CancelledTotals = calculateInvoiceTotals(
+      normalized.items.slice(0, 2),
+      2_160_000
+    )
+    expect(course3CancelledTotals).toEqual({
+      subtotal: 4 * (allocated[0] + allocated[1]),
+      serviceCharge: 316_484,
+      vatAmount: 664_616,
+      totalAmount: 7_310_772,
+      deductedDeposit: 2_160_000,
+      amountDue: 5_150_772,
+    })
   })
 })

@@ -244,6 +244,11 @@ public class TableService : ITableService
             OpenedAt = now
         };
 
+        var orderedCourses = tastingMenu.TastingMenuItems.OrderBy(c => c.CourseOrder).ToList();
+        var allocatedPrices = InvoiceService.AllocateSetMenuUnitPrices(
+            tastingMenu.Price,
+            orderedCourses.Select(c => c.MenuItem?.Price ?? 0m).ToList());
+
         order.OrderItems.Add(new OrderItem
         {
             Id = Guid.NewGuid(),
@@ -257,8 +262,9 @@ public class TableService : ITableService
             Note = cleanGuestNote
         });
 
-        foreach (var courseDef in tastingMenu.TastingMenuItems.OrderBy(c => c.CourseOrder))
+        for (var idx = 0; idx < orderedCourses.Count; idx++)
         {
+            var courseDef = orderedCourses[idx];
             var isImmediate = courseDef.CourseType == CourseType.Beverage || courseDef.CourseType == firstCourse;
             order.OrderItems.Add(new OrderItem
             {
@@ -267,7 +273,7 @@ public class TableService : ITableService
                 TastingMenuId = tastingMenu.Id,
                 MenuItemId = courseDef.MenuItemId,
                 Quantity = quantity,
-                UnitPrice = 0m,
+                UnitPrice = allocatedPrices[idx],
                 Status = isImmediate ? OrderItemStatus.Preparing : OrderItemStatus.Hold,
                 FiredAt = isImmediate ? now : null,
                 IsRush = false,

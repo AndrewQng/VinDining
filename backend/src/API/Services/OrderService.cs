@@ -196,6 +196,10 @@ public class OrderService : IOrderService
         {
             var tm = tastingMenus[tmDto.TastingMenuId];
             var cleanNote = string.IsNullOrWhiteSpace(tmDto.Note) ? null : tmDto.Note.Trim();
+            var orderedCourses = tm.TastingMenuItems.OrderBy(c => c.CourseOrder).ToList();
+            var allocatedPrices = InvoiceService.AllocateSetMenuUnitPrices(
+                tm.Price,
+                orderedCourses.Select(c => c.MenuItem?.Price ?? 0m).ToList());
 
             // Billing header item carrying package price
             order.OrderItems.Add(new OrderItem
@@ -211,8 +215,9 @@ public class OrderService : IOrderService
                 Note = cleanNote
             });
 
-            foreach (var courseDef in tm.TastingMenuItems.OrderBy(c => c.CourseOrder))
+            for (var idx = 0; idx < orderedCourses.Count; idx++)
             {
+                var courseDef = orderedCourses[idx];
                 var isImmediate = courseDef.CourseType == CourseType.Beverage || courseDef.CourseType == firstCourse;
                 order.OrderItems.Add(new OrderItem
                 {
@@ -221,7 +226,7 @@ public class OrderService : IOrderService
                     TastingMenuId = tm.Id,
                     MenuItemId = courseDef.MenuItemId,
                     Quantity = tmDto.Quantity,
-                    UnitPrice = 0m,
+                    UnitPrice = allocatedPrices[idx],
                     Status = isImmediate ? OrderItemStatus.Preparing : OrderItemStatus.Hold,
                     FiredAt = isImmediate ? now : null,
                     IsRush = dto.IsPriority && isImmediate,
@@ -838,6 +843,7 @@ public class OrderService : IOrderService
         var guestCount = order.Reservation?.PartySize
             ?? order.OrderItems.Where(oi => oi.TastingMenuId != null).Select(oi => (int?)oi.Quantity).FirstOrDefault()
             ?? 2;
+        var unitPrices = InvoiceService.ResolveDishUnitPrices(order.OrderItems);
 
         return new OrderDetailDto(
             order.Id,
@@ -850,7 +856,7 @@ public class OrderService : IOrderService
                 oi.Id,
                 oi.MenuItemId ?? Guid.Empty,
                 oi.MenuItem?.Name ?? oi.TastingMenu?.Name ?? "Set Menu",
-                oi.UnitPrice,
+                oi.MenuItemId != null ? unitPrices.GetValueOrDefault(oi.Id, oi.UnitPrice) : oi.UnitPrice,
                 oi.Quantity,
                 oi.Status,
                 oi.MenuItem?.CourseType ?? CourseType.Appetizer,

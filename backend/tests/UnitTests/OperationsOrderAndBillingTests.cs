@@ -468,7 +468,8 @@ public class OperationsOrderAndBillingTests
         var orderSvc = new OrderService(context, currentUser, new RecordingKitchenNotifier(), notifier);
         var invSvc = new InvoiceService(context, currentUser, notifier);
 
-        // Case 1: Serve Appetizer & MainCourse, then cancel Dessert -> Header becomes Served & Pre-Bill Subtotal = 4 * 1.8M = 7.2M
+        // Case 1: Serve Appetizer & MainCourse, then cancel Dessert -> only served courses are billed by allocated prices
+        var allocated = InvoiceService.AllocateSetMenuUnitPrices(1_800_000m, new[] { 350_000m, 1_250_000m, 220_000m });
         var orderId1 = await orderSvc.CreateOrderWithCoursesAsync(new CreateOrderDto(
             table1.Id,
             TastingMenus: new List<OrderTastingMenuRequestDto> { new(tasting.Id, 4) }));
@@ -477,15 +478,22 @@ public class OperationsOrderAndBillingTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => invSvc.RequestCheckoutAsync(table1.Id));
 
         var detail1 = await orderSvc.GetOrderDetailsAsync(orderId1);
-        var soupItem1 = detail1.Items.Single(i => i.MenuItemId == soup.Id).Id;
-        var wagyuItem1 = detail1.Items.Single(i => i.MenuItemId == wagyu.Id).Id;
-        var souffleItem1 = detail1.Items.Single(i => i.MenuItemId == souffle.Id).Id;
+        var soupOrderItem = detail1.Items.Single(i => i.MenuItemId == soup.Id);
+        var wagyuOrderItem = detail1.Items.Single(i => i.MenuItemId == wagyu.Id);
+        var souffleOrderItem = detail1.Items.Single(i => i.MenuItemId == souffle.Id);
+        Assert.Equal(allocated[0], soupOrderItem.UnitPrice);
+        Assert.Equal(allocated[1], wagyuOrderItem.UnitPrice);
+        Assert.Equal(allocated[2], souffleOrderItem.UnitPrice);
+
+        var soupItem1 = soupOrderItem.Id;
+        var wagyuItem1 = wagyuOrderItem.Id;
+        var souffleItem1 = souffleOrderItem.Id;
 
         await orderSvc.ConfirmServedAsync(orderId1, soupItem1);
 
-        // RequestCheckout succeeds once Course 1 is served, estimating package subtotal 7,200,000
+        // RequestCheckout succeeds once Course 1 is served, estimating only served Course 1 subtotal
         await invSvc.RequestCheckoutAsync(table1.Id);
-        Assert.Equal(7_200_000m, notifier.CheckoutRequests.Single().Subtotal);
+        Assert.Equal(4 * allocated[0], notifier.CheckoutRequests.Single().Subtotal);
 
         // Mutations are locked while table is PaymentPending until reopened
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -501,18 +509,35 @@ public class OperationsOrderAndBillingTests
         await orderSvc.FireNextCourseAsync(orderId1, new FireCourseDto(CourseType.MainCourse));
         await orderSvc.ConfirmServedAsync(orderId1, wagyuItem1);
 
-        // Cancel final Dessert course -> Billing header synchronizes to Served!
+        // Cancel final Dessert course -> only Course 1 & Course 2 are billed
         await orderSvc.CancelOrderItemAsync(orderId1, souffleItem1, "Khách xin bỏ món tráng miệng");
+
+        var expectedSubtotal = 4 * (allocated[0] + allocated[1]); // 6,329,672
+        var expectedServiceCharge = Math.Round(expectedSubtotal * 0.05m, 0, MidpointRounding.AwayFromZero); // 316,484
+        var expectedVat = Math.Round((expectedSubtotal + expectedServiceCharge) * 0.10m, 0, MidpointRounding.AwayFromZero); // 664,616
+        var expectedTotal = expectedSubtotal + expectedServiceCharge + expectedVat; // 7,310,772
 
         var preview1 = await invSvc.CalculateInvoiceAsync(table1.Id);
         Assert.False(preview1.HasUnservedItems);
-        Assert.Equal(7_200_000m, preview1.Subtotal);
-        Assert.Equal(360_000m, preview1.ServiceCharge);
-        Assert.Equal(756_000m, preview1.VatAmount);
-        Assert.Equal(8_316_000m, preview1.FinalAmount);
+        Assert.Equal(expectedSubtotal, preview1.Subtotal);
+        Assert.Equal(expectedServiceCharge, preview1.ServiceCharge);
+        Assert.Equal(expectedVat, preview1.VatAmount);
+        Assert.Equal(expectedTotal, preview1.FinalAmount);
+        Assert.Equal(2, preview1.Items!.Count);
+        Assert.Equal(allocated[0], preview1.Items.Single(i => i.MenuItemId == soup.Id).UnitPrice);
+        Assert.Equal(allocated[1], preview1.Items.Single(i => i.MenuItemId == wagyu.Id).UnitPrice);
+
+        var print1 = await invSvc.PrintPreBillAsync(table1.Id);
+        Assert.Equal(expectedSubtotal, print1.Subtotal);
+        Assert.Equal(expectedTotal, print1.FinalAmount);
 
         var invId1 = await invSvc.SettleInvoiceAsync(table1.Id, new SettleInvoiceDto(orderId1, PaymentMethod.Card, expediter.Id));
         Assert.NotEqual(Guid.Empty, invId1);
+        var settled1 = await invSvc.GetInvoiceByIdAsync(invId1);
+        Assert.Equal(expectedSubtotal, settled1.Subtotal);
+        Assert.Equal(expectedServiceCharge, settled1.ServiceCharge);
+        Assert.Equal(expectedVat, settled1.VatAmount);
+        Assert.Equal(expectedTotal, settled1.FinalTotal);
 
         // Cannot cancel items on an already settled order
         await Assert.ThrowsAsync<InvalidOperationException>(() => orderSvc.CancelOrderItemAsync(orderId1, soupItem1));
@@ -935,5 +960,119 @@ public class OperationsOrderAndBillingTests
         Assert.Contains("Khu vuc,VIP,Ca phuc vu,Lunch", csvText);
         Assert.Contains("Tôm Hùm Bơ Tỏi", csvText);
         Assert.DoesNotContain("Thăn Bò Úc", csvText);
+    }
+
+    [Fact]
+    public async Task B05_SetMenuThuongHang_AllServedAndCourse3Cancelled_MatchesSection10AndOwnerAnswer13()
+    {
+        using var context = CreateContext();
+        var tableNotifier = new RecordingTableNotifier();
+        var kitchenNotifier = new RecordingKitchenNotifier();
+
+        var waiter = new Staff { FullName = "Trần Thị Mai", Username = "mai_b05", Email = "mai_b05@vn.vn", PhoneNumber = "0901000001", PasswordHash = "pw", Role = StaffRole.Waitstaff, IsActive = true };
+        var expediter = new Staff { FullName = "Lê Minh Quân", Username = "quan_b05", Email = "quan_b05@vn.vn", PhoneNumber = "0901000002", PasswordHash = "pw", Role = StaffRole.Expediter, IsActive = true };
+        await context.Staffs.AddRangeAsync(waiter, expediter);
+
+        var cat = new Category { Name = "Thực đơn" };
+        var soup = new MenuItem { Name = "Súp bào ngư thượng hạng", Price = 350_000m, CourseType = CourseType.Appetizer, PrepTimeMinutes = 12, Category = cat, Status = "Available" };
+        var wagyu = new MenuItem { Name = "Bò Wagyu A5 sốt nấm Truffle", Price = 1_250_000m, CourseType = CourseType.MainCourse, PrepTimeMinutes = 25, Category = cat, Status = "Available" };
+        var souffle = new MenuItem { Name = "Bánh Soufflé sô-cô-la", Price = 220_000m, CourseType = CourseType.Dessert, PrepTimeMinutes = 15, Category = cat, Status = "Available" };
+
+        var setMenu = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = soup, CourseType = CourseType.Appetizer, CourseOrder = 1 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = wagyu, CourseType = CourseType.MainCourse, CourseOrder = 2 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = souffle, CourseType = CourseType.Dessert, CourseOrder = 3 });
+
+        var tableB05All = new Table { TableNumber = "B05", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+        var tableB06Cancel = new Table { TableNumber = "B06", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+
+        await context.Categories.AddAsync(cat);
+        await context.MenuItems.AddRangeAsync(soup, wagyu, souffle);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.Tables.AddRangeAsync(tableB05All, tableB06Cancel);
+        await context.SaveChangesAsync();
+
+        var currentUser = new FakeCurrentUserService { UserId = waiter.Id, Role = nameof(StaffRole.Waitstaff) };
+        var resSvc = new ReservationService(context, new MockPaymentGateway(), tableNotifier);
+        var tableSvc = new TableService(context, tableNotifier, kitchenNotifier: kitchenNotifier, currentUserService: currentUser);
+        var orderSvc = new OrderService(context, currentUser, kitchenNotifier, tableNotifier);
+        var invSvc = new InvoiceService(context, currentUser, tableNotifier);
+
+        // Case A: §10 story B05 with all 3 courses served -> 7.200.000 / 360.000 / 756.000 / 8.316.000 - 2.160.000 = 6.156.000
+        var bookingAll = await resSvc.CreateReservationAsync(new CreateReservationDto(
+            "Nguyễn Văn An", "0901234567", "an.nguyen@email.com", tableB05All.Id, DateTime.UtcNow.AddHours(2), 4, null, setMenu.Id));
+        Assert.Equal(2_160_000m, bookingAll.DepositAmount);
+        await resSvc.ConfirmDepositAsync(new ConfirmDepositDto(bookingAll.BookingCode, "VNP-7K3Q-ALL"));
+        await tableSvc.CheckInReservationAsync(tableB05All.Id, new CheckInDto(BookingCode: bookingAll.BookingCode));
+
+        var orderAll = await orderSvc.GetActiveOrderByTableAsync(tableB05All.Id);
+        Assert.NotNull(orderAll);
+
+        await orderSvc.FireNextCourseAsync(orderAll!.Id, new FireCourseDto(CourseType.MainCourse));
+        await orderSvc.FireNextCourseAsync(orderAll.Id, new FireCourseDto(CourseType.Dessert));
+
+        currentUser.UserId = expediter.Id;
+        currentUser.Role = nameof(StaffRole.Expediter);
+        foreach (var dish in orderAll.Items.Where(i => i.MenuItemId != Guid.Empty))
+        {
+            await orderSvc.ConfirmServedAsync(orderAll.Id, dish.Id);
+        }
+
+        var previewAll = await invSvc.CalculateInvoiceAsync(tableB05All.Id);
+        Assert.Equal(7_200_000m, previewAll.Subtotal);
+        Assert.Equal(360_000m, previewAll.ServiceCharge);
+        Assert.Equal(756_000m, previewAll.VatAmount);
+        Assert.Equal(2_160_000m, previewAll.DeductedDeposit);
+        Assert.Equal(6_156_000m, previewAll.FinalAmount);
+
+        var printAll = await invSvc.PrintPreBillAsync(tableB05All.Id);
+        Assert.Equal(previewAll.Subtotal, printAll.Subtotal);
+        Assert.Equal(previewAll.FinalAmount, printAll.FinalAmount);
+
+        var invAllId = await invSvc.SettleInvoiceAsync(tableB05All.Id, new SettleInvoiceDto(orderAll.Id, PaymentMethod.BankTransfer, expediter.Id));
+        var settledAll = await invSvc.GetInvoiceByIdAsync(invAllId);
+        Assert.Equal(7_200_000m, settledAll.Subtotal);
+        Assert.Equal(360_000m, settledAll.ServiceCharge);
+        Assert.Equal(756_000m, settledAll.VatAmount);
+        Assert.Equal(2_160_000m, settledAll.DeductedDeposit);
+        Assert.Equal(6_156_000m, settledAll.FinalTotal);
+
+        // Case B: B05 with Course 3 cancelled -> allocated unit prices of Course 1 & Course 2 only
+        currentUser.UserId = waiter.Id;
+        currentUser.Role = nameof(StaffRole.Waitstaff);
+        var bookingCancelled = await resSvc.CreateReservationAsync(new CreateReservationDto(
+            "Nguyễn Văn An", "0901234567", "an.nguyen@email.com", tableB06Cancel.Id, DateTime.UtcNow.AddHours(3), 4, null, setMenu.Id));
+        await resSvc.ConfirmDepositAsync(new ConfirmDepositDto(bookingCancelled.BookingCode, "VNP-7K3Q-C3"));
+        await tableSvc.CheckInReservationAsync(tableB06Cancel.Id, new CheckInDto(BookingCode: bookingCancelled.BookingCode));
+
+        var orderCancelled = await orderSvc.GetActiveOrderByTableAsync(tableB06Cancel.Id);
+        Assert.NotNull(orderCancelled);
+        await orderSvc.FireNextCourseAsync(orderCancelled!.Id, new FireCourseDto(CourseType.MainCourse));
+
+        currentUser.UserId = expediter.Id;
+        currentUser.Role = nameof(StaffRole.Expediter);
+        var c1 = orderCancelled.Items.Single(i => i.MenuItemId == soup.Id);
+        var c2 = orderCancelled.Items.Single(i => i.MenuItemId == wagyu.Id);
+        var c3 = orderCancelled.Items.Single(i => i.MenuItemId == souffle.Id);
+        await orderSvc.ConfirmServedAsync(orderCancelled.Id, c1.Id);
+        await orderSvc.ConfirmServedAsync(orderCancelled.Id, c2.Id);
+        await orderSvc.CancelOrderItemAsync(orderCancelled.Id, c3.Id, "Khách không dùng tráng miệng");
+
+        var allocated = InvoiceService.AllocateSetMenuUnitPrices(1_800_000m, new[] { 350_000m, 1_250_000m, 220_000m });
+        var expectedSub = 4 * (allocated[0] + allocated[1]);
+        var expectedSvc = Math.Round(expectedSub * 0.05m, 0, MidpointRounding.AwayFromZero);
+        var expectedVat = Math.Round((expectedSub + expectedSvc) * 0.10m, 0, MidpointRounding.AwayFromZero);
+        var expectedDue = Math.Max(0m, expectedSub + expectedSvc + expectedVat - 2_160_000m);
+
+        var previewCancelled = await invSvc.CalculateInvoiceAsync(tableB06Cancel.Id);
+        Assert.Equal(expectedSub, previewCancelled.Subtotal);
+        Assert.Equal(expectedSvc, previewCancelled.ServiceCharge);
+        Assert.Equal(expectedVat, previewCancelled.VatAmount);
+        Assert.Equal(expectedDue, previewCancelled.FinalAmount);
+
+        var invCancelledId = await invSvc.SettleInvoiceAsync(tableB06Cancel.Id, new SettleInvoiceDto(orderCancelled.Id, PaymentMethod.Card, expediter.Id));
+        var settledCancelled = await invSvc.GetInvoiceByIdAsync(invCancelledId);
+        Assert.Equal(expectedSub, settledCancelled.Subtotal);
+        Assert.Equal(expectedDue, settledCancelled.FinalTotal);
     }
 }
