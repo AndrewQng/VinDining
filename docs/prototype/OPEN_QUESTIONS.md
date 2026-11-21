@@ -8,7 +8,7 @@ Things the docs don't settle. Agents add rows here instead of guessing. The proj
 | 2 | Which Course do drinks belong to? CONTEXT.md puts all drinks in Course 1; backend has a separate `Beverage` course type. | `CONTEXT.md` vs `CourseType.cs` | Drinks listed under Khai vị (Course 1) |
 | 3 | Does the E-Menu have a "request bill" button? ADR 0004 lists it; the report's UC-U2 lists only 3 buttons. | ADR 0004 vs report UC-U2 | No bill button (report wins) |
 | 4 | Is there a separate Admin role, or is Admin the Manager? Report UC-A4 says "Quản trị viên / Quản lý"; RBAC table has only Manager. | Report UC-A4 vs RBAC table | Manager screens only |
-| 5 | Is a pre-ordered Set Menu one per guest or one per table? The booking stores a single `PreOrderedSetMenuId`. | UC-U1 / UC-E6 (no quantity field) | One set for the booking, served × party size |
+| 5 | Is a pre-ordered Set Menu one per guest or one per table? The booking stores a single `PreOrderedTastingMenuId`. | UC-U1 / UC-E6 (no quantity field) | One set for the booking, served × party size |
 | 6 | Set Menu names and package prices are not in the docs (only "giá trọn gói" is). | UC-A1 | Demo values in rules §10 (Thượng Hạng 1.800.000 ₫, Hải Sản 1.250.000 ₫) |
 | 7 | Can guests pre-order à la carte items when booking, or only a Set Menu? | UC-U1 says Set Menu only | Set Menu only |
 | 8 | How should the KDS handle more tickets than fit on screen? | No doc covers KDS overflow | Answered below: page buttons |
