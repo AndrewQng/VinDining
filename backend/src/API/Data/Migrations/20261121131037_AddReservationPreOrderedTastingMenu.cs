@@ -37,7 +37,7 @@ SET
     r.[PreOrderedTastingMenuId] = tm.[Id],
     r.[Note] = CASE
         WHEN NULLIF(LTRIM(RTRIM(parsed.[CleanedNote])), N'''') IS NULL THEN NULL
-        ELSE parsed.[CleanedNote]
+        ELSE LTRIM(RTRIM(parsed.[CleanedNote]))
     END
 FROM [Reservations] AS r
 CROSS APPLY (
@@ -60,7 +60,7 @@ CROSS APPLY (
             ELSE STUFF(r.[Note], s.[StartIdx], c.[CloseIdx] - s.[StartIdx] + 2, N'''')
         END AS [CleanedNote]
 ) AS parsed
-LEFT JOIN [TastingMenus] AS tm
+INNER JOIN [TastingMenus] AS tm
     ON tm.[Id] = parsed.[ParsedMenuId]
 WHERE r.[Note] IS NOT NULL
   AND s.[StartIdx] > 0

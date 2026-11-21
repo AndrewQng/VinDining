@@ -16,10 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-// Load .env file automatically from project or solution root
-DotNetEnv.Env.TraversePath().Load();
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Load .env file automatically from project or solution root (skip in Testing to avoid polluting process env)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    DotNetEnv.Env.TraversePath().Load();
+}
+
 builder.Configuration.AddEnvironmentVariables();
 
 // 1. Configure Database Connection & DbContext
