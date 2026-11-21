@@ -178,6 +178,9 @@ describe('G2 lookup & cancellation policy branch (>= 4h vs < 4h)', () => {
     expect(await screen.findByText('VD-4M2P')).toBeInTheDocument()
     expect(screen.getByText('Đã nhận bàn')).toBeInTheDocument()
     expect(
+      screen.getByText('Bạn đã nhận bàn nên không thể hủy trực tuyến.')
+    ).toBeInTheDocument()
+    expect(
       screen.queryByRole('button', { name: /Hủy đặt bàn này/i })
     ).not.toBeInTheDocument()
   })
