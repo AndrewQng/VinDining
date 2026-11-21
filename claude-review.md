@@ -113,15 +113,38 @@ On 19/11/2026 at about 23:40, an Antigravity config migration deleted `~/.gemini
   The `DANGLING` lines reach prints for G0, G0.D, G1.2 and G1.2.D are `SCROLL_TO` links within the same frame, and are expected.
 - **Process note:** during the subtitle fix, the first Gemini session resent an old report without making the change. A fresh session did it, and the first session turned out to have edited the same frames at the same time. The twin-text and overlap checks above show nothing was duplicated or left out of date.
 
-## 5. Not verified, and known gaps
-- **No live run against SQL Server.** There is no SQL Server or `dotnet-ef` on the review machine; backend tests use EF Core InMemory. Please run the branch against your live stack once, mainly booking → check-in → bill for a pre-ordered set, and `/tra-cuu` after check-in.
+## 5. Live run on MariaDB (21/11/2026)
+
+There is no SQL Server on the review machine, so the branch was run against **MariaDB 11.8** in a **throwaway copy that is not committed**. That copy changes 3 lines:
+- the Pomelo MySQL provider replaces `UseSqlServer`;
+- `EnsureCreated` replaces `Migrate`, because the migrations are SQL Server-only.
+
+The backend ran in Development on `:5159`, and the website ran in live mode (`VITE_USE_MOCK=false`) on `:5173`.
+
+| Step | How | Result |
+| :--- | :--- | :--- |
+| Schema and seed | backend start | 20 tables created; §10 tables with the 4 × 2 Sảnh chính positions, 4 Set Menus at §10 prices, only Nguyễn Văn An as a guest |
+| Book Set Menu Thượng Hạng × 4 at B06 | website (Playwright) | the home page lists 4 sets from the API; the set step shows 7.200.000 ₫ and a 2.160.000 ₫ deposit; the hold screen shows 2.160.000 ₫; the VNPAY sandbox confirms; "Đặt bàn thành công" |
+| Check in at B06 | API as `mai.tt` | the set order is created automatically; `guestStatus` = `CheckedIn` |
+| `/tra-cuu` after check-in | website | "Đã nhận bàn", no cancel button, "Bạn đã nhận bàn nên không thể hủy trực tuyến." |
+| Fire and serve Courses 1–3 | API as `mai.tt` / `quan.lm` | OK |
+| Bill (all served) | API as `ha.pt` | 7.200.000 / 360.000 / 756.000 / **8.316.000 ₫**, deposit −2.160.000 → **6.156.000 ₫** (exactly §10); dish lines at 346.155 / 1.236.263 / 217.582 ₫ per guest; settled in cash |
+| Second booking with Course 3 cancelled (C03) | API | **6.329.672 / 316.484 / 664.616 / 7.310.772 ₫ → 5.150.772 ₫**, the same as demo mode (owner decision #13) |
+| Cashier bill screen for C03 | website as `ha.pt` | shows the same five amounts |
+| Best sellers (today) | API as `long.dh` | dish rows only, no Set Menu row |
+| Paid booking, then cancel ≥ 4 h ahead | API + website | "Đã đặt" with the cancel button; after cancelling, "Đã hủy · đã hoàn cọc"; the deposit is `Refunded` with 750.000 ₫ (30% × 1.250.000 × 2) |
+| Browser console / HTTP errors during the UI steps | Playwright | none |
+
+## 6. Not verified, and known gaps
+- **Not run on SQL Server.** The live run used MariaDB with `EnsureCreated`, so the SQL Server migrations (including `SyncLiveFeBeSchema`) and any SQL Server-specific behaviour were not exercised. Please run the branch once on your SQL Server stack.
 - **No EF migration was added.** The `guestStatus` derivation still relies on the reason markers (now constants in one place).
+- **The pre-ordered set is stored as text** in `Reservations.Note` (`[Set Menu đặt trước: Set Menu Thượng Hạng (<id>)]`); there is no `PreOrderedTastingMenuId` column. It works (check-in found the set), but it is the same free-text pattern as issue #2, so a proper column would be safer.
 - **Best sellers on the backend count only paid orders;** demo mode also counts dishes already served on open tables. This was already the case before this branch and was left as is.
 - **Not in Figma, because no frame shows these states:** the M2 QR modal (no such frame) and the check-in capacity warning (the §10 story never exceeds capacity).
 - **The Figma tooling is local only.** `/home/life/tools/cursor-talk-to-figma-mcp` has no remote. Pushing it somewhere private would protect it from another loss. The relay channel changes whenever the plugin reconnects (it is now `qzguwelv`).
 - **Not touched:** the `.docx` report and the Google Doc (API list, ERD and the #13 rule), and the Jira statuses (20 of 21 backend tasks are still not Done although the code is complete; see `docs/jira-backend-local-list.md`).
 
-## 6. How to review
+## 7. How to review
 ```bash
 git fetch origin && git checkout fix/post-merge-review
 cd frontend && npm ci && npx oxlint && npx vitest run && npm run build && npx playwright test
