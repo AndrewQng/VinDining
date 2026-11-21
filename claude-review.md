@@ -2,8 +2,10 @@
 
 Prepared by Claude (orchestrator and reviewer) for the project lead. Gemini (Antigravity) wrote the code and Figma changes; Claude specified them and checked every result. This file covers the work from the request "find all unaddressed issues" after PR #1 (`feature/website`, live FE–BE) was merged into `main` at `a00711d`.
 
-- **Branch to review:** `fix/post-merge-review`. It is based on `main` at `a00711d` and has 20 commits: code, tests, docs, and this review. It is not merged, and no PR was opened.
-- **Handed to the lead:** a run on **SQL Server**, including the new migration's data step. See §6 and §7.
+- **Branch:** `fix/post-merge-review`, based on `main` at `a00711d`. The lead added `fe3912b` and merged the branch into `main` as PR #2 (`caa3201`, 21:09 on 21/11/2026). This file's later updates (§5b and this header) are on the branch after that merge.
+- **SQL Server:**
+  - the full live flow passed on the remote SQL Server (§5b);
+  - the lead reports in `Neon.md` that the new migration's data step and `Down` passed a round trip (`Up` → `Down` → `Up`) on a local SQL Server Express, across 5 note cases.
 - **Figma:** page `Prototype` (`115:4`) was updated in place. The pages `Wireframe` and `Prototype - Khánh` were not touched.
 
 ## 1. What `main` looked like after the merge
@@ -147,8 +149,37 @@ The backend ran in Development on `:5159`, and the website ran in live mode (`VI
 | Paid booking, then cancel ≥ 4 h ahead | API + website | "Đã đặt" with the cancel button; after cancelling, "Đã hủy · đã hoàn cọc"; the deposit is `Refunded` with 750.000 ₫ (30% × 1.250.000 × 2) |
 | Browser console / HTTP errors during the UI steps | Playwright | none |
 
+## 5b. Live run on the remote SQL Server (21/11/2026)
+
+The owner set up a remote database: `VinDiningDb` on `VinDiningDb.mssql.somee.com`, running Microsoft SQL Server 2025 Express (17.0.5035.5). Its connection string and JWT settings are in the gitignored `backend/src/API/.env` of the main checkout. Claude ran this branch's backend unchanged (SQL Server provider, `Migrate`, Development) against it, with the website in live mode.
+
+- **Database state before the run** (read-only check):
+  - created from this branch at about 21:03 on 21/11/2026;
+  - all **9 migrations applied**, `SyncLiveFeBeSchema` and `AddReservationPreOrderedTastingMenu` included; the backend logged "No migrations were applied. The database is already up to date.";
+  - only §10 seed data (11 bookings, 1 guest, 4 staff, 15 tables, 4 sets);
+  - the seeded set bookings (VD-7K3Q, VD-2C8N, VD-5E1M) have `PreOrderedTastingMenuId` filled and clean notes.
+- **The same flow as §5, all passing:**
+  - booking Set Menu Thượng Hạng × 4 on the website at B06 (2.160.000 ₫ deposit, VNPAY sandbox);
+  - check-in from the column, `guestStatus` `CheckedIn`;
+  - `/tra-cuu` "Đã nhận bàn" with no cancel button;
+  - bill **8.316.000 → 6.156.000 ₫**, with the dish lines at 346.155 / 1.236.263 / 217.582 ₫, settled in cash;
+  - second booking with Course 3 cancelled: **7.310.772 → 5.150.772 ₫**;
+  - the cashier bill screen shows the same amounts;
+  - best sellers have no Set Menu row;
+  - a paid booking (Set Menu Hải Sản × 2) cancelled ≥ 4 h ahead becomes "Đã hủy · đã hoàn cọc" with the 750.000 ₫ deposit `Refunded`;
+  - no browser console or HTTP errors.
+- **Read back from the database after the run:**
+  - the 3 new bookings store their set in `PreOrderedTastingMenuId` with `Note` NULL;
+  - no booking note contains the old marker;
+  - 6 invoices in total.
+- **Test data left in the remote database:** bookings `VD-261121-DF6A8` (B06, paid and settled), `VD-261121-E5742` (C03, billed, not settled) and `VD-261121-A52C2` (C04, cancelled and refunded), with their orders and invoices.
+
 ## 6. Not verified, and known gaps
-- **SQL Server is handed to the lead (owner's decision).** The live runs used MariaDB with `EnsureCreated`, so nothing has run the migrations on SQL Server yet. That covers `SyncLiveFeBeSchema` and the new `AddReservationPreOrderedTastingMenu`, including its T-SQL data step and `Down`. Steps are in §7.
+- **The migration's data step and `Down` were tested by the lead, not by Claude.** The remote database was created fresh from this branch, so the run in §5b had no old note markers to move. The lead hardened the data step in `fe3912b`:
+  - a marker that points to a set which no longer exists is now kept in `Note` (`INNER JOIN`);
+  - the cleaned note is trimmed.
+
+  The lead reports in `Neon.md` a passing `Up` → `Down` → `Up` on a local SQL Server Express across 5 cases: prefix marker, marker only, suffix marker, orphan set id, plain note. Claude re-ran the backend tests with `fe3912b`: 97/97.
 - **`guestStatus` still comes from reason markers.** It is derived from the cancellation-reason markers, now constants in one place; there is no status column for it. A follow-up migration could add one, like issue #13 did for the set.
 - **Two sequence-diagram PNGs are out of date.** `docs/Diagram/puml/sequences/SD_UC_U1_Reservation_Deposit.png` and `SD_UC_E6_1_CheckIn_Reservation.png` still show `PreOrderedSetMenuId`; their `.puml` files are fixed. Re-render them with PlantUML.
 - **Best sellers on the backend count only paid orders;** demo mode also counts dishes already served on open tables. This was already the case before this branch and was left as is.
@@ -163,7 +194,7 @@ cd frontend && npm ci && npx oxlint && npx vitest run && npm run build && npx pl
 cd ../backend && dotnet test Restaurant.sln
 ```
 
-**On SQL Server (not done here):**
+**On SQL Server (steps 1–2 reported done by the lead in `Neon.md`; step 3 done by Claude on the remote database, see §5b):**
 1. **Migrate an old database.** Take a database created by `main` (`a00711d`), so its set bookings still carry the `Note` marker; for example, run `main`'s backend once on an empty database and make one booking with a set. Then start this branch's backend, which applies `AddReservationPreOrderedTastingMenu`. Check:
    ```sql
    SELECT BookingCode, PreOrderedTastingMenuId, Note FROM Reservations;
