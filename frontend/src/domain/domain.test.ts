@@ -20,6 +20,7 @@ import {
   formatDateTime,
   formatInvoiceCode,
   formatMinutesSeconds,
+  formatPhoneNumber,
   formatRelativeMinutes,
   formatSlotTime,
   formatVnd,
@@ -878,5 +879,13 @@ describe('groupPassHistory', () => {
     expect(groups[0].items[0].remakeCount).toBe(2)
     expect(groups[1].tableNumber).toBe('B01')
     expect(groups[1].items).toHaveLength(2)
+  })
+})
+
+describe('formatPhoneNumber', () => {
+  it('formats 10-digit Vietnamese phone numbers with spaces', () => {
+    expect(formatPhoneNumber('0901234567')).toBe('0901 234 567')
+    expect(formatPhoneNumber('0901 234 567')).toBe('0901 234 567')
+    expect(formatPhoneNumber('19001234')).toBe('19001234')
   })
 })

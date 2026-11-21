@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import { TABLE_ZONE_LABELS, formatSlotTime } from '@/domain'
+import { TABLE_ZONE_LABELS, formatPhoneNumber, formatSlotTime } from '@/domain'
 import {
   Button,
   Card,
@@ -99,9 +99,11 @@ export function CheckInLookupPage() {
                     {res.guest.fullName} · {res.bookingCode}
                   </p>
                   <p className="text-xs text-ink-muted">
-                    SĐT: {res.guest.phoneNumber} · Bàn {res.tableNumber} (
-                    {TABLE_ZONE_LABELS[res.zone]}) · {res.partySize} khách ·{' '}
-                    {formatSlotTime(res.reservationTime)}
+                    Bàn {res.tableNumber} ({TABLE_ZONE_LABELS[res.zone]}) ·{' '}
+                    {res.partySize} khách · {formatSlotTime(res.reservationTime)}
+                  </p>
+                  <p className="text-xs text-ink-muted tabular-nums">
+                    {formatPhoneNumber(res.guest.phoneNumber)}
                   </p>
                   {res.preOrderedTastingMenuName && (
                     <p className="text-xs font-medium text-accent mt-1">

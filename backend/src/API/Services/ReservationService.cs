@@ -11,8 +11,7 @@ public class ReservationService : IReservationService
     internal const int LockDurationMinutes = 17;
     private const double FreeCancellationThresholdHours = 4.0;
     private const int NoShowGraceMinutes = 15;
-    private const string PreOrderedSetMenuPrefix = "[Set Menu đặt trước: ";
-    internal const string UnpaidCancellationMarker = "(Chưa thanh toán cọc)";
+    internal const string UnpaidCancellationMarker = ReservationGuestStatus.UnpaidCancellationMarker;
 
     private static readonly ITableConcurrencyLock DefaultTableLock = new TableConcurrencyLock();
 
@@ -79,7 +78,7 @@ public class ReservationService : IReservationService
             {
                 stale.Status = ReservationStatus.Cancelled;
                 stale.CancelledAt = now;
-                stale.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockDurationMinutes} phút.";
+                stale.CancelledReason = ReservationGuestStatus.BuildHoldExpiredReason(LockDurationMinutes);
                 if (stale.Deposit != null && stale.Deposit.Status == DepositStatus.Pending)
                 {
                     stale.Deposit.Status = DepositStatus.Forfeited;
@@ -150,7 +149,9 @@ public class ReservationService : IReservationService
         }
 
         var bookingCode = $"VD-{now:yyMMdd}-{Guid.NewGuid().ToString("N")[..5].ToUpperInvariant()}";
-        var formattedNote = FormatNoteWithPreOrderedSetMenu(dto.Note, selectedTastingMenu);
+        var guestNote = string.IsNullOrWhiteSpace(dto.Note) ? null : dto.Note.Trim();
+        if (guestNote != null && guestNote.Length > 1000)
+            guestNote = guestNote[..1000];
 
         var reservation = new Reservation
         {
@@ -160,11 +161,12 @@ public class ReservationService : IReservationService
             Guest = guest,
             TableId = table.Id,
             Table = table,
+            PreOrderedTastingMenuId = selectedTastingMenu?.Id,
             ReservationTime = dto.ReservationTime,
             PartySize = dto.PartySize,
             DurationMinutes = 120,
             Status = ReservationStatus.Pending,
-            Note = formattedNote,
+            Note = guestNote,
             CreatedAt = now
         };
 
@@ -199,6 +201,11 @@ public class ReservationService : IReservationService
 
         var expireAt = now.AddMinutes(LockDurationMinutes);
         reservation.Deposit = deposit;
+        var detailDto = MapToDetailDto(reservation);
+        if (selectedTastingMenu != null && string.IsNullOrEmpty(detailDto.PreOrderedTastingMenuName))
+        {
+            detailDto = detailDto with { PreOrderedTastingMenuName = selectedTastingMenu.Name };
+        }
 
         return new CreateReservationResultDto(
             reservation.Id,
@@ -209,7 +216,7 @@ public class ReservationService : IReservationService
             table.TableNumber,
             selectedTastingMenu?.Id,
             selectedTastingMenu?.Name,
-            MapToDetailDto(reservation)
+            detailDto
         );
     }
 
@@ -434,7 +441,7 @@ public class ReservationService : IReservationService
 
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
-            reservation.CancelledReason = $"Thanh toán cọc VNPAY không thành công (Mã phản hồi: {responseCode ?? "N/A"}).";
+            reservation.CancelledReason = ReservationGuestStatus.BuildVnPayFailedReason(responseCode);
 
             if (reservation.Deposit != null)
             {
@@ -508,7 +515,7 @@ public class ReservationService : IReservationService
         {
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
-            reservation.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockDurationMinutes} phút.";
+            reservation.CancelledReason = ReservationGuestStatus.BuildHoldExpiredReason(LockDurationMinutes);
             if (reservation.Deposit != null && reservation.Deposit.Status == DepositStatus.Pending)
             {
                 reservation.Deposit.Status = DepositStatus.Forfeited;
@@ -570,6 +577,7 @@ public class ReservationService : IReservationService
             .Include(r => r.Table)
             .Include(r => r.Deposit)
             .Include(r => r.Orders)
+            .Include(r => r.PreOrderedTastingMenu)
             .FirstOrDefaultAsync(r => r.BookingCode == bookingCode, ct);
 
         if (reservation == null)
@@ -709,6 +717,8 @@ public class ReservationService : IReservationService
         var reservation = await _context.Reservations
             .Include(r => r.Table)
             .Include(r => r.Deposit)
+            .Include(r => r.Guest)
+            .Include(r => r.PreOrderedTastingMenu)
             .FirstOrDefaultAsync(r => r.BookingCode == normalizedCode, ct);
 
         if (reservation == null)
@@ -784,6 +794,7 @@ public class ReservationService : IReservationService
             .Include(r => r.Guest)
             .Include(r => r.Table)
             .Include(r => r.Deposit)
+            .Include(r => r.PreOrderedTastingMenu)
             .Where(r => !r.BookingCode.StartsWith("WALKIN-"))
             .AsNoTracking();
 
@@ -832,6 +843,7 @@ public class ReservationService : IReservationService
             .Include(x => x.Guest)
             .Include(x => x.Table)
             .Include(x => x.Deposit)
+            .Include(x => x.PreOrderedTastingMenu)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.BookingCode == normalizedCode, ct);
 
@@ -1029,61 +1041,16 @@ public class ReservationService : IReservationService
         return cleaned;
     }
 
-    internal static string? FormatNoteWithPreOrderedSetMenu(string? rawNote, TastingMenu? tastingMenu)
-    {
-        var trimmed = string.IsNullOrWhiteSpace(rawNote) ? null : rawNote.Trim();
-        if (tastingMenu == null)
-            return trimmed;
-
-        if (trimmed != null &&
-            (trimmed.Contains(PreOrderedSetMenuPrefix, StringComparison.OrdinalIgnoreCase) ||
-             trimmed.Contains(tastingMenu.Id.ToString(), StringComparison.OrdinalIgnoreCase)))
-        {
-            return trimmed.Length <= 1000 ? trimmed : trimmed[..1000];
-        }
-
-        var tag = $"{PreOrderedSetMenuPrefix}{tastingMenu.Name} ({tastingMenu.Id})]";
-        var combined = trimmed == null ? tag : $"{tag} {trimmed}";
-        return combined.Length <= 1000 ? combined : combined[..1000];
-    }
-
-    internal static (Guid? TastingMenuId, string? TastingMenuName) ParsePreOrderedSetMenu(string? note)
-    {
-        if (string.IsNullOrWhiteSpace(note))
-            return (null, null);
-
-        var startIdx = note.IndexOf(PreOrderedSetMenuPrefix, StringComparison.OrdinalIgnoreCase);
-        if (startIdx < 0)
-            return (null, null);
-
-        var contentStart = startIdx + PreOrderedSetMenuPrefix.Length;
-        var closeIdx = note.IndexOf(")]", contentStart, StringComparison.Ordinal);
-        if (closeIdx < 0)
-            return (null, null);
-
-        var inner = note[contentStart..closeIdx];
-        var guidSepIdx = inner.LastIndexOf(" (", StringComparison.Ordinal);
-        if (guidSepIdx <= 0)
-            return (null, null);
-
-        var namePart = inner[..guidSepIdx].Trim();
-        var guidPart = inner[(guidSepIdx + 2)..].Trim();
-
-        if (Guid.TryParse(guidPart, out var menuId) && menuId != Guid.Empty)
-            return (menuId, string.IsNullOrWhiteSpace(namePart) ? null : namePart);
-
-        return (null, null);
-    }
-
     private static string AppendReason(string? existing, string addition)
         => string.IsNullOrWhiteSpace(existing) ? addition : $"{existing.Trim()} | {addition}";
 
     private static string TruncateReason(string reason)
         => reason.Length <= 500 ? reason : reason[..500];
 
-    internal static ReservationDetailDto MapToDetailDto(Reservation r)
+    public static ReservationDetailDto MapToDetailDto(Reservation r)
     {
-        var (preOrderedId, preOrderedName) = ParsePreOrderedSetMenu(r.Note);
+        var preOrderedId = r.PreOrderedTastingMenuId;
+        var preOrderedName = r.PreOrderedTastingMenu?.Name;
         var guestDto = new GuestProfileDto(
             r.Guest?.Id ?? r.GuestId,
             r.Guest?.FullName ?? "N/A",
@@ -1130,7 +1097,8 @@ public class ReservationService : IReservationService
             r.CancelledAt,
             r.CancelledReason,
             holdExpiresAt,
-            null
+            null,
+            ReservationGuestStatus.From(r)
         );
     }
 }

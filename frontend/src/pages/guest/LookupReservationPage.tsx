@@ -282,8 +282,9 @@ export function LookupReservationPage() {
 
               {reservation.status !== 'Reserved' && !cancelOutcome && (
                 <p className="text-xs text-ink-subtle">
-                  Đơn đặt bàn đang ở trạng thái cuối hoặc chưa hoàn tất cọc nên
-                  không thể hủy.
+                  {reservation.status === 'CheckedIn'
+                    ? 'Bạn đã nhận bàn nên không thể hủy trực tuyến.'
+                    : 'Đơn đặt bàn đang ở trạng thái cuối hoặc chưa hoàn tất cọc nên không thể hủy.'}
                 </p>
               )}
             </Card>

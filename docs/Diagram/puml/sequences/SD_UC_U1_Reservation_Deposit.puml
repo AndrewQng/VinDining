@@ -21,7 +21,7 @@ participant "VNPAY" as VNPAY
 Guest -> UI: Nhập thông tin \nchọn Set Menu (tùy chọn) & Đặt bàn
 activate UI
 
-UI -> Controller: POST /api/reservations \n({/PreOrderedSetMenuId})
+UI -> Controller: POST /api/reservations \n({/PreOrderedTastingMenuId})
 activate Controller
 
 Controller -> Service: CreateReservation(dto)
@@ -31,7 +31,7 @@ Service -> Service: CalculateDeposit(dto)\n(BR-06: 30% × giá Set Menu × số 
 Service -> Repo: LockTable(tableId, 17m) & SaveReservation(dto)
 activate Repo
 
-Repo -> DB: UPDATE Tables SET Status = 'Locked' \nINSERT Reservations (Status = 'PendingDeposit',\nPreOrderedSetMenuId)
+Repo -> DB: UPDATE Tables SET Status = 'Locked' \nINSERT Reservations (Status = 'PendingDeposit',\nPreOrderedTastingMenuId)
 activate DB
 DB --> Repo: OK
 deactivate DB

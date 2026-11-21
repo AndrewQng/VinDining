@@ -29,7 +29,7 @@ activate Repo
 
 Repo -> DB: SELECT * FROM Reservations
 activate DB
-DB --> Repo: ReservationData (kèm PreOrderedSetMenuId)
+DB --> Repo: ReservationData (kèm PreOrderedTastingMenuId)
 deactivate DB
 
 Repo --> Service: reservation
@@ -46,7 +46,7 @@ deactivate DB
 Repo --> Service: OK
 deactivate Repo
 
-opt Khách có đặt trước Set Menu (PreOrderedSetMenuId != null)
+opt Khách có đặt trước Set Menu (PreOrderedTastingMenuId != null)
     Service -> Repo: CreateOrderFromPreOrder(reservation)
     activate Repo
     Repo -> DB: INSERT Orders, OrderItems 

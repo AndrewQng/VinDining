@@ -29,7 +29,7 @@ function isBlockingReservationStatus(
   res: SlotReservationLike,
   now: Date
 ): boolean {
-  if (res.status === 'Reserved') return true
+  if (res.status === 'Reserved' || res.status === 'CheckedIn') return true
   if (res.status === 'PendingDeposit') {
     return !isHoldExpired(res.holdExpiresAt, now)
   }
@@ -38,7 +38,7 @@ function isBlockingReservationStatus(
 
 /**
  * Determines whether a table is unavailable for a requested booking slot.
- * Blocks on overlapping active reservations (Reserved or unexpired PendingDeposit)
+ * Blocks on overlapping active reservations (Reserved, CheckedIn, or unexpired PendingDeposit)
  * and, for slots starting today within 120 minutes of now, non-Available live status.
  */
 export function isTableUnavailableForSlot({

@@ -4,6 +4,7 @@ import type { TableZone } from './table'
 export type ReservationStatus =
   | 'PendingDeposit'
   | 'Reserved'
+  | 'CheckedIn'
   | 'Expired_Cancelled'
   | 'Cancelled_Refunded'
   | 'Cancelled_Forfeited'
@@ -50,6 +51,7 @@ export interface ReservationDto {
   preOrderedTastingMenuName: string | null
   durationMinutes: number
   status: ReservationStatus
+  guestStatus?: ReservationStatus
   note: string | null
   cancelledAt: string | null
   cancelledReason: string | null

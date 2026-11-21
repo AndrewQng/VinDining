@@ -166,6 +166,24 @@ describe('G2 lookup & cancellation policy branch (>= 4h vs < 4h)', () => {
       await screen.findByText(/Đã hủy · đã hoàn cọc/i)
     ).toBeInTheDocument()
   })
+
+  it('shows "Đã nhận bàn" badge and no cancel button for a CheckedIn booking', async () => {
+    const user = userEvent.setup()
+    renderWithQuery(<LookupReservationPage />, '/tra-cuu')
+
+    await user.type(screen.getByLabelText(/Mã đặt bàn/i), 'VD-4M2P')
+    await user.type(screen.getByLabelText(/Số điện thoại/i), '0901 234 567')
+    await user.click(screen.getByRole('button', { name: /Tra cứu đặt bàn/i }))
+
+    expect(await screen.findByText('VD-4M2P')).toBeInTheDocument()
+    expect(screen.getByText('Đã nhận bàn')).toBeInTheDocument()
+    expect(
+      screen.getByText('Bạn đã nhận bàn nên không thể hủy trực tuyến.')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Hủy đặt bàn này/i })
+    ).not.toBeInTheDocument()
+  })
 })
 
 describe('G3 EMenu double-send guard', () => {

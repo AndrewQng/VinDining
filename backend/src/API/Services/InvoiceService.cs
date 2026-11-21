@@ -42,6 +42,9 @@ public class InvoiceService : IInvoiceService
 
         var order = await _context.Orders
             .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.TastingMenu)
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.TableId == tableId && o.Status == OrderStatus.Processing, ct);
 
@@ -90,8 +93,8 @@ public class InvoiceService : IInvoiceService
             .ToList();
 
         var subtotal = CalculateBillableSubtotal(order);
-        var serviceCharge = Math.Round(subtotal * ServiceChargeRate, 2);
-        var vatAmount = Math.Round((subtotal + serviceCharge) * VatRate, 2);
+        var serviceCharge = Math.Round(subtotal * ServiceChargeRate, 0, MidpointRounding.AwayFromZero);
+        var vatAmount = Math.Round((subtotal + serviceCharge) * VatRate, 0, MidpointRounding.AwayFromZero);
 
         var deductedDeposit = ResolvePaidDepositAmount(order);
         var finalAmount = Math.Max(0m, (subtotal + serviceCharge + vatAmount) - deductedDeposit);
@@ -101,31 +104,35 @@ public class InvoiceService : IInvoiceService
             .GroupBy(oi => oi.TastingMenuId!.Value)
             .ToDictionary(g => g.Key.ToString(), g => g.First().TastingMenu!.Name);
 
-        // Display billable lines (regular items or TastingMenu package headers) that aren't cancelled
+        var unitPrices = ResolveDishUnitPrices(order.OrderItems);
+
+        // Return individual dish lines (including allocated Set Menu dish lines) that aren't cancelled
         var displayItems = order.OrderItems
-            .Where(oi => oi.Status != OrderItemStatus.Cancelled &&
-                         (oi.UnitPrice > 0m || oi.TastingMenuId == null) &&
-                         !IsFullyCancelledTastingMenuHeader(order, oi))
-            .Select(oi => new InvoicePreviewItemDto(
-                oi.MenuItem?.Name ?? oi.TastingMenu?.Name ?? "Món phục vụ",
-                oi.Quantity,
-                oi.UnitPrice,
-                oi.Quantity * oi.UnitPrice,
-                oi.Id,
-                ResolveEffectiveBillableStatus(order, oi).ToString(),
-                order.Id,
-                oi.MenuItemId,
-                oi.TastingMenuId,
-                oi.MenuItem?.CourseType ?? CourseType.Appetizer,
-                oi.Note,
-                oi.IsRush && oi.Note != null && oi.Note.Contains("[LÀM LẠI:", StringComparison.OrdinalIgnoreCase),
-                0,
-                oi.IsRush,
-                oi.MenuItem?.PrepTimeMinutes ?? 15,
-                oi.FiredAt,
-                oi.ServedAt,
-                oi.ServedById
-            ))
+            .Where(oi => oi.Status != OrderItemStatus.Cancelled && oi.MenuItemId != null)
+            .Select(oi =>
+            {
+                var unitPrice = unitPrices.GetValueOrDefault(oi.Id, oi.UnitPrice);
+                return new InvoicePreviewItemDto(
+                    oi.MenuItem?.Name ?? "Món phục vụ",
+                    oi.Quantity,
+                    unitPrice,
+                    oi.Quantity * unitPrice,
+                    oi.Id,
+                    oi.Status.ToString(),
+                    order.Id,
+                    oi.MenuItemId,
+                    oi.TastingMenuId,
+                    oi.MenuItem?.CourseType ?? CourseType.Appetizer,
+                    oi.Note,
+                    oi.IsRush && oi.Note != null && oi.Note.Contains("[LÀM LẠI:", StringComparison.OrdinalIgnoreCase),
+                    0,
+                    oi.IsRush,
+                    oi.MenuItem?.PrepTimeMinutes ?? 15,
+                    oi.FiredAt,
+                    oi.ServedAt,
+                    oi.ServedById
+                );
+            })
             .ToList();
 
         var vietQrUrl = BuildVietQrUrl(order.Id, order.Table?.TableNumber ?? "BAN", finalAmount);
@@ -180,6 +187,9 @@ public class InvoiceService : IInvoiceService
             .Include(o => o.Reservation)
                 .ThenInclude(r => r!.Deposit)
             .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.TastingMenu)
             .Include(o => o.Invoice)
             .FirstOrDefaultAsync(
                 o => o.TableId == tableId &&
@@ -225,16 +235,26 @@ public class InvoiceService : IInvoiceService
             }
         }
 
+        var unitPrices = ResolveDishUnitPrices(order.OrderItems);
+        foreach (var dish in order.OrderItems.Where(oi => oi.MenuItemId != null && oi.UnitPrice <= 0m))
+        {
+            var resolved = unitPrices.GetValueOrDefault(dish.Id, 0m);
+            if (resolved > 0m)
+            {
+                dish.UnitPrice = resolved;
+            }
+        }
+
         var servedItems = order.OrderItems
-            .Where(oi => oi.Status == OrderItemStatus.Served && oi.UnitPrice > 0m)
+            .Where(oi => oi.MenuItemId != null && oi.Status == OrderItemStatus.Served && oi.UnitPrice > 0m)
             .ToList();
 
         if (servedItems.Count == 0)
             throw new InvalidOperationException("Đơn hàng chưa có món ăn nào đã phục vụ hợp lệ để xuất hóa đơn.");
 
         var subtotal = servedItems.Sum(oi => oi.Quantity * oi.UnitPrice);
-        var serviceCharge = Math.Round(subtotal * ServiceChargeRate, 2);
-        var vatAmount = Math.Round((subtotal + serviceCharge) * VatRate, 2);
+        var serviceCharge = Math.Round(subtotal * ServiceChargeRate, 0, MidpointRounding.AwayFromZero);
+        var vatAmount = Math.Round((subtotal + serviceCharge) * VatRate, 0, MidpointRounding.AwayFromZero);
         var deductedDeposit = ResolvePaidDepositAmount(order);
 
         var settleById = await ResolveSettlingStaffIdAsync(dto.StaffId, order.CreateById, ct);
@@ -352,29 +372,36 @@ public class InvoiceService : IInvoiceService
             .ToDictionary(g => g.Key.ToString(), g => g.First().TastingMenu!.Name)
             ?? new Dictionary<string, string>();
 
+        var unitPrices = order != null
+            ? ResolveDishUnitPrices(order.OrderItems)
+            : new Dictionary<Guid, decimal>();
+
         var items = order?.OrderItems
-            .Where(oi => oi.Status != OrderItemStatus.Cancelled &&
-                         (oi.UnitPrice > 0m || oi.TastingMenuId == null))
-            .Select(oi => new InvoicePreviewItemDto(
-                oi.MenuItem?.Name ?? oi.TastingMenu?.Name ?? "Món phục vụ",
-                oi.Quantity,
-                oi.UnitPrice,
-                oi.Quantity * oi.UnitPrice,
-                oi.Id,
-                "Served",
-                order.Id,
-                oi.MenuItemId,
-                oi.TastingMenuId,
-                oi.MenuItem?.CourseType ?? CourseType.Appetizer,
-                oi.Note,
-                false,
-                0,
-                oi.IsRush,
-                oi.MenuItem?.PrepTimeMinutes ?? 15,
-                oi.FiredAt,
-                oi.ServedAt,
-                oi.ServedById
-            ))
+            .Where(oi => oi.Status != OrderItemStatus.Cancelled && oi.MenuItemId != null)
+            .Select(oi =>
+            {
+                var unitPrice = unitPrices.GetValueOrDefault(oi.Id, oi.UnitPrice);
+                return new InvoicePreviewItemDto(
+                    oi.MenuItem?.Name ?? "Món phục vụ",
+                    oi.Quantity,
+                    unitPrice,
+                    oi.Quantity * unitPrice,
+                    oi.Id,
+                    "Served",
+                    order.Id,
+                    oi.MenuItemId,
+                    oi.TastingMenuId,
+                    oi.MenuItem?.CourseType ?? CourseType.Appetizer,
+                    oi.Note,
+                    false,
+                    0,
+                    oi.IsRush,
+                    oi.MenuItem?.PrepTimeMinutes ?? 15,
+                    oi.FiredAt,
+                    oi.ServedAt,
+                    oi.ServedById
+                );
+            })
             .ToList();
 
         return new InvoiceDto(
@@ -425,71 +452,70 @@ public class InvoiceService : IInvoiceService
         return allocated;
     }
 
+    public static Dictionary<Guid, decimal> ResolveDishUnitPrices(IEnumerable<OrderItem> orderItems)
+    {
+        var items = orderItems.ToList();
+        var prices = new Dictionary<Guid, decimal>(items.Count);
+
+        foreach (var oi in items)
+        {
+            if (oi.MenuItemId != null && oi.UnitPrice > 0m)
+            {
+                prices[oi.Id] = oi.UnitPrice;
+            }
+        }
+
+        var setGroups = items
+            .Where(oi => oi.TastingMenuId.HasValue && oi.MenuItemId != null)
+            .GroupBy(oi => oi.TastingMenuId!.Value);
+
+        foreach (var group in setGroups)
+        {
+            var dishes = group
+                .OrderBy(oi => oi.MenuItem?.CourseType ?? CourseType.Appetizer)
+                .ThenBy(oi => oi.Id)
+                .ToList();
+
+            if (dishes.All(d => prices.ContainsKey(d.Id)))
+                continue;
+
+            var header = items.FirstOrDefault(oi => oi.TastingMenuId == group.Key && oi.MenuItemId == null);
+            var setPrice = header?.UnitPrice
+                ?? dishes.Select(d => d.TastingMenu?.Price).FirstOrDefault(p => p.HasValue && p.Value > 0m)
+                ?? 0m;
+
+            var componentPrices = dishes.Select(d => d.MenuItem?.Price ?? 0m).ToList();
+            var allocated = AllocateSetMenuUnitPrices(setPrice, componentPrices);
+
+            for (var i = 0; i < dishes.Count; i++)
+            {
+                if (!prices.ContainsKey(dishes[i].Id))
+                {
+                    prices[dishes[i].Id] = allocated[i];
+                }
+            }
+        }
+
+        return prices;
+    }
+
     private static decimal CalculateBillableSubtotal(Order order)
     {
+        var unitPrices = ResolveDishUnitPrices(order.OrderItems);
         decimal subtotal = 0m;
         foreach (var oi in order.OrderItems)
         {
-            if (oi.Status == OrderItemStatus.Cancelled || oi.UnitPrice <= 0m)
+            if (oi.MenuItemId == null || oi.Status != OrderItemStatus.Served)
                 continue;
 
-            if (oi.TastingMenuId.HasValue && oi.MenuItemId == null)
+            var unitPrice = unitPrices.GetValueOrDefault(oi.Id, oi.UnitPrice);
+            if (unitPrice > 0m)
             {
-                var hasServedCourse = oi.Status == OrderItemStatus.Served ||
-                    order.OrderItems.Any(c =>
-                        c.TastingMenuId == oi.TastingMenuId &&
-                        c.MenuItemId != null &&
-                        c.Status == OrderItemStatus.Served);
-
-                if (hasServedCourse)
-                {
-                    subtotal += oi.Quantity * oi.UnitPrice;
-                }
-            }
-            else if (oi.Status == OrderItemStatus.Served)
-            {
-                subtotal += oi.Quantity * oi.UnitPrice;
+                subtotal += oi.Quantity * unitPrice;
             }
         }
 
         return subtotal;
-    }
-
-    private static bool IsFullyCancelledTastingMenuHeader(Order order, OrderItem item)
-    {
-        if (!item.TastingMenuId.HasValue || item.MenuItemId != null)
-            return false;
-
-        var children = order.OrderItems
-            .Where(c => c.TastingMenuId == item.TastingMenuId && c.MenuItemId != null)
-            .ToList();
-
-        return children.Count > 0 && children.All(c => c.Status == OrderItemStatus.Cancelled);
-    }
-
-    private static OrderItemStatus ResolveEffectiveBillableStatus(Order order, OrderItem item)
-    {
-        if (!item.TastingMenuId.HasValue || item.MenuItemId != null)
-            return item.Status;
-
-        if (item.Status == OrderItemStatus.Served || item.Status == OrderItemStatus.Cancelled)
-            return item.Status;
-
-        var children = order.OrderItems
-            .Where(c => c.TastingMenuId == item.TastingMenuId && c.MenuItemId != null)
-            .ToList();
-
-        if (children.Count > 0 && children.All(c => c.Status == OrderItemStatus.Cancelled))
-            return OrderItemStatus.Cancelled;
-
-        if (children.Any(c => c.Status == OrderItemStatus.Served) &&
-            children.All(c => c.Status == OrderItemStatus.Served || c.Status == OrderItemStatus.Cancelled))
-            return OrderItemStatus.Served;
-
-        if (children.Any(c => c.Status == OrderItemStatus.Preparing || c.Status == OrderItemStatus.Served))
-            return OrderItemStatus.Preparing;
-
-        return OrderItemStatus.Hold;
     }
 
     private static decimal ResolvePaidDepositAmount(Order order)

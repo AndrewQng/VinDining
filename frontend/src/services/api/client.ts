@@ -29,11 +29,11 @@ apiClient.interceptors.request.use(
   (error: unknown) => Promise.reject(error)
 )
 
-interface BackendErrorEnvelope extends ApiErrorResponse {
+export interface BackendErrorEnvelope extends ApiErrorResponse {
   errors?: Record<string, string[]>
 }
 
-function isApiResponseEnvelope(
+export function isApiResponseEnvelope(
   value: unknown
 ): value is { success: boolean; statusCode: number; data: unknown; timestamp: string } {
   return (
@@ -44,6 +44,28 @@ function isApiResponseEnvelope(
     'data' in value &&
     'timestamp' in value
   )
+}
+
+export function normalizeLockoutErrorData(
+  data: BackendErrorEnvelope,
+  nowMs: number = Date.now()
+): BackendErrorEnvelope {
+  if (!data.code) {
+    data.code = 'ACCOUNT_LOCKED'
+  }
+  if (data.remainingMinutes === undefined) {
+    const lockedUntilIso = data.errors?.lockedUntil?.[0]
+    if (lockedUntilIso) {
+      const diffMs = Date.parse(lockedUntilIso) - nowMs
+      data.remainingMinutes =
+        Number.isFinite(diffMs) && diffMs > 0
+          ? Math.max(1, Math.ceil(diffMs / 60_000))
+          : 15
+    } else {
+      data.remainingMinutes = 15
+    }
+  }
+  return data
 }
 
 apiClient.interceptors.response.use(
@@ -60,22 +82,7 @@ apiClient.interceptors.response.use(
       useAuthStore.getState().logout()
     }
     if (error.response?.status === 423 && error.response.data) {
-      const data = error.response.data
-      if (!data.code) {
-        data.code = 'ACCOUNT_LOCKED'
-      }
-      if (data.remainingMinutes === undefined) {
-        const lockedUntilIso = data.errors?.lockedUntil?.[0]
-        if (lockedUntilIso) {
-          const diffMs = Date.parse(lockedUntilIso) - Date.now()
-          data.remainingMinutes =
-            Number.isFinite(diffMs) && diffMs > 0
-              ? Math.max(1, Math.ceil(diffMs / 60_000))
-              : 15
-        } else {
-          data.remainingMinutes = 15
-        }
-      }
+      normalizeLockoutErrorData(error.response.data)
     }
     return Promise.reject(error)
   }

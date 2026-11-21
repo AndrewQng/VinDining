@@ -28,6 +28,7 @@ public class ClosedLoopIntegrationTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("Jwt:Secret", "IntegrationTestJwtSecretKey_Minimum32CharsLong2026!");
             builder.ConfigureServices(services =>
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
@@ -555,5 +556,61 @@ public class ClosedLoopIntegrationTests
         var exportMeta = await client.GetFromJsonAsync<JsonElement>("/api/manager/reports/export?period=month&format=excel");
         Assert.Equal("excel", exportMeta.GetProperty("format").GetString());
         Assert.EndsWith(".xlsx", exportMeta.GetProperty("fileName").GetString());
+    }
+
+    [Fact]
+    public async Task GetReservationByCode_WithPreOrderedSetMenu_ReturnsPreOrderedFieldsAndCleanNoteOverHttp()
+    {
+        await using var factory = new VinDiningApiFactory();
+        using var client = factory.CreateClient();
+
+        Assert.Equal(HttpStatusCode.OK, (await client.PostAsync("/api/testing/seed", null)).StatusCode);
+
+        var adminLogin = await (await client.PostAsJsonAsync("/api/auth/login", new LoginDto("admin_test", "hash123")))
+            .Content.ReadFromJsonAsync<AuthResponseDto>(JsonOpts);
+
+        var appetizerId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var mainCourseId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        var dessertId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminLogin!.Token);
+        var createTmRes = await client.PostAsJsonAsync("/api/manager/tasting-menus", new CreateTastingMenuDto(
+            "Set Menu Thượng Hạng",
+            1_800_000m,
+            "Thực đơn 3 course",
+            new List<CreateTastingMenuItemDto>
+            {
+                new(appetizerId, CourseType.Appetizer, 1),
+                new(mainCourseId, CourseType.MainCourse, 2),
+                new(dessertId, CourseType.Dessert, 3)
+            }));
+        Assert.Equal(HttpStatusCode.Created, createTmRes.StatusCode);
+        var tastingMenuId = (await createTmRes.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+
+        var tableRes = await client.PostAsJsonAsync("/api/manager/tables", new CreateTableDto("B-07", 4, TableZone.MainHall, 120, 120));
+        var tableId = (await tableRes.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("tableId").GetGuid();
+
+        client.DefaultRequestHeaders.Authorization = null;
+        var createRes = await client.PostAsJsonAsync("/api/reservations", new
+        {
+            fullName = "Nguyễn Văn An",
+            phoneNumber = "0901234567",
+            email = "an.nguyen@email.com",
+            tableId,
+            reservationTime = DateTime.UtcNow.AddHours(5),
+            partySize = 4,
+            note = "Bàn gần cửa sổ nếu có thể",
+            preOrderedTastingMenuId = tastingMenuId
+        });
+        Assert.Equal(HttpStatusCode.Created, createRes.StatusCode);
+        var createdJson = await createRes.Content.ReadFromJsonAsync<JsonElement>();
+        var bookingCode = createdJson.GetProperty("bookingCode").GetString()!;
+
+        var lookupRes = await client.GetAsync($"/api/reservations/{bookingCode}");
+        Assert.Equal(HttpStatusCode.OK, lookupRes.StatusCode);
+        var lookupJson = await lookupRes.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(tastingMenuId, lookupJson.GetProperty("preOrderedTastingMenuId").GetGuid());
+        Assert.Equal("Set Menu Thượng Hạng", lookupJson.GetProperty("preOrderedTastingMenuName").GetString());
+        Assert.Equal("Bàn gần cửa sổ nếu có thể", lookupJson.GetProperty("note").GetString());
     }
 }

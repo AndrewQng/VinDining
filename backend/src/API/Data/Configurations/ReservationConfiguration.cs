@@ -52,6 +52,12 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
             .HasForeignKey(r => r.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(r => r.PreOrderedTastingMenu)
+            .WithMany(tm => tm.Reservations)
+            .HasForeignKey(r => r.PreOrderedTastingMenuId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(r => r.BookingCode)
             .IsUnique();
 
@@ -60,5 +66,7 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.HasIndex(r => r.ReservationTime);
 
         builder.HasIndex(r => r.Status);
+
+        builder.HasIndex(r => r.PreOrderedTastingMenuId);
     }
 }

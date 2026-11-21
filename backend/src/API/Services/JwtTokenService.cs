@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using API.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
@@ -15,10 +16,33 @@ public class JwtTokenService : IJwtTokenService
     public const string DefaultAudience = "VinDiningClient";
 
     private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment? _environment;
 
-    public JwtTokenService(IConfiguration configuration)
+    public JwtTokenService(IConfiguration configuration, IHostEnvironment? environment = null)
     {
         _configuration = configuration;
+        _environment = environment;
+    }
+
+    public static string ResolveSecret(IConfiguration configuration, IHostEnvironment? environment = null)
+    {
+        var envSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+        if (!string.IsNullOrWhiteSpace(envSecret))
+            return envSecret;
+
+        var configEnvSecret = configuration["JWT_SECRET"];
+        if (!string.IsNullOrWhiteSpace(configEnvSecret))
+            return configEnvSecret;
+
+        var configSecret = configuration["Jwt:Secret"];
+        if (!string.IsNullOrWhiteSpace(configSecret))
+            return configSecret;
+
+        if (environment != null && environment.IsDevelopment())
+            return DefaultDevSecret;
+
+        throw new InvalidOperationException(
+            "JWT signing secret is not configured. Set the JWT_SECRET environment variable or Jwt:Secret configuration.");
     }
 
     public string GenerateAccessToken(Guid userId, string email, string fullName, IEnumerable<string> roles, IEnumerable<Claim>? customClaims = null)
@@ -98,17 +122,15 @@ public class JwtTokenService : IJwtTokenService
     }
 
     private string ResolveSecret()
-        => _configuration["Jwt:Secret"]
-            ?? Environment.GetEnvironmentVariable("JWT_SECRET")
-            ?? DefaultDevSecret;
+        => ResolveSecret(_configuration, _environment);
 
     private string ResolveIssuer()
-        => _configuration["Jwt:Issuer"]
-            ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+        => Environment.GetEnvironmentVariable("JWT_ISSUER")
+            ?? _configuration["Jwt:Issuer"]
             ?? DefaultIssuer;
 
     private string ResolveAudience()
-        => _configuration["Jwt:Audience"]
-            ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+        => Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+            ?? _configuration["Jwt:Audience"]
             ?? DefaultAudience;
 }

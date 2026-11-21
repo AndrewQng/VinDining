@@ -13,6 +13,9 @@ public class Reservation : BaseEntity, IHasCreatedAt
     public Guid TableId { get; set; }
     public Table Table { get; set; } = null!;
 
+    public Guid? PreOrderedTastingMenuId { get; set; }
+    public TastingMenu? PreOrderedTastingMenu { get; set; }
+
     public DateTime ReservationTime { get; set; }
     public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
     public string? Note { get; set; }

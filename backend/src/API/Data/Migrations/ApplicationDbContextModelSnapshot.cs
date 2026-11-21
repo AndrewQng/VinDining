@@ -435,6 +435,9 @@ namespace API.Data.Migrations
                     b.Property<int>("PartySize")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("PreOrderedTastingMenuId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("ReservationTime")
                         .HasColumnType("datetime2");
 
@@ -454,6 +457,8 @@ namespace API.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("GuestId");
+
+                    b.HasIndex("PreOrderedTastingMenuId");
 
                     b.HasIndex("ReservationTime");
 
@@ -1007,6 +1012,11 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("API.Models.Entities.TastingMenu", "PreOrderedTastingMenu")
+                        .WithMany("Reservations")
+                        .HasForeignKey("PreOrderedTastingMenuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Models.Entities.Table", "Table")
                         .WithMany("Reservations")
                         .HasForeignKey("TableId")
@@ -1014,6 +1024,8 @@ namespace API.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Guest");
+
+                    b.Navigation("PreOrderedTastingMenu");
 
                     b.Navigation("Table");
                 });
@@ -1150,6 +1162,8 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Models.Entities.TastingMenu", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Reservations");
 
                     b.Navigation("TastingMenuItems");
                 });

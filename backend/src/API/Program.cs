@@ -16,10 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-// Load .env file automatically from project or solution root
-DotNetEnv.Env.TraversePath().Load();
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Load .env file automatically from project or solution root (skip in Testing to avoid polluting process env)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    DotNetEnv.Env.TraversePath().Load();
+}
+
 builder.Configuration.AddEnvironmentVariables();
 
 // 1. Configure Database Connection & DbContext
@@ -49,16 +53,14 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddDefaultTokenProviders();
 
 // 3. Configure JWT Authentication (with SignalR WebSocket query token support)
-var jwtSecret = builder.Configuration["Jwt:Secret"]
-    ?? Environment.GetEnvironmentVariable("JWT_SECRET")
-    ?? JwtTokenService.DefaultDevSecret;
+var jwtSecret = JwtTokenService.ResolveSecret(builder.Configuration, builder.Environment);
 
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+    ?? builder.Configuration["Jwt:Issuer"]
     ?? JwtTokenService.DefaultIssuer;
 
-var jwtAudience = builder.Configuration["Jwt:Audience"]
-    ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+    ?? builder.Configuration["Jwt:Audience"]
     ?? JwtTokenService.DefaultAudience;
 
 builder.Services.AddAuthentication(options =>

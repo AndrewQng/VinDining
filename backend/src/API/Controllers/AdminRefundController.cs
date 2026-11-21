@@ -29,6 +29,7 @@ public class AdminRefundController : ApiControllerBase
             .Include(x => x.Guest)
             .Include(x => x.Table)
             .Include(x => x.Deposit)
+            .Include(x => x.PreOrderedTastingMenu)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
@@ -51,6 +52,7 @@ public class AdminRefundController : ApiControllerBase
                 preOrderedTastingMenuName = mapped.PreOrderedTastingMenuName,
                 durationMinutes = mapped.DurationMinutes,
                 status = approved ? "Cancelled_Refunded" : "RefundRejected",
+                guestStatus = mapped.GuestStatus,
                 note = mapped.Note,
                 cancelledAt = mapped.CancelledAt,
                 cancelledReason = mapped.CancelledReason,

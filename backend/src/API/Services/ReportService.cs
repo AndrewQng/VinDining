@@ -41,7 +41,7 @@ public class ReportService : IReportService
             .Include(oi => oi.Order)
                 .ThenInclude(o => o.Table)
             .AsNoTracking()
-            .Where(oi => oi.Status == OrderItemStatus.Served && oi.Order.Status == OrderStatus.Completed);
+            .Where(oi => oi.Order.Status == OrderStatus.Completed);
 
         if (range.FromDate.HasValue)
         {
@@ -133,29 +133,14 @@ public class ReportService : IReportService
             occupancyRate = Math.Round((busyCount * 100.0) / activeTables.Count, 1);
         }
 
-        var servedItems = await orderItemQuery.ToListAsync(ct);
+        var completedOrderItems = await orderItemQuery.ToListAsync(ct);
         if (isLunchShift.HasValue)
         {
-            servedItems = servedItems.Where(oi => oi.Order != null && MatchesShift(oi.Order.OpenedAt, isLunchShift.Value)).ToList();
+            completedOrderItems = completedOrderItems
+                .Where(oi => oi.Order != null && MatchesShift(oi.Order.OpenedAt, isLunchShift.Value))
+                .ToList();
         }
-        var topItems = servedItems
-            .Where(oi => oi.MenuItem != null || oi.TastingMenu != null)
-            .GroupBy(oi => oi.MenuItem != null ? oi.MenuItem.Name : oi.TastingMenu!.Name)
-            .Select(g =>
-            {
-                var first = g.First();
-                var itemId = (first.MenuItemId ?? first.TastingMenuId ?? Guid.Empty).ToString();
-                return new TopSellingItemDto(
-                    g.Key,
-                    g.Sum(x => x.Quantity),
-                    g.Sum(x => x.Quantity * x.UnitPrice),
-                    itemId
-                );
-            })
-            .OrderByDescending(x => x.QuantitySold)
-            .ThenByDescending(x => x.Revenue)
-            .Take(10)
-            .ToList();
+        var topItems = BuildTopSellingItems(completedOrderItems);
 
         var bestSellers = topItems
             .Take(8)
@@ -439,6 +424,45 @@ public class ReportService : IReportService
         }
 
         return points;
+    }
+
+    private static List<TopSellingItemDto> BuildTopSellingItems(List<OrderItem> completedOrderItems)
+    {
+        var resolvedUnitPrices = new Dictionary<Guid, decimal>();
+        foreach (var orderGroup in completedOrderItems.GroupBy(oi => oi.OrderId))
+        {
+            if (orderGroup.Any(oi => oi.MenuItemId != null && oi.UnitPrice <= 0m))
+            {
+                foreach (var kv in InvoiceService.ResolveDishUnitPrices(orderGroup))
+                {
+                    resolvedUnitPrices[kv.Key] = kv.Value;
+                }
+            }
+        }
+
+        return completedOrderItems
+            .Where(oi => oi.MenuItemId != null && oi.MenuItem != null && oi.Status == OrderItemStatus.Served)
+            .GroupBy(oi => oi.MenuItem!.Name)
+            .Select(g =>
+            {
+                var first = g.First();
+                var itemId = first.MenuItemId!.Value.ToString();
+                var revenue = g.Sum(x =>
+                {
+                    var unitPrice = x.UnitPrice > 0m ? x.UnitPrice : resolvedUnitPrices.GetValueOrDefault(x.Id, 0m);
+                    return x.Quantity * unitPrice;
+                });
+                return new TopSellingItemDto(
+                    g.Key,
+                    g.Sum(x => x.Quantity),
+                    revenue,
+                    itemId
+                );
+            })
+            .OrderByDescending(x => x.QuantitySold)
+            .ThenByDescending(x => x.Revenue)
+            .Take(10)
+            .ToList();
     }
 
     private static string EscapeCsv(string value)

@@ -120,6 +120,10 @@ describe('Mock API §10 end-to-end stories', () => {
       { reservationCode: 'VD-7K3Q' },
       { headers: { Authorization: `Bearer ${waitstaffToken}` } }
     )
+    const checkedInLookup = await client.get('/reservations/VD-7K3Q', {
+      params: { phone: '0901 234 567' },
+    })
+    expect(checkedInLookup.data.status).toBe('CheckedIn')
     const order = checkIn.data.order
     expect(order.items).toHaveLength(3)
     expect(order.items[0].status).toBe('Cooking')
@@ -137,13 +141,32 @@ describe('Mock API §10 end-to-end stories', () => {
       { headers: { Authorization: `Bearer ${waitstaffToken}` } }
     )
 
-    for (const item of order.items) {
+    for (const item of order.items.slice(0, 2)) {
       await client.patch(
         `/orders/${order.id}/items/${item.id}/serve`,
         {},
         { headers: { Authorization: `Bearer ${expediterToken}` } }
       )
     }
+
+    const partialPreview = await client.get('/invoices/preview/tbl-b05', {
+      headers: { Authorization: `Bearer ${cashierToken}` },
+    })
+    expect(partialPreview.data).toMatchObject({
+      subtotal: 6_329_672,
+      serviceCharge: 316_484,
+      vatAmount: 664_616,
+      totalAmount: 7_310_772,
+      deductedDeposit: 2_160_000,
+      amountDue: 5_150_772,
+      hasUnservedItems: true,
+    })
+
+    await client.patch(
+      `/orders/${order.id}/items/${order.items[2].id}/serve`,
+      {},
+      { headers: { Authorization: `Bearer ${expediterToken}` } }
+    )
 
     const preview = await client.get('/invoices/preview/tbl-b05', {
       headers: { Authorization: `Bearer ${cashierToken}` },

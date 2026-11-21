@@ -49,6 +49,7 @@ const ORDER_ITEM_STATUSES: OrderItemStatus[] = ['OnHold', 'Cooking', 'Served']
 const RESERVATION_STATUSES: ReservationStatus[] = [
   'PendingDeposit',
   'Reserved',
+  'CheckedIn',
   'Expired_Cancelled',
   'Cancelled_Refunded',
   'Cancelled_Forfeited',

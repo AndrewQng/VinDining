@@ -101,6 +101,7 @@ function computeStaticSeedVersion(input: {
   tastingMenus: readonly TastingMenuDto[]
   menuItems: readonly MenuItemDto[]
   staffs: readonly MockStaffRecord[]
+  reservations: readonly ReservationDto[]
 }): string {
   const canonical = JSON.stringify({
     tables: input.tables.map((t) => ({
@@ -135,6 +136,11 @@ function computeStaticSeedVersion(input: {
       username: s.username,
       fullName: s.fullName,
       role: s.role,
+    })),
+    reservations: input.reservations.map((r) => ({
+      id: r.id,
+      bookingCode: r.bookingCode,
+      status: r.status,
     })),
   })
   let hash = 2166136261
@@ -811,7 +817,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       preOrderedTastingMenuId: null,
       preOrderedTastingMenuName: null,
       durationMinutes: 120,
-      status: 'Reserved',
+      status: 'CheckedIn',
       note: null,
       cancelledAt: null,
       cancelledReason: null,
@@ -1382,6 +1388,7 @@ export function createInitialMockDb(now: Date = new Date()): MockDatabase {
       tastingMenus,
       menuItems,
       staffs,
+      reservations,
     }),
     staffs,
     sessions: {},

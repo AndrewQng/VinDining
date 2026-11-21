@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace API.Data;
 
@@ -12,6 +14,9 @@ public static class DatabaseSeeder
         await using var scope = services.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<Staff>>();
+        var hostEnvironment = scope.ServiceProvider.GetService<IHostEnvironment>();
+        var logger = scope.ServiceProvider.GetService<ILoggerFactory>()?.CreateLogger(typeof(DatabaseSeeder));
+        var isDevelopment = hostEnvironment?.IsDevelopment() == true;
 
         if (context.Database.IsRelational())
         {
@@ -135,6 +140,22 @@ public static class DatabaseSeeder
                 };
                 await context.MenuItems.AddAsync(item, ct);
             }
+            else if (isDevelopment)
+            {
+                if (item.Price != price || item.PrepTimeMinutes != prepMins)
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: syncing MenuItem '{Name}' ({Id}) Price {OldPrice}->{NewPrice}, PrepTimeMinutes {OldPrep}->{NewPrep}.",
+                        item.Name,
+                        item.Id,
+                        item.Price,
+                        price,
+                        item.PrepTimeMinutes,
+                        prepMins);
+                    item.Price = price;
+                    item.PrepTimeMinutes = prepMins;
+                }
+            }
             else if (course == CourseType.Beverage && item.PrepTimeMinutes != prepMins)
             {
                 item.PrepTimeMinutes = prepMins;
@@ -229,6 +250,85 @@ public static class DatabaseSeeder
                     }, ct);
                 }
             }
+            else if (isDevelopment)
+            {
+                var changed = false;
+                if (tastingMenu.Price != spec.Price ||
+                    !string.Equals(tastingMenu.Description, spec.Description, StringComparison.Ordinal) ||
+                    !string.Equals(tastingMenu.ImageUrl, spec.ImageUrl, StringComparison.Ordinal))
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: syncing TastingMenu '{Name}' ({Id}) Price {OldPrice}->{NewPrice}, Description/ImageUrl.",
+                        tastingMenu.Name,
+                        tastingMenu.Id,
+                        tastingMenu.Price,
+                        spec.Price);
+                    tastingMenu.Price = spec.Price;
+                    tastingMenu.Description = spec.Description;
+                    tastingMenu.ImageUrl = spec.ImageUrl;
+                    changed = true;
+                }
+
+                var existingDishes = tastingMenu.TastingMenuItems
+                    .OrderBy(d => d.CourseOrder)
+                    .ToList();
+                var matchedIds = new HashSet<Guid>();
+                var missingSpecs = new List<(string DishName, int Order, CourseType Course)>();
+
+                foreach (var (dishName, order, course) in spec.Items)
+                {
+                    var expectedMenuItemId = itemsByName[dishName].Id;
+                    var byOrder = existingDishes.FirstOrDefault(d => d.CourseOrder == order && !matchedIds.Contains(d.Id));
+                    if (byOrder != null)
+                    {
+                        matchedIds.Add(byOrder.Id);
+                        if (byOrder.MenuItemId != expectedMenuItemId || byOrder.CourseType != course)
+                        {
+                            byOrder.MenuItemId = expectedMenuItemId;
+                            byOrder.CourseType = course;
+                            changed = true;
+                        }
+                    }
+                    else
+                    {
+                        missingSpecs.Add((dishName, order, course));
+                    }
+                }
+
+                var reusableDishes = existingDishes.Where(d => !matchedIds.Contains(d.Id)).ToList();
+                for (var i = 0; i < missingSpecs.Count; i++)
+                {
+                    var (dishName, order, course) = missingSpecs[i];
+                    var expectedMenuItemId = itemsByName[dishName].Id;
+                    if (i < reusableDishes.Count)
+                    {
+                        var row = reusableDishes[i];
+                        row.MenuItemId = expectedMenuItemId;
+                        row.CourseOrder = order;
+                        row.CourseType = course;
+                    }
+                    else
+                    {
+                        await context.TastingMenuItems.AddAsync(new TastingMenuItem
+                        {
+                            Id = Guid.NewGuid(),
+                            TastingMenuId = tastingMenu.Id,
+                            MenuItemId = expectedMenuItemId,
+                            CourseOrder = order,
+                            CourseType = course
+                        }, ct);
+                    }
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: synced TastingMenu '{Name}' ({Id}) dishes to seed values.",
+                        tastingMenu.Name,
+                        tastingMenu.Id);
+                }
+            }
             setsByName[spec.Name] = tastingMenu;
         }
         await context.SaveChangesAsync(ct);
@@ -275,20 +375,41 @@ public static class DatabaseSeeder
                 };
                 await context.Tables.AddAsync(table, ct);
             }
-            else if (guestCount.HasValue && !table.CurrentGuestCount.HasValue)
+            else
             {
-                table.CurrentGuestCount = guestCount;
+                if (isDevelopment &&
+                    (table.Capacity != cap || table.Zone != zone || table.PosX != posX || table.PosY != posY))
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: syncing Table '{TableNumber}' ({Id}) Capacity {OldCap}->{NewCap}, Zone {OldZone}->{NewZone}, Pos ({OldX},{OldY})->({NewX},{NewY}).",
+                        table.TableNumber,
+                        table.Id,
+                        table.Capacity,
+                        cap,
+                        table.Zone,
+                        zone,
+                        table.PosX,
+                        table.PosY,
+                        posX,
+                        posY);
+                    table.Capacity = cap;
+                    table.Zone = zone;
+                    table.PosX = posX;
+                    table.PosY = posY;
+                }
+                if (guestCount.HasValue && !table.CurrentGuestCount.HasValue)
+                {
+                    table.CurrentGuestCount = guestCount;
+                }
             }
             tablesByNumber[num] = table;
         }
         await context.SaveChangesAsync(ct);
 
-        // 6. Guests
+        // 6. Guests (§10 guest only)
         var guestSpecs = new[]
         {
             ("Nguyễn Văn An", "0901234567", "an.nguyen@email.com"),
-            ("Trần Quốc Bảo", "0912345678", "bao.tran@email.com"),
-            ("Lê Thanh Hương", "0987654321", "huong.le@email.com"),
         };
 
         var guestsByPhone = new Dictionary<string, Guest>(StringComparer.Ordinal);
@@ -312,8 +433,33 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync(ct);
 
         var guestAn = guestsByPhone["0901234567"];
-        var guestBao = guestsByPhone["0912345678"];
-        var guestHuong = guestsByPhone["0987654321"];
+
+        if (isDevelopment)
+        {
+            var legacyDemoGuests = await context.Guests
+                .Where(g => g.Id != guestAn.Id && (g.PhoneNumber == "0912345678" || g.PhoneNumber == "0987654321"))
+                .Select(g => g.Id)
+                .ToListAsync(ct);
+
+            if (legacyDemoGuests.Count > 0)
+            {
+                var legacyReservations = await context.Reservations
+                    .Where(r => legacyDemoGuests.Contains(r.GuestId))
+                    .ToListAsync(ct);
+                foreach (var res in legacyReservations)
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: re-attaching Reservation '{BookingCode}' ({Id}) to §10 guest Nguyễn Văn An.",
+                        res.BookingCode,
+                        res.Id);
+                    res.GuestId = guestAn.Id;
+                }
+                if (legacyReservations.Count > 0)
+                {
+                    await context.SaveChangesAsync(ct);
+                }
+            }
+        }
 
         var setThuongHang = setsByName["Set Menu Thượng Hạng"];
         var setHaiSan = setsByName["Set Menu Hải Sản"];
@@ -335,13 +481,26 @@ public static class DatabaseSeeder
             DateTime? paidAt = null,
             DateTime? cancelledAt = null,
             string? cancelledReason = null,
-            decimal? refundAmount = null)
+            decimal? refundAmount = null,
+            Guid? preOrderedTastingMenuId = null)
         {
             var existing = await context.Reservations
                 .Include(r => r.Deposit)
                 .FirstOrDefaultAsync(r => r.BookingCode == bookingCode, ct);
             if (existing != null)
+            {
+                if (isDevelopment && existing.PreOrderedTastingMenuId != preOrderedTastingMenuId)
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: syncing Reservation '{BookingCode}' ({Id}) PreOrderedTastingMenuId {OldMenuId}->{NewMenuId}.",
+                        existing.BookingCode,
+                        existing.Id,
+                        existing.PreOrderedTastingMenuId,
+                        preOrderedTastingMenuId);
+                    existing.PreOrderedTastingMenuId = preOrderedTastingMenuId;
+                }
                 return existing;
+            }
 
             var reservation = new Reservation
             {
@@ -349,6 +508,7 @@ public static class DatabaseSeeder
                 BookingCode = bookingCode,
                 GuestId = guest.Id,
                 TableId = table.Id,
+                PreOrderedTastingMenuId = preOrderedTastingMenuId,
                 ReservationTime = reservationTime,
                 PartySize = partySize,
                 DurationMinutes = 120,
@@ -384,13 +544,14 @@ public static class DatabaseSeeder
             now.AddHours(2),
             4,
             ReservationStatus.Confirmed,
-            ReservationService.FormatNoteWithPreOrderedSetMenu("Bàn gần cửa sổ nếu có thể", setThuongHang),
+            "Bàn gần cửa sổ nếu có thể",
             2_160_000m,
             "VNP-7K3Q-001",
             PaymentMethod.BankTransfer,
             DepositStatus.Paid,
             now.AddMinutes(-180),
-            paidAt: now.AddMinutes(-178));
+            paidAt: now.AddMinutes(-178),
+            preOrderedTastingMenuId: setThuongHang.Id);
 
         // VD-4M2P: checked-in reservation on B04
         var resVd4m2p = await EnsureReservationAsync(
@@ -431,7 +592,7 @@ public static class DatabaseSeeder
             now.AddHours(2),
             4,
             ReservationStatus.Cancelled,
-            ReservationService.FormatNoteWithPreOrderedSetMenu(null, setHaiSan),
+            null,
             1_500_000m,
             "VNP-2C8N-001",
             PaymentMethod.BankTransfer,
@@ -439,7 +600,8 @@ public static class DatabaseSeeder
             now.AddMinutes(-400),
             paidAt: now.AddMinutes(-398),
             cancelledAt: now.AddMinutes(-30),
-            cancelledReason: "Khách báo thay đổi lịch công tác đột xuất");
+            cancelledReason: "Khách báo thay đổi lịch công tác đột xuất",
+            preOrderedTastingMenuId: setHaiSan.Id);
 
         // VD-8P4K: second pending exception refund on B06
         await EnsureReservationAsync(
@@ -467,7 +629,7 @@ public static class DatabaseSeeder
             VnSlotUtc(-2, 19, 0),
             4,
             ReservationStatus.Cancelled,
-            ReservationService.FormatNoteWithPreOrderedSetMenu(null, setThuongHang),
+            null,
             2_160_000m,
             "VNP-5E1M-001",
             PaymentMethod.BankTransfer,
@@ -475,8 +637,9 @@ public static class DatabaseSeeder
             now.AddMinutes(-3_200),
             paidAt: now.AddMinutes(-3_198),
             cancelledAt: now.AddMinutes(-2_940),
-            cancelledReason: "Khách báo nhập viện đột xuất trước giờ hẹn | Duyệt hoàn cọc: Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ",
-            refundAmount: 2_160_000m);
+            cancelledReason: $"Khách báo nhập viện đột xuất trước giờ hẹn | {ReservationGuestStatus.RefundApprovedPrefix} Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ",
+            refundAmount: 2_160_000m,
+            preOrderedTastingMenuId: setThuongHang.Id);
 
         // VD-6R2T: rejected exception refund (shows in M3 Đã xử lý)
         await EnsureReservationAsync(
@@ -494,7 +657,9 @@ public static class DatabaseSeeder
             now.AddMinutes(-1_700),
             paidAt: now.AddMinutes(-1_698),
             cancelledAt: now.AddMinutes(-1_500),
-            cancelledReason: $"Khách báo hủy sát giờ 30 phút do đổi địa điểm | {RefundService.RefundRejectedMarker} Từ chối hoàn cọc: Hủy sát giờ vì lý do cá nhân, không thuộc diện bất khả kháng",
+            cancelledReason: ReservationGuestStatus.BuildRefundRejectedReason(
+                "Khách báo hủy sát giờ 30 phút do đổi địa điểm",
+                "Hủy sát giờ vì lý do cá nhân, không thuộc diện bất khả kháng"),
             refundAmount: 0m);
 
         // Past completed reservations for historical invoices & feedbacks
@@ -515,7 +680,7 @@ public static class DatabaseSeeder
 
         var resC01Past = await EnsureReservationAsync(
             "VD-H2C1",
-            guestBao,
+            guestAn,
             tablesByNumber["C01"],
             VnSlotUtc(-2, 18, 30),
             2,
@@ -530,7 +695,7 @@ public static class DatabaseSeeder
 
         var resC03Past = await EnsureReservationAsync(
             "VD-H3C3",
-            guestHuong,
+            guestAn,
             tablesByNumber["C03"],
             VnSlotUtc(-4, 19, 30),
             4,
@@ -545,7 +710,7 @@ public static class DatabaseSeeder
 
         var resV03Past = await EnsureReservationAsync(
             "VD-H4V3",
-            guestBao,
+            guestAn,
             tablesByNumber["V03"],
             VnSlotUtc(-6, 12, 0),
             6,
