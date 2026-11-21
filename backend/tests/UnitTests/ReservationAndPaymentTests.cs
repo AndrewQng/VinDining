@@ -138,8 +138,7 @@ public class ReservationAndPaymentTests
         var detail2 = await service.GetReservationByCodeAsync(res2.BookingCode);
         Assert.Equal(tastingMenu.Id, detail2.PreOrderedTastingMenuId);
         Assert.Equal("Autumn Degustation", detail2.PreOrderedTastingMenuName);
-        Assert.Contains("Autumn Degustation", detail2.Note);
-        Assert.Contains("Bàn yên tĩnh", detail2.Note);
+        Assert.Equal("Bàn yên tĩnh", detail2.Note);
     }
 
     [Fact]

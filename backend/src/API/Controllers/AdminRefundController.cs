@@ -29,6 +29,7 @@ public class AdminRefundController : ApiControllerBase
             .Include(x => x.Guest)
             .Include(x => x.Table)
             .Include(x => x.Deposit)
+            .Include(x => x.PreOrderedTastingMenu)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 

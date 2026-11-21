@@ -481,13 +481,26 @@ public static class DatabaseSeeder
             DateTime? paidAt = null,
             DateTime? cancelledAt = null,
             string? cancelledReason = null,
-            decimal? refundAmount = null)
+            decimal? refundAmount = null,
+            Guid? preOrderedTastingMenuId = null)
         {
             var existing = await context.Reservations
                 .Include(r => r.Deposit)
                 .FirstOrDefaultAsync(r => r.BookingCode == bookingCode, ct);
             if (existing != null)
+            {
+                if (isDevelopment && existing.PreOrderedTastingMenuId != preOrderedTastingMenuId)
+                {
+                    logger?.LogInformation(
+                        "DatabaseSeeder: syncing Reservation '{BookingCode}' ({Id}) PreOrderedTastingMenuId {OldMenuId}->{NewMenuId}.",
+                        existing.BookingCode,
+                        existing.Id,
+                        existing.PreOrderedTastingMenuId,
+                        preOrderedTastingMenuId);
+                    existing.PreOrderedTastingMenuId = preOrderedTastingMenuId;
+                }
                 return existing;
+            }
 
             var reservation = new Reservation
             {
@@ -495,6 +508,7 @@ public static class DatabaseSeeder
                 BookingCode = bookingCode,
                 GuestId = guest.Id,
                 TableId = table.Id,
+                PreOrderedTastingMenuId = preOrderedTastingMenuId,
                 ReservationTime = reservationTime,
                 PartySize = partySize,
                 DurationMinutes = 120,
@@ -530,13 +544,14 @@ public static class DatabaseSeeder
             now.AddHours(2),
             4,
             ReservationStatus.Confirmed,
-            ReservationService.FormatNoteWithPreOrderedSetMenu("Bàn gần cửa sổ nếu có thể", setThuongHang),
+            "Bàn gần cửa sổ nếu có thể",
             2_160_000m,
             "VNP-7K3Q-001",
             PaymentMethod.BankTransfer,
             DepositStatus.Paid,
             now.AddMinutes(-180),
-            paidAt: now.AddMinutes(-178));
+            paidAt: now.AddMinutes(-178),
+            preOrderedTastingMenuId: setThuongHang.Id);
 
         // VD-4M2P: checked-in reservation on B04
         var resVd4m2p = await EnsureReservationAsync(
@@ -577,7 +592,7 @@ public static class DatabaseSeeder
             now.AddHours(2),
             4,
             ReservationStatus.Cancelled,
-            ReservationService.FormatNoteWithPreOrderedSetMenu(null, setHaiSan),
+            null,
             1_500_000m,
             "VNP-2C8N-001",
             PaymentMethod.BankTransfer,
@@ -585,7 +600,8 @@ public static class DatabaseSeeder
             now.AddMinutes(-400),
             paidAt: now.AddMinutes(-398),
             cancelledAt: now.AddMinutes(-30),
-            cancelledReason: "Khách báo thay đổi lịch công tác đột xuất");
+            cancelledReason: "Khách báo thay đổi lịch công tác đột xuất",
+            preOrderedTastingMenuId: setHaiSan.Id);
 
         // VD-8P4K: second pending exception refund on B06
         await EnsureReservationAsync(
@@ -613,7 +629,7 @@ public static class DatabaseSeeder
             VnSlotUtc(-2, 19, 0),
             4,
             ReservationStatus.Cancelled,
-            ReservationService.FormatNoteWithPreOrderedSetMenu(null, setThuongHang),
+            null,
             2_160_000m,
             "VNP-5E1M-001",
             PaymentMethod.BankTransfer,
@@ -622,7 +638,8 @@ public static class DatabaseSeeder
             paidAt: now.AddMinutes(-3_198),
             cancelledAt: now.AddMinutes(-2_940),
             cancelledReason: $"Khách báo nhập viện đột xuất trước giờ hẹn | {ReservationGuestStatus.RefundApprovedPrefix} Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ",
-            refundAmount: 2_160_000m);
+            refundAmount: 2_160_000m,
+            preOrderedTastingMenuId: setThuongHang.Id);
 
         // VD-6R2T: rejected exception refund (shows in M3 Đã xử lý)
         await EnsureReservationAsync(

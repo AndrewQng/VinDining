@@ -193,6 +193,7 @@ public class RefundService : IRefundService
             .Include(r => r.Guest)
             .Include(r => r.Table)
             .Include(r => r.Deposit)
+            .Include(r => r.PreOrderedTastingMenu)
             .Include(r => r.Orders)
                 .ThenInclude(o => o.Invoice)
             .Where(r => r.Status == ReservationStatus.Cancelled &&

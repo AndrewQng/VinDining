@@ -199,7 +199,7 @@ public class TableService : ITableService
         DateTime now,
         CancellationToken ct)
     {
-        var (tastingMenuId, _) = ReservationService.ParsePreOrderedSetMenu(reservation.Note);
+        var tastingMenuId = reservation.PreOrderedTastingMenuId;
         if (!tastingMenuId.HasValue || tastingMenuId.Value == Guid.Empty)
             return null;
 
@@ -225,7 +225,9 @@ public class TableService : ITableService
 
         var staffId = await ResolveCheckInStaffIdAsync(ct);
         var quantity = Math.Max(1, reservation.PartySize);
-        var cleanGuestNote = ExtractCleanGuestNote(reservation.Note);
+        var cleanGuestNote = string.IsNullOrWhiteSpace(reservation.Note) ? null : reservation.Note.Trim();
+        if (cleanGuestNote != null && cleanGuestNote.Length > 500)
+            cleanGuestNote = cleanGuestNote[..500];
 
         var foodCourses = tastingMenu.TastingMenuItems
             .Where(tmi => tmi.CourseType != CourseType.Beverage)
@@ -311,33 +313,6 @@ public class TableService : ITableService
         };
         await _context.Staffs.AddAsync(fallback, ct);
         return fallback.Id;
-    }
-
-    private static string? ExtractCleanGuestNote(string? note)
-    {
-        if (string.IsNullOrWhiteSpace(note))
-            return null;
-
-        var trimmed = note.Trim();
-        const string prefix = "[Set Menu đặt trước: ";
-        var startIdx = trimmed.IndexOf(prefix, StringComparison.OrdinalIgnoreCase);
-        if (startIdx >= 0)
-        {
-            var closeIdx = trimmed.IndexOf(")]", startIdx + prefix.Length, StringComparison.Ordinal);
-            if (closeIdx >= 0)
-            {
-                var before = trimmed[..startIdx].Trim();
-                var after = trimmed[(closeIdx + 2)..].Trim();
-                var combined = string.IsNullOrEmpty(before)
-                    ? after
-                    : string.IsNullOrEmpty(after)
-                        ? before
-                        : $"{before} {after}";
-                return string.IsNullOrWhiteSpace(combined) ? null : combined;
-            }
-        }
-
-        return trimmed;
     }
 
     public async Task<Guid> CheckInWalkInAsync(Guid id, WalkInDto dto, CancellationToken ct = default)
