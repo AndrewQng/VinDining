@@ -1075,4 +1075,116 @@ public class OperationsOrderAndBillingTests
         Assert.Equal(expectedSub, settledCancelled.Subtotal);
         Assert.Equal(expectedDue, settledCancelled.FinalTotal);
     }
+
+    [Fact]
+    public async Task ReportService_PaidB05SetMenuOrder_ExcludesSetHeaderAndSumsDishesTo7_200_000()
+    {
+        using var context = CreateContext();
+        var tableNotifier = new RecordingTableNotifier();
+        var kitchenNotifier = new RecordingKitchenNotifier();
+
+        var waiter = new Staff { FullName = "Trần Thị Mai", Username = "mai_rep", Email = "mai_rep@vn.vn", PhoneNumber = "0901000011", PasswordHash = "pw", Role = StaffRole.Waitstaff, IsActive = true };
+        var expediter = new Staff { FullName = "Lê Minh Quân", Username = "quan_rep", Email = "quan_rep@vn.vn", PhoneNumber = "0901000012", PasswordHash = "pw", Role = StaffRole.Expediter, IsActive = true };
+        await context.Staffs.AddRangeAsync(waiter, expediter);
+
+        var cat = new Category { Name = "Thực đơn" };
+        var soup = new MenuItem { Name = "Súp bào ngư thượng hạng", Price = 350_000m, CourseType = CourseType.Appetizer, PrepTimeMinutes = 12, Category = cat, Status = "Available" };
+        var wagyu = new MenuItem { Name = "Bò Wagyu A5 sốt nấm Truffle", Price = 1_250_000m, CourseType = CourseType.MainCourse, PrepTimeMinutes = 25, Category = cat, Status = "Available" };
+        var souffle = new MenuItem { Name = "Bánh Soufflé sô-cô-la", Price = 220_000m, CourseType = CourseType.Dessert, PrepTimeMinutes = 15, Category = cat, Status = "Available" };
+
+        var setMenu = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = soup, CourseType = CourseType.Appetizer, CourseOrder = 1 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = wagyu, CourseType = CourseType.MainCourse, CourseOrder = 2 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = souffle, CourseType = CourseType.Dessert, CourseOrder = 3 });
+
+        var tableB05 = new Table { TableNumber = "B05", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+
+        await context.Categories.AddAsync(cat);
+        await context.MenuItems.AddRangeAsync(soup, wagyu, souffle);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.Tables.AddAsync(tableB05);
+        await context.SaveChangesAsync();
+
+        var currentUser = new FakeCurrentUserService { UserId = waiter.Id, Role = nameof(StaffRole.Waitstaff) };
+        var resSvc = new ReservationService(context, new MockPaymentGateway(), tableNotifier);
+        var tableSvc = new TableService(context, tableNotifier, kitchenNotifier: kitchenNotifier, currentUserService: currentUser);
+        var orderSvc = new OrderService(context, currentUser, kitchenNotifier, tableNotifier);
+        var invSvc = new InvoiceService(context, currentUser, tableNotifier);
+
+        var booking = await resSvc.CreateReservationAsync(new CreateReservationDto(
+            "Nguyễn Văn An", "0901234567", "an.nguyen@email.com", tableB05.Id, DateTime.UtcNow.AddHours(2), 4, null, setMenu.Id));
+        await resSvc.ConfirmDepositAsync(new ConfirmDepositDto(booking.BookingCode, "VNP-7K3Q-REP"));
+        await tableSvc.CheckInReservationAsync(tableB05.Id, new CheckInDto(BookingCode: booking.BookingCode));
+
+        var activeOrder = await orderSvc.GetActiveOrderByTableAsync(tableB05.Id);
+        Assert.NotNull(activeOrder);
+
+        await orderSvc.FireNextCourseAsync(activeOrder!.Id, new FireCourseDto(CourseType.MainCourse));
+        await orderSvc.FireNextCourseAsync(activeOrder.Id, new FireCourseDto(CourseType.Dessert));
+
+        currentUser.UserId = expediter.Id;
+        currentUser.Role = nameof(StaffRole.Expediter);
+        foreach (var dish in activeOrder.Items.Where(i => i.MenuItemId != Guid.Empty))
+        {
+            await orderSvc.ConfirmServedAsync(activeOrder.Id, dish.Id);
+        }
+
+        await invSvc.SettleInvoiceAsync(tableB05.Id, new SettleInvoiceDto(activeOrder.Id, PaymentMethod.BankTransfer, expediter.Id));
+
+        var reportSvc = new ReportService(context);
+        var metrics = await reportSvc.GetMetricsAsync(new DateRangeDto());
+
+        Assert.DoesNotContain(metrics.TopSellingItems, item => item.MenuItemName == "Set Menu Thượng Hạng");
+        Assert.NotNull(metrics.BestSellers);
+        Assert.DoesNotContain(metrics.BestSellers!, item => item.Name == "Set Menu Thượng Hạng");
+        Assert.Equal(3, metrics.BestSellers!.Count);
+        Assert.Equal(7_200_000m, metrics.BestSellers.Sum(x => x.Revenue));
+        Assert.Equal(7_200_000m, metrics.TopSellingItems.Sum(x => x.Revenue));
+    }
+
+    [Fact]
+    public async Task ReportService_LegacyZeroUnitPriceSetDishes_ResolveAllocatedPricesWithoutHeader()
+    {
+        using var context = CreateContext();
+        var waiter = new Staff { FullName = "Trần Thị Mai", Username = "mai_leg", Email = "mai_leg@vn.vn", PhoneNumber = "0901000013", PasswordHash = "pw", Role = StaffRole.Waitstaff, IsActive = true };
+        var cat = new Category { Name = "Thực đơn" };
+        var soup = new MenuItem { Name = "Súp bào ngư thượng hạng", Price = 350_000m, CourseType = CourseType.Appetizer, Category = cat, Status = "Available" };
+        var wagyu = new MenuItem { Name = "Bò Wagyu A5 sốt nấm Truffle", Price = 1_250_000m, CourseType = CourseType.MainCourse, Category = cat, Status = "Available" };
+        var souffle = new MenuItem { Name = "Bánh Soufflé sô-cô-la", Price = 220_000m, CourseType = CourseType.Dessert, Category = cat, Status = "Available" };
+        var setMenu = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        var table = new Table { TableNumber = "B05", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+
+        var now = DateTime.UtcNow;
+        var order = new Order
+        {
+            Table = table,
+            CreateBy = waiter,
+            Status = OrderStatus.Completed,
+            OpenedAt = now.AddHours(-1),
+            ClosedAt = now,
+            OrderItems = new List<OrderItem>
+            {
+                new() { TastingMenu = setMenu, MenuItemId = null, Quantity = 4, UnitPrice = 1_800_000m, Status = OrderItemStatus.Served, FiredAt = now, ServedAt = now },
+                new() { TastingMenu = setMenu, MenuItem = soup, Quantity = 4, UnitPrice = 0m, Status = OrderItemStatus.Served, FiredAt = now, ServedAt = now },
+                new() { TastingMenu = setMenu, MenuItem = wagyu, Quantity = 4, UnitPrice = 0m, Status = OrderItemStatus.Served, FiredAt = now, ServedAt = now },
+                new() { TastingMenu = setMenu, MenuItem = souffle, Quantity = 4, UnitPrice = 0m, Status = OrderItemStatus.Served, FiredAt = now, ServedAt = now },
+            }
+        };
+
+        await context.Staffs.AddAsync(waiter);
+        await context.Categories.AddAsync(cat);
+        await context.MenuItems.AddRangeAsync(soup, wagyu, souffle);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.Tables.AddAsync(table);
+        await context.Orders.AddAsync(order);
+        await context.SaveChangesAsync();
+
+        var reportSvc = new ReportService(context);
+        var metrics = await reportSvc.GetMetricsAsync(new DateRangeDto());
+
+        Assert.NotNull(metrics.BestSellers);
+        Assert.DoesNotContain(metrics.BestSellers!, item => item.Name == "Set Menu Thượng Hạng");
+        Assert.Equal(3, metrics.BestSellers!.Count);
+        Assert.Equal(7_200_000m, metrics.BestSellers.Sum(x => x.Revenue));
+    }
 }
