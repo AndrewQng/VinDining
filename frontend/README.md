@@ -62,12 +62,13 @@ Mặc định `frontend/.env.development` đặt `VITE_USE_MOCK=true` để `npm
 - `pages/` — các màn hình theo vai trò (`guest/`, `staff/`, `kds/`, `LoginPage.tsx`, `dev/UiGalleryPage.tsx`).
 - `stores/` — Zustand stores (`useAuthStore`, `useThemeStore`, `useToastStore`, `useWaitstaffNotificationsStore`).
 
-## Routes Mock mở rộng ngoài `docs/api.md`
+## Routes mở rộng đã đồng bộ với Backend & `docs/api.md`
 
-Theo `docs/prototype/OPEN_QUESTIONS.md`:
+Theo `docs/prototype/OPEN_QUESTIONS.md`, các route trước đây chỉ có ở Mock nay đã được Backend phục vụ và cập nhật trong `docs/api.md`:
 
-- **#10 — `GET /api/menu/tasting-menus`:** cho phép khách truy cập danh sách Set Menu công khai trên G0/G1/G3 (trong `docs/api.md` hiện chỉ ghi `GET /api/manager/tasting-menus`).
-- **#11 — `GET /api/reservations?search=...` cho `Waitstaff`:** phục vụ tra cứu nhanh khi check-in tại bàn ở W2 (`docs/api.md` hiện chỉ ghi `Cashier/Manager`).
+- **#10 — `GET /api/menu/tasting-menus`:** cho phép khách truy cập danh sách Set Menu công khai trên G0/G1/G3.
+- **#11 — `GET /api/reservations?search=...` (cho phép `Waitstaff`):** phục vụ tra cứu nhanh khi check-in tại bàn ở W2 bên cạnh Thu ngân/Quản lý.
+- **#16 — `GET /api/orders/pass/history` (`Expediter`, `Manager`):** trả về lịch sử ra món trong ngày tại quầy Pass (E2).
 
 ## Quy tắc nghiệp vụ trong `src/domain/`
 

@@ -10,7 +10,7 @@
 | 4 | `POST` | `/api/reservations` | Đặt bàn trực tuyến & tạo link cọc VNPAY | Khách hàng |
 | 5 | `POST` | `/api/payments/vnpay-ipn` | Tiếp nhận Webhook IPN xử lý cọc thành công | Cổng VNPAY |
 | 6 | `POST` | `/api/reservations/cancel` | Hủy đặt bàn và tự động hoàn cọc theo mốc | Khách hàng |
-| 7 | `GET` | `/api/reservations` | Tra cứu danh sách đặt bàn theo ngày / trạng thái | Thu ngân, Quản lý |
+| 7 | `GET` | `/api/reservations` | Tra cứu danh sách đặt bàn (`date`, `status`, `search`) | Phục vụ, Điều phối, Thu ngân, Quản lý |
 | 8 | `GET` | `/api/reservations/{code}` | Xem chi tiết thông tin đơn đặt bàn | Khách hàng, Thu ngân |
 | 9 | `GET` | `/api/reservations/available-slots` | Kiểm tra các khung giờ còn bàn trống | Public |
 | 10 | `POST` | `/api/tables/{id}/check-in` | Check-in nhận bàn cho khách có đặt trước | Phục vụ, Thu ngân, Quản lý |
@@ -63,6 +63,27 @@
 | 57 | `GET` | `/api/manager/staff/{id}` | Xem chi tiết hồ sơ một nhân viên | Quản lý |
 | 58 | `GET` | `/api/manager/reports/dashboard` | Thống kê số liệu doanh thu, tỷ lệ lấp đầy | Quản lý |
 | 59 | `GET` | `/api/manager/reports/export` | Xuất dữ liệu báo cáo sang file Excel / PDF | Quản lý |
+| 60 | `GET` | `/api/menu/tasting-menus` | Lấy danh sách Set Menu công khai (đặt bàn & E-Menu) | Public |
+| 61 | `GET` | `/api/orders/pass/history` | Lịch sử các món đã xác nhận ra món trong ngày tại quầy Pass | Điều phối, Quản lý |
+| 62 | `GET` | `/api/feedbacks/validate/{token}` | Kiểm tra tính hợp lệ của mã/token khảo sát trước khi đánh giá | Public |
+| 63 | `POST` | `/api/auth/refresh-token` | Làm mới Access Token bằng Refresh Token | Public |
+| 64 | `GET` | `/api/payments/vnpay-ipn` | Tiếp nhận callback IPN dạng query từ VNPAY (`vnpay-return` alias) | Cổng VNPAY |
+| 65 | `POST` | `/api/reservations/confirm-deposit` | Xác nhận thủ công thanh toán cọc cho đơn giữ chỗ | Public |
+| 66 | `PATCH` | `/api/reservations/{code}/cancel` | Hủy đặt bàn theo mã (alias của `POST /api/reservations/cancel`) | Khách hàng |
+| 67 | `POST` | `/api/reservations/{code}/no-show` | Đánh dấu khách vắng mặt quá giờ giữ bàn | Phục vụ, Điều phối, Thu ngân, Quản lý |
+| 68 | `POST` | `/api/tables/merge` | Gộp nhiều bàn thành một nhóm phục vụ | Phục vụ, Quản lý |
+| 69 | `DELETE` | `/api/orders/{id}/items/{itemId}` | Hủy món chưa phục vụ trong đơn (`PATCH .../cancel` alias) | Phục vụ, Quản lý |
+| 70 | `POST` | `/api/invoices/settle` | Quyết toán hóa đơn theo `OrderId` trong payload | Thu ngân, Quản lý |
+| 71 | `POST` | `/api/service-calls` | Gửi yêu cầu phục vụ từ bàn ăn (alias của `/api/tables/{id}/call-service`) | Khách hàng |
+| 72 | `GET` | `/api/feedbacks` | Danh sách phản hồi khách hàng (alias của `/api/manager/feedbacks`) | Quản lý |
+| 73 | `POST` | `/api/manager/categories` | Tạo mới danh mục nhóm món | Quản lý |
+| 74 | `GET` | `/api/manager/categories` | Lấy danh sách danh mục nhóm món trong quản trị | Quản lý |
+| 75 | `PUT` | `/api/manager/tables/{id}` | Cập nhật thông tin bàn ăn (số bàn, sức chứa, khu vực, tọa độ) | Quản lý |
+| 76 | `GET` | `/api/health` | Kiểm tra trạng thái sống của API và kết nối CSDL | Public |
+| 77 | `POST` | `/api/testing/seed` | Khởi tạo dữ liệu mẫu kiểm thử (môi trường Dev/Test) | Public (Dev/Test) |
+| 78 | `GET` | `/api/testing/overview` | Xem tổng quan dữ liệu kiểm thử hiện có | Public (Dev/Test) |
+
+> **Lưu ý route alias:** Các endpoint quản trị `/api/manager/*` đồng thời hỗ trợ tiền tố `/api/admin/*`; `/api/reservations` hỗ trợ `/api/reservation`; `/api/reservations/available-slots` hỗ trợ `/api/reservations/available-tables`; `/api/orders` hỗ trợ `/api/order`; `/api/invoices` hỗ trợ `/api/invoice`; `POST /api/orders/{id}/items/{itemId}/remake` đồng thời hỗ trợ phương thức `PATCH`; `GET /api/payments/vnpay-ipn` đồng thời hỗ trợ `/api/payments/vnpay-return`.
 
 ---
 
@@ -70,16 +91,18 @@
 
 | Tên Controller | Các hàm trong Controller (Action Methods) |
 | :--- | :--- |
-| `AuthController` | • `LoginAsync(LoginDto dto)`<br>• `GetCurrentUserAsync()`<br>• `LogoutAsync()` |
-| `ReservationController` | • `CreateReservationAsync(CreateReservationDto dto)`<br>• `ProcessVnPayIpnAsync(VnPayIpnDto params)`<br>• `CancelReservationAsync(CancelReservationDto dto)`<br>• `GetReservationsAsync(ReservationFilterDto filter)`<br>• `GetReservationByCodeAsync(string code)`<br>• `GetAvailableTimeSlotsAsync(DateTime date, int partySize)` |
-| `TableController` | • `CheckInReservationAsync(int id, CheckInDto dto)`<br>• `CheckInWalkInAsync(int id, WalkInDto dto)`<br>• `TransferTableAsync(int sourceId, TransferTableDto dto)`<br>• `GetFloorPlanAsync()`<br>• `GetTableByIdAsync(int id)`<br>• `UpdateTableStatusAsync(int id, UpdateTableStatusDto dto)` |
-| `OrderController` | • `CreateOrderWithCoursesAsync(CreateOrderDto dto)`<br>• `FireNextCourseAsync(int id, FireCourseDto dto)`<br>• `AddOrderItemsAsync(int id, AddItemsDto itemsDto)`<br>• `ConfirmServedAsync(int id, int itemId)`<br>• `RequestRemakeAsync(int id, int itemId)`<br>• `GetActiveOrderByTableAsync(int tableId)`<br>• `GetOrderDetailsAsync(int id)`<br>• `GetKitchenPendingOrdersAsync()` |
-| `InvoiceController` | • `RequestCheckoutAsync(int tableId)`<br>• `GetInvoicePreviewAsync(int tableId)`<br>• `PrintPreBillAsync(int tableId)`<br>• `SettleInvoiceAsync(int tableId, SettleInvoiceDto dto)`<br>• `GetInvoiceByIdAsync(int id)`<br>• `GetInvoicesAsync(InvoiceFilterDto filter)` |
-| `MenuController` | • `GetTableMenuAsync(int id)`<br>• `GetCategoriesAsync()`<br>• `GetMenuItemByIdAsync(int id)` |
-| `ServiceCallController` | • `CreateServiceCallAsync(int id, ServiceCallDto dto)`<br>• `CompleteServiceCallAsync(int id)`<br>• `GetActiveServiceCallsAsync()` |
-| `FeedbackController` | • `SubmitFeedbackAsync(SubmitFeedbackDto dto)`<br>• `GetFeedbacksAsync(FeedbackFilterDto filter)` |
-| `ManagerMenuController` | • `CreateMenuItemAsync(CreateMenuItemDto dto)`<br>• `UpdateMenuItemAsync(int id, UpdateMenuItemDto dto)`<br>• `UpdateAvailabilityAsync(int id, ToggleAvailabilityDto dto)`<br>• `DeleteMenuItemAsync(int id)`<br>• `GetAllMenuItemsAsync(MenuFilterDto filter)`<br>• `CreateTastingMenuAsync(CreateTastingMenuDto dto)`<br>• `UpdateTastingMenuAsync(int id, UpdateTastingMenuDto dto)`<br>• `DeleteTastingMenuAsync(int id)`<br>• `GetAllTastingMenusAsync()` |
-| `ManagerTableController` | • `UpdateFloorPlanLayoutAsync(UpdateFloorPlanDto dto)`<br>• `CreateTableAsync(CreateTableDto dto)`<br>• `DeleteTableAsync(int id)` |
-| `ManagerRefundController` | • `OverrideRefundAsync(int id, ManualRefundDto dto)`<br>• `GetRefundRequestsAsync(RefundFilterDto filter)` |
-| `ManagerStaffController` | • `CreateStaffAsync(CreateStaffDto dto)`<br>• `UpdateStaffAsync(int id, UpdateStaffDto dto)`<br>• `ResetPasswordAsync(int id, ResetPasswordDto dto)`<br>• `UpdateStatusAsync(int id, ToggleStatusDto dto)`<br>• `GetStaffListAsync(StaffFilterDto filter)`<br>• `GetStaffByIdAsync(int id)` |
+| `AuthController` | • `LoginAsync(LoginDto dto)`<br>• `RefreshTokenAsync(RefreshTokenDto dto)`<br>• `GetCurrentUserAsync()`<br>• `LogoutAsync()` |
+| `ReservationController` | • `CreateReservationAsync(CreateReservationDto dto)`<br>• `ProcessVnPayIpnPostAsync()`<br>• `ProcessVnPayQueryCallbackAsync(VnPayIpnDto paramsDto)`<br>• `ConfirmDepositAsync(ConfirmDepositDto dto)`<br>• `CancelReservationAsync(CancelReservationDto dto)`<br>• `CancelReservationByCodeAsync(string code, CancelReservationBodyDto? body)`<br>• `MarkNoShowAsync(string code, NoShowReservationDto? dto)`<br>• `GetReservationsAsync(DateTime? date, string? status, string? search)`<br>• `GetReservationByCodeAsync(string code, string? phoneNumber, string? phone)`<br>• `GetAvailableTimeSlotsAsync(DateTime? reservationTime, string? date, int partySize, TableZone? zone)` |
+| `TableController` | • `CheckInReservationAsync(Guid id, CheckInDto dto)`<br>• `CheckInWalkInAsync(Guid id, WalkInDto dto)`<br>• `TransferTableAsync(Guid sourceId, TransferTableDto dto)`<br>• `MergeTablesAsync(MergeTablesDto dto)`<br>• `GetFloorPlanAsync()`<br>• `GetTableByIdAsync(Guid id)`<br>• `UpdateTableStatusAsync(Guid id, UpdateTableStatusDto dto)` |
+| `OrderController` | • `CreateOrderWithCoursesAsync(CreateOrderDto dto)`<br>• `FireNextCourseAsync(Guid id, FireCourseDto dto)`<br>• `AddOrderItemsAsync(Guid id, AddItemsDto itemsDto)`<br>• `ConfirmServedAsync(Guid id, Guid itemId)`<br>• `RequestRemakeAsync(Guid id, Guid itemId, RemakeItemDto? dto)`<br>• `GetActiveOrderByTableAsync(Guid tableId)`<br>• `GetOrderDetailsAsync(Guid id)`<br>• `CancelOrderItemAsync(Guid id, Guid itemId, CancelOrderItemDto? dto)`<br>• `GetKitchenPendingOrdersAsync()`<br>• `GetPassHistoryAsync(string? tableNumber)` |
+| `InvoiceController` | • `RequestCheckoutAsync(Guid tableId)`<br>• `GetInvoicePreviewAsync(Guid tableId)`<br>• `PrintPreBillAsync(Guid tableId)`<br>• `SettleInvoiceByOrderAsync(SettleInvoiceDto dto)`<br>• `SettleInvoiceAsync(Guid tableId, SettleInvoiceDto dto)`<br>• `GetInvoiceByIdAsync(Guid id)`<br>• `GetInvoicesAsync(DateTime? date, string? paymentMethod)` |
+| `MenuController` | • `GetTableMenuAsync(string id)`<br>• `GetCategoriesAsync()`<br>• `GetTastingMenusAsync()`<br>• `GetMenuItemByIdAsync(Guid id)` |
+| `ServiceCallController` | • `CreateServiceCallDirectAsync(ServiceCallDto dto)`<br>• `CreateServiceCallAsync(Guid id, ServiceCallDto dto)`<br>• `CompleteServiceCallAsync(Guid id)`<br>• `GetActiveServiceCallsAsync()` |
+| `FeedbackController` | • `ValidateFeedbackTokenAsync(string token)`<br>• `SubmitFeedbackAsync(SubmitFeedbackDto dto)`<br>• `GetFeedbacksAsync()` |
+| `AdminMenuController` | • `CreateCategoryAsync(CreateCategoryDto dto)`<br>• `GetCategoriesAsync()`<br>• `CreateMenuItemAsync(CreateMenuItemDto dto)`<br>• `UpdateMenuItemAsync(Guid id, UpdateMenuItemDto dto)`<br>• `UpdateAvailabilityAsync(Guid id, ToggleAvailabilityDto dto)`<br>• `DeleteMenuItemAsync(Guid id)`<br>• `GetAllMenuItemsAsync(string? search)`<br>• `CreateTastingMenuAsync(CreateTastingMenuDto dto)`<br>• `UpdateTastingMenuAsync(Guid id, UpdateTastingMenuDto dto)`<br>• `DeleteTastingMenuAsync(Guid id)`<br>• `GetAllTastingMenusAsync()` |
+| `AdminTableController` | • `UpdateFloorPlanLayoutAsync(UpdateFloorPlanLayoutDto dto)`<br>• `CreateTableAsync(CreateTableDto dto)`<br>• `UpdateTableAsync(Guid id, UpdateTableDto dto)`<br>• `DeleteTableAsync(Guid id)` |
+| `AdminRefundController` | • `OverrideRefundAsync(Guid id, ManualRefundDto dto)`<br>• `GetRefundRequestsAsync()` |
+| `AdminStaffController` | • `CreateStaffAsync(CreateStaffDto dto)`<br>• `UpdateStaffAsync(Guid id, UpdateStaffDto dto)`<br>• `ResetPasswordAsync(Guid id, ResetPasswordDto dto)`<br>• `UpdateStatusAsync(Guid id, ToggleStatusDto dto)`<br>• `GetStaffListAsync(StaffRole? role, string? search)`<br>• `GetStaffByIdAsync(Guid id)` |
 | `ReportController` | • `GetMetricsAsync(DateRangeDto range)`<br>• `ExportRevenueReportAsync(DateRangeDto range)` |
+| `HealthController` | • `Get()` |
+| `TestingController` | • `SeedSampleData()`<br>• `GetOverview()` |
