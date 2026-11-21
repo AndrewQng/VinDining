@@ -41,3 +41,18 @@ Things the docs don't settle. Agents add rows here instead of guessing. The proj
 | Copy tone | Plain and informative, no emoji | Emoji removed from every screen; E1/K1 wording simplified |
 | KDS overflow (#8) | Kitchen staff may touch the screen to change pages, but never change data | Page bar with ‹ Trang trước / Trang sau › on K1, K1b, K1p, K1p2. This overrides "hands-free" in CONTEXT.md / ADR 0003 for page navigation only |
 | Deposit in the report (#9) | Yes | Added BR-06 to `BAO_CAO_PHAN_TICH_HE_THONG.md` §2.4; UC-U1 step 4 refers to it |
+
+## Answers from the project owner (21/11/2026)
+
+| # | Answer | Effect |
+| :--- | :--- | :--- |
+| 3 | No bill button on the E-Menu. As ADR 0004 describes, the guest asks the waiter, and the waiter sends the request from the waitstaff app (W6 "Yêu cầu tính tiền"). | As built; question closed |
+| 5 | One Set Menu per guest | As built: served × party size, deposit 30% × set price × guests |
+| 12 | Longest dish | As built: one countdown per course ticket, the longest Prep SLA among its dishes, from the course start |
+| 13 | Served courses only | A pre-ordered set is billed as the sum of its served courses, the set price split by the dishes' à la carte prices; unserved or cancelled courses are not billed. Mock and live backend must give the same total |
+| 14 | Zone filter only | No shift filter in M5 |
+| 15 | Keep the formulas above | As built |
+
+## Resolved by the backend (20/11/2026)
+
+The live backend now serves the routes that #10, #11 and #16 called "mock only": `GET /api/menu/tasting-menus` (public), `GET /api/reservations?search=…` (Waitstaff allowed) and `GET /api/orders/pass/history` (Expediter, Manager).

@@ -131,13 +131,13 @@ Caught in review (hallucinations that actually happened — never repeat):
 - M2 Sơ đồ bàn (UC-A2): add/remove/drag tables, seats, zones, auto QR per table; block deleting occupied/reserved tables.
 - M3 Hoàn cọc ngoại lệ (UC-A3, BR-04): cancellations are decided automatically (≥ 4 h before: 100% refund; < 4 h or no-show: deposit kept) and never need approval. This screen lists **only forfeited deposits** that the Manager may refund as an exception (force majeure): details, approve with reason / reject with reason, and a "Đã xử lý" list of past exception decisions. Never list automatic refunds or ask to approve a cancellation. The page explains the automatic policy in one line.
 - M4 Tài khoản (UC-A4): create (họ tên, email, chức vụ: Phục vụ, Điều phối, Thu ngân, Quản lý), edit, reset password, lock/unlock.
-- M5 Báo cáo (UC-A5): period (ngày/tuần/tháng/quý), zone/shift filter, revenue, guest count, occupancy rate, best sellers, cancellation rate, export Excel/PDF, empty state.
+- M5 Báo cáo (UC-A5): period (ngày/tuần/tháng/quý), zone filter (no shift filter, OPEN_QUESTIONS #14), revenue, guest count, occupancy rate, best sellers, cancellation rate, export Excel/PDF, empty state.
 
 ## 6. Statuses (use exactly these)
 
 - Table: Available (Trống), Locked (Đang giữ chỗ), Reserved (Đã đặt), Occupied (Đang phục vụ), PaymentPending (Chờ thanh toán), Cleaning (Đang dọn).
 - Order item: On Hold (Chờ), Cooking (Đang nấu), Served (Đã ra món), Remake (Làm lại).
-- Reservation: Chờ thanh toán cọc, Reserved, Đã hủy, Hết hạn (Expired_Cancelled).
+- Reservation: Chờ thanh toán cọc, Reserved, Đã nhận bàn (the guests are seated: shown from check-in on, never cancellable online), Đã hủy, Hết hạn (Expired_Cancelled).
 
 ## 7. Visual style
 
