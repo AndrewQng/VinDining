@@ -28,6 +28,7 @@ public class ClosedLoopIntegrationTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("Jwt:Secret", "IntegrationTestJwtSecretKey_Minimum32CharsLong2026!");
             builder.ConfigureServices(services =>
             {
                 services.AddDbContext<ApplicationDbContext>(options =>

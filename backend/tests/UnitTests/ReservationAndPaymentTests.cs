@@ -72,6 +72,7 @@ public class ReservationAndPaymentTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("Jwt:Secret", "ReservationTestJwtSecretKey_Minimum32CharsLong2026!");
             builder.ConfigureServices(services =>
             {
                 services.AddDbContext<ApplicationDbContext>(options =>

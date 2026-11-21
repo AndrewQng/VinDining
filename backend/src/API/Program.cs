@@ -49,16 +49,14 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddDefaultTokenProviders();
 
 // 3. Configure JWT Authentication (with SignalR WebSocket query token support)
-var jwtSecret = builder.Configuration["Jwt:Secret"]
-    ?? Environment.GetEnvironmentVariable("JWT_SECRET")
-    ?? JwtTokenService.DefaultDevSecret;
+var jwtSecret = JwtTokenService.ResolveSecret(builder.Configuration, builder.Environment);
 
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+    ?? builder.Configuration["Jwt:Issuer"]
     ?? JwtTokenService.DefaultIssuer;
 
-var jwtAudience = builder.Configuration["Jwt:Audience"]
-    ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+    ?? builder.Configuration["Jwt:Audience"]
     ?? JwtTokenService.DefaultAudience;
 
 builder.Services.AddAuthentication(options =>

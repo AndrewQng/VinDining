@@ -45,6 +45,7 @@ public class GlobalExceptionMiddlewareTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("Jwt:Secret", "MiddlewareTestJwtSecretKey_Minimum32CharsLong2026!");
             builder.ConfigureServices(services =>
             {
                 services.AddDbContext<ApplicationDbContext>(options =>

@@ -9,6 +9,8 @@ using API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace UnitTests;
@@ -236,5 +238,48 @@ public class AuthServiceTests
         Assert.Equal("Trần Quản Lý", result.FullName);
         Assert.Equal("manager_test", result.Username);
         Assert.Equal(StaffRole.Admin, result.Role);
+    }
+
+    private sealed class StubHostEnvironment(string environmentName) : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = environmentName;
+        public string ApplicationName { get; set; } = "API";
+        public string ContentRootPath { get; set; } = string.Empty;
+        public IFileProvider ContentRootFileProvider { get; set; } = null!;
+    }
+
+    [Fact]
+    public void ResolveSecret_PrefersEnvOverConfig_AndRestrictsDefaultFallbackToDevelopment()
+    {
+        var previousEnv = Environment.GetEnvironmentVariable("JWT_SECRET");
+        try
+        {
+            var configWithSecret = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Jwt:Secret"] = "ConfigJwtSecret_Minimum32CharsLength_2026!"
+                })
+                .Build();
+            var emptyConfig = new ConfigurationBuilder().Build();
+
+            // 1. JWT_SECRET env takes precedence over Jwt:Secret
+            Environment.SetEnvironmentVariable("JWT_SECRET", "EnvJwtSecret_Minimum32CharsLength_2026!");
+            Assert.Equal("EnvJwtSecret_Minimum32CharsLength_2026!", JwtTokenService.ResolveSecret(configWithSecret, new StubHostEnvironment(Environments.Production)));
+
+            // 2. Falls back to Jwt:Secret when JWT_SECRET is absent
+            Environment.SetEnvironmentVariable("JWT_SECRET", null);
+            Assert.Equal("ConfigJwtSecret_Minimum32CharsLength_2026!", JwtTokenService.ResolveSecret(configWithSecret, new StubHostEnvironment(Environments.Production)));
+
+            // 3. Falls back to DefaultDevSecret only in Development
+            Assert.Equal(JwtTokenService.DefaultDevSecret, JwtTokenService.ResolveSecret(emptyConfig, new StubHostEnvironment(Environments.Development)));
+
+            // 4. Throws in non-Development when secret is missing
+            Assert.Throws<InvalidOperationException>(() =>
+                JwtTokenService.ResolveSecret(emptyConfig, new StubHostEnvironment(Environments.Production)));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("JWT_SECRET", previousEnv);
+        }
     }
 }
