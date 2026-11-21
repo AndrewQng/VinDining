@@ -313,8 +313,8 @@ export function ReservedCheckInPanel({
 
           {matchedReservation.partySize > table.capacity && (
             <div className="pt-2 border-t border-line text-xs font-medium text-warning">
-              Cảnh báo: đoàn {matchedReservation.partySize} khách vượt sức chứa bàn{' '}
-              {table.tableNumber} ({table.capacity} ghế).
+              Đoàn {matchedReservation.partySize} khách, bàn {table.tableNumber}{' '}
+              chỉ có {table.capacity} ghế.
             </div>
           )}
           {matchedReservation.preOrderedTastingMenuName && (

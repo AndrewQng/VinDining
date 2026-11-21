@@ -108,7 +108,7 @@ export function TableCheckInDetailPage() {
               {courseOneItems
                 .map((i) => `${i.quantity}× ${i.itemName}`)
                 .join(', ')}{' '}
-              {allCourseOneServed ? 'đã phục vụ lên bàn.' : 'đang nấu tại bếp.'}
+              {allCourseOneServed ? 'đã phục vụ.' : 'đang nấu tại bếp.'}
             </p>
           )}
         </Card>

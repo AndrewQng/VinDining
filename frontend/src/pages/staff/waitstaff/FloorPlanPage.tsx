@@ -112,7 +112,7 @@ export function FloorPlanPage() {
           to="/phuc-vu/check-in"
           className="text-xs font-medium text-accent hover:underline whitespace-nowrap"
         >
-          Tra cứu check-in →
+          Tra cứu check-in
         </Link>
       </div>
 
