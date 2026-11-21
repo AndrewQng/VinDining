@@ -1187,4 +1187,78 @@ public class OperationsOrderAndBillingTests
         Assert.Equal(3, metrics.BestSellers!.Count);
         Assert.Equal(7_200_000m, metrics.BestSellers.Sum(x => x.Revenue));
     }
+
+    [Fact]
+    public async Task CheckInReservation_FromColumnPreOrderedTastingMenu_FiresCourse1HoldsLaterCoursesAndAllocatesDishPrices()
+    {
+        using var context = CreateContext();
+        var tableNotifier = new RecordingTableNotifier();
+        var kitchenNotifier = new RecordingKitchenNotifier();
+        var waiter = new Staff { FullName = "Trần Thị Mai", Username = "mai_col", Email = "mai_col@vn.vn", PhoneNumber = "0901000099", PasswordHash = "pw", Role = StaffRole.Waitstaff, IsActive = true };
+        var currentUser = new FakeCurrentUserService { UserId = waiter.Id, Role = nameof(StaffRole.Waitstaff) };
+
+        var cat = new Category { Name = "Signature" };
+        var soup = new MenuItem { Name = "Súp bào ngư thượng hạng", Price = 350_000m, CourseType = CourseType.Appetizer, Category = cat, Status = "Available" };
+        var wagyu = new MenuItem { Name = "Bò Wagyu A5 sốt nấm Truffle", Price = 1_250_000m, CourseType = CourseType.MainCourse, Category = cat, Status = "Available" };
+        var souffle = new MenuItem { Name = "Bánh Soufflé sô-cô-la", Price = 220_000m, CourseType = CourseType.Dessert, Category = cat, Status = "Available" };
+
+        var setMenu = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = soup, CourseType = CourseType.Appetizer, CourseOrder = 1 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = wagyu, CourseType = CourseType.MainCourse, CourseOrder = 2 });
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = souffle, CourseType = CourseType.Dessert, CourseOrder = 3 });
+
+        var guest = new Guest { FullName = "Nguyễn Văn An", PhoneNumber = "0901234567", Email = "an@vn.vn" };
+        var table = new Table { TableNumber = "B-10", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Reserved };
+        var reservation = new Reservation
+        {
+            BookingCode = "VD-COL01",
+            Guest = guest,
+            Table = table,
+            PreOrderedTastingMenuId = setMenu.Id,
+            ReservationTime = DateTime.UtcNow.AddMinutes(30),
+            PartySize = 4,
+            Status = ReservationStatus.Confirmed,
+            Note = "Không tiêu đen"
+        };
+
+        await context.Staffs.AddAsync(waiter);
+        await context.Categories.AddAsync(cat);
+        await context.MenuItems.AddRangeAsync(soup, wagyu, souffle);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.Guests.AddAsync(guest);
+        await context.Tables.AddAsync(table);
+        await context.Reservations.AddAsync(reservation);
+        await context.SaveChangesAsync();
+
+        var tableService = new TableService(context, tableNotifier, kitchenNotifier: kitchenNotifier, currentUserService: currentUser);
+        var orderService = new OrderService(context, currentUser, kitchenNotifier, tableNotifier);
+
+        var ok = await tableService.CheckInReservationAsync(table.Id, new CheckInDto(BookingCode: "VD-COL01"));
+        Assert.True(ok);
+
+        var activeOrder = await orderService.GetActiveOrderByTableAsync(table.Id);
+        Assert.NotNull(activeOrder);
+        Assert.Equal(4, activeOrder!.Items.Count);
+
+        var header = activeOrder.Items.Single(i => i.MenuItemId == Guid.Empty);
+        Assert.Equal(setMenu.Id, header.TastingMenuId);
+        Assert.Equal(1_800_000m, header.UnitPrice);
+        Assert.Equal(OrderItemStatus.Hold, header.Status);
+        Assert.Equal("Không tiêu đen", header.Note);
+
+        var dishes = activeOrder.Items.Where(i => i.MenuItemId != Guid.Empty).ToList();
+        Assert.Equal(3, dishes.Count);
+        Assert.Equal(1_800_000m, dishes.Sum(d => d.UnitPrice));
+        Assert.All(dishes, d => Assert.True(d.UnitPrice > 0m));
+
+        var c1 = dishes.Single(d => d.MenuItemId == soup.Id);
+        var c2 = dishes.Single(d => d.MenuItemId == wagyu.Id);
+        var c3 = dishes.Single(d => d.MenuItemId == souffle.Id);
+        Assert.Equal(OrderItemStatus.Preparing, c1.Status);
+        Assert.NotNull(c1.FiredAt);
+        Assert.Equal(OrderItemStatus.Hold, c2.Status);
+        Assert.Null(c2.FiredAt);
+        Assert.Equal(OrderItemStatus.Hold, c3.Status);
+        Assert.Null(c3.FiredAt);
+    }
 }

@@ -909,4 +909,137 @@ public class ReservationAndPaymentTests
         Assert.Equal(expectedGuestStatus, actual);
         Assert.Equal(expectedGuestStatus, ReservationService.MapToDetailDto(reservation).GuestStatus);
     }
+
+    [Fact]
+    public async Task CreateReservation_WithPreOrderedSetMenu_StoresColumn_LeavesGuestNoteExact_AndCalculates30PercentDeposit()
+    {
+        using var context = CreateContext();
+        var notifier = new RecordingTableNotifier();
+        var service = new ReservationService(context, new MockPaymentGateway(), notifier, new TableConcurrencyLock());
+
+        var table1 = new Table { TableNumber = "B-05", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+        var table2 = new Table { TableNumber = "B-06", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+        var set1 = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        var set2 = new TastingMenu { Name = "Set Menu Hải Sản", Price = 1_250_000m, IsActive = true };
+        await context.Tables.AddRangeAsync(table1, table2);
+        await context.TastingMenus.AddRangeAsync(set1, set2);
+        await context.SaveChangesAsync();
+
+        var resWithNote = await service.CreateReservationAsync(new CreateReservationDto(
+            "Nguyễn Văn An",
+            "0901234567",
+            "an@example.com",
+            table1.Id,
+            DateTime.UtcNow.AddHours(6),
+            4,
+            "Bàn gần cửa sổ nếu có thể",
+            PreOrderedTastingMenuId: set1.Id));
+
+        Assert.Equal(2_160_000m, resWithNote.DepositAmount);
+        Assert.Equal(set1.Id, resWithNote.PreOrderedTastingMenuId);
+        Assert.Equal("Set Menu Thượng Hạng", resWithNote.PreOrderedTastingMenuName);
+        Assert.Equal("Bàn gần cửa sổ nếu có thể", resWithNote.Reservation?.Note);
+
+        var entity1 = await context.Reservations.AsNoTracking().FirstAsync(r => r.Id == resWithNote.ReservationId);
+        Assert.Equal(set1.Id, entity1.PreOrderedTastingMenuId);
+        Assert.Equal("Bàn gần cửa sổ nếu có thể", entity1.Note);
+
+        var resEmptyNote = await service.CreateReservationAsync(new CreateReservationDto(
+            "Trần Thị Bình",
+            "0902223334",
+            "binh@example.com",
+            table2.Id,
+            DateTime.UtcNow.AddHours(6),
+            2,
+            "",
+            PreOrderedTastingMenuId: set2.Id));
+
+        Assert.Equal(750_000m, resEmptyNote.DepositAmount);
+        Assert.Equal(set2.Id, resEmptyNote.PreOrderedTastingMenuId);
+        Assert.Equal("Set Menu Hải Sản", resEmptyNote.PreOrderedTastingMenuName);
+        Assert.Null(resEmptyNote.Reservation?.Note);
+
+        var entity2 = await context.Reservations.AsNoTracking().FirstAsync(r => r.Id == resEmptyNote.ReservationId);
+        Assert.Equal(set2.Id, entity2.PreOrderedTastingMenuId);
+        Assert.Null(entity2.Note);
+    }
+
+    [Fact]
+    public async Task CreateReservation_GuestNoteContainingLegacyMarkerText_DoesNotSetPreOrderedMenuOrTriggerAutoOrder()
+    {
+        using var context = CreateContext();
+        var notifier = new RecordingTableNotifier();
+        var reservationService = new ReservationService(context, new MockPaymentGateway(), notifier, new TableConcurrencyLock());
+        var tableService = new TableService(context, notifier);
+
+        var staff = new Staff { FullName = "Trần Thị Mai", Username = "mai_marker", Email = "mai_marker@vn.vn", PhoneNumber = "0901", PasswordHash = "pw", Role = StaffRole.Waitstaff, IsActive = true };
+        var cat = new Category { Name = "Khai vị" };
+        var soup = new MenuItem { Name = "Súp bào ngư", Price = 350_000m, CourseType = CourseType.Appetizer, Category = cat, Status = "Available" };
+        var setMenu = new TastingMenu { Name = "Set Menu Thượng Hạng", Price = 1_800_000m, IsActive = true };
+        setMenu.TastingMenuItems.Add(new TastingMenuItem { TastingMenu = setMenu, MenuItem = soup, CourseType = CourseType.Appetizer, CourseOrder = 1 });
+        var table = new Table { TableNumber = "B-09", Capacity = 4, Zone = TableZone.MainHall, Status = TableStatus.Available };
+
+        await context.Staffs.AddAsync(staff);
+        await context.Categories.AddAsync(cat);
+        await context.MenuItems.AddAsync(soup);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.Tables.AddAsync(table);
+        await context.SaveChangesAsync();
+
+        var craftedNote = $"[Set Menu đặt trước: {setMenu.Name} ({setMenu.Id})] Dị ứng hải sản";
+        var result = await reservationService.CreateReservationAsync(new CreateReservationDto(
+            "Lê Văn C",
+            "0903456789",
+            "c@example.com",
+            table.Id,
+            DateTime.UtcNow.AddHours(2),
+            4,
+            craftedNote));
+
+        Assert.Equal(2_000_000m, result.DepositAmount); // 500,000 * 4 standard deposit
+        Assert.Null(result.PreOrderedTastingMenuId);
+        Assert.Null(result.PreOrderedTastingMenuName);
+
+        var detail = await reservationService.GetReservationByCodeAsync(result.BookingCode);
+        Assert.Null(detail.PreOrderedTastingMenuId);
+        Assert.Null(detail.PreOrderedTastingMenuName);
+        Assert.Equal(craftedNote, detail.Note);
+
+        await reservationService.ConfirmDepositAsync(new ConfirmDepositDto(result.BookingCode, "TXN-CRAFTED"));
+        await tableService.CheckInReservationAsync(table.Id, new CheckInDto(BookingCode: result.BookingCode));
+
+        Assert.False(await context.Orders.AnyAsync(o => o.TableId == table.Id));
+    }
+
+    [Fact]
+    public async Task DeleteTastingMenu_WhenReferencedByReservation_DeactivatesInsteadOfDeleting()
+    {
+        using var context = CreateContext();
+        var notifier = new RecordingTableNotifier();
+        var reservationService = new ReservationService(context, new MockPaymentGateway(), notifier, new TableConcurrencyLock());
+        var adminMenuService = new AdminMenuService(context, tableNotifier: notifier);
+
+        var table = new Table { TableNumber = "V-01", Capacity = 6, Zone = TableZone.VIP, Status = TableStatus.Available };
+        var setMenu = new TastingMenu { Name = "Set Menu Đặc Tuyển", Price = 1_850_000m, IsActive = true };
+        await context.Tables.AddAsync(table);
+        await context.TastingMenus.AddAsync(setMenu);
+        await context.SaveChangesAsync();
+
+        await reservationService.CreateReservationAsync(new CreateReservationDto(
+            "Phạm Thị D",
+            "0904567890",
+            "d@example.com",
+            table.Id,
+            DateTime.UtcNow.AddHours(5),
+            4,
+            null,
+            PreOrderedTastingMenuId: setMenu.Id));
+
+        var deleted = await adminMenuService.DeleteTastingMenuAsync(setMenu.Id);
+        Assert.True(deleted);
+
+        var persisted = await context.TastingMenus.AsNoTracking().FirstOrDefaultAsync(tm => tm.Id == setMenu.Id);
+        Assert.NotNull(persisted);
+        Assert.False(persisted!.IsActive);
+    }
 }
