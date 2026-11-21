@@ -106,7 +106,7 @@ Caught in review (hallucinations that actually happened — never repeat):
 
 **Waitstaff (mobile)**
 - W1 Sơ đồ bàn / table list with statuses.
-- W2 Check-in (UC-E6): reservation lookup by code/phone; walk-in check-in on an Available table. For a booking with a pre-ordered set, check-in shows "Set Menu đặt trước: … × 4 — Course 1 đã tự động gửi bếp": the Order and Courses are created automatically, no ordering needed.
+- W2 Check-in (UC-E6): reservation lookup by code/phone; walk-in check-in on an Available table. For a booking with a pre-ordered set, check-in shows "Set Menu đặt trước: … × 4 — Course 1 đã tự động gửi bếp": the Order and Courses are created automatically, no ordering needed. If the waiter checks a booking into a table with fewer seats than the party (e.g. VD-7K3Q, 4 khách, at B01 with 2 ghế), the check-in sheet shows the line "Đoàn 4 khách, bàn B01 chỉ có 2 ghế." in the warning colour; the backend refuses that check-in.
 - W3 Tạo Order (UC-E1) — for walk-ins / guests without a pre-order (demo table B03): **Set Menu tab first**, then món lẻ grouped by Course (Khai vị, Món chính, Tráng miệng), free-text note, Gửi đơn. Out-of-stock items locked.
 - W4 Cập nhật Order (UC-E2): add items/drinks, Course Firing button (Priority toggle allowed per `docs/use-cases/UC-E2`). Locked when table is PaymentPending.
 - W5 Đổi bàn (UC-E5): pick an Available target table of fitting capacity.
@@ -128,7 +128,7 @@ Caught in review (hallucinations that actually happened — never repeat):
 
 **Manager (desktop)**
 - M1 Thực đơn (UC-A1): items (name, description, price, category, Prep SLA, Còn món / Tạm hết) and Set Menu (TastingMenu) create/edit/delete.
-- M2 Sơ đồ bàn (UC-A2): add/remove/drag tables, seats, zones, auto QR per table; block deleting occupied/reserved tables.
+- M2 Sơ đồ bàn (UC-A2): add/remove/drag tables, seats, zones, auto QR per table (the table panel's "Xem / In mã QR" opens "Mã QR thực đơn · Bàn {n}": the printable QR card and "In mã QR"); block deleting occupied/reserved tables.
 - M3 Hoàn cọc ngoại lệ (UC-A3, BR-04): cancellations are decided automatically (≥ 4 h before: 100% refund; < 4 h or no-show: deposit kept) and never need approval. This screen lists **only forfeited deposits** that the Manager may refund as an exception (force majeure): details, approve with reason / reject with reason, and a "Đã xử lý" list of past exception decisions. Never list automatic refunds or ask to approve a cancellation. The page explains the automatic policy in one line.
 - M4 Tài khoản (UC-A4): create (họ tên, email, chức vụ: Phục vụ, Điều phối, Thu ngân, Quản lý), edit, reset password, lock/unlock.
 - M5 Báo cáo (UC-A5): period (ngày/tuần/tháng/quý), zone filter (no shift filter, OPEN_QUESTIONS #14), revenue, guest count, occupancy rate, best sellers, cancellation rate, export Excel/PDF, empty state.
