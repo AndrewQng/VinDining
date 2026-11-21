@@ -344,7 +344,8 @@ public class AdminMenuService : IAdminMenuService
         if (menu == null)
             throw new KeyNotFoundException($"Không tìm thấy Tasting Menu {id}.");
 
-        var referenced = await _context.OrderItems.AnyAsync(oi => oi.TastingMenuId == id, ct);
+        var referenced = await _context.OrderItems.AnyAsync(oi => oi.TastingMenuId == id, ct)
+            || await _context.Reservations.AnyAsync(r => r.PreOrderedTastingMenuId == id, ct);
         if (referenced)
         {
             menu.IsActive = false;

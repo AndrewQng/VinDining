@@ -13,4 +13,5 @@ public class TastingMenu : BaseEntity, IHasCreatedAt
 
     public ICollection<TastingMenuItem> TastingMenuItems { get; set; } = new List<TastingMenuItem>();
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }
