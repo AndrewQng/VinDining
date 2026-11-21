@@ -14,7 +14,7 @@ Mặc định môi trường phát triển chạy chế độ Mock (`VITE_USE_MO
 
 ## Chế độ Mock vs Backend thật
 
-Cấu hình qua biến môi trường trong `.env.development` hoặc `.env.local` (tham khảo `.env.example`):
+Mặc định `frontend/.env.development` đặt `VITE_USE_MOCK=true` để `npm run dev` chạy ở chế độ Demo/Mock. Để chuyển sang Backend thật (opt-in), tạo file không theo dõi bởi Git `frontend/.env.development.local` chứa `VITE_USE_MOCK=false` (`*.local` đã nằm trong `.gitignore`; tham khảo các biến khác tại `.env.example`):
 
 | Biến | Mặc định (`.env.example`) | Ý nghĩa |
 | :--- | :--- | :--- |

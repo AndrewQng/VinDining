@@ -174,9 +174,9 @@ frontend/src/
 
 ### 5.2. Cơ chế chuyển đổi Mock Mode ↔ Live Backend Mode
 
-- Biến môi trường `VITE_USE_MOCK` trong `frontend/.env.development`:
-  - `VITE_USE_MOCK=true` (**mặc định khi dev/demo độc lập**): `apiClient` gắn `installMockAdapter` và `realtimeClient` dùng `createMockRealtimeClient()` (đồng bộ realtime giữa các tab trình duyệt cùng origin qua `BroadcastChannel`/`localStorage`).
-  - `VITE_USE_MOCK=false` (**chạy với Backend thật**): `apiClient` gọi trực tiếp `VITE_API_URL` (`http://localhost:5159/api`) và `realtimeClient` kết nối SignalR tới `VITE_SIGNALR_URL` (`http://localhost:5159/hubs`).
+- Biến môi trường `VITE_USE_MOCK` (mặc định `VITE_USE_MOCK=true` trong `frontend/.env.development`):
+  - `VITE_USE_MOCK=true` (**mặc định khi chạy `npm run dev` / demo độc lập**): `apiClient` gắn `installMockAdapter` và `realtimeClient` dùng `createMockRealtimeClient()` (đồng bộ realtime giữa các tab trình duyệt cùng origin qua `BroadcastChannel`/`localStorage`).
+  - `VITE_USE_MOCK=false` (**chạy với Backend thật — opt-in**): tạo file untracked `frontend/.env.development.local` (đã được gitignore qua `*.local`) với nội dung `VITE_USE_MOCK=false`. Khi đó `apiClient` gọi trực tiếp `VITE_API_URL` (`http://localhost:5159/api`) và `realtimeClient` kết nối SignalR tới `VITE_SIGNALR_URL` (`http://localhost:5159/hubs`).
 
 ### 5.3. Bản đồ Tuyến đường (Routes) theo Vai trò
 
@@ -241,8 +241,8 @@ Tất cả tài khoản demo dùng chung mật khẩu: **`VinDining@2026`**
   npm run dev
   # Mở http://localhost:5173/
   ```
-- **Chuyển sang chạy Frontend + Backend thật**:
-  1. Đổi `VITE_USE_MOCK=false` trong `frontend/.env.development`.
+- **Chuyển sang chạy Frontend + Backend thật (opt-in):**
+  1. Tạo file untracked `frontend/.env.development.local` (`*.local` đã được gitignore) với nội dung `VITE_USE_MOCK=false`.
   2. Chạy Backend: `cd backend/src/API; dotnet run` (cổng `http://localhost:5159`, Swagger tại `/swagger`).
   3. Chạy Frontend: `cd frontend; npm run dev`.
 - **Kiểm chứng chất lượng trước khi thuyết trình**:
