@@ -94,6 +94,10 @@ const STATUS_META_MAP: Record<
     label: RESERVATION_STATUS_LABELS.PendingDeposit,
     tone: 'warning',
   },
+  CheckedIn: {
+    label: RESERVATION_STATUS_LABELS.CheckedIn,
+    tone: 'success',
+  },
   Expired_Cancelled: {
     label: RESERVATION_STATUS_LABELS.Expired_Cancelled,
     tone: 'neutral',

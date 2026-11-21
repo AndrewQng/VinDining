@@ -64,6 +64,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 export const RESERVATION_STATUS_LABELS: Record<ReservationStatus, string> = {
   PendingDeposit: 'Chờ đặt cọc',
   Reserved: 'Đã đặt',
+  CheckedIn: 'Đã nhận bàn',
   Expired_Cancelled: 'Hết hạn',
   Cancelled_Refunded: 'Đã hủy · đã hoàn cọc',
   Cancelled_Forfeited: 'Đã hủy · không hoàn cọc',

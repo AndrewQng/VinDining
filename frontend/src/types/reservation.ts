@@ -4,6 +4,7 @@ import type { TableZone } from './table'
 export type ReservationStatus =
   | 'PendingDeposit'
   | 'Reserved'
+  | 'CheckedIn'
   | 'Expired_Cancelled'
   | 'Cancelled_Refunded'
   | 'Cancelled_Forfeited'

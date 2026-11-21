@@ -107,7 +107,8 @@ function normalizeReservationStatus(
 ): ReservationStatus {
   const status = raw.status as string
   if (status === 'Pending') return 'PendingDeposit'
-  if (status === 'Confirmed' || status === 'Completed') return 'Reserved'
+  if (status === 'Confirmed') return 'Reserved'
+  if (status === 'Completed') return 'CheckedIn'
   if (status === 'Cancelled') {
     const depStatus = raw.deposit?.status ?? raw.depositStatus
     if (depStatus === 'Refunded') return 'Cancelled_Refunded'

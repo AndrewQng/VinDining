@@ -120,6 +120,10 @@ describe('Mock API §10 end-to-end stories', () => {
       { reservationCode: 'VD-7K3Q' },
       { headers: { Authorization: `Bearer ${waitstaffToken}` } }
     )
+    const checkedInLookup = await client.get('/reservations/VD-7K3Q', {
+      params: { phone: '0901 234 567' },
+    })
+    expect(checkedInLookup.data.status).toBe('CheckedIn')
     const order = checkIn.data.order
     expect(order.items).toHaveLength(3)
     expect(order.items[0].status).toBe('Cooking')

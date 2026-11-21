@@ -72,6 +72,7 @@ export const tableRoutes: MockRouteDefinition[] = [
       }
 
       const nowIso = now.toISOString()
+      reservation.status = 'CheckedIn'
       table.status = 'Occupied'
       table.assignedStaffId = user?.id ?? null
       table.assignedStaffName = user?.fullName ?? null

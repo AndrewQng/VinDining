@@ -127,7 +127,9 @@ export const managerRoutes: MockRouteDefinition[] = [
       const hasFutureReservation = db.reservations.some(
         (r) =>
           r.tableId === table.id &&
-          (r.status === 'Reserved' || r.status === 'PendingDeposit') &&
+          (r.status === 'Reserved' ||
+            r.status === 'CheckedIn' ||
+            r.status === 'PendingDeposit') &&
           Date.parse(r.reservationTime) > now.getTime()
       )
 

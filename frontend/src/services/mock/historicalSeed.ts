@@ -397,7 +397,7 @@ function buildHistorical120DayData(now: Date): HistoricalSeedBundle {
         preOrderedTastingMenuId: chosenSet?.id ?? null,
         preOrderedTastingMenuName: chosenSet?.name ?? null,
         durationMinutes: 120,
-        status: 'Reserved',
+        status: 'CheckedIn',
         note: null,
         cancelledAt: null,
         cancelledReason: null,
