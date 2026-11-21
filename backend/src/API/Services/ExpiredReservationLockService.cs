@@ -54,7 +54,7 @@ public class ExpiredReservationLockService : IExpiredReservationLockService
         {
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
-            reservation.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockExpiryMinutes} phút.";
+            reservation.CancelledReason = ReservationGuestStatus.BuildHoldExpiredReason(LockExpiryMinutes);
 
             if (reservation.Deposit != null && reservation.Deposit.Status == DepositStatus.Pending)
             {

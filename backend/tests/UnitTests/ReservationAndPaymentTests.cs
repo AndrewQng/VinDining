@@ -875,4 +875,38 @@ public class ReservationAndPaymentTests
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             service.GetReservationByCodeAsync("WALKIN-ABCDEF12"));
     }
+
+    [Theory]
+    [InlineData(ReservationStatus.Pending, DepositStatus.Pending, null, "PendingDeposit")]
+    [InlineData(ReservationStatus.Confirmed, DepositStatus.Paid, null, "Reserved")]
+    [InlineData(ReservationStatus.Completed, DepositStatus.Paid, null, "CheckedIn")]
+    [InlineData(ReservationStatus.Cancelled, DepositStatus.Forfeited, "Tự động hủy do quá thời hạn thanh toán tiền cọc 17 phút.", "Expired_Cancelled")]
+    [InlineData(ReservationStatus.Cancelled, DepositStatus.Forfeited, "Thanh toán cọc VNPAY không thành công (Mã phản hồi: 24).", "Expired_Cancelled")]
+    [InlineData(ReservationStatus.Cancelled, DepositStatus.Refunded, "Khách hủy trước 4 giờ", "Cancelled_Refunded")]
+    [InlineData(ReservationStatus.Cancelled, DepositStatus.Forfeited, "Hủy sát giờ", "Cancelled_Forfeited")]
+    [InlineData(ReservationStatus.Cancelled, DepositStatus.Forfeited, "Hủy muộn | [REFUND_REJECTED] Từ chối hoàn cọc: Không hợp lệ", "RefundRejected")]
+    public void ReservationGuestStatus_MapsAllSevenFrontendValues(
+        ReservationStatus status,
+        DepositStatus depositStatus,
+        string? cancelledReason,
+        string expectedGuestStatus)
+    {
+        var reservation = new Reservation
+        {
+            Id = Guid.NewGuid(),
+            BookingCode = "VD-TEST",
+            Status = status,
+            CancelledReason = cancelledReason,
+            Deposit = new Deposit
+            {
+                Id = Guid.NewGuid(),
+                Status = depositStatus,
+                Amount = 1_000_000m
+            }
+        };
+
+        var actual = ReservationGuestStatus.From(reservation);
+        Assert.Equal(expectedGuestStatus, actual);
+        Assert.Equal(expectedGuestStatus, ReservationService.MapToDetailDto(reservation).GuestStatus);
+    }
 }

@@ -12,7 +12,7 @@ public class ReservationService : IReservationService
     private const double FreeCancellationThresholdHours = 4.0;
     private const int NoShowGraceMinutes = 15;
     private const string PreOrderedSetMenuPrefix = "[Set Menu đặt trước: ";
-    internal const string UnpaidCancellationMarker = "(Chưa thanh toán cọc)";
+    internal const string UnpaidCancellationMarker = ReservationGuestStatus.UnpaidCancellationMarker;
 
     private static readonly ITableConcurrencyLock DefaultTableLock = new TableConcurrencyLock();
 
@@ -79,7 +79,7 @@ public class ReservationService : IReservationService
             {
                 stale.Status = ReservationStatus.Cancelled;
                 stale.CancelledAt = now;
-                stale.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockDurationMinutes} phút.";
+                stale.CancelledReason = ReservationGuestStatus.BuildHoldExpiredReason(LockDurationMinutes);
                 if (stale.Deposit != null && stale.Deposit.Status == DepositStatus.Pending)
                 {
                     stale.Deposit.Status = DepositStatus.Forfeited;
@@ -434,7 +434,7 @@ public class ReservationService : IReservationService
 
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
-            reservation.CancelledReason = $"Thanh toán cọc VNPAY không thành công (Mã phản hồi: {responseCode ?? "N/A"}).";
+            reservation.CancelledReason = ReservationGuestStatus.BuildVnPayFailedReason(responseCode);
 
             if (reservation.Deposit != null)
             {
@@ -508,7 +508,7 @@ public class ReservationService : IReservationService
         {
             reservation.Status = ReservationStatus.Cancelled;
             reservation.CancelledAt = now;
-            reservation.CancelledReason = $"Tự động hủy do quá thời hạn thanh toán tiền cọc {LockDurationMinutes} phút.";
+            reservation.CancelledReason = ReservationGuestStatus.BuildHoldExpiredReason(LockDurationMinutes);
             if (reservation.Deposit != null && reservation.Deposit.Status == DepositStatus.Pending)
             {
                 reservation.Deposit.Status = DepositStatus.Forfeited;
@@ -1081,7 +1081,7 @@ public class ReservationService : IReservationService
     private static string TruncateReason(string reason)
         => reason.Length <= 500 ? reason : reason[..500];
 
-    internal static ReservationDetailDto MapToDetailDto(Reservation r)
+    public static ReservationDetailDto MapToDetailDto(Reservation r)
     {
         var (preOrderedId, preOrderedName) = ParsePreOrderedSetMenu(r.Note);
         var guestDto = new GuestProfileDto(
@@ -1130,7 +1130,8 @@ public class ReservationService : IReservationService
             r.CancelledAt,
             r.CancelledReason,
             holdExpiresAt,
-            null
+            null,
+            ReservationGuestStatus.From(r)
         );
     }
 }

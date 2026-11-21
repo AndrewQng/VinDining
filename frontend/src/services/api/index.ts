@@ -103,29 +103,13 @@ function normalizePaymentMethod(method: string): PaymentMethod {
 }
 
 function normalizeReservationStatus(
-  raw: ReservationDto & { depositStatus?: string }
+  raw: ReservationDto
 ): ReservationStatus {
+  if (raw.guestStatus) return raw.guestStatus
   const status = raw.status as string
   if (status === 'Pending') return 'PendingDeposit'
   if (status === 'Confirmed') return 'Reserved'
   if (status === 'Completed') return 'CheckedIn'
-  if (status === 'Cancelled') {
-    const depStatus = raw.deposit?.status ?? raw.depositStatus
-    if (depStatus === 'Refunded') return 'Cancelled_Refunded'
-    if (
-      raw.cancelledReason?.includes('[REFUND_REJECTED]') ||
-      raw.cancelledReason?.includes('Từ chối hoàn cọc')
-    ) {
-      return 'RefundRejected'
-    }
-    if (
-      raw.cancelledReason?.includes('quá thời hạn thanh toán tiền cọc') ||
-      raw.cancelledReason?.includes('VNPAY không thành công')
-    ) {
-      return 'Expired_Cancelled'
-    }
-    return 'Cancelled_Forfeited'
-  }
   return raw.status
 }
 

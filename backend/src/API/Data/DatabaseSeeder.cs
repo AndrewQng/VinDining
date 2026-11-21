@@ -475,7 +475,7 @@ public static class DatabaseSeeder
             now.AddMinutes(-3_200),
             paidAt: now.AddMinutes(-3_198),
             cancelledAt: now.AddMinutes(-2_940),
-            cancelledReason: "Khách báo nhập viện đột xuất trước giờ hẹn | Duyệt hoàn cọc: Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ",
+            cancelledReason: $"Khách báo nhập viện đột xuất trước giờ hẹn | {ReservationGuestStatus.RefundApprovedPrefix} Xác nhận giấy nhập viện cấp cứu, chấp thuận hoàn ngoại lệ",
             refundAmount: 2_160_000m);
 
         // VD-6R2T: rejected exception refund (shows in M3 Đã xử lý)
@@ -494,7 +494,9 @@ public static class DatabaseSeeder
             now.AddMinutes(-1_700),
             paidAt: now.AddMinutes(-1_698),
             cancelledAt: now.AddMinutes(-1_500),
-            cancelledReason: $"Khách báo hủy sát giờ 30 phút do đổi địa điểm | {RefundService.RefundRejectedMarker} Từ chối hoàn cọc: Hủy sát giờ vì lý do cá nhân, không thuộc diện bất khả kháng",
+            cancelledReason: ReservationGuestStatus.BuildRefundRejectedReason(
+                "Khách báo hủy sát giờ 30 phút do đổi địa điểm",
+                "Hủy sát giờ vì lý do cá nhân, không thuộc diện bất khả kháng"),
             refundAmount: 0m);
 
         // Past completed reservations for historical invoices & feedbacks

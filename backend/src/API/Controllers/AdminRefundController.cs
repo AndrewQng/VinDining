@@ -51,6 +51,7 @@ public class AdminRefundController : ApiControllerBase
                 preOrderedTastingMenuName = mapped.PreOrderedTastingMenuName,
                 durationMinutes = mapped.DurationMinutes,
                 status = approved ? "Cancelled_Refunded" : "RefundRejected",
+                guestStatus = mapped.GuestStatus,
                 note = mapped.Note,
                 cancelledAt = mapped.CancelledAt,
                 cancelledReason = mapped.CancelledReason,

@@ -184,6 +184,8 @@ public class ReservationController : ApiControllerBase
                 parsedStatus = ReservationStatus.Pending;
             else if (string.Equals(raw, "Reserved", StringComparison.OrdinalIgnoreCase))
                 parsedStatus = ReservationStatus.Confirmed;
+            else if (string.Equals(raw, "CheckedIn", StringComparison.OrdinalIgnoreCase))
+                parsedStatus = ReservationStatus.Completed;
             else if (raw.StartsWith("Cancelled", StringComparison.OrdinalIgnoreCase) ||
                      raw.StartsWith("Expired", StringComparison.OrdinalIgnoreCase) ||
                      string.Equals(raw, "RefundRejected", StringComparison.OrdinalIgnoreCase))

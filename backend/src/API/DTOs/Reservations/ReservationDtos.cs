@@ -102,7 +102,8 @@ public record ReservationDetailDto(
     DateTime? CancelledAt = null,
     string? CancelledReason = null,
     DateTime? HoldExpiresAt = null,
-    DateTime? ReminderSentAt = null
+    DateTime? ReminderSentAt = null,
+    string GuestStatus = ""
 )
 {
     public string GuestPhone => PhoneNumber;

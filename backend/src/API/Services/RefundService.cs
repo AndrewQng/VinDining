@@ -2,7 +2,7 @@ namespace API.Services;
 
 public class RefundService : IRefundService
 {
-    public const string RefundRejectedMarker = "[REFUND_REJECTED]";
+    public const string RefundRejectedMarker = ReservationGuestStatus.RefundRejectedMarker;
 
     private static readonly ITableConcurrencyLock DefaultTableLock = new TableConcurrencyLock();
 
@@ -86,7 +86,7 @@ public class RefundService : IRefundService
             reservation.Deposit.Status = DepositStatus.Forfeited;
             reservation.Deposit.RefundAmount = 0m;
             reservation.CancelledReason = TruncateReason(
-                $"{reservation.CancelledReason ?? "Hủy muộn"} | {RefundRejectedMarker} Từ chối hoàn cọc: {effectiveNote}");
+                ReservationGuestStatus.BuildRefundRejectedReason(reservation.CancelledReason, effectiveNote));
 
             TableStatus? rejectReleaseNotify = null;
             if (reservation.Status != ReservationStatus.Cancelled)
@@ -144,7 +144,7 @@ public class RefundService : IRefundService
         reservation.Deposit.Status = DepositStatus.Refunded;
         reservation.Deposit.RefundAmount = refundAmount;
         reservation.CancelledReason = TruncateReason(
-            $"{reservation.CancelledReason ?? "Hủy ngoại lệ"} | Duyệt hoàn cọc: {effectiveNote}");
+            ReservationGuestStatus.BuildRefundApprovedReason(reservation.CancelledReason, effectiveNote));
 
         if (reservation.Status != ReservationStatus.Cancelled)
         {
@@ -224,7 +224,7 @@ public class RefundService : IRefundService
                     var hours = (r.ReservationTime - requestedAt).TotalHours;
                     var reasonText = r.CancelledReason ?? string.Empty;
                     return hours < 4.0 ||
-                           reasonText.Contains("Duyệt hoàn cọc:", StringComparison.OrdinalIgnoreCase) ||
+                           reasonText.Contains(ReservationGuestStatus.RefundApprovedPrefix, StringComparison.OrdinalIgnoreCase) ||
                            reasonText.Contains("ngoại lệ", StringComparison.OrdinalIgnoreCase);
                 }
 
@@ -244,13 +244,13 @@ public class RefundService : IRefundService
                 if (includeProcessed && isManualApproved)
                 {
                     decisionAction = "ManualRefundApproved";
-                    auditReason = ExtractAuditReason(r.CancelledReason, "Duyệt hoàn cọc:");
+                    auditReason = ExtractAuditReason(r.CancelledReason, ReservationGuestStatus.RefundApprovedPrefix);
                     processedAt = requestedAt;
                 }
                 else if (includeProcessed && isRejected)
                 {
                     decisionAction = "ManualRefundRejected";
-                    auditReason = ExtractAuditReason(r.CancelledReason, "Từ chối hoàn cọc:");
+                    auditReason = ExtractAuditReason(r.CancelledReason, ReservationGuestStatus.RefundRejectedPrefix);
                     processedAt = requestedAt;
                 }
 
@@ -296,14 +296,7 @@ public class RefundService : IRefundService
     }
 
     private static bool IsUnpaidCancellationReason(string? cancelledReason)
-    {
-        if (string.IsNullOrWhiteSpace(cancelledReason))
-            return false;
-
-        return cancelledReason.Contains("quá thời hạn thanh toán tiền cọc", StringComparison.OrdinalIgnoreCase) ||
-               cancelledReason.Contains("Thanh toán cọc VNPAY không thành công", StringComparison.OrdinalIgnoreCase) ||
-               cancelledReason.Contains(ReservationService.UnpaidCancellationMarker, StringComparison.OrdinalIgnoreCase);
-    }
+        => ReservationGuestStatus.IsUnpaidOrExpiredReason(cancelledReason);
 
     private static string TruncateReason(string reason)
         => reason.Length <= 500 ? reason : reason[..500];
