@@ -2,7 +2,8 @@
 
 Prepared by Claude (orchestrator and reviewer) for the project lead. Gemini (Antigravity) wrote the code and Figma changes; Claude specified them and checked every result. This file covers the work from the request "find all unaddressed issues" after PR #1 (`feature/website`, live FE–BE) was merged into `main` at `a00711d`.
 
-- **Branch to review:** `fix/post-merge-review`. It is based on `main` at `a00711d`, has 13 commits and changes 57 files (+1690 / −385). It is not merged.
+- **Branch to review:** `fix/post-merge-review`. It is based on `main` at `a00711d` and has 20 commits: code, tests, docs, and this review. It is not merged, and no PR was opened.
+- **Handed to the lead:** a run on **SQL Server**, including the new migration's data step. See §6 and §7.
 - **Figma:** page `Prototype` (`115:4`) was updated in place. The pages `Wireframe` and `Prototype - Khánh` were not touched.
 
 ## 1. What `main` looked like after the merge
@@ -35,7 +36,8 @@ There were no open GitHub issues and no review comments on PR #1, so the review 
 | 9 | UI changes in the live FE–BE commit `364363f` were not in Figma (Quầy Pass, W1/W2, M1 thumbnails, M2 QR title, G4 invalid link). | Figma | Web ≠ Figma |
 | 10 | New strings broke the copy rules (unslop): the "Cảnh báo:" prefix, an arrow in a link, and the "SĐT: … · Bàn … · 4 khách · 19:00" chain. | waitstaff pages | Copy |
 | 11 | Two Word lock files (`~$…docx`) were committed, and `frontend/test-results/` was not ignored. | repo | Hygiene |
-| 12 | Found while fixing #13 below: the live backend billed the **whole** set price as soon as one course was served. Demo mode billed only the served courses. | `InvoiceService.cs` | Bug (billing) |
+| 12 | Found while fixing open question #13 (§2): the live backend billed the **whole** set price as soon as one course was served. Demo mode billed only the served courses. | `InvoiceService.cs` | Bug (billing) |
+| 13 | Found during the MariaDB live run (§5): the pre-ordered Set Menu was stored as text inside `Reservations.Note` and parsed back at check-in, although the ERD defines a `PreOrderedTastingMenuId` column. | `ReservationService.cs`, `TableService.cs` | Fragile / design drift |
 
 ## 2. Owner decisions (21/11/2026)
 
@@ -62,23 +64,30 @@ PROTOTYPE_RULES §6 gains the booking status "Đã nhận bàn"; §5 M5 now says
 | `385735a` | #3 | Secret order: `JWT_SECRET` env → `Jwt:Secret` config → dev default only in Development; any other environment without a secret **stops at startup**. Key removed from `appsettings.json`; placeholder in `.env.example`; test factories set a test secret. | **Set `JWT_SECRET` on every non-Development host and in CI.** |
 | `7de608f` | #4 | `VITE_USE_MOCK=true`; README and `CAU_TRUC_DU_AN_DEMO.md` explain `.env.development.local`. | |
 | `af1c5f7` | #5 | Normalizers moved to `services/api/normalize.ts`; `normalize.test.ts` uses backend-shaped fixtures (envelope, 423 lock, all enum mappings, `guestStatus`, set prices). | |
-| `d7d6697` | #12 / #13 | New orders store allocated prices on set dish lines; preview and settlement bill served dishes only; the frontend uses the backend's prices (no equal split); rounding matches JS. Legacy rows with 0-price dishes fall back to `ResolveDishUnitPrices`. | Data model: the set header line keeps the set price, **so any sum over `OrderItems` must skip header lines (`MenuItemId == null`)**. B05 (§10): 7.200.000 / 360.000 / 756.000 / 8.316.000 / 6.156.000 ₫; Course 3 cancelled: 6.329.672 / … / 5.150.772 ₫, the same in demo mode and the backend. |
+| `d7d6697` | #12 / OQ #13 | New orders store allocated prices on set dish lines; preview and settlement bill served dishes only; the frontend uses the backend's prices (no equal split); rounding matches JS. Legacy rows with 0-price dishes fall back to `ResolveDishUnitPrices`. | Data model: the set header line keeps the set price, **so any sum over `OrderItems` must skip header lines (`MenuItemId == null`)**. B05 (§10): 7.200.000 / 360.000 / 756.000 / 8.316.000 / 6.156.000 ₫; Course 3 cancelled: 6.329.672 / … / 5.150.772 ₫, the same in demo mode and the backend. |
 | `48d4ee5` | #7, #8 | Only Nguyễn Văn An is seeded; in **Development only**, the seeder resets demo rows (tables, menu items, set menus) to the seed values on startup and logs each change; it never deletes. | Manager edits to those rows in a dev database are reset on restart. |
 | `1963f27` | #6 | `docs/api.md` gains the missing routes (public tasting menus, Waitstaff reservation search, pass history, feedback token validation, plus others found by comparing every `[Http*]` attribute); README section reworded; 3 ERD `.drawio` files gain the two `Tables` columns. | The `.docx` report and the Google Doc were **not** regenerated. |
 | `a8e7251` | #10 | "Đoàn N khách, bàn B chỉ có C ghế."; "Tra cứu check-in"; the phone number on its own line (new `formatPhoneNumber`); "đã phục vụ." | |
 | `76b26fa` | #11 | Lock files removed; `~$*`, `test-results/` and `playwright-report/` ignored. | |
 | `4f87385` | follow-up of #12 | Best sellers skip set header lines, so a set no longer counts both as its own row and in its dishes; legacy prices resolved. 2 new tests. | Other `OrderItems` sums were checked and are already safe (listed in the commit). |
 | `9eaf7f6` | follow-up of #1 | `/tra-cuu` note: "Bạn đã nhận bàn nên không thể hủy trực tuyến." | |
+| `603c2bc` | #13 | New column `Reservations.PreOrderedTastingMenuId` (nullable FK → `TastingMenus`, `Restrict`, indexed), as the ERD already defines it. Migration `AddReservationPreOrderedTastingMenu` with a T-SQL data step that moves the set from each `Note` marker into the column (only when that set exists) and strips the marker; `Down` writes the marker back. A set used by bookings is deactivated instead of deleted. | **Schema change.** The data step is SQL Server-only and untested (see §6). |
+| `1f9b7de` | #13 | Booking creation, check-in (`TryCreatePreOrderedSetMenuOrderAsync`), `MapToDetailDto`, refunds and the seeder use the column; `Note` holds only the guest's text; every marker parser was removed. | The API is unchanged (`preOrderedTastingMenuId` / `preOrderedTastingMenuName`). The frontend needed no change. |
+| `803f331` | #13 | 5 new tests: column stored with the guest note kept exactly; a note that contains marker-like text has no effect; check-in builds the set order from the column; HTTP lookup returns the fields; a set used by a booking is deactivated, not deleted; the seeder restores the column in Development. | |
+| `5a703d2` | #13 | Docs: `PreOrderedSetMenuId` → `PreOrderedTastingMenuId` in `SD_UC_U1_Reservation_Deposit.puml`, `SD_UC_E6_1_CheckIn_Reservation.puml` and OPEN_QUESTIONS #5. The ERD and class diagram already had the column. | The two sequence-diagram **PNGs were not re-rendered** (PlantUML isn't installed here). |
 
-### Verification on the branch head (`9eaf7f6`)
+Issue **#13**, found during the MariaDB live run (§5): the pre-ordered Set Menu was stored as text inside `Reservations.Note` (`[Set Menu đặt trước: <name> (<id>)]`) and parsed back at check-in. The ERD defines a `PreOrderedTastingMenuId` column, but the code never had one. This is the same free-text pattern as #2.
+
+### Verification on the branch head (`5a703d2`)
 
 | Command | Result |
 | :--- | :--- |
 | `cd frontend && npx oxlint` | 0 warnings, 0 errors |
 | `cd frontend && npx vitest run` | 78/78 (was 68) |
 | `cd frontend && npm run build` | OK |
-| `cd frontend && npx playwright test` | 46/46 (demo mode) |
-| `cd backend && dotnet test Restaurant.sln` (.NET 9) | 92/92 (was 79) |
+| `cd frontend && npx playwright test` | 46/46 (demo mode; run at `9eaf7f6`, the frontend has not changed since) |
+| `cd backend && dotnet test Restaurant.sln` (.NET 9) | 97/97 (was 79) |
+| `dotnet ef migrations list` | `…SyncLiveFeBeSchema`, then `20261121131037_AddReservationPreOrderedTastingMenu` |
 | No AI attribution in commit messages | confirmed |
 
 ## 4. Figma
@@ -119,7 +128,10 @@ There is no SQL Server on the review machine, so the branch was run against **Ma
 - the Pomelo MySQL provider replaces `UseSqlServer`;
 - `EnsureCreated` replaces `Migrate`, because the migrations are SQL Server-only.
 
-The backend ran in Development on `:5159`, and the website ran in live mode (`VITE_USE_MOCK=false`) on `:5173`.
+The backend ran in Development on `:5159`, and the website ran in live mode (`VITE_USE_MOCK=false`) on `:5173`. The whole run was done twice: at `9426e67`, and again on a fresh database at `5a703d2` after the issue #13 column fix. Both runs gave the same results. On the second run:
+- the website booking stored Set Menu Thượng Hạng in `PreOrderedTastingMenuId` and left `Note` empty;
+- the seeded VD-7K3Q has the set in the column and only "Bàn gần cửa sổ nếu có thể" in `Note`;
+- check-in built the set order from the column.
 
 | Step | How | Result |
 | :--- | :--- | :--- |
@@ -129,20 +141,20 @@ The backend ran in Development on `:5159`, and the website ran in live mode (`VI
 | `/tra-cuu` after check-in | website | "Đã nhận bàn", no cancel button, "Bạn đã nhận bàn nên không thể hủy trực tuyến." |
 | Fire and serve Courses 1–3 | API as `mai.tt` / `quan.lm` | OK |
 | Bill (all served) | API as `ha.pt` | 7.200.000 / 360.000 / 756.000 / **8.316.000 ₫**, deposit −2.160.000 → **6.156.000 ₫** (exactly §10); dish lines at 346.155 / 1.236.263 / 217.582 ₫ per guest; settled in cash |
-| Second booking with Course 3 cancelled (C03) | API | **6.329.672 / 316.484 / 664.616 / 7.310.772 ₫ → 5.150.772 ₫**, the same as demo mode (owner decision #13) |
+| Second booking with Course 3 cancelled (C03) | API | **6.329.672 / 316.484 / 664.616 / 7.310.772 ₫ → 5.150.772 ₫**, the same as demo mode (owner decision OQ #13) |
 | Cashier bill screen for C03 | website as `ha.pt` | shows the same five amounts |
 | Best sellers (today) | API as `long.dh` | dish rows only, no Set Menu row |
 | Paid booking, then cancel ≥ 4 h ahead | API + website | "Đã đặt" with the cancel button; after cancelling, "Đã hủy · đã hoàn cọc"; the deposit is `Refunded` with 750.000 ₫ (30% × 1.250.000 × 2) |
 | Browser console / HTTP errors during the UI steps | Playwright | none |
 
 ## 6. Not verified, and known gaps
-- **Not run on SQL Server.** The live run used MariaDB with `EnsureCreated`, so the SQL Server migrations (including `SyncLiveFeBeSchema`) and any SQL Server-specific behaviour were not exercised. Please run the branch once on your SQL Server stack.
-- **No EF migration was added.** The `guestStatus` derivation still relies on the reason markers (now constants in one place).
-- **The pre-ordered set is stored as text** in `Reservations.Note` (`[Set Menu đặt trước: Set Menu Thượng Hạng (<id>)]`); there is no `PreOrderedTastingMenuId` column. It works (check-in found the set), but it is the same free-text pattern as issue #2, so a proper column would be safer.
+- **SQL Server is handed to the lead (owner's decision).** The live runs used MariaDB with `EnsureCreated`, so nothing has run the migrations on SQL Server yet. That covers `SyncLiveFeBeSchema` and the new `AddReservationPreOrderedTastingMenu`, including its T-SQL data step and `Down`. Steps are in §7.
+- **`guestStatus` still comes from reason markers.** It is derived from the cancellation-reason markers, now constants in one place; there is no status column for it. A follow-up migration could add one, like issue #13 did for the set.
+- **Two sequence-diagram PNGs are out of date.** `docs/Diagram/puml/sequences/SD_UC_U1_Reservation_Deposit.png` and `SD_UC_E6_1_CheckIn_Reservation.png` still show `PreOrderedSetMenuId`; their `.puml` files are fixed. Re-render them with PlantUML.
 - **Best sellers on the backend count only paid orders;** demo mode also counts dishes already served on open tables. This was already the case before this branch and was left as is.
 - **Not in Figma, because no frame shows these states:** the M2 QR modal (no such frame) and the check-in capacity warning (the §10 story never exceeds capacity).
 - **The Figma tooling is local only.** `/home/life/tools/cursor-talk-to-figma-mcp` has no remote. Pushing it somewhere private would protect it from another loss. The relay channel changes whenever the plugin reconnects (it is now `qzguwelv`).
-- **Not touched:** the `.docx` report and the Google Doc (API list, ERD and the #13 rule), and the Jira statuses (20 of 21 backend tasks are still not Done although the code is complete; see `docs/jira-backend-local-list.md`).
+- **Not touched:** the `.docx` report and the Google Doc (API list, ERD and the OQ #13 billing rule), and the Jira statuses (20 of 21 backend tasks are still not Done although the code is complete; see `docs/jira-backend-local-list.md`).
 
 ## 7. How to review
 ```bash
@@ -150,4 +162,13 @@ git fetch origin && git checkout fix/post-merge-review
 cd frontend && npm ci && npx oxlint && npx vitest run && npm run build && npx playwright test
 cd ../backend && dotnet test Restaurant.sln
 ```
-Read first: `backend/src/API/Services/ReservationGuestStatus.cs`, `InvoiceService.cs` (`ResolveDishUnitPrices`, `CalculateBillableSubtotal`, `SettleInvoiceAsync`), `JwtTokenService.cs` (`ResolveSecret`), `Data/DatabaseSeeder.cs` (Development sync), `frontend/src/services/api/normalize.ts`, and `frontend/src/pages/guest/LookupReservationPage.tsx`.
+
+**On SQL Server (not done here):**
+1. **Migrate an old database.** Take a database created by `main` (`a00711d`), so its set bookings still carry the `Note` marker; for example, run `main`'s backend once on an empty database and make one booking with a set. Then start this branch's backend, which applies `AddReservationPreOrderedTastingMenu`. Check:
+   ```sql
+   SELECT BookingCode, PreOrderedTastingMenuId, Note FROM Reservations;
+   ```
+   Every set booking should have the column filled and no `[Set Menu đặt trước: …]` left in `Note`; VD-7K3Q should keep "Bàn gần cửa sổ nếu có thể".
+2. **Test `Down`.** Run `dotnet ef database update SyncLiveFeBeSchema`; the markers should come back. Then update to the latest migration again.
+3. **Run the live flow from §5** on SQL Server: book a set, check in, bill, look it up on `/tra-cuu`, and cancel a booking with a refund.
+Read first: `backend/src/API/Data/Migrations/20261121131037_AddReservationPreOrderedTastingMenu.cs`, `backend/src/API/Services/ReservationGuestStatus.cs`, `InvoiceService.cs` (`ResolveDishUnitPrices`, `CalculateBillableSubtotal`, `SettleInvoiceAsync`), `JwtTokenService.cs` (`ResolveSecret`), `Data/DatabaseSeeder.cs` (Development sync), `frontend/src/services/api/normalize.ts`, and `frontend/src/pages/guest/LookupReservationPage.tsx`.
