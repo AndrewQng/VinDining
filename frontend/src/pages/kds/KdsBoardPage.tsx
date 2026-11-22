@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   computeKdsRowsPerPage,
@@ -11,9 +10,7 @@ import {
 import { StatusBadge } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
-import { isMockMode } from '@/lib/utils'
 import { orderApi } from '@/services/api'
-import { seedFullKitchenDemo } from '@/services/mock'
 import { useRealtime } from '@/services/realtime'
 
 function formatWallClock(date: Date): string {
@@ -46,19 +43,12 @@ function getCountdownBoxStyle(ticket: GroupedKitchenTicket): string {
 /** K1, K1b, K1p, K1p2 — Hands-free wall KDS display with 3 lanes and height-computed pagination. */
 export function KdsBoardPage() {
   useDocumentTitle('KDS Bếp')
-  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const [now, setNow] = useState(() => new Date())
   const [pageIndex, setPageIndex] = useState(1)
   const [viewportHeight, setViewportHeight] = useState(() =>
     typeof window !== 'undefined' ? window.innerHeight : 1080
   )
-
-  useEffect(() => {
-    if (isMockMode() && searchParams.get('demo') === 'full') {
-      seedFullKitchenDemo()
-    }
-  }, [searchParams])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000)

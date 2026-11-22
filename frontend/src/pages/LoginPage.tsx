@@ -2,29 +2,26 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Lock, User } from 'lucide-react'
-import { STAFF_ROLE_LABELS } from '@/domain'
 import { Button, Card, Input, ThemeToggle, Wordmark } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { isMockMode } from '@/lib/utils'
+import { isStaffAppMode } from '@/lib/utils'
 import { authApi } from '@/services/api'
-import { DEMO_STAFF_ACCOUNTS, resetMockDb } from '@/services/mock'
 import {
   getRoleHomeRoute,
   isRouteAllowedForRole,
   useAuthStore,
 } from '@/stores/useAuthStore'
 import { useThemeArea } from '@/stores/useThemeStore'
-import { toast } from '@/stores/useToastStore'
 import type { ApiErrorResponse } from '@/types'
 
-/** S1 — Shared staff login page with lockout feedback and mock demo account helper. */
+/** S1 — Shared staff login page with lockout feedback. */
 export function LoginPage() {
   useThemeArea('staff')
   useDocumentTitle('Đăng nhập')
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
-  const mockEnabled = isMockMode()
+  const staffApp = isStaffAppMode()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -71,30 +68,22 @@ export function LoginPage() {
     }
   }
 
-  const handleSelectDemo = (demoUsername: string, demoPassword: string) => {
-    setUsername(demoUsername)
-    setPassword(demoPassword)
-    setErrorMessage(null)
-    setLockedMinutes(null)
-  }
-
-  const handleResetDemo = () => {
-    resetMockDb()
-    setErrorMessage(null)
-    setLockedMinutes(null)
-    toast.success('Đã khôi phục dữ liệu demo')
-  }
-
   return (
     <div className="min-h-screen bg-bg text-ink flex flex-col justify-between p-4 sm:p-6">
       <div className="max-w-md w-full mx-auto flex items-center justify-between pt-2">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-accent transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>Quay lại trang chủ</span>
-        </Link>
+        {!staffApp ? (
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-accent transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Quay lại trang chủ</span>
+          </Link>
+        ) : (
+          <span className="text-xs font-medium text-ink-muted">
+            Ứng dụng Nhân viên
+          </span>
+        )}
         <ThemeToggle />
       </div>
 
@@ -169,48 +158,9 @@ export function LoginPage() {
             </Button>
           </form>
         </Card>
-
-        {mockEnabled && (
-          <Card padding="sm" className="space-y-2.5">
-            <p className="text-xs font-semibold text-accent">Tài khoản demo</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {DEMO_STAFF_ACCOUNTS.map((acc) => {
-                const selected = username === acc.username
-                return (
-                  <button
-                    key={acc.id}
-                    type="button"
-                    onClick={() =>
-                      handleSelectDemo(acc.username, acc.password)
-                    }
-                    className={`text-left px-3 py-2 rounded-lg border text-xs transition-colors cursor-pointer ${
-                      selected
-                        ? 'border-primary bg-card-hover text-accent'
-                        : 'border-line bg-card text-ink hover:bg-card-hover'
-                    }`}
-                  >
-                    <span className="block font-medium">{acc.fullName}</span>
-                    <span className="block text-ink-muted mt-0.5">
-                      {STAFF_ROLE_LABELS[acc.role]} · {acc.username}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </Card>
-        )}
       </div>
 
       <footer className="max-w-md w-full mx-auto pb-2 text-center space-y-2">
-        {mockEnabled && (
-          <button
-            type="button"
-            onClick={handleResetDemo}
-            className="text-xs text-ink-muted hover:text-accent underline underline-offset-4 cursor-pointer"
-          >
-            Khôi phục dữ liệu demo
-          </button>
-        )}
         <p className="text-xs text-ink-subtle">© VinDining</p>
       </footer>
     </div>

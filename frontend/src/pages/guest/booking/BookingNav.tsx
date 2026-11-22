@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui'
+import { cn } from '@/lib/utils'
 import type { BookingStep } from '../bookingState'
 
 export interface BookingNavProps {
@@ -42,9 +43,12 @@ export function BookingNav({
   return (
     <div
       data-testid="booking-nav"
-      className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-3"
+      className={cn(
+        'grid gap-3',
+        showBack ? 'grid-cols-[minmax(0,1fr)_minmax(0,2fr)]' : 'grid-cols-1'
+      )}
     >
-      {showBack ? (
+      {showBack && (
         <Button
           type="button"
           variant="secondary"
@@ -54,8 +58,6 @@ export function BookingNav({
         >
           Quay lại
         </Button>
-      ) : (
-        <div aria-hidden="true" />
       )}
 
       {step === 'contact' ? (

@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
-/** Returns true when the frontend is configured to run against the in-browser mock API. */
-export function isMockMode(): boolean {
-  return import.meta.env.VITE_USE_MOCK === 'true'
+/** Returns true when built as the dedicated Staff-only mobile/tablet app (no guest website routes). */
+export function isStaffAppMode(): boolean {
+  return import.meta.env.VITE_APP_MODE === 'staff'
 }

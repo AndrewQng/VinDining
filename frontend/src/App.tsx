@@ -9,7 +9,8 @@ import {
   StaffTabletLayout,
   WallLayout,
 } from '@/layouts'
-import { isMockMode } from '@/lib/utils'
+import { isStaffAppMode } from '@/lib/utils'
+import { getRoleHomeRoute, useAuthStore } from '@/stores/useAuthStore'
 import { useThemeArea } from '@/stores/useThemeStore'
 
 const HomePage = lazy(() =>
@@ -38,11 +39,6 @@ const FeedbackPage = lazy(() =>
 )
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((m) => ({ default: m.LoginPage }))
-)
-const UiGalleryPage = lazy(() =>
-  import('@/pages/dev/UiGalleryPage').then((m) => ({
-    default: m.UiGalleryPage,
-  }))
 )
 const WaitstaffFloorPlanPage = lazy(() =>
   import('@/pages/staff/waitstaff/FloorPlanPage').then((m) => ({
@@ -166,24 +162,39 @@ function QrMenuShell() {
   )
 }
 
+function StaffAppEntry() {
+  const token = useAuthStore((s) => s.token)
+  const user = useAuthStore((s) => s.user)
+  if (token && user) {
+    return <Navigate to={getRoleHomeRoute(user.role)} replace />
+  }
+  return <Navigate to="/dang-nhap" replace />
+}
+
 export default function App() {
-  const mockEnabled = isMockMode()
+  const staffApp = isStaffAppMode()
 
   return (
     <BrowserRouter>
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          {/* Guest Public Website */}
-          <Route element={<GuestLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/dat-ban" element={<BookingPage />} />
-            <Route path="/thanh-toan/vnpay/:code" element={<VnPayMockPage />} />
-            <Route path="/tra-cuu" element={<LookupReservationPage />} />
-            <Route path="/danh-gia/:token" element={<FeedbackPage />} />
-          </Route>
+          {staffApp ? (
+            <Route path="/" element={<StaffAppEntry />} />
+          ) : (
+            <>
+              {/* Guest Public Website */}
+              <Route element={<GuestLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/dat-ban" element={<BookingPage />} />
+                <Route path="/thanh-toan/vnpay/:code" element={<VnPayMockPage />} />
+                <Route path="/tra-cuu" element={<LookupReservationPage />} />
+                <Route path="/danh-gia/:token" element={<FeedbackPage />} />
+              </Route>
 
-          {/* Guest Table QR E-Menu (phone-first view-only) */}
-          <Route path="/menu/:qrCode" element={<QrMenuShell />} />
+              {/* Guest Table QR E-Menu (phone-first view-only) */}
+              <Route path="/menu/:qrCode" element={<QrMenuShell />} />
+            </>
+          )}
 
           {/* Staff Login */}
           <Route path="/dang-nhap" element={<LoginPage />} />
@@ -265,12 +276,13 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Dev-only UI Gallery */}
-          {mockEnabled && <Route path="/dev/ui" element={<UiGalleryPage />} />}
-
           {/* Legacy skeleton route aliases */}
-          <Route path="/reserve" element={<Navigate to="/dat-ban" replace />} />
-          <Route path="/menu" element={<Navigate to="/menu/VD-QR-B03" replace />} />
+          {!staffApp && (
+            <>
+              <Route path="/reserve" element={<Navigate to="/dat-ban" replace />} />
+              <Route path="/menu" element={<Navigate to="/menu/VD-QR-B03" replace />} />
+            </>
+          )}
           <Route path="/login" element={<Navigate to="/dang-nhap" replace />} />
           <Route path="/pos" element={<Navigate to="/phuc-vu" replace />} />
           <Route path="/pos/tables" element={<Navigate to="/phuc-vu" replace />} />
@@ -292,7 +304,10 @@ export default function App() {
           />
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route
+            path="*"
+            element={<Navigate to={staffApp ? '/dang-nhap' : '/'} replace />}
+          />
         </Routes>
       </Suspense>
       <ToastViewport />

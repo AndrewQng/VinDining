@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { Check, Clock, RotateCcw } from 'lucide-react'
@@ -21,9 +20,8 @@ import {
   Tabs,
 } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { cn, isMockMode } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { orderApi } from '@/services/api'
-import { seedFullKitchenDemo } from '@/services/mock'
 import { useRealtime } from '@/services/realtime'
 import type { ApiErrorResponse, KitchenPendingTicketDto } from '@/types'
 
@@ -74,7 +72,6 @@ function formatClockTime(date: Date): string {
 /** E1 — Expediter tablet Pass station for dispatching served dishes and requesting kitchen remakes. */
 export function ExpediterPassPage() {
   useDocumentTitle('Quầy Pass')
-  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const [tab, setTab] = useState<PassTab>('active')
   const [tableFilter, setTableFilter] = useState<string>('ALL')
@@ -87,12 +84,6 @@ export function ExpediterPassPage() {
     null
   )
   const [busyTicketId, setBusyTicketId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (isMockMode() && searchParams.get('demo') === 'full') {
-      seedFullKitchenDemo()
-    }
-  }, [searchParams])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000)

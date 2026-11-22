@@ -1,6 +1,4 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
-import { isMockMode } from '@/lib/utils'
-import { installMockAdapter } from '@/services/mock/router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import type { ApiErrorResponse } from '@/types'
 
@@ -13,10 +11,6 @@ export const apiClient = axios.create({
   },
   timeout: 15000,
 })
-
-if (isMockMode()) {
-  installMockAdapter(apiClient)
-}
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
