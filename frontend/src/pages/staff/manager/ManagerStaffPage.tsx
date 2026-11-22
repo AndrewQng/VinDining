@@ -12,7 +12,7 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { cn, isMockMode } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { managerApi } from '@/services/api'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useToastStore } from '@/stores/useToastStore'
@@ -114,22 +114,6 @@ export function ManagerStaffPage() {
               ? `Đã gửi thông tin đăng nhập ban đầu đến email ${credentialBanner.email}`
               : `Đã đặt lại mật khẩu và gửi thông tin đăng nhập đến email ${credentialBanner.email}`}
           </p>
-          {(isMockMode() || Boolean(import.meta.env.VITEST)) &&
-            credentialBanner.temporaryPassword && (
-            <p className="text-xs text-ink-muted">
-              Dữ liệu thử nghiệm, tài khoản{' '}
-              <strong className="font-mono text-ink">
-                {credentialBanner.username}
-              </strong>{' '}
-              · Mật khẩu tạm thời:{' '}
-              <strong
-                data-testid="mock-temp-password"
-                className="font-mono text-accent"
-              >
-                {credentialBanner.temporaryPassword}
-              </strong>
-            </p>
-          )}
         </div>
       )}
 

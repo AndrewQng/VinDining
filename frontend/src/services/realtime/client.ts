@@ -1,5 +1,3 @@
-import { isMockMode } from '@/lib/utils'
-import { createMockRealtimeClient } from './mockRealtimeClient'
 import { createSignalRRealtimeClient } from './signalrRealtimeClient'
 import type { RealtimeClient } from './types'
 
@@ -17,6 +15,4 @@ function readStoredToken(): string | null {
 }
 
 export const realtimeClient: RealtimeClient =
-  isMockMode() || Boolean(import.meta.env.VITEST)
-    ? createMockRealtimeClient()
-    : createSignalRRealtimeClient(readStoredToken)
+  createSignalRRealtimeClient(readStoredToken)

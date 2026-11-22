@@ -56,7 +56,7 @@ public class DatabaseSeederTests
     }
 
     [Fact]
-    public async Task SeedAsync_SeedsOnlySection10Guest_AndSyncsStaleDemoDataInDevelopmentOnly()
+    public async Task SeedAsync_SeedsOnlyMasterData_AndSyncsStaleMasterDataInDevelopmentOnly()
     {
         var dbName = $"SeederTest_{Guid.NewGuid():N}";
         var prodLogs = new RecordingLoggerProvider();
@@ -69,21 +69,13 @@ public class DatabaseSeederTests
             await using var scope = initProvider.CreateAsyncScope();
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var guests = await db.Guests.AsNoTracking().ToListAsync();
-            var guest = Assert.Single(guests);
-            Assert.Equal("Nguyễn Văn An", guest.FullName);
-            Assert.Equal("0901234567", guest.PhoneNumber);
-            Assert.Equal("an.nguyen@email.com", guest.Email);
+            Assert.Empty(await db.Guests.AsNoTracking().ToListAsync());
+            Assert.Empty(await db.Reservations.AsNoTracking().ToListAsync());
+            Assert.Empty(await db.Orders.AsNoTracking().ToListAsync());
+            Assert.Empty(await db.Invoices.AsNoTracking().ToListAsync());
+            Assert.All(await db.Tables.AsNoTracking().ToListAsync(), t => Assert.Equal(TableStatus.Available, t.Status));
 
-            var reservations = await db.Reservations.AsNoTracking().ToListAsync();
-            Assert.All(reservations, r => Assert.Equal(guest.Id, r.GuestId));
-
-            var seededSetThuongHang = await db.TastingMenus.AsNoTracking().FirstAsync(tm => tm.Name == "Set Menu Thượng Hạng");
-            var vd7k3qInit = reservations.Single(r => r.BookingCode == "VD-7K3Q");
-            Assert.Equal(seededSetThuongHang.Id, vd7k3qInit.PreOrderedTastingMenuId);
-            Assert.Equal("Bàn gần cửa sổ nếu có thể", vd7k3qInit.Note);
-
-            // Mutate demo rows to simulate a pre-20/11 database
+            // Mutate master rows to simulate a stale database
             var b01 = await db.Tables.FirstAsync(t => t.TableNumber == "B01");
             b01.Capacity = 10;
             b01.Zone = TableZone.VIP;
@@ -104,9 +96,6 @@ public class DatabaseSeederTests
             var dessertCourse = setThuongHang.TastingMenuItems.First(i => i.CourseOrder == 3);
             dessertCourse.MenuItemId = panna.Id;
 
-            var vd7k3q = await db.Reservations.FirstAsync(r => r.BookingCode == "VD-7K3Q");
-            vd7k3q.PreOrderedTastingMenuId = null;
-
             await db.SaveChangesAsync();
         }
 
@@ -120,15 +109,13 @@ public class DatabaseSeederTests
             var b01 = await db.Tables.AsNoTracking().FirstAsync(t => t.TableNumber == "B01");
             var soup = await db.MenuItems.AsNoTracking().FirstAsync(m => m.Name == "Súp bào ngư thượng hạng");
             var setThuongHang = await db.TastingMenus.AsNoTracking().FirstAsync(tm => tm.Name == "Set Menu Thượng Hạng");
-            var vd7k3q = await db.Reservations.AsNoTracking().FirstAsync(r => r.BookingCode == "VD-7K3Q");
 
             Assert.Equal(10, b01.Capacity);
             Assert.Equal(111_000m, soup.Price);
             Assert.Equal(999_000m, setThuongHang.Price);
-            Assert.Null(vd7k3q.PreOrderedTastingMenuId);
         }
 
-        // 3. Development brings existing demo rows back to seed values, logs changes, and deletes nothing
+        // 3. Development brings existing master rows back to seed values and logs changes
         var devLogs = new RecordingLoggerProvider();
         using (var devProvider = BuildProvider(dbName, Environments.Development, devLogs))
         {
@@ -158,16 +145,12 @@ public class DatabaseSeederTests
             Assert.Equal(3, setThuongHang.TastingMenuItems.Count);
             Assert.Equal(souffle.Id, setThuongHang.TastingMenuItems.Single(i => i.CourseOrder == 3).MenuItemId);
 
-            var vd7k3q = await db.Reservations.AsNoTracking().FirstAsync(r => r.BookingCode == "VD-7K3Q");
-            Assert.Equal(setThuongHang.Id, vd7k3q.PreOrderedTastingMenuId);
-
             Assert.Equal(15, await db.Tables.CountAsync());
             Assert.Equal(9, await db.MenuItems.CountAsync());
             Assert.Equal(4, await db.TastingMenus.CountAsync());
             Assert.Contains(devLogs.Messages, m => m.Contains("B01"));
             Assert.Contains(devLogs.Messages, m => m.Contains("Súp bào ngư thượng hạng"));
             Assert.Contains(devLogs.Messages, m => m.Contains("Set Menu Thượng Hạng"));
-            Assert.Contains(devLogs.Messages, m => m.Contains("VD-7K3Q"));
         }
     }
 }

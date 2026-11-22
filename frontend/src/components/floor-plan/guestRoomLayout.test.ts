@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { createInitialMockDb } from '@/services/mock/seed'
 import type { TableZone } from '@/types'
 import {
   buildUnitRoom,
@@ -11,8 +10,32 @@ import {
   type Rect,
 } from './guestRoomLayout'
 
-const tablesOf = (zone: TableZone) =>
-  createInitialMockDb().tables.filter((t) => t.zone === zone && t.isActive)
+const TEST_TABLES: Array<{
+  id: string
+  tableNumber: string
+  capacity: number
+  zone: TableZone
+  posX: number
+  posY: number
+}> = [
+  { id: 'tbl-b01', tableNumber: 'B01', capacity: 2, zone: 'MainHall', posX: 51, posY: 66 },
+  { id: 'tbl-b02', tableNumber: 'B02', capacity: 2, zone: 'MainHall', posX: 211, posY: 66 },
+  { id: 'tbl-b03', tableNumber: 'B03', capacity: 4, zone: 'MainHall', posX: 363, posY: 63 },
+  { id: 'tbl-b04', tableNumber: 'B04', capacity: 4, zone: 'MainHall', posX: 523, posY: 63 },
+  { id: 'tbl-b05', tableNumber: 'B05', capacity: 4, zone: 'MainHall', posX: 43, posY: 283 },
+  { id: 'tbl-b06', tableNumber: 'B06', capacity: 6, zone: 'MainHall', posX: 195, posY: 280 },
+  { id: 'tbl-b07', tableNumber: 'B07', capacity: 6, zone: 'MainHall', posX: 355, posY: 280 },
+  { id: 'tbl-b08', tableNumber: 'B08', capacity: 8, zone: 'MainHall', posX: 511, posY: 277 },
+  { id: 'tbl-v01', tableNumber: 'V01', capacity: 6, zone: 'VIP', posX: 80, posY: 80 },
+  { id: 'tbl-v02', tableNumber: 'V02', capacity: 8, zone: 'VIP', posX: 240, posY: 80 },
+  { id: 'tbl-v03', tableNumber: 'V03', capacity: 10, zone: 'VIP', posX: 160, posY: 220 },
+  { id: 'tbl-c01', tableNumber: 'C01', capacity: 2, zone: 'Balcony', posX: 80, posY: 80 },
+  { id: 'tbl-c02', tableNumber: 'C02', capacity: 2, zone: 'Balcony', posX: 220, posY: 80 },
+  { id: 'tbl-c03', tableNumber: 'C03', capacity: 4, zone: 'Balcony', posX: 80, posY: 200 },
+  { id: 'tbl-c04', tableNumber: 'C04', capacity: 4, zone: 'Balcony', posX: 220, posY: 200 },
+]
+
+const tablesOf = (zone: TableZone) => TEST_TABLES.filter((t) => t.zone === zone)
 
 const overlaps = (a: Rect, b: Rect) =>
   a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h
