@@ -114,7 +114,9 @@ export function BookingPage() {
       return
     }
     let active = true
-    const payload = `VIETQR|VINDINING|${holdBookingCode}|${holdDepositAmount}`
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173'
+    const payload = `${origin}/thanh-toan/vnpay/${encodeURIComponent(holdBookingCode)}`
     void QRCode.toDataURL(payload, {
       width: 176,
       margin: 1,

@@ -45,20 +45,23 @@ Kịch bản chạy trực tiếp trên **Backend ASP.NET Core (.NET 9) + Micros
 3. Ngay tại bước **Giữ chỗ & cọc** trên `/dat-ban`:
    - Giao diện hiển thị đồng thời **đồng hồ đếm ngược giữ chỗ** và **mã QR thanh toán VietQR / VNPAY thật** kèm số tiền cọc, nội dung chuyển khoản `VD-...`.
    - Có thể demo nút **Hủy giao dịch** để chứng minh hệ thống xóa ngay trạng thái khóa bàn `LockedForPayment` trên SQL Server và trả bàn về trống (`Available`) tức thời mà không phải chờ hết 15–17 phút.
-   - Sau đó đặt lại và hoàn tất thanh toán cọc ngay tại bước **Giữ chỗ & cọc** (nhấn vào mã QR hoặc `Đã chuyển khoản xong` để kích hoạt IPN `POST /api/payments/vnpay-ipn`) → hệ thống tự chuyển sang bước **Xác nhận** kèm mã đặt bàn `VD-...`.
+   - Sau đó đặt lại và hoàn tất thanh toán cọc ngay tại bước **Giữ chỗ & cọc** (quét mã QR mở link xác nhận hoặc nhấn vào mã QR / `Đã chuyển khoản xong` để kích hoạt IPN `POST /api/payments/vnpay-ipn`) → hệ thống tự chuyển sang bước **Xác nhận** kèm mã đặt bàn `VD-...`.
 4. Vào `/tra-cuu`, nhập mã `VD-...` để chứng minh đơn đã chuyển trạng thái **Đã xác nhận** kèm số tiền cọc đã ghi nhận trong SQL Server.
-5. Mở nhanh `/menu/VD-QR-B03` để giới thiệu QR E-Menu tại bàn (chỉ xem thực đơn trên điện thoại, việc gọi món chuẩn Fine Dining do nhân viên phục vụ thao tác trên POS).
 
 ---
 
-## 3. Luồng Phục Vụ (Waitstaff) — Check-in & Course Firing (4:00 – 7:00)
+## 3. Luồng Phục Vụ (Waitstaff) Check-in, Khách Quét QR E-Menu Tại Bàn & Course Firing (4:00 – 7:00)
 
 1. Chuyển sang cửa sổ `mai.tt` (`/phuc-vu`), chỉ bàn `B03` đã tự cập nhật trạng thái đặt trước qua SignalR.
-2. Vào `/phuc-vu/check-in`, tìm mã đặt bàn `VD-...` vừa tạo và bấm **Check-in** → bàn `B03` chuyển sang **Đang phục vụ** (`Occupied`).
-3. Mở chi tiết bàn `B03` → **Tạo Order**:
+2. Vào `/phuc-vu/check-in` (hoặc `/thu-ngan/check-in`), chọn đơn đặt bàn `VD-...` trong danh sách tự động tải sẵn và bấm **Check-in** → bàn `B03` chuyển sang **Đang phục vụ** (`Occupied`).
+3. Demo **Luồng khách hàng quét mã QR tại bàn** (`/menu/VD-QR-B03`):
+   - Giải thích quy tắc bảo mật nghiệp vụ: khi bàn chưa Check-in (`Available`/`Reserved`), quét mã QR sẽ chặn mở thực đơn và báo liên hệ nhân viên; ngay khi nhân viên bấm **Check-in** (`Occupied`), trang `/menu/VD-QR-B03` tự động mở khóa theo thời gian thực qua SignalR (`table:status-changed`).
+   - Khách xem thực đơn Set Menu và A La Carte trực quan trên điện thoại (chỉ xem món, đồng bộ trạng thái **Hết món** tức thời qua SignalR `menu:updated`, không tự gọi món để giữ chuẩn phục vụ Fine Dining).
+   - Khách bấm 1 trong 3 nút hỗ trợ (**Gọi nhân viên**, **Châm nước**, **Đổi dụng cụ ăn**) → yêu cầu bắn qua SignalR (`service-request:created`) sang màn hình `/phuc-vu/thong-bao` của Waitstaff kèm âm báo chuông; khi Waitstaff bấm hoàn tất, màn hình QR của khách tự động nhận phản hồi (`service-request:completed`) và mở lại nút.
+4. Mở chi tiết bàn `B03` trên máy Waitstaff → **Tạo Order**:
    - Chọn 1 món khai vị (Appetizer), 1 món chính (Main Course) và 1 món tráng miệng (Dessert) kèm ghi chú chế biến.
    - Bấm gửi đơn: món khai vị (Course 1) được bắn ngay xuống bếp (`Preparing`), món chính và tráng miệng giữ ở trạng thái chờ (`Hold`) đúng quy trình **Course Firing**.
-4. Thao tác nhanh **Gọi thêm món** (bổ sung thêm 1 món vào đơn đang mở) và giới thiệu tính năng **Đổi bàn** (`/phuc-vu/doi-ban/:tableId` — khóa đồng thời cả bàn nguồn và bàn đích chống deadlock).
+5. Thao tác nhanh **Gọi thêm món** (bổ sung thêm 1 món vào đơn đang mở) và giới thiệu tính năng **Đổi bàn** (`/phuc-vu/doi-ban/:tableId` — khóa đồng thời cả bàn nguồn và bàn đích chống deadlock).
 
 ---
 

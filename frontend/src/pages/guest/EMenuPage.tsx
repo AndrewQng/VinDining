@@ -19,7 +19,7 @@ import {
 } from '@/components/ui'
 import { COURSE_TYPE_LABELS, SERVICE_REQUEST_TYPE_LABELS } from '@/domain'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { menuApi } from '@/services/api'
+import { menuApi, tableApi } from '@/services/api'
 import { useRealtime } from '@/services/realtime/useRealtime'
 import { toast } from '@/stores/useToastStore'
 import type {
@@ -76,7 +76,27 @@ export function EMenuPage() {
     retry: false,
   })
 
+  const { data: allTables = [] } = useQuery({
+    queryKey: ['tables'],
+    queryFn: tableApi.getAll,
+    enabled: isError,
+  })
+
+  const activeDiningTables = allTables.filter(
+    (t) => t.status === 'Occupied' || t.status === 'PaymentPending'
+  )
+
   useRealtime('menu:updated')
+  useRealtime('table:status-changed')
+  useRealtime('service-request:completed', () => {
+    setSentTypes(new Set())
+    if (lastSentType) {
+      toast.info(
+        'Nhân viên phục vụ đã hoàn tất yêu cầu hỗ trợ của bàn quý khách'
+      )
+      setLastSentType(null)
+    }
+  })
 
   const serviceMutation = useMutation({
     mutationFn: (requestType: ServiceRequestType) => {
@@ -151,6 +171,27 @@ export function EMenuPage() {
                 'Mã QR không hợp lệ hoặc bàn chưa được nhận. Vui lòng liên hệ nhân viên phục vụ.'}
             </p>
           </div>
+
+          {activeDiningTables.length > 0 && (
+            <div className="pt-2 border-t border-line space-y-2 text-left">
+              <p className="text-xs font-medium text-accent text-center">
+                Các bàn đã Check-in đang mở thực đơn QR:
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {activeDiningTables.map((t) => (
+                  <Link
+                    key={t.id}
+                    to={`/menu/${encodeURIComponent(t.qrCode)}`}
+                  >
+                    <Button size="sm" variant="primary">
+                      Mở QR Bàn {t.tableNumber}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           <Link to="/" className="inline-block">
             <Button variant="secondary">Về trang chủ</Button>
           </Link>

@@ -8,7 +8,13 @@ import type {
 } from './types'
 
 const EVENT_QUERY_KEYS: Record<RealtimeEventName, QueryKey[]> = {
-  'table:status-changed': [['tables'], ['table'], ['reservations'], ['invoices']],
+  'table:status-changed': [
+    ['tables'],
+    ['table'],
+    ['reservations'],
+    ['invoices'],
+    ['table-emenu'],
+  ],
   'order:updated': [['orders'], ['tables'], ['table'], ['kitchen'], ['invoices']],
   'course:activated': [['orders'], ['table'], ['kitchen']],
   'item:served': [['orders'], ['kitchen'], ['tables'], ['table'], ['invoices']],

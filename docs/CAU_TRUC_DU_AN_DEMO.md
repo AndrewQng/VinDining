@@ -229,7 +229,7 @@ Tài liệu mô tả theo từng dòng toàn bộ cấu trúc thư mục, chức
 - `booking/useBookingAvailability.ts` và `useStableViewportHeight.ts` — Gọi `reservationApi.getAvailability()` lấy danh sách bàn trống theo khung giờ và giữ ổn định chiều cao khung nhìn trên thiết bị di động.
 - `VnPayMockPage.tsx` (route `/thanh-toan/vnpay/:code`) — Giao diện cổng thanh toán tiền cọc VNPAY Sandbox, đếm ngược thời gian giữ bàn và gọi `reservationApi.processVnPayIpn()` (`POST /api/payments/vnpay-ipn`) để xác nhận đặt cọc vào SQL Server.
 - `LookupReservationPage.tsx` (route `/tra-cuu`) — Tra cứu đơn đặt bàn theo Mã đặt bàn + SĐT, kiểm tra chính sách hủy 4 giờ (`cancellation.ts`) và gọi `reservationApi.cancel()`.
-- `EMenuPage.tsx` (route `/menu/:qrCode`) — Trang thực đơn điện tử khi khách quét QR tại bàn (chỉ xem món, không tự đặt món) và gửi yêu cầu gọi phục vụ qua `serviceRequestApi.create()`.
+- `EMenuPage.tsx` (route `/menu/:qrCode`) — Trang thực đơn điện tử khi khách quét mã QR tại bàn: chỉ mở khóa khi bàn đã Check-in (`Occupied`/`PaymentPending`, tự động mở khóa tức thời qua SignalR `table:status-changed` ngay khi nhân viên bấm Check-in, hoặc gợi ý danh sách bàn đang phục vụ nếu quét nhầm bàn chưa mở); hiển thị Set Menu và món lẻ (chỉ xem, đồng bộ trạng thái Hết món qua `menu:updated`), cung cấp 3 nút gọi hỗ trợ (`Gọi nhân viên`, `Châm nước`, `Đổi dụng cụ ăn`) gọi `menuApi.callService()` phát chuông thông báo sang máy Waitstaff và tự động đặt lại nút khi nhận sự kiện `service-request:completed`.
 - `FeedbackPage.tsx` (route `/danh-gia/:token`) — Trang khảo sát sau bữa ăn, xác thực token qua `feedbackApi.verifyToken()` và gửi điểm đánh giá qua `feedbackApi.submit()`.
 
 #### Trang Đăng nhập & Bếp KDS (`pages/LoginPage.tsx` & `pages/kds/`)
