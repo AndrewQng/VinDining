@@ -7,17 +7,15 @@ Thư mục này đóng gói trực tiếp giao diện React (`../frontend/dist`)
 2. `npx cap sync android` sao chép `frontend/dist` vào `mobile/android/app/src/main/assets/public/`.
 3. Ứng dụng Android mở một WebView nội bộ (origin `http://localhost`) nạp trực tiếp gói giao diện đó, đồng thời cho phép gắn plugin native (Camera quét QR, in nhiệt Bluetooth, Push Notification...).
 
-## Chế độ chạy
-- **Demo Mode (mặc định, chạy offline ngay trong APK):** `frontend` build mặc định dùng mock data nếu `VITE_USE_MOCK=true`.
-- **Live Mode (nối Backend thật):** Build `frontend` với biến môi trường trỏ về IP LAN máy chạy backend (hoặc domain HTTPS):
-  ```powershell
-  $env:VITE_USE_MOCK="false"
-  $env:VITE_API_URL="http://192.168.10.103:5159/api"
-  $env:VITE_SIGNALR_URL="http://192.168.10.103:5159/hubs"
-  npm --prefix ../frontend run build
-  npx cap sync android
-  ```
-  *(Nếu chạy trên Android Emulator dùng `10.0.2.2:5159` thay cho IP LAN.)*
+## Cấu hình kết nối Backend
+Build `frontend` với biến môi trường trỏ về IP LAN máy chạy Backend (hoặc domain HTTPS):
+```powershell
+$env:VITE_API_URL="http://192.168.10.103:5159/api"
+$env:VITE_SIGNALR_URL="http://192.168.10.103:5159/hubs"
+npm --prefix ../frontend run build
+npx cap sync android
+```
+*(Nếu chạy trên Android Emulator dùng `10.0.2.2:5159` thay cho IP LAN.)*
 
 ## Xuất file `.apk`
 1. Cài **Android Studio** (có sẵn JDK & Android SDK).

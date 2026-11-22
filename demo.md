@@ -41,10 +41,11 @@ Kịch bản chạy trực tiếp trên **Backend ASP.NET Core (.NET 9) + Micros
 2. Bấm **Đặt bàn** (`/dat-ban`):
    - Chọn ngày hôm nay, khung giờ sắp tới, số lượng khách (ví dụ 4 khách), khu vực **Sảnh chính**, chọn bàn `B03`.
    - Có thể chọn kèm Set Menu hoặc đặt bàn tiêu chuẩn (cọc `500.000đ/khách`).
-   - Nhập họ tên, số điện thoại, email rồi bấm xác nhận.
-3. Trên trang `/thanh-toan/vnpay/:code`:
-   - Chỉ cho hội đồng thấy lúc này hệ thống đã khóa bàn `B03` sang trạng thái giữ chỗ chờ thanh toán (`LockedForPayment`) trong **17 phút** (15 phút thanh toán + 2 phút đệm) để chống đặt trùng.
-   - Bấm xác nhận thanh toán thành công (gọi thật `POST /api/payments/vnpay-ipn`) → hệ thống trả về mã đặt bàn `VD-...`.
+   - Nhập họ tên, số điện thoại, email rồi bấm **Giữ chỗ & đặt cọc**.
+3. Ngay tại bước **Giữ chỗ & cọc** trên `/dat-ban`:
+   - Giao diện hiển thị đồng thời **đồng hồ đếm ngược giữ chỗ** và **mã QR thanh toán VietQR / VNPAY thật** kèm số tiền cọc, nội dung chuyển khoản `VD-...`.
+   - Có thể demo nút **Hủy giao dịch** để chứng minh hệ thống xóa ngay trạng thái khóa bàn `LockedForPayment` trên SQL Server và trả bàn về trống (`Available`) tức thời mà không phải chờ hết 15–17 phút.
+   - Sau đó đặt lại và hoàn tất thanh toán cọc ngay tại bước **Giữ chỗ & cọc** (nhấn vào mã QR hoặc `Đã chuyển khoản xong` để kích hoạt IPN `POST /api/payments/vnpay-ipn`) → hệ thống tự chuyển sang bước **Xác nhận** kèm mã đặt bàn `VD-...`.
 4. Vào `/tra-cuu`, nhập mã `VD-...` để chứng minh đơn đã chuyển trạng thái **Đã xác nhận** kèm số tiền cọc đã ghi nhận trong SQL Server.
 5. Mở nhanh `/menu/VD-QR-B03` để giới thiệu QR E-Menu tại bàn (chỉ xem thực đơn trên điện thoại, việc gọi món chuẩn Fine Dining do nhân viên phục vụ thao tác trên POS).
 

@@ -49,14 +49,37 @@ export function CashierCheckInPage() {
     queryFn: tableApi.getAll,
   })
 
-  useRealtime('table:status-changed', () => {
-    void queryClient.invalidateQueries({ queryKey: ['tables'] })
+  const confirmedReservationsQuery = useQuery({
+    queryKey: ['confirmed-reservations'],
+    queryFn: () => reservationApi.search({ status: 'Reserved' }),
   })
 
-  const reservedTables = useMemo(
-    () => (tablesQuery.data ?? []).filter((t) => t.status === 'Reserved'),
-    [tablesQuery.data]
-  )
+  useRealtime('table:status-changed', () => {
+    void queryClient.invalidateQueries({ queryKey: ['tables'] })
+    void queryClient.invalidateQueries({ queryKey: ['confirmed-reservations'] })
+  })
+
+  const reservedTables = useMemo(() => {
+    const tables = tablesQuery.data ?? []
+    const confirmedByTableId = new Map<string, ReservationDto>()
+    for (const r of confirmedReservationsQuery.data ?? []) {
+      if (!confirmedByTableId.has(r.tableId)) {
+        confirmedByTableId.set(r.tableId, r)
+      }
+    }
+    return tables
+      .filter((t) => t.status === 'Reserved' || confirmedByTableId.has(t.id))
+      .map((t) => {
+        const res = confirmedByTableId.get(t.id)
+        if (!res) return t
+        return {
+          ...t,
+          status: t.status === 'Available' ? ('Reserved' as const) : t.status,
+          currentReservationCode: t.currentReservationCode ?? res.bookingCode,
+          guestCount: t.guestCount ?? res.partySize,
+        }
+      })
+  }, [tablesQuery.data, confirmedReservationsQuery.data])
   const availableTables = useMemo(
     () => (tablesQuery.data ?? []).filter((t) => t.status === 'Available'),
     [tablesQuery.data]
@@ -96,7 +119,16 @@ export function CashierCheckInPage() {
     setGuestCount((prev) =>
       Math.min(Math.max(prev, 1), selectedTable.capacity)
     )
-  }, [selectedTable])
+    if (mode === 'reserved' && !matchedReservation) {
+      const found = (confirmedReservationsQuery.data ?? []).find(
+        (r) => r.tableId === selectedTable.id
+      )
+      if (found) {
+        setMatchedReservation(found)
+        setSearchInput(found.bookingCode)
+      }
+    }
+  }, [selectedTable, mode, matchedReservation, confirmedReservationsQuery.data])
 
   const searchMutation = useMutation({
     mutationFn: async (term: string) => {
@@ -139,6 +171,7 @@ export function CashierCheckInPage() {
     onSuccess: (res) => {
       setSubmitError(null)
       void queryClient.invalidateQueries({ queryKey: ['tables'] })
+      void queryClient.invalidateQueries({ queryKey: ['confirmed-reservations'] })
       setCheckedInSummary({
         tableNumber: res.table.tableNumber,
         mode: 'reserved',

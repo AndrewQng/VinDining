@@ -1,8 +1,15 @@
+import { useEffect } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { ShieldAlert } from 'lucide-react'
 import { STAFF_ROLE_LABELS } from '@/domain'
 import { Button, Card } from '@/components/ui'
-import { getRoleHomeRoute, useAuthStore } from '@/stores/useAuthStore'
+import { authApi } from '@/services/api'
+import {
+  getRoleHomeRoute,
+  isValidJwtToken,
+  useAuthStore,
+} from '@/stores/useAuthStore'
 import { useThemeArea } from '@/stores/useThemeStore'
 import type { StaffRole } from '@/types'
 
@@ -10,15 +17,39 @@ export interface ProtectedRouteProps {
   allowedRoles?: StaffRole[]
 }
 
-/** Enforces staff authentication and RBAC matrix (Manager has access to all staff areas). */
+/** Enforces staff authentication, live JWT verification, and RBAC matrix (Manager has access to all staff areas). */
 export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   useThemeArea('staff')
   const location = useLocation()
+  const token = useAuthStore((s) => s.token)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const user = useAuthStore((s) => s.user)
   const justLoggedOut = useAuthStore((s) => s.justLoggedOut)
+  const logout = useAuthStore((s) => s.logout)
 
-  if (!isAuthenticated || !user) {
+  const hasValidJwt = isValidJwtToken(token)
+
+  useEffect(() => {
+    if ((isAuthenticated || token) && !hasValidJwt) {
+      logout()
+    }
+  }, [isAuthenticated, token, hasValidJwt, logout])
+
+  const meQuery = useQuery({
+    queryKey: ['auth-me', token],
+    queryFn: () => authApi.me(),
+    enabled: Boolean(isAuthenticated && user && hasValidJwt),
+    retry: false,
+    staleTime: 30_000,
+  })
+
+  useEffect(() => {
+    if (meQuery.isError) {
+      logout()
+    }
+  }, [meQuery.isError, logout])
+
+  if (!isAuthenticated || !user || !hasValidJwt || meQuery.isError) {
     return (
       <Navigate
         to="/dang-nhap"

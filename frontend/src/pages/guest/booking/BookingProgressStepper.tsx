@@ -18,7 +18,10 @@ export function BookingProgressStepper({
   currentStep,
   onSelectStep,
 }: BookingProgressStepperProps) {
-  const isFinalized = currentStep === 'confirmed' || currentStep === 'expired'
+  const isFinalized =
+    currentStep === 'hold' ||
+    currentStep === 'confirmed' ||
+    currentStep === 'expired'
   const rawIdx = steps.findIndex((s) => s.step === currentStep)
   const activeIdx =
     rawIdx >= 0

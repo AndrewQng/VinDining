@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { TABLE_ZONE_LABELS, formatPhoneNumber, formatSlotTime } from '@/domain'
 import {
@@ -23,6 +23,13 @@ export function CheckInLookupPage() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<ReservationDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const initialQuery = useQuery({
+    queryKey: ['waitstaff-confirmed-reservations'],
+    queryFn: () => reservationApi.search({ status: 'Reserved' }),
+  })
+
+  const displayedResults = results ?? initialQuery.data ?? []
 
   const searchMutation = useMutation({
     mutationFn: (term: string) =>
@@ -84,14 +91,14 @@ export function CheckInLookupPage() {
         </p>
       )}
 
-      {results && results.length === 0 ? (
+      {!initialQuery.isLoading && displayedResults.length === 0 ? (
         <EmptyState
           title="Không tìm thấy đơn đặt bàn"
           description="Kiểm tra lại mã đặt bàn hoặc số điện thoại của khách."
         />
       ) : (
         <div className="space-y-3">
-          {(results ?? []).map((res) => (
+          {displayedResults.map((res) => (
             <Card key={res.id} className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>

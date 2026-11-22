@@ -74,6 +74,23 @@ export function VnPayMockPage() {
     },
   })
 
+  const cancelHoldMutation = useMutation({
+    mutationFn: () =>
+      reservationApi.processVnPayIpn({
+        bookingCode: code,
+        transactionId: `VNP-CANCEL-${code}-${Date.now()}`,
+        paymentMethod: method,
+        responseCode: '24',
+      }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
+      const current = loadBookingDraft()
+      saveBookingDraft({ ...current, step: 'table', holdReservation: null })
+      navigate('/dat-ban', { replace: true })
+    },
+  })
+
   if (isLoading) {
     return (
       <div className="max-w-lg mx-auto px-4 py-10 space-y-4">
@@ -194,7 +211,8 @@ export function VnPayMockPage() {
           <Button
             variant="secondary"
             fullWidth
-            onClick={() => navigate('/dat-ban')}
+            loading={cancelHoldMutation.isPending}
+            onClick={() => cancelHoldMutation.mutate()}
           >
             Hủy giao dịch
           </Button>

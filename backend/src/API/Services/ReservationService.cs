@@ -610,8 +610,9 @@ public class ReservationService : IReservationService
 
         var hoursUntilDining = (reservation.ReservationTime - now).TotalHours;
         var eligibleForRefund = hoursUntilDining >= FreeCancellationThresholdHours;
+        var hasPaidDeposit = reservation.Deposit?.Status == DepositStatus.Paid;
 
-        if (!eligibleForRefund && dto.ConfirmForfeit == false)
+        if (hasPaidDeposit && !eligibleForRefund && dto.ConfirmForfeit == false)
         {
             throw new ConflictException("Hủy dưới 4 tiếng trước giờ hẹn sẽ không được hoàn tiền cọc.");
         }

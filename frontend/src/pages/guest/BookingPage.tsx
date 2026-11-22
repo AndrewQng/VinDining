@@ -2,7 +2,16 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import QRCode from 'qrcode'
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  Loader2,
+  QrCode,
+  ShieldCheck,
+} from 'lucide-react'
 import { GuestPhotoBackground } from '@/components/guest/GuestPhotoBackground'
 import {
   Button,
@@ -22,7 +31,8 @@ import {
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { cn } from '@/lib/utils'
 import { menuApi, reservationApi } from '@/services/api'
-import type { ApiErrorResponse, TableZone } from '@/types'
+import { toast } from '@/stores/useToastStore'
+import type { ApiErrorResponse, DepositPaymentMethod, TableZone } from '@/types'
 import {
   buildReservationIso,
   clearBookingDraft,
@@ -83,10 +93,75 @@ export function BookingPage() {
     Partial<Record<'fullName' | 'phoneNumber' | 'email', string>>
   >({})
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [qrDataUrl, setQrDataUrl] = useState<string>('')
 
   useEffect(() => {
     saveBookingDraft(draft)
   }, [draft])
+
+  const holdBookingCode = draft.holdReservation?.bookingCode ?? ''
+  const holdDepositAmount =
+    draft.holdReservation?.deposit?.amount ??
+    calculateDepositAmount({
+      guestCount: draft.partySize,
+      setMenuPricePerGuest: null,
+    })
+
+  useEffect(() => {
+    if (draft.step !== 'hold' || !holdBookingCode) {
+      setQrDataUrl('')
+      return
+    }
+    let active = true
+    const payload = `VIETQR|VINDINING|${holdBookingCode}|${holdDepositAmount}`
+    void QRCode.toDataURL(payload, {
+      width: 176,
+      margin: 1,
+      errorCorrectionLevel: 'M',
+      color: {
+        dark: '#111827',
+        light: '#FFFFFF',
+      },
+    })
+      .then((url) => {
+        if (active) setQrDataUrl(url)
+      })
+      .catch(() => {
+        if (active) setQrDataUrl('')
+      })
+    return () => {
+      active = false
+    }
+  }, [draft.step, holdBookingCode, holdDepositAmount])
+
+  const { data: polledHoldReservation } = useQuery({
+    queryKey: ['pending-reservation-poll', holdBookingCode],
+    queryFn: () => reservationApi.getByCode(holdBookingCode),
+    enabled: draft.step === 'hold' && Boolean(holdBookingCode),
+    refetchInterval: 2500,
+    retry: false,
+  })
+
+  useEffect(() => {
+    if (draft.step !== 'hold' || !polledHoldReservation) return
+    if (polledHoldReservation.status === 'Reserved') {
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
+      setDraft((prev) => ({
+        ...prev,
+        step: 'confirmed',
+        holdReservation: null,
+        confirmedReservation: polledHoldReservation,
+      }))
+    } else if (
+      polledHoldReservation.status === 'Expired_Cancelled' ||
+      polledHoldReservation.status === 'Cancelled_Forfeited' ||
+      polledHoldReservation.status === 'Cancelled_Refunded'
+    ) {
+      setDraft((prev) => ({ ...prev, step: 'expired', holdReservation: null }))
+    }
+  }, [draft.step, polledHoldReservation, queryClient])
 
   // A new step starts at the top of its card: if the card begins above the
   // screen (the guest scrolled down to the buttons on a phone), jump back to it.
@@ -154,6 +229,68 @@ export function BookingPage() {
       } else {
         setSubmitError('Không thể kết nối hệ thống')
       }
+    },
+  })
+
+  const completePaymentMutation = useMutation({
+    mutationFn: () => {
+      const code = draft.holdReservation?.bookingCode ?? ''
+      return reservationApi.processVnPayIpn({
+        bookingCode: code,
+        transactionId: `VNP-${code}-${Date.now()}`,
+        paymentMethod: draft.paymentMethod,
+        responseCode: '00',
+      })
+    },
+    onSuccess: (res) => {
+      setPaymentError(null)
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
+      if (!res.success || res.reservation?.status !== 'Reserved') {
+        setDraft((prev) => ({ ...prev, step: 'expired', holdReservation: null }))
+        return
+      }
+      setDraft((prev) => ({
+        ...prev,
+        step: 'confirmed',
+        holdReservation: null,
+        confirmedReservation: res.reservation,
+      }))
+    },
+    onError: (err) => {
+      if (isAxiosError<ApiErrorResponse>(err)) {
+        if (err.response?.status === 410) {
+          setDraft((prev) => ({ ...prev, step: 'expired', holdReservation: null }))
+          return
+        }
+        setPaymentError(err.response?.data?.message ?? 'Thanh toán không thành công')
+      } else {
+        setPaymentError('Không thể kết nối cổng thanh toán')
+      }
+    },
+  })
+
+  const cancelHoldMutation = useMutation({
+    mutationFn: async () => {
+      const code = draft.holdReservation?.bookingCode
+      if (!code) return
+      await reservationApi.processVnPayIpn({
+        bookingCode: code,
+        transactionId: `VNP-CANCEL-${code}-${Date.now()}`,
+        paymentMethod: draft.paymentMethod,
+        responseCode: '24',
+      })
+    },
+    onSettled: () => {
+      setPaymentError(null)
+      void queryClient.invalidateQueries({ queryKey: ['booking-slots'] })
+      void queryClient.invalidateQueries({ queryKey: ['booking-all-slots'] })
+      setDraft((prev) => ({
+        ...prev,
+        step: 'table',
+        holdReservation: null,
+      }))
+      toast.info('Đã hủy giao dịch và mở khóa bàn')
     },
   })
 
@@ -333,10 +470,10 @@ export function BookingPage() {
             </Card>
           )}
 
-          {/* Step 5: 17-minute Hold */}
+          {/* Step 5: 17-minute Hold & Direct Deposit Payment */}
           {draft.step === 'hold' && draft.holdReservation && (
-            <Card className="bg-surface/95 backdrop-blur-md space-y-6">
-              <div className="rounded-xl bg-card border border-line p-6 text-center space-y-2">
+            <Card className="bg-surface/95 backdrop-blur-md space-y-5">
+              <div className="rounded-xl bg-card border border-line p-5 text-center space-y-1.5">
                 <p className="text-sm font-medium text-ink-muted">
                   Thời gian giữ chỗ còn lại
                 </p>
@@ -346,42 +483,185 @@ export function BookingPage() {
                     tone="warning"
                     className="text-3xl sm:text-4xl font-bold"
                     onExpire={() =>
-                      setDraft((d) => ({ ...d, step: 'expired' }))
+                      setDraft((d) => ({ ...d, step: 'expired', holdReservation: null }))
                     }
                   />
                 </div>
                 <p className="text-xs text-ink-muted">
-                  Bàn {draft.holdReservation.tableNumber} đang được giữ trong 17
-                  phút. Vui lòng hoàn tất thanh toán cọc.
+                  Bàn {draft.holdReservation.tableNumber} đang được giữ chỗ tạm thời. Quét mã bên dưới để hoàn tất đặt cọc.
                 </p>
               </div>
 
-              <div className="rounded-xl bg-card border border-line p-4 space-y-1.5">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-ink">
-                    Số tiền cọc cần thanh toán
+              <div className="rounded-xl bg-card border border-line p-4 sm:p-5 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-line">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                    <ShieldCheck className="w-4 h-4" aria-hidden="true" />
+                    Cổng thanh toán đặt cọc VNPAY
                   </span>
-                  <Money
-                    amount={
-                      draft.holdReservation.deposit?.amount ??
-                      calculateDepositAmount({
-                        guestCount: draft.partySize,
-                        setMenuPricePerGuest: selectedSet?.price ?? null,
-                      })
-                    }
-                    tone="accent"
-                    className="text-lg font-semibold"
-                  />
+                  <span className="text-xs font-mono text-ink-muted">
+                    Mã giữ chỗ: {draft.holdReservation.bookingCode} · Bàn {draft.holdReservation.tableNumber}
+                  </span>
                 </div>
-                <p className="text-xs text-ink-muted">
-                  Mã giữ chỗ: {draft.holdReservation.bookingCode} · Bàn{' '}
-                  {draft.holdReservation.tableNumber}
-                </p>
-                {draft.holdReservation.preOrderedTastingMenuName && (
-                  <p className="text-xs text-accent">
-                    Set Menu đặt trước:{' '}
-                    {draft.holdReservation.preOrderedTastingMenuName} ×{' '}
-                    {draft.holdReservation.partySize}
+
+                <div
+                  className="grid grid-cols-2 gap-3"
+                  role="radiogroup"
+                  aria-label="Phương thức thanh toán cọc"
+                >
+                  {(['VietQR', 'Card'] as DepositPaymentMethod[]).map((m) => {
+                    const active = draft.paymentMethod === m
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() =>
+                          setDraft((d) => ({ ...d, paymentMethod: m }))
+                        }
+                        className={cn(
+                          'p-3 rounded-xl border text-left transition-colors flex items-center gap-3 cursor-pointer',
+                          active
+                            ? 'border-primary ring-1 ring-primary bg-surface text-accent'
+                            : 'border-line bg-surface/60 text-ink-muted hover:text-ink'
+                        )}
+                      >
+                        {m === 'VietQR' ? (
+                          <QrCode className="w-5 h-5 shrink-0" aria-hidden="true" />
+                        ) : (
+                          <CreditCard className="w-5 h-5 shrink-0" aria-hidden="true" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-ink">
+                            {m === 'VietQR' ? 'Quét mã VietQR' : 'Thẻ ngân hàng'}
+                          </p>
+                          <p className="text-xs text-ink-muted">
+                            {m === 'VietQR'
+                              ? 'App ngân hàng / Ví VNPAY'
+                              : 'ATM nội địa / Visa / Master'}
+                          </p>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {draft.paymentMethod === 'VietQR' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-5 items-center rounded-xl bg-surface border border-line p-4">
+                    <div className="flex flex-col items-center gap-2 mx-auto">
+                      <button
+                        type="button"
+                        onClick={() => completePaymentMutation.mutate()}
+                        disabled={completePaymentMutation.isPending}
+                        title="Quét mã hoặc nhấn vào mã QR để hoàn tất thanh toán"
+                        className="p-2.5 rounded-xl bg-white border border-line shadow-sm cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                      >
+                        {qrDataUrl ? (
+                          <img
+                            src={qrDataUrl}
+                            alt={`Mã VietQR thanh toán cọc ${draft.holdReservation.bookingCode}`}
+                            className="w-40 h-40 object-contain"
+                          />
+                        ) : (
+                          <div className="w-40 h-40 flex items-center justify-center">
+                            <QrCode className="w-16 h-16 text-gray-800" />
+                          </div>
+                        )}
+                      </button>
+                      <span className="text-[11px] font-mono text-ink-muted">
+                        VNPAY · VIETQR
+                      </span>
+                    </div>
+
+                    <div className="space-y-2.5 text-sm">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-ink-muted">Đơn vị thụ hưởng</span>
+                        <span className="font-semibold text-ink">NHÀ HÀNG VINDINING</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-ink-muted">Số tiền đặt cọc</span>
+                        <Money
+                          amount={
+                            draft.holdReservation.deposit?.amount ??
+                            calculateDepositAmount({
+                              guestCount: draft.partySize,
+                              setMenuPricePerGuest: selectedSet?.price ?? null,
+                            })
+                          }
+                          tone="accent"
+                          className="text-lg font-bold"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-ink-muted">Nội dung CK</span>
+                        <span className="font-mono font-semibold text-accent">
+                          {draft.holdReservation.bookingCode}
+                        </span>
+                      </div>
+                      {draft.holdReservation.preOrderedTastingMenuName && (
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-ink-muted">Set Menu đặt trước</span>
+                          <span className="text-xs font-medium text-accent">
+                            {draft.holdReservation.preOrderedTastingMenuName} ×{' '}
+                            {draft.holdReservation.partySize}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="pt-2 border-t border-line flex flex-wrap items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
+                          Đang chờ nhận giao dịch tự động...
+                        </span>
+                        <button
+                          type="button"
+                          disabled={completePaymentMutation.isPending}
+                          onClick={() => completePaymentMutation.mutate()}
+                          className="text-xs font-medium text-accent hover:underline cursor-pointer"
+                        >
+                          {completePaymentMutation.isPending
+                            ? 'Đang kiểm tra...'
+                            : 'Đã chuyển khoản xong'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-xl bg-surface border border-line p-4 space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">Số tiền thanh toán thẻ</span>
+                      <Money
+                        amount={
+                          draft.holdReservation.deposit?.amount ??
+                          calculateDepositAmount({
+                            guestCount: draft.partySize,
+                            setMenuPricePerGuest: selectedSet?.price ?? null,
+                          })
+                        }
+                        tone="accent"
+                        className="text-lg font-bold"
+                      />
+                    </div>
+                    <p className="text-xs text-ink-muted">
+                      Cổng thẻ nội địa / quốc tế VNPAY cho mã giữ chỗ{' '}
+                      <span className="font-mono text-ink">
+                        {draft.holdReservation.bookingCode}
+                      </span>
+                      .
+                    </p>
+                    <Button
+                      fullWidth
+                      loading={completePaymentMutation.isPending}
+                      onClick={() => completePaymentMutation.mutate()}
+                    >
+                      Thanh toán thẻ ngay
+                    </Button>
+                  </div>
+                )}
+
+                {paymentError && (
+                  <p role="alert" className="text-xs text-danger text-center">
+                    {paymentError}
                   </p>
                 )}
               </div>
@@ -495,8 +775,10 @@ export function BookingPage() {
               step={draft.step}
               hasSelectedTable={Boolean(draft.tableId)}
               isSubmittingContact={createMutation.isPending}
+              isCancellingHold={cancelHoldMutation.isPending}
               contactFormId={BOOKING_CONTACT_FORM_ID}
               onBack={handleBack}
+              onCancelHold={() => cancelHoldMutation.mutate()}
               onNext={() => {
                 if (draft.step === 'time-zone') {
                   setDraft((d) => ({ ...d, step: 'table' }))
@@ -504,12 +786,6 @@ export function BookingPage() {
                   setDraft((d) => ({ ...d, step: 'set-menu' }))
                 } else if (draft.step === 'set-menu') {
                   setDraft((d) => ({ ...d, step: 'contact' }))
-                } else if (draft.step === 'hold' && draft.holdReservation) {
-                  navigate(
-                    `/thanh-toan/vnpay/${encodeURIComponent(
-                      draft.holdReservation.bookingCode
-                    )}`
-                  )
                 }
               }}
             />

@@ -6,9 +6,11 @@ export interface BookingNavProps {
   step: BookingStep
   hasSelectedTable: boolean
   isSubmittingContact: boolean
+  isCancellingHold?: boolean
   contactFormId: string
   onBack: () => void
   onNext: () => void
+  onCancelHold?: () => void
 }
 
 function getPrimaryLabel(step: BookingStep): string {
@@ -20,9 +22,7 @@ function getPrimaryLabel(step: BookingStep): string {
     case 'set-menu':
       return 'Tiếp tục'
     case 'contact':
-      return 'Giữ chỗ'
-    case 'hold':
-      return 'Thanh toán qua VNPAY'
+      return 'Giữ chỗ & đặt cọc'
     default:
       return 'Tiếp tục'
   }
@@ -33,10 +33,29 @@ export function BookingNav({
   step,
   hasSelectedTable,
   isSubmittingContact,
+  isCancellingHold = false,
   contactFormId,
   onBack,
   onNext,
+  onCancelHold,
 }: BookingNavProps) {
+  if (step === 'hold') {
+    return (
+      <div data-testid="booking-nav" className="grid grid-cols-1 gap-3">
+        <Button
+          type="button"
+          variant="danger"
+          className="w-full"
+          loading={isCancellingHold}
+          data-testid="booking-nav-cancel-hold"
+          onClick={onCancelHold}
+        >
+          Hủy giao dịch
+        </Button>
+      </div>
+    )
+  }
+
   const showBack = step !== 'time-zone'
   const primaryLabel = getPrimaryLabel(step)
 
