@@ -45,16 +45,17 @@ export function InvoicesTodayPage() {
   useDocumentTitle('Hóa đơn hôm nay')
   const queryClient = useQueryClient()
   const [methodFilter, setMethodFilter] = useState<MethodFilter>('ALL')
+  const [dateScope, setDateScope] = useState<'today' | 'all'>('today')
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
   )
   const todayDate = getTodayDateString()
 
   const invoicesQuery = useQuery({
-    queryKey: ['invoices', 'list', todayDate, methodFilter],
+    queryKey: ['invoices', 'list', dateScope, todayDate, methodFilter],
     queryFn: () =>
       invoiceApi.list({
-        date: todayDate,
+        ...(dateScope === 'today' ? { date: `${todayDate}T00:00:00Z` } : {}),
         ...(methodFilter === 'ALL' ? {} : { paymentMethod: methodFilter }),
       }),
   })
@@ -89,6 +90,20 @@ export function InvoicesTodayPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              setDateScope((prev) => (prev === 'today' ? 'all' : 'today'))
+            }
+            className={cn(
+              'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer',
+              dateScope === 'all'
+                ? 'border-accent bg-accent/15 text-accent'
+                : 'border-line bg-card text-ink-muted hover:text-ink'
+            )}
+          >
+            {dateScope === 'today' ? `Ngày ${todayDate}` : 'Tất cả ngày'}
+          </button>
           {FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}

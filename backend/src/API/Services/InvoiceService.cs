@@ -347,7 +347,7 @@ public class InvoiceService : IInvoiceService
 
         if (date.HasValue)
         {
-            var vnDate = date.Value.Date;
+            var vnDate = DateTime.SpecifyKind(date.Value.Date, DateTimeKind.Utc);
             var startUtc = vnDate.AddHours(-7);
             var endUtc = startUtc.AddDays(1);
             query = query.Where(i => i.CreatedAt >= startUtc && i.CreatedAt < endUtc);
